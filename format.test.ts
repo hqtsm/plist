@@ -1,15 +1,17 @@
 import { assertEquals } from '@std/assert';
 import * as FORMAT from './format.ts';
 
-const regCFPLF = /^kCFPropertyList.*Format.*/;
-
 Deno.test('format constants', () => {
-	const keys = Object.keys(FORMAT).filter((s) => regCFPLF.test(s)).sort();
-	assertEquals(keys, [
-		'kCFPropertyListBinaryFormat_v1_0',
-		'kCFPropertyListOpenStepFormat',
-		'kCFPropertyListXMLFormat_v1_0',
-	]);
+	const keys = Object.keys(FORMAT).filter((s) => s.startsWith('FORMAT_'));
+
+	assertEquals(
+		keys.sort(),
+		[
+			'FORMAT_OPEN_STEP',
+			'FORMAT_XML_V1_0',
+			'FORMAT_BINARY_V1_0',
+		].sort(),
+	);
 
 	for (const key of keys) {
 		assertEquals(
