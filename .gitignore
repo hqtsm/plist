@@ -12,3 +12,6 @@ Thumbs.db
 /docs
 /vendor
 /npm
+
+/spec/fixtures/util/bin
+/spec/fixtures/plist/*/main
