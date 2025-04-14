@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict aaa="111" bbb='222' ccc=333 dddd>
+	<key aaa="111" bbb='222' ccc=333 dddd>CF$UID</key>
+	<integer aaa="111" bbb='222' ccc=333 dddd>42</integer>
+</dict>
+</plist>
