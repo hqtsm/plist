@@ -4,6 +4,8 @@
  * Plist formats.
  */
 
+export const kCFPropertyListOpenStepFormat = 1;
+
 // deno-lint-ignore camelcase
 export const kCFPropertyListXMLFormat_v1_0 = 100;
 
