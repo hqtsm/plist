@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<key>1234|d76df8</key>
+	<data>1234</data>
+	<key>123=|d76d</key>
+	<data>123=</data>
+	<key>12=4|d76038</key>
+	<data>12=4</data>
+	<key>12==|d7</key>
+	<data>12==</data>
+	<key>1=34|d40df8</key>
+	<data>1=34</data>
+	<key>1=3=|d40d</key>
+	<data>1=3=</data>
+	<key>1==4|d40038</key>
+	<data>1==4</data>
+	<key>1===|d4</key>
+	<data>1===</data>
+	<key>=234|036df8</key>
+	<data>=234</data>
+	<key>=23=|036d</key>
+	<data>=23=</data>
+	<key>=2=4|036038</key>
+	<data>=2=4</data>
+	<key>=2==|03</key>
+	<data>=2==</data>
+	<key>==34|000df8</key>
+	<data>==34</data>
+	<key>==3=|000d</key>
+	<data>==3=</data>
+	<key>===4|000038</key>
+	<data>===4</data>
+	<key>====|00</key>
+	<data>====</data>
+</array>
+</plist>
