@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         config:
-          - deno-version: 2.2.9
+          - deno-version: 2.2.10
           - deno-version: 2.2.0
           - deno-version: 2.1.0
           - deno-version: 2.0.0
@@ -54,7 +54,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: 2.2.9
+          deno-version: 2.2.10
 
       - name: Docs
         run: deno task docs
@@ -86,7 +86,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: 2.2.9
+          deno-version: 2.2.10
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -116,7 +116,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: 2.2.9
+          deno-version: 2.2.10
 
       - name: Setup Node
         uses: actions/setup-node@v4
