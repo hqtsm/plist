@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>leapyear</key>
+	<date>2008-02-29T00:00:00Z</date>
+	<key>year 999</key>
+	<date>999-01-01T00:00:00Z</date>
+	<key>year 99</key>
+	<date>99-01-01T00:00:00Z</date>
+	<key>year 9</key>
+	<date>9-01-01T00:00:00Z</date>
+	<key>year 1</key>
+	<date>1-01-01T00:00:00Z</date>
+	<key>year 0</key>
+	<date>0-01-01T00:00:00Z</date>
+	<key>year -1</key>
+	<date>-1-01-01T00:00:00Z</date>
+	<key>limit</key>
+	<date>10737420240-12-31T23:59:59Z</date>
+	<key>overflow</key>
+	<date>10737420241-01-01T00:00:00Z</date>
+	<key>underflow</key>
+	<date>-2147481648-01-01T00:00:00Z</date>
+	<key>rollover s 60</key>
+	<date>2010-01-01T00:00:60Z</date>
+	<key>rollover s 99</key>
+	<date>2010-01-01T00:00:99Z</date>
+	<key>rollover m 60</key>
+	<date>2010-01-01T00:60:00Z</date>
+	<key>rollover m 99</key>
+	<date>2010-01-01T00:99:00Z</date>
+	<key>rollover h 24</key>
+	<date>2010-01-01T24:00:00Z</date>
+	<key>rollover h 99</key>
+	<date>2010-01-01T99:00:00Z</date>
+	<key>rollover d 00</key>
+	<date>2010-01-00T00:00:00Z</date>
+	<key>rollover d 32</key>
+	<date>2010-01-32T00:00:00Z</date>
+	<key>rollover m 00</key>
+	<date>2010-00-01T00:00:00Z</date>
+	<key>rollover m 13</key>
+	<date>2010-13-01T00:00:00Z</date>
+	<key>rollover feb 29</key>
+	<date>2010-02-29T00:00:00Z</date>
+</dict>
+</plist>
