@@ -2,6 +2,7 @@ import type { PLType } from './type.ts';
 
 let values: WeakMap<PLUID, bigint>;
 
+const MIN_VALUE = 0n;
 const MAX_VALUE = 0xffffffffn;
 
 const type = 'PLUID';
@@ -49,9 +50,27 @@ export class PLUID implements PLType {
 		return arg[Symbol.toStringTag] === type;
 	}
 
+	/**
+	 * Maximum UID value.
+	 */
+	public static readonly MAX_VALUE: bigint;
+
+	/**
+	 * Minimum UID value.
+	 */
+	public static readonly MIN_VALUE: bigint;
+
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: type,
+			configurable: true,
+		});
+		Object.defineProperty(this, 'MAX_VALUE', {
+			value: MAX_VALUE,
+			configurable: true,
+		});
+		Object.defineProperty(this, 'MIN_VALUE', {
+			value: MIN_VALUE,
 			configurable: true,
 		});
 	}

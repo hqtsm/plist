@@ -2,8 +2,8 @@ import type { PLType } from './type.ts';
 
 let values: WeakMap<PLInteger, bigint>;
 
-const P = 0xffffffffffffffffn;
-const N = -0x8000000000000000n;
+const MAX_VALUE = 0xffffffffffffffffn;
+const MIN_VALUE = -0x8000000000000000n;
 
 const type = 'PLInteger';
 
@@ -37,7 +37,10 @@ export class PLInteger implements PLType {
 	 * @param value Integer value.
 	 */
 	public set value(value: bigint) {
-		(values ??= new WeakMap()).set(this, value % (value < 0 ? N : P));
+		(values ??= new WeakMap()).set(
+			this,
+			value % (value < 0 ? MIN_VALUE : MAX_VALUE),
+		);
 	}
 
 	/**
@@ -50,9 +53,27 @@ export class PLInteger implements PLType {
 		return arg[Symbol.toStringTag] === type;
 	}
 
+	/**
+	 * Maximum integer value.
+	 */
+	public static readonly MAX_VALUE: bigint;
+
+	/**
+	 * Minimum integer value.
+	 */
+	public static readonly MIN_VALUE: bigint;
+
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: type,
+			configurable: true,
+		});
+		Object.defineProperty(this, 'MAX_VALUE', {
+			value: MAX_VALUE,
+			configurable: true,
+		});
+		Object.defineProperty(this, 'MIN_VALUE', {
+			value: MIN_VALUE,
 			configurable: true,
 		});
 	}
