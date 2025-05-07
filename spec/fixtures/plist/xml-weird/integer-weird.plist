@@ -6,13 +6,29 @@
 	<integer>+0</integer>
 	<key>+ 1|1</key>
 	<integer>+ 1</integer>
-	<key>+  2|2</key>
-	<integer>+  2</integer>
+	<key>  +  2|2</key>
+	<integer>  +  2</integer>
 	<key>-0|0</key>
 	<integer>0</integer>
 	<key>- 1|-1</key>
 	<integer>- 1</integer>
-	<key>-  2|-2</key>
-	<integer>-  2</integer>
+	<key>  -  2|-2</key>
+	<integer>  -  2</integer>
+	<key>  3|3</key>
+	<integer>  3</integer>
+	<key>0xa|10</key>
+	<integer>0xa</integer>
+	<key> 0XA|10</key>
+	<integer> 0XA</integer>
+	<key> + 0xA|10</key>
+	<integer> + 0xA</integer>
+	<key> - 0XA|-10</key>
+	<integer> - 0XA</integer>
+	<key>18446744073709551615|18446744073709551615</key>
+	<integer>18446744073709551615</integer>
+	<key>0xffffffffffffffff|18446744073709551615</key>
+	<integer>0xffffffffffffffff</integer>
+	<key>0xffffffffff|1099511627775</key>
+	<integer>0xffffffffff</integer>
 </dict>
 </plist>
