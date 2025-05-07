@@ -41,7 +41,7 @@ export class PLBoolean implements PLType {
 	 * Check if type is boolean type.
 	 *
 	 * @param arg Property list type.
-	 * @returns True if type is boolean type.
+	 * @returns Is type boolean type.
 	 */
 	public static is(arg: PLType): arg is PLBoolean {
 		return arg[Symbol.toStringTag] === type;

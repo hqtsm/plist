@@ -47,7 +47,7 @@ export class PLInteger implements PLType {
 	 * Check if type is integer type.
 	 *
 	 * @param arg Property list type.
-	 * @returns True if type is integer type.
+	 * @returns Is type integer type.
 	 */
 	public static is(arg: PLType): arg is PLInteger {
 		return arg[Symbol.toStringTag] === type;

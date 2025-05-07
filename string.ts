@@ -50,7 +50,7 @@ export class PLString implements PLType {
 	 * Check if type is string type.
 	 *
 	 * @param arg Property list type.
-	 * @returns True if type is string type.
+	 * @returns Is type string type.
 	 */
 	public static is(arg: PLType): arg is PLString {
 		return arg[Symbol.toStringTag] === type;

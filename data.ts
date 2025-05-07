@@ -41,7 +41,7 @@ export class PLData implements PLType {
 	 * Check if type is data type.
 	 *
 	 * @param arg Property list type.
-	 * @returns True if type is data type.
+	 * @returns Is type data type.
 	 */
 	public static is(arg: PLType): arg is PLData {
 		return arg[Symbol.toStringTag] === type;

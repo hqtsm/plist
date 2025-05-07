@@ -71,7 +71,7 @@ export class PLReal implements PLType {
 	 * Check if type is real type.
 	 *
 	 * @param arg Property list type.
-	 * @returns True if type is real type.
+	 * @returns Is type real type.
 	 */
 	public static is(arg: PLType): arg is PLReal {
 		return arg[Symbol.toStringTag] === type;

@@ -44,7 +44,7 @@ export class PLUID implements PLType {
 	 * Check if type is UID type.
 	 *
 	 * @param arg Property list type.
-	 * @returns True if type is UID type.
+	 * @returns Is type UID type.
 	 */
 	public static is(arg: PLType): arg is PLUID {
 		return arg[Symbol.toStringTag] === type;

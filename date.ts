@@ -48,7 +48,7 @@ export class PLDate implements PLType {
 	 * Check if type is date type.
 	 *
 	 * @param arg Property list type.
-	 * @returns True if type is date type.
+	 * @returns Is type date type.
 	 */
 	public static is(arg: PLType): arg is PLDate {
 		return arg[Symbol.toStringTag] === type;
