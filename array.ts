@@ -16,10 +16,7 @@ export class PLArray<T extends PLType = PLType> implements PLType {
 	 * @param itter Property list values.
 	 */
 	constructor(itter: Iterable<T> | ArrayLike<T> | null = null) {
-		(arrays ??= new WeakMap()).set(
-			this,
-			itter ? Array.from(itter) : [],
-		);
+		(arrays ??= new WeakMap()).set(this, itter ? Array.from(itter) : []);
 	}
 
 	/**
