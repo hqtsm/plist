@@ -79,6 +79,66 @@ export class PLDict<T extends PLType = PLType> implements PLType {
 	}
 
 	/**
+	 * Find value for first key of value.
+	 *
+	 * @param key Key value.
+	 * @returns Value or undefined.
+	 */
+	public find(key: string): T | undefined {
+		for (const [k, v] of (maps.get(this) as Map<PLString, T>)) {
+			if (k.value === key) {
+				return v;
+			}
+		}
+	}
+
+	/**
+	 * Find first key of value.
+	 *
+	 * @param key Key value.
+	 * @returns Key or undefined.
+	 */
+	public findKey(key: string): PLString | undefined {
+		for (const [k] of (maps.get(this) as Map<PLString, T>)) {
+			if (k.value === key) {
+				return k;
+			}
+		}
+	}
+
+	/**
+	 * Find value for last key of value.
+	 *
+	 * @param key Key value.
+	 * @returns Value or undefined.
+	 */
+	public findLast(key: string): T | undefined {
+		let r;
+		for (const [k, v] of (maps.get(this) as Map<PLString, T>)) {
+			if (k.value === key) {
+				r = v;
+			}
+		}
+		return r;
+	}
+
+	/**
+	 * Find last key of value.
+	 *
+	 * @param key Key value.
+	 * @returns Key or undefined.
+	 */
+	public findLastKey(key: string): PLString | undefined {
+		let r;
+		for (const [k] of (maps.get(this) as Map<PLString, T>)) {
+			if (k.value === key) {
+				r = k;
+			}
+		}
+		return r;
+	}
+
+	/**
 	 * Get dict entries.
 	 *
 	 * @returns Dict entries.
