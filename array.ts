@@ -15,10 +15,10 @@ export class PLArray<T extends PLType = PLType> implements PLType {
 	 *
 	 * @param itter Property list values.
 	 */
-	constructor(itter?: Iterable<T> | ArrayLike<T>) {
+	constructor(itter: Iterable<T> | ArrayLike<T> | null = null) {
 		(arrays ??= new WeakMap()).set(
 			this,
-			itter === undefined ? [] : Array.from(itter),
+			itter ? Array.from(itter) : [],
 		);
 	}
 
