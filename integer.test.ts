@@ -50,7 +50,7 @@ Deno.test('value clamped', () => {
 	assertEquals(integer.value, MIN_VALUE);
 });
 
-Deno.test('is integer', () => {
+Deno.test('is type', () => {
 	const integer = new PLInteger();
 
 	assertEquals(PLInteger.is(integer), true);
