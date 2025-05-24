@@ -52,9 +52,11 @@ Deno.test('value clamped', () => {
 
 Deno.test('is integer', () => {
 	const integer = new PLInteger();
+
 	assertEquals(PLInteger.is(integer), true);
 	assertEquals(PLInteger.is({}), false);
 	assertEquals(PLInteger.is(null), false);
+
 	for (const v of [integer, {}, null]) {
 		if (PLInteger.is(v)) {
 			assertEquals(v.value, 0n);
