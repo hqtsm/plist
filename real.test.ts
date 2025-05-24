@@ -1,5 +1,6 @@
 import { assertEquals } from '@std/assert';
 import { PLReal } from './real.ts';
+import { PLInteger } from './integer.ts';
 
 const PI64 = Math.PI;
 const PI32 = Math.fround(PI64);
@@ -29,10 +30,11 @@ Deno.test('is type', () => {
 	const real = new PLReal();
 
 	assertEquals(PLReal.is(real), true);
+	assertEquals(PLReal.is(new PLInteger()), false);
 	assertEquals(PLReal.is({}), false);
 	assertEquals(PLReal.is(null), false);
 
-	for (const v of [real, {}, null]) {
+	for (const v of [real, new PLInteger(), {}, null]) {
 		if (PLReal.is(v)) {
 			assertEquals(v.value, 0);
 		}

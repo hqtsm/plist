@@ -1,5 +1,6 @@
 import { assertEquals } from '@std/assert';
 import { PLInteger } from './integer.ts';
+import { PLReal } from './real.ts';
 
 const { MAX_VALUE, MIN_VALUE } = PLInteger;
 
@@ -54,10 +55,11 @@ Deno.test('is type', () => {
 	const integer = new PLInteger();
 
 	assertEquals(PLInteger.is(integer), true);
+	assertEquals(PLInteger.is(new PLReal()), false);
 	assertEquals(PLInteger.is({}), false);
 	assertEquals(PLInteger.is(null), false);
 
-	for (const v of [integer, {}, null]) {
+	for (const v of [integer, new PLReal(), {}, null]) {
 		if (PLInteger.is(v)) {
 			assertEquals(v.value, 0n);
 		}
