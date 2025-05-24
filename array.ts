@@ -262,13 +262,13 @@ export class PLArray<T extends PLType = PLType> implements PLType {
 	}
 
 	/**
-	 * Check if type is array type.
+	 * Check if array type.
 	 *
-	 * @param arg Property list type.
-	 * @returns Is type array type.
+	 * @param arg Variable.
+	 * @returns Is array type.
 	 */
-	public static is(arg: PLType): arg is PLArray {
-		return arg[Symbol.toStringTag] === type;
+	public static is(arg: unknown): arg is PLArray {
+		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
 	}
 
 	static {

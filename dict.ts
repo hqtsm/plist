@@ -175,13 +175,13 @@ export class PLDict<T extends PLType = PLType> implements PLType {
 	}
 
 	/**
-	 * Check if type is dict type.
+	 * Check if dict type.
 	 *
-	 * @param arg Property list type.
-	 * @returns Is type dict type.
+	 * @param arg Variable.
+	 * @returns Is dict type.
 	 */
-	public static is(arg: PLType): arg is PLDict {
-		return arg[Symbol.toStringTag] === type;
+	public static is(arg: unknown): arg is PLDict {
+		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
 	}
 
 	static {

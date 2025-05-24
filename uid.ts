@@ -41,13 +41,13 @@ export class PLUID implements PLType {
 	}
 
 	/**
-	 * Check if type is UID type.
+	 * Check if UID type.
 	 *
-	 * @param arg Property list type.
-	 * @returns Is type UID type.
+	 * @param arg Variable.
+	 * @returns Is UID type.
 	 */
-	public static is(arg: PLType): arg is PLUID {
-		return arg[Symbol.toStringTag] === type;
+	public static is(arg: unknown): arg is PLUID {
+		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
 	}
 
 	/**

@@ -38,13 +38,13 @@ export class PLData implements PLType {
 	}
 
 	/**
-	 * Check if type is data type.
+	 * Check if data type.
 	 *
-	 * @param arg Property list type.
-	 * @returns Is type data type.
+	 * @param arg Variable.
+	 * @returns Is data type.
 	 */
-	public static is(arg: PLType): arg is PLData {
-		return arg[Symbol.toStringTag] === type;
+	public static is(arg: unknown): arg is PLData {
+		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
 	}
 
 	static {

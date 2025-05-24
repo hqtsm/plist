@@ -68,13 +68,13 @@ export class PLReal implements PLType {
 	}
 
 	/**
-	 * Check if type is real type.
+	 * Check if real type.
 	 *
-	 * @param arg Property list type.
-	 * @returns Is type real type.
+	 * @param arg Variable.
+	 * @returns Is real type.
 	 */
-	public static is(arg: PLType): arg is PLReal {
-		return arg[Symbol.toStringTag] === type;
+	public static is(arg: unknown): arg is PLReal {
+		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
 	}
 
 	static {

@@ -45,13 +45,13 @@ export class PLDate implements PLType {
 	}
 
 	/**
-	 * Check if type is date type.
+	 * Check if date type.
 	 *
-	 * @param arg Property list type.
-	 * @returns Is type date type.
+	 * @param arg Variable.
+	 * @returns Is date type.
 	 */
-	public static is(arg: PLType): arg is PLDate {
-		return arg[Symbol.toStringTag] === type;
+	public static is(arg: unknown): arg is PLDate {
+		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
 	}
 
 	/**

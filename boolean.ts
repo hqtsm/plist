@@ -38,13 +38,13 @@ export class PLBoolean implements PLType {
 	}
 
 	/**
-	 * Check if type is boolean type.
+	 * Check if boolean type.
 	 *
-	 * @param arg Property list type.
-	 * @returns Is type boolean type.
+	 * @param arg Variable.
+	 * @returns Is boolean type.
 	 */
-	public static is(arg: PLType): arg is PLBoolean {
-		return arg[Symbol.toStringTag] === type;
+	public static is(arg: unknown): arg is PLBoolean {
+		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
 	}
 
 	static {

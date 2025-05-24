@@ -47,13 +47,13 @@ export class PLString implements PLType {
 	}
 
 	/**
-	 * Check if type is string type.
+	 * Check if string type.
 	 *
-	 * @param arg Property list type.
-	 * @returns Is type string type.
+	 * @param arg Variable.
+	 * @returns Is string type.
 	 */
-	public static is(arg: PLType): arg is PLString {
-		return arg[Symbol.toStringTag] === type;
+	public static is(arg: unknown): arg is PLString {
+		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
 	}
 
 	static {
