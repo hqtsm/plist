@@ -17,33 +17,31 @@ Deno.test('initial value', () => {
 });
 
 Deno.test('set value', () => {
-	const real = new PLReal();
-	assertEquals(real.bits, 64);
-	real.value = PI64;
-	assertEquals(real.value, PI64);
-	real.bits = 32;
-	assertEquals(real.bits, 32);
-	real.bits = 32;
-	assertEquals(real.value, PI32);
-	real.value = PI64;
-	assertEquals(real.value, PI32);
-	real.bits = 64;
-	assertEquals(real.bits, 64);
-	real.bits = 64;
-	assertEquals(real.value, PI32);
-	real.value = PI64;
-	assertEquals(real.value, PI64);
+	const pl = new PLReal();
+	assertEquals(pl.bits, 64);
+	pl.value = PI64;
+	assertEquals(pl.value, PI64);
+	pl.bits = 32;
+	assertEquals(pl.bits, 32);
+	pl.bits = 32;
+	assertEquals(pl.value, PI32);
+	pl.value = PI64;
+	assertEquals(pl.value, PI32);
+	pl.bits = 64;
+	assertEquals(pl.bits, 64);
+	pl.bits = 64;
+	assertEquals(pl.value, PI32);
+	pl.value = PI64;
+	assertEquals(pl.value, PI64);
 });
 
 Deno.test('is type', () => {
-	const real = new PLReal();
-
-	assertEquals(PLReal.is(real), true);
+	assertEquals(PLReal.is(new PLReal()), true);
 	assertEquals(PLReal.is(new PLInteger()), false);
 	assertEquals(PLReal.is({}), false);
 	assertEquals(PLReal.is(null), false);
 
-	for (const v of [real, new PLInteger(), {}, null]) {
+	for (const v of [new PLReal(), new PLInteger(), {}, null]) {
 		if (PLReal.is(v)) {
 			assertEquals(v.value, 0);
 		}

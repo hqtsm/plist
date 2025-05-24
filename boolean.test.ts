@@ -9,22 +9,20 @@ Deno.test('initial value', () => {
 });
 
 Deno.test('set value', () => {
-	const integer = new PLBoolean();
-	integer.value = true;
-	assertEquals(integer.value, true);
-	integer.value = false;
-	assertEquals(integer.value, false);
+	const pl = new PLBoolean();
+	pl.value = true;
+	assertEquals(pl.value, true);
+	pl.value = false;
+	assertEquals(pl.value, false);
 });
 
 Deno.test('is type', () => {
-	const boolean = new PLBoolean();
-
-	assertEquals(PLBoolean.is(boolean), true);
+	assertEquals(PLBoolean.is(new PLBoolean()), true);
 	assertEquals(PLBoolean.is(new PLInteger()), false);
 	assertEquals(PLBoolean.is({}), false);
 	assertEquals(PLBoolean.is(null), false);
 
-	for (const v of [boolean, new PLInteger(), {}, null]) {
+	for (const v of [new PLBoolean(), new PLInteger(), {}, null]) {
 		if (PLBoolean.is(v)) {
 			assertEquals(v.value, false);
 		}
