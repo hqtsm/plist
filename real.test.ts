@@ -1,0 +1,40 @@
+import { assertEquals } from '@std/assert';
+import { PLReal } from './real.ts';
+
+const PI64 = Math.PI;
+const PI32 = Math.fround(PI64);
+
+Deno.test('initial value', () => {
+	assertEquals(new PLReal().value, 0);
+	assertEquals(new PLReal(PI64).value, PI64);
+	assertEquals(new PLReal(PI64, 64).value, PI64);
+	assertEquals(new PLReal(PI64, 32).value, PI32);
+});
+
+Deno.test('set value', () => {
+	const real = new PLReal();
+	real.value = PI64;
+	assertEquals(real.value, PI64);
+	real.bits = 32;
+	assertEquals(real.value, PI32);
+	real.value = PI64;
+	assertEquals(real.value, PI32);
+	real.bits = 64;
+	assertEquals(real.value, PI32);
+	real.value = PI64;
+	assertEquals(real.value, PI64);
+});
+
+Deno.test('is type', () => {
+	const real = new PLReal();
+
+	assertEquals(PLReal.is(real), true);
+	assertEquals(PLReal.is({}), false);
+	assertEquals(PLReal.is(null), false);
+
+	for (const v of [real, {}, null]) {
+		if (PLReal.is(v)) {
+			assertEquals(v.value, 0);
+		}
+	}
+});
