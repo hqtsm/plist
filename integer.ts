@@ -39,7 +39,9 @@ export class PLInteger implements PLType {
 	public set value(value: bigint) {
 		(values ??= new WeakMap()).set(
 			this,
-			value % (value < 0 ? MIN_VALUE : MAX_VALUE),
+			value > MAX_VALUE
+				? MAX_VALUE
+				: (value < MIN_VALUE ? MIN_VALUE : value),
 		);
 	}
 
