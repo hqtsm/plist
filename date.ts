@@ -1,7 +1,5 @@
 import type { PLType } from './type.ts';
 
-type Timed = Pick<Date, 'getTime'>;
-
 let times: WeakMap<PLDate, number>;
 
 const UNIX_EPOCH = -978307200;
@@ -19,7 +17,7 @@ export class PLDate implements PLType {
 	 *
 	 * @param time Date time.
 	 */
-	constructor(time: number | Timed = 0) {
+	constructor(time: number | { getTime: () => number }) {
 		this.time = time;
 	}
 
@@ -37,11 +35,13 @@ export class PLDate implements PLType {
 	 *
 	 * @param value Date value.
 	 */
-	public set time(time: number | Timed) {
-		if ((time as Timed).getTime) {
-			time = (time as Timed).getTime() / 1000 + UNIX_EPOCH;
-		}
-		(times ??= new WeakMap()).set(this, time as number);
+	public set time(time: number | { getTime: () => number }) {
+		(times ??= new WeakMap()).set(
+			this,
+			typeof time === 'number'
+				? time
+				: (time.getTime() / 1000 + UNIX_EPOCH),
+		);
 	}
 
 	/**
