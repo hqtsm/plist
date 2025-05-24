@@ -37,7 +37,12 @@ export class PLUID implements PLType {
 	 * @param value UID value.
 	 */
 	public set value(value: bigint) {
-		(values ??= new WeakMap()).set(this, value & MAX_VALUE);
+		(values ??= new WeakMap()).set(
+			this,
+			value > MAX_VALUE
+				? MAX_VALUE
+				: (value < MIN_VALUE ? MIN_VALUE : value),
+		);
 	}
 
 	/**
