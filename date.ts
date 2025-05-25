@@ -17,7 +17,7 @@ export class PLDate implements PLType {
 	 *
 	 * @param time Date time.
 	 */
-	constructor(time: number | { getTime: () => number }) {
+	constructor(time: number) {
 		this.time = time;
 	}
 
@@ -35,13 +35,8 @@ export class PLDate implements PLType {
 	 *
 	 * @param value Date value.
 	 */
-	public set time(time: number | { getTime: () => number }) {
-		(times ??= new WeakMap()).set(
-			this,
-			typeof time === 'number'
-				? time
-				: (time.getTime() / 1000 + UNIX_EPOCH),
-		);
+	public set time(time: number) {
+		(times ??= new WeakMap()).set(this, time);
 	}
 
 	/**
