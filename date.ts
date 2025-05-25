@@ -17,7 +17,7 @@ export class PLDate implements PLType {
 	 *
 	 * @param time Date time.
 	 */
-	constructor(time: number) {
+	constructor(time = 0) {
 		this.time = time;
 	}
 
