@@ -32,7 +32,7 @@ Deno.test('to date', () => {
 
 Deno.test('from date', () => {
 	assertEquals(
-		PLDate.fromDate(new Date(0)).toDate().toISOString(),
+		PLDate.from(new Date(0)).toDate().toISOString(),
 		new Date(0).toISOString(),
 	);
 });

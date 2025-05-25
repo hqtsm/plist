@@ -73,7 +73,7 @@ export class PLDate implements PLType {
 	 * @param date Date.
 	 * @returns Date type.
 	 */
-	public static fromDate(date: Date): PLDate {
+	public static from(date: Date): PLDate {
 		return new PLDate(date.getTime() / 1000 + UNIX_EPOCH);
 	}
 
