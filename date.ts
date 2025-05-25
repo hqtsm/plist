@@ -40,6 +40,15 @@ export class PLDate implements PLType {
 	}
 
 	/**
+	 * Convert to date.
+	 *
+	 * @returns Date.
+	 */
+	public toDate(): Date {
+		return new Date((this.time - UNIX_EPOCH) * 1000);
+	}
+
+	/**
 	 * Check if date type.
 	 *
 	 * @param arg Variable.
@@ -56,6 +65,16 @@ export class PLDate implements PLType {
 	 */
 	public static now(): number {
 		return Date.now() / 1000 + UNIX_EPOCH;
+	}
+
+	/**
+	 * Create from date.
+	 *
+	 * @param date Date.
+	 * @returns Date type.
+	 */
+	public static fromDate(date: Date): PLDate {
+		return new PLDate(date.getTime() / 1000 + UNIX_EPOCH);
 	}
 
 	/**
