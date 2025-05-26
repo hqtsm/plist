@@ -57,18 +57,6 @@ Deno.test('at', () => {
 	assertEquals(array.at(-3), undefined);
 });
 
-Deno.test('at', () => {
-	const kFalse = new PLBoolean(false);
-	const kTrue = new PLBoolean(true);
-	const array = new PLArray([kFalse, kTrue]);
-	assertEquals(array.at(0), kFalse);
-	assertEquals(array.at(1), kTrue);
-	assertEquals(array.at(2), undefined);
-	assertEquals(array.at(-1), kTrue);
-	assertEquals(array.at(-2), kFalse);
-	assertEquals(array.at(-3), undefined);
-});
-
 Deno.test('push', () => {
 	const a = new PLInteger(0n);
 	const b = new PLInteger(1n);
