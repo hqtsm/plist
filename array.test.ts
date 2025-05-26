@@ -9,8 +9,10 @@ import { PLInteger } from './integer.ts';
  * @param ir Iterator result.
  * @returns Iterator values.
  */
-function irv<T>(ir: IteratorResult<T>): [boolean, T | undefined] {
-	return [ir.done, ir.value] as [boolean, T | undefined];
+function irv<T>(
+	ir: { done?: boolean; value?: T },
+): [boolean | undefined, T | undefined] {
+	return [ir.done, ir.value] as [boolean | undefined, T | undefined];
 }
 
 Deno.test('initial value', () => {
