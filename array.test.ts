@@ -12,7 +12,7 @@ import { PLInteger } from './integer.ts';
 function irv<T>(
 	ir: { done?: boolean; value?: T },
 ): [boolean | undefined, T | undefined] {
-	return [ir.done, ir.value] as [boolean | undefined, T | undefined];
+	return [ir.done, ir.value];
 }
 
 Deno.test('initial value', () => {
