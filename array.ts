@@ -230,7 +230,7 @@ export class PLArray<T extends PLType = PLType> implements PLType {
 	 *
 	 * @returns Array entries.
 	 */
-	public entries(): ArrayIterator<[number, T]> {
+	public entries(): ReturnType<Array<T>['entries']> {
 		return (arrays.get(this) as T[]).entries();
 	}
 
@@ -239,7 +239,7 @@ export class PLArray<T extends PLType = PLType> implements PLType {
 	 *
 	 * @returns Array keys.
 	 */
-	public keys(): ArrayIterator<number> {
+	public keys(): ReturnType<Array<T>['keys']> {
 		return (arrays.get(this) as T[]).keys();
 	}
 
@@ -248,7 +248,7 @@ export class PLArray<T extends PLType = PLType> implements PLType {
 	 *
 	 * @returns Array values.
 	 */
-	public values(): ArrayIterator<T> {
+	public values(): ReturnType<Array<T>['values']> {
 		return (arrays.get(this) as T[]).values();
 	}
 
@@ -257,7 +257,7 @@ export class PLArray<T extends PLType = PLType> implements PLType {
 	 *
 	 * @returns Array iterator.
 	 */
-	public [Symbol.iterator](): ArrayIterator<T> {
+	public [Symbol.iterator](): ReturnType<Array<T>[typeof Symbol.iterator]> {
 		return (arrays.get(this) as T[])[Symbol.iterator]();
 	}
 
