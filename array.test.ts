@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert';
+import { assertEquals, assertStrictEquals } from '@std/assert';
 import { PLArray } from './array.ts';
 import { PLBoolean } from './boolean.ts';
 import { PLInteger } from './integer.ts';
@@ -29,8 +29,8 @@ Deno.test('get', () => {
 	const kFalse = new PLBoolean(false);
 	const kTrue = new PLBoolean(true);
 	const array = new PLArray([kFalse, kTrue]);
-	assertEquals(array.get(0), kFalse);
-	assertEquals(array.get(1), kTrue);
+	assertStrictEquals(array.get(0), kFalse);
+	assertStrictEquals(array.get(1), kTrue);
 	assertEquals(array.get(2), undefined);
 	assertEquals(array.get(-1), undefined);
 });
@@ -51,11 +51,11 @@ Deno.test('at', () => {
 	const kFalse = new PLBoolean(false);
 	const kTrue = new PLBoolean(true);
 	const array = new PLArray([kFalse, kTrue]);
-	assertEquals(array.at(0), kFalse);
-	assertEquals(array.at(1), kTrue);
+	assertStrictEquals(array.at(0), kFalse);
+	assertStrictEquals(array.at(1), kTrue);
 	assertEquals(array.at(2), undefined);
-	assertEquals(array.at(-1), kTrue);
-	assertEquals(array.at(-2), kFalse);
+	assertStrictEquals(array.at(-1), kTrue);
+	assertStrictEquals(array.at(-2), kFalse);
 	assertEquals(array.at(-3), undefined);
 });
 
@@ -67,11 +67,11 @@ Deno.test('push', () => {
 	const array = new PLArray([a]);
 	array.push(b);
 	assertEquals(array.length, 2);
-	assertEquals(array.get(1), b);
+	assertStrictEquals(array.get(1), b);
 	array.push(c, d);
 	assertEquals(array.length, 4);
-	assertEquals(array.get(2), c);
-	assertEquals(array.get(3), d);
+	assertStrictEquals(array.get(2), c);
+	assertStrictEquals(array.get(3), d);
 	assertEquals(array.get(4), undefined);
 });
 
@@ -81,16 +81,16 @@ Deno.test('pop', () => {
 	const c = new PLInteger(2n);
 	const d = new PLInteger(3n);
 	const array = new PLArray([a, b, c, d]);
-	assertEquals(array.pop(), d);
+	assertStrictEquals(array.pop(), d);
 	assertEquals(array.length, 3);
-	assertEquals(array.get(2), c);
-	assertEquals(array.pop(), c);
+	assertStrictEquals(array.get(2), c);
+	assertStrictEquals(array.pop(), c);
 	assertEquals(array.length, 2);
-	assertEquals(array.get(1), b);
-	assertEquals(array.pop(), b);
+	assertStrictEquals(array.get(1), b);
+	assertStrictEquals(array.pop(), b);
 	assertEquals(array.length, 1);
-	assertEquals(array.get(0), a);
-	assertEquals(array.pop(), a);
+	assertStrictEquals(array.get(0), a);
+	assertStrictEquals(array.pop(), a);
 	assertEquals(array.length, 0);
 	assertEquals(array.get(0), undefined);
 	assertEquals(array.pop(), undefined);
@@ -105,15 +105,15 @@ Deno.test('unshift', () => {
 	const array = new PLArray([a, b]);
 	array.unshift(c);
 	assertEquals(array.length, 3);
-	assertEquals(array.get(0), c);
-	assertEquals(array.get(1), a);
-	assertEquals(array.get(2), b);
+	assertStrictEquals(array.get(0), c);
+	assertStrictEquals(array.get(1), a);
+	assertStrictEquals(array.get(2), b);
 	array.unshift(d);
 	assertEquals(array.length, 4);
-	assertEquals(array.get(0), d);
-	assertEquals(array.get(1), c);
-	assertEquals(array.get(2), a);
-	assertEquals(array.get(3), b);
+	assertStrictEquals(array.get(0), d);
+	assertStrictEquals(array.get(1), c);
+	assertStrictEquals(array.get(2), a);
+	assertStrictEquals(array.get(3), b);
 });
 
 Deno.test('shift', () => {
@@ -122,16 +122,16 @@ Deno.test('shift', () => {
 	const c = new PLInteger(2n);
 	const d = new PLInteger(3n);
 	const array = new PLArray([a, b, c, d]);
-	assertEquals(array.shift(), a);
+	assertStrictEquals(array.shift(), a);
 	assertEquals(array.length, 3);
-	assertEquals(array.get(0), b);
-	assertEquals(array.shift(), b);
+	assertStrictEquals(array.get(0), b);
+	assertStrictEquals(array.shift(), b);
 	assertEquals(array.length, 2);
-	assertEquals(array.get(0), c);
-	assertEquals(array.shift(), c);
+	assertStrictEquals(array.get(0), c);
+	assertStrictEquals(array.shift(), c);
 	assertEquals(array.length, 1);
-	assertEquals(array.get(0), d);
-	assertEquals(array.shift(), d);
+	assertStrictEquals(array.get(0), d);
+	assertStrictEquals(array.shift(), d);
 	assertEquals(array.length, 0);
 	assertEquals(array.get(0), undefined);
 	assertEquals(array.shift(), undefined);
@@ -174,30 +174,30 @@ Deno.test('splice', () => {
 	const array = new PLArray([a, b, c, d]);
 	assertEquals(array.splice(0, 1), [a]);
 	assertEquals(array.length, 3);
-	assertEquals(array.get(0), b);
-	assertEquals(array.get(1), c);
-	assertEquals(array.get(2), d);
+	assertStrictEquals(array.get(0), b);
+	assertStrictEquals(array.get(1), c);
+	assertStrictEquals(array.get(2), d);
 	assertEquals(array.splice(0, 2), [b, c]);
 	assertEquals(array.length, 1);
-	assertEquals(array.get(0), d);
+	assertStrictEquals(array.get(0), d);
 	assertEquals(array.splice(0, 1), [d]);
 	assertEquals(array.length, 0);
-	assertEquals(array.get(0), undefined);
+	assertStrictEquals(array.get(0), undefined);
 	assertEquals(array.splice(0, 1), []);
 	assertEquals(array.length, 0);
-	assertEquals(array.get(0), undefined);
+	assertStrictEquals(array.get(0), undefined);
 	array.push(a, c, d);
 	assertEquals(array.splice(1, 1, b), [c]);
 	assertEquals(array.length, 3);
-	assertEquals(array.get(0), a);
-	assertEquals(array.get(1), b);
-	assertEquals(array.get(2), d);
+	assertStrictEquals(array.get(0), a);
+	assertStrictEquals(array.get(1), b);
+	assertStrictEquals(array.get(2), d);
 	assertEquals(array.splice(2, 0, c), []);
 	assertEquals(array.length, 4);
-	assertEquals(array.get(0), a);
-	assertEquals(array.get(1), b);
-	assertEquals(array.get(2), c);
-	assertEquals(array.get(3), d);
+	assertStrictEquals(array.get(0), a);
+	assertStrictEquals(array.get(1), b);
+	assertStrictEquals(array.get(2), c);
+	assertStrictEquals(array.get(3), d);
 });
 
 Deno.test('reverse', () => {
@@ -208,10 +208,10 @@ Deno.test('reverse', () => {
 	const array = new PLArray([a, b, c, d]);
 	array.reverse();
 	assertEquals(array.length, 4);
-	assertEquals(array.get(0), d);
-	assertEquals(array.get(1), c);
-	assertEquals(array.get(2), b);
-	assertEquals(array.get(3), a);
+	assertStrictEquals(array.get(0), d);
+	assertStrictEquals(array.get(1), c);
+	assertStrictEquals(array.get(2), b);
+	assertStrictEquals(array.get(3), a);
 });
 
 Deno.test('indexOf', () => {
@@ -246,10 +246,10 @@ Deno.test('find', () => {
 	const c = new PLInteger(2n);
 	const d = new PLInteger(3n);
 	const array = new PLArray([a, a, b, b, c, c, d, d]);
-	assertEquals(array.find((v) => v.value === 0n), a);
-	assertEquals(array.find((v) => v.value === 1n), b);
-	assertEquals(array.find((v) => v.value === 2n), c);
-	assertEquals(array.find((v) => v.value === 3n), d);
+	assertStrictEquals(array.find((v) => v.value === 0n), a);
+	assertStrictEquals(array.find((v) => v.value === 1n), b);
+	assertStrictEquals(array.find((v) => v.value === 2n), c);
+	assertStrictEquals(array.find((v) => v.value === 3n), d);
 	assertEquals(array.find((v) => v.value === 4n), undefined);
 });
 
@@ -272,10 +272,10 @@ Deno.test('findLast', () => {
 	const c = new PLInteger(2n);
 	const d = new PLInteger(3n);
 	const array = new PLArray([a, a, b, b, c, c, d, d]);
-	assertEquals(array.findLast((v) => v.value === 0n), a);
-	assertEquals(array.findLast((v) => v.value === 1n), b);
-	assertEquals(array.findLast((v) => v.value === 2n), c);
-	assertEquals(array.findLast((v) => v.value === 3n), d);
+	assertStrictEquals(array.findLast((v) => v.value === 0n), a);
+	assertStrictEquals(array.findLast((v) => v.value === 1n), b);
+	assertStrictEquals(array.findLast((v) => v.value === 2n), c);
+	assertStrictEquals(array.findLast((v) => v.value === 3n), d);
 	assertEquals(array.findLast((v) => v.value === 4n), undefined);
 });
 
@@ -313,22 +313,22 @@ Deno.test('fill', () => {
 	const array = new PLArray([a, a, a, a]);
 	array.fill(b);
 	assertEquals(array.length, 4);
-	assertEquals(array.get(0), b);
-	assertEquals(array.get(1), b);
-	assertEquals(array.get(2), b);
-	assertEquals(array.get(3), b);
+	assertStrictEquals(array.get(0), b);
+	assertStrictEquals(array.get(1), b);
+	assertStrictEquals(array.get(2), b);
+	assertStrictEquals(array.get(3), b);
 	array.fill(c, 1, 3);
 	assertEquals(array.length, 4);
-	assertEquals(array.get(0), b);
-	assertEquals(array.get(1), c);
-	assertEquals(array.get(2), c);
-	assertEquals(array.get(3), b);
+	assertStrictEquals(array.get(0), b);
+	assertStrictEquals(array.get(1), c);
+	assertStrictEquals(array.get(2), c);
+	assertStrictEquals(array.get(3), b);
 	array.fill(d, 3, 6);
 	assertEquals(array.length, 4);
-	assertEquals(array.get(0), b);
-	assertEquals(array.get(1), c);
-	assertEquals(array.get(2), c);
-	assertEquals(array.get(3), d);
+	assertStrictEquals(array.get(0), b);
+	assertStrictEquals(array.get(1), c);
+	assertStrictEquals(array.get(2), c);
+	assertStrictEquals(array.get(3), d);
 });
 
 Deno.test('copyWithin', () => {
@@ -339,10 +339,10 @@ Deno.test('copyWithin', () => {
 	const array = new PLArray([a, b, c, d]);
 	array.copyWithin(2, 1, 3);
 	assertEquals(array.length, 4);
-	assertEquals(array.get(0), a);
-	assertEquals(array.get(1), b);
-	assertEquals(array.get(2), b);
-	assertEquals(array.get(3), c);
+	assertStrictEquals(array.get(0), a);
+	assertStrictEquals(array.get(1), b);
+	assertStrictEquals(array.get(2), b);
+	assertStrictEquals(array.get(3), c);
 });
 
 Deno.test('clear', () => {
@@ -405,7 +405,7 @@ Deno.test('Symbol.iterator', () => {
 	const array = new PLArray(values);
 	let i = 0;
 	for (const value of array) {
-		assertEquals(value, values[i++]);
+		assertStrictEquals(value, values[i++]);
 	}
 });
 
