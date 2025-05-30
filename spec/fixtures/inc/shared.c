@@ -15,10 +15,19 @@ CFPropertyListRef plr(CFStringRef file, CFPropertyListFormat * format) {
 	CFReadStreamRef stream = CFReadStreamCreateWithFile(NULL, url);
 	CFReadStreamOpen(stream);
 	CFErrorRef error = NULL;
-	CFPropertyListRef plist = CFPropertyListCreateWithStream(NULL, stream, 0, 0, format, &error);
+	// Rejects streams less than 6 bytes.
+	// CFPropertyListRef plist = CFPropertyListCreateWithStream(NULL, stream, 0, 0, format, &error);
+	CFMutableDataRef data = CFDataCreateMutable(kCFAllocatorDefault, 0);
+	UInt8 buffer[4096];
+	CFIndex length;
+	while ((length = CFReadStreamRead(stream, buffer, sizeof(buffer))) > 0) {
+		CFDataAppendBytes(data, buffer, length);
+	}
+	CFPropertyListRef plist = CFPropertyListCreateWithData(NULL, data, 0, format, &error);
 	if (error) {
 		CFShow(error);
 	}
+	CFReadStreamClose(stream);
 	return plist;
 }
 
@@ -31,5 +40,6 @@ int plw(CFPropertyListRef plist, CFStringRef file, CFPropertyListFormat format) 
 	if (error) {
 		CFShow(error);
 	}
+	CFWriteStreamClose(stream);
 	return !error;
 }
