@@ -19,19 +19,21 @@ eschr = {
 	34: b'\\"',
 	92: b'\\\\',
 }
-with open('openstep.plist', 'wb') as out:
-	out.write(b'{\n')
-	for i in range(0, 0xffff + 1):
-		v = str(i).encode()
-		k = None
-		if i in eschr:
-			k = b'"' + eschr[i] + b'"'
-		elif i <= 127:
-			if i in unesc:
-				k = chr(i).encode()
+with open('openstep.plist', 'wb') as plist:
+	with open('strings.plist', 'wb') as strings:
+		plist.write(b'{\n')
+		for i in range(0, 0xffff + 1):
+			v = str(i).encode()
+			k = None
+			if i in eschr:
+				k = b'"' + eschr[i] + b'"'
+			elif i <= 127:
+				if i in unesc:
+					k = chr(i).encode()
+				else:
+					k = ('"' + chr(i) + '"').encode()
 			else:
-				k = ('"' + chr(i) + '"').encode()
-		else:
-			k = b'"\\U%0.04x"' % i
-		out.write(b'\t' + k + b' = ' + v + b';\n')
-	out.write(b'}\n')
+				k = b'"\\U%0.04x"' % i
+			plist.write(b'\t' + k + b' = ' + v + b';\n')
+			strings.write(k + b' = ' + v + b';\n')
+		plist.write(b'}\n')

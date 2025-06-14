@@ -25,19 +25,21 @@ for i in range(0, 0xffff + 1):
 ints.sort()
 
 with open('openstep.plist', 'wb') as out:
-	out.write(b'{\n')
-	for i in ints:
-		i = int(i)
-		k = str(i).encode()
-		v = None
-		if i in eschr:
-			v = b'"' + eschr[i] + b'"'
-		elif i <= 127:
-			if i in unesc:
-				v = chr(i).encode()
+	with open('strings.plist', 'wb') as strings:
+		out.write(b'{\n')
+		for i in ints:
+			i = int(i)
+			k = str(i).encode()
+			v = None
+			if i in eschr:
+				v = b'"' + eschr[i] + b'"'
+			elif i <= 127:
+				if i in unesc:
+					v = chr(i).encode()
+				else:
+					v = ('"' + chr(i) + '"').encode()
 			else:
-				v = ('"' + chr(i) + '"').encode()
-		else:
-			v = b'"\\U%0.04x"' % i
-		out.write(b'\t' + k + b' = ' + v + b';\n')
-	out.write(b'}\n')
+				v = b'"\\U%0.04x"' % i
+			out.write(b'\t' + k + b' = ' + v + b';\n')
+			strings.write(k + b' = ' + v + b';\n')
+		out.write(b'}\n')
