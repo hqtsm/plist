@@ -2,12 +2,20 @@
 
 unesc = b'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 eschr = {
-	7: b'\\a',
+	0: b'\\0',
+	1: b'\\1',
+	2: b'\\2',
+	3: b'\\3',
+	4: b'\\4',
+	5: b'\\5',
+	6: b'\\6',
+	7: b'\\7',
 	8: b'\\b',
 	9: b'\\t',
 	10: b'\\n',
 	11: b'\\v',
 	12: b'\\f',
+	13: b'\\r',
 	34: b'\\"',
 	92: b'\\\\',
 }
