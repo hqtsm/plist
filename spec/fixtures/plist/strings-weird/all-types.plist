@@ -1,0 +1,13 @@
+/* OpenStep dict without the opening... */
+STRING = Example;
+DICT = {
+	A = a;
+	B = b;
+};
+ARRAY = (
+	1,
+	2,
+	3
+);
+DATA = <01 23 45 67>;
+// ... or closing dict characters.
