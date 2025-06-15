@@ -7,17 +7,14 @@ Deno.test('format constants', () => {
 	assertEquals(
 		keys.sort(),
 		[
-			'FORMAT_OPEN_STEP',
+			'FORMAT_OPENSTEP',
 			'FORMAT_XML_V1_0',
 			'FORMAT_BINARY_V1_0',
 		].sort(),
 	);
 
 	for (const key of keys) {
-		assertEquals(
-			typeof (FORMAT as { [key: string]: unknown })[key],
-			'number',
-			key,
-		);
+		const value = (FORMAT as { [key: string]: string })[key];
+		assertEquals(`FORMAT_${value.replace(/[.-]/g, '_')}`, key);
 	}
 });
