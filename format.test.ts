@@ -7,6 +7,7 @@ Deno.test('format constants', () => {
 	assertEquals(
 		keys.sort(),
 		[
+			'FORMAT_STRINGS',
 			'FORMAT_OPENSTEP',
 			'FORMAT_XML_V1_0',
 			'FORMAT_BINARY_V1_0',
