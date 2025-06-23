@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-unesc = b'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+unesc = b'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$/:.-'
 eschr = {
 	0: b'\\0',
 	1: b'\\1',
