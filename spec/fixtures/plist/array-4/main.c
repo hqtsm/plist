@@ -8,7 +8,7 @@ int main() {
 	const unsigned char bb[] = "bb";
 	CFDataRef data0 = CFDataCreate(NULL, aa, sizeof(aa) - 1);
 	CFDataRef data1 = CFDataCreate(NULL, bb, sizeof(bb) - 1);
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 4; i++) {
 		CFArrayAppendValue(plist, i % 2 ? data1 : data0);
 	}
 	plw(plist, CFSTR("binary.plist"), kCFPropertyListBinaryFormat_v1_0);
