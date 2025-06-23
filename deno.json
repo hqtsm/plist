@@ -72,7 +72,7 @@
 	},
 	"tasks": {
 		"clean": "rm -rf coverage docs vendor npm",
-		"test": "deno test --doc --parallel --shuffle --trace-leaks --coverage --clean",
+		"test": "deno test --doc --parallel --shuffle --trace-leaks --coverage --clean --allow-read",
 		"docs": "deno doc --html mod.ts",
 		"lint": "deno lint --fix",
 		"linted": "deno lint",
