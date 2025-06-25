@@ -243,6 +243,9 @@ export function encodeOpenStep(
 			size += x ? 2 + x + x + (x - (x % 4 || 4)) / 4 : 2;
 		} else if (PLDict.is(e)) {
 			if ((x = e.size)) {
+				if (ancestors.has(e)) {
+					throw new TypeError('Circular reference');
+				}
 				size += ((depth + 1) * indentSize + 5) * x +
 					(depth !== -1 ? 3 + depth * indentSize : -1);
 				q.length = l += x += x + 1;
@@ -253,9 +256,6 @@ export function encodeOpenStep(
 					q[x++] = v;
 				}
 				q[x] = close;
-				if (ancestors.has(e)) {
-					throw new TypeError('Circular reference');
-				}
 				ancestors.add(e);
 				stack.push(e);
 				depth++;
@@ -264,6 +264,9 @@ export function encodeOpenStep(
 			}
 		} else if (PLArray.is(e)) {
 			if ((x = e.length)) {
+				if (ancestors.has(e)) {
+					throw new TypeError('Circular reference');
+				}
 				size += 2 + ((depth + 1) * indentSize + 2) * x++ +
 					depth * indentSize;
 				q.length = l += x;
@@ -273,9 +276,6 @@ export function encodeOpenStep(
 					q[x++] = v;
 				}
 				q[x] = close;
-				if (ancestors.has(e)) {
-					throw new TypeError('Circular reference');
-				}
 				ancestors.add(e);
 				stack.push(e);
 				depth++;
