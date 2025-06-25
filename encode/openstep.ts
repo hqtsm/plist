@@ -197,7 +197,7 @@ export function encodeOpenStep(
 	let inDict = 0;
 	let inArray = 0;
 
-	switch (format) {
+	switch (format = String(format) as typeof format) {
 		case FORMAT_OPENSTEP: {
 			break;
 		}
@@ -209,7 +209,7 @@ export function encodeOpenStep(
 			throw new TypeError(`Invalid strings root type: ${String(plist)}`);
 		}
 		default: {
-			throw new RangeError(`Unknown format: ${String(format)}`);
+			throw new RangeError(`Unknown format: ${format}`);
 		}
 	}
 
