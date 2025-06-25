@@ -138,7 +138,7 @@ Deno.test('Invalid type', () => {
 			encodeOpenStep({} as unknown as PLType);
 		},
 		TypeError,
-		`Invalid type: ${{}}`,
+		`Invalid OpenStep value type: ${{}}`,
 	);
 });
 

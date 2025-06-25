@@ -197,7 +197,7 @@ export function encodeOpenStep(
 	let inDict = 0;
 	let inArray = 0;
 
-	switch (format = String(format) as typeof format) {
+	switch (format) {
 		case FORMAT_OPENSTEP: {
 			break;
 		}
@@ -206,14 +206,14 @@ export function encodeOpenStep(
 				depth--;
 				break;
 			}
-			throw new TypeError(`Invalid strings root type: ${String(plist)}`);
+			throw new TypeError(`Invalid strings root type: ${plist}`);
 		}
 		default: {
 			throw new RangeError(`Unknown format: ${format}`);
 		}
 	}
 
-	if (!/^[\t ]*$/.test(indent = String(indent))) {
+	if (!/^[\t ]*$/.test(indent)) {
 		throw new RangeError(`Invalid indent: ${JSON.stringify(indent)}`);
 	}
 
@@ -281,7 +281,7 @@ export function encodeOpenStep(
 				size += 2;
 			}
 		} else {
-			throw new TypeError(`Invalid type: ${String(e)}`);
+			throw new TypeError(`Invalid OpenStep value type: ${e}`);
 		}
 	}
 
