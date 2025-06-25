@@ -202,13 +202,11 @@ export function encodeOpenStep(
 			break;
 		}
 		case FORMAT_STRINGS: {
-			if (!PLDict.is(plist)) {
-				throw new TypeError(
-					`Invalid strings root type: ${String(plist)}`,
-				);
+			if (PLDict.is(plist)) {
+				depth--;
+				break;
 			}
-			depth--;
-			break;
+			throw new TypeError(`Invalid strings root type: ${String(plist)}`);
 		}
 		default: {
 			throw new RangeError(`Unknown format: ${String(format)}`);
