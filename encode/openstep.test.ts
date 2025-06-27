@@ -142,6 +142,32 @@ Deno.test('Invalid type', () => {
 	);
 });
 
+Deno.test('Custom quote', () => {
+	const encode = encodeOpenStep(new PLString(' " \' '), { quote: "'" });
+	assertEquals(
+		encode,
+		new TextEncoder().encode(`' " \\' '\n`),
+	);
+});
+
+Deno.test('Invalid quote', () => {
+	assertThrows(
+		() => {
+			encodeOpenStep(new PLString(), { quote: '`' as "'" });
+		},
+		RangeError,
+		'Invalid quote: `',
+	);
+});
+
+Deno.test('Always quoted', () => {
+	const encode = encodeOpenStep(new PLString('A'), { quoted: true });
+	assertEquals(
+		encode,
+		new TextEncoder().encode('"A"\n'),
+	);
+});
+
 Deno.test('spec: array-0', async () => {
 	const encode = encodeOpenStep(new PLArray());
 	assertEquals(

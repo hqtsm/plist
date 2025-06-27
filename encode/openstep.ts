@@ -6,6 +6,8 @@ import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 
 const abtnvfr = 'abtnvfr';
+const close = Symbol();
+const rIndent = /^[\t ]*$/;
 
 /**
  * Check if a character is unquoted.
@@ -24,17 +26,18 @@ const unquoted = (chr: number) =>
  * Calculate string encode size.
  *
  * @param str String.
+ * @param quote Quote.
+ * @param quoted Quoted.
  * @returns Size.
  */
-function stringLength(str: string): number {
+function stringLength(str: string, quote: 34 | 39, quoted: boolean): number {
 	let i = str.length;
 	let total = i;
-	let quote = 0;
 	let next = 0;
 	let chr: number;
 	while (i--) {
 		if (!unquoted(chr = str.charCodeAt(i))) {
-			quote = 2;
+			quoted = true;
 			total += chr < 32
 				? (
 					chr > 13
@@ -42,13 +45,13 @@ function stringLength(str: string): number {
 						: (chr < 7 && next < 56 && next > 47 ? 3 : 1)
 				)
 				: (
-					(chr === 34 || chr === 92) ||
+					(chr === quote || chr === 92) ||
 					(chr > 126 && (chr === 127 ? 3 : 5))
 				) as number;
 		}
 		next = chr;
 	}
-	return quote + total || 2;
+	return quoted || !total ? total + 2 : total;
 }
 
 /**
@@ -57,40 +60,43 @@ function stringLength(str: string): number {
  * @param str String.
  * @param dest Buffer.
  * @param start Offset.
+ * @param quote Quote.
+ * @param quoted Quoted.
  * @returns End.
  */
-function stringEncode(str: string, dest: Uint8Array, start: number): number {
+function stringEncode(
+	str: string,
+	dest: Uint8Array,
+	start: number,
+	quote: 34 | 39,
+	quoted: boolean,
+): number {
 	const l = str.length;
-	let q = !l;
 	let i = 0;
-	let next: number;
 	let chr: number;
 	let x: number;
-	if (!q) {
+	if (!(quoted ||= !l)) {
 		do {
 			if (!unquoted(str.charCodeAt(i++))) {
-				q = true;
+				quoted = true;
 				break;
 			}
 		} while (i < l);
 		i = 0;
 	}
-	if (q) {
-		dest[start++] = 34;
+	if (quoted) {
+		dest[start++] = quote;
 	}
 	while (i < l) {
 		if ((chr = str.charCodeAt(i++)) < 32) {
 			dest[start++] = 92;
 			if (chr < 7) {
-				next = str.charCodeAt(i);
-				if (next < 56 && next > 47) {
-					dest[start++] = 48;
-					dest[start++] = 48;
+				if ((x = str.charCodeAt(i)) < 56 && x > 47) {
+					dest[start++] = dest[start++] = 48;
 				}
 				dest[start++] = 48 + chr;
 			} else if (chr > 13) {
-				next = str.charCodeAt(i);
-				if (next < 56 && next > 47) {
+				if ((x = str.charCodeAt(i)) < 56 && x > 47) {
 					dest[start++] = 48;
 				}
 				dest[start++] = 48 + (chr - (x = chr % 8)) / 8;
@@ -98,11 +104,8 @@ function stringEncode(str: string, dest: Uint8Array, start: number): number {
 			} else {
 				dest[start++] = abtnvfr.charCodeAt(chr - 7);
 			}
-		} else if (chr === 34) {
+		} else if (chr === quote || chr === 92) {
 			dest[start++] = 92;
-			dest[start++] = chr;
-		} else if (chr === 92) {
-			dest[start++] = chr;
 			dest[start++] = chr;
 		} else if (chr > 126) {
 			dest[start++] = 92;
@@ -124,8 +127,8 @@ function stringEncode(str: string, dest: Uint8Array, start: number): number {
 			dest[start++] = chr;
 		}
 	}
-	if (q) {
-		dest[start++] = 34;
+	if (quoted) {
+		dest[start++] = quote;
 	}
 	return start;
 }
@@ -144,11 +147,11 @@ function dataEncode(
 	start: number,
 ): number {
 	dest[start++] = 60;
-	for (let i = 0, c = data.length, hi, lo; i < c; i++) {
-		if (i && !(i % 4)) {
+	for (let i = 0, c = data.length, hi, lo; i < c;) {
+		if (!(i % 4) && i) {
 			dest[start++] = 32;
 		}
-		hi = data[i];
+		hi = data[i++];
 		lo = hi & 15;
 		hi >>= 4;
 		dest[start++] = hi + (hi > 9 ? 87 : 48);
@@ -175,6 +178,20 @@ export interface EncodeOpenStepOptions {
 	 * @default '\t'
 	 */
 	indent?: string;
+
+	/**
+	 * Quote character.
+	 *
+	 * @default '"'
+	 */
+	quote?: '"' | "'";
+
+	/**
+	 * Always quote strings.
+	 *
+	 * @default false
+	 */
+	quoted?: boolean;
 }
 
 /**
@@ -186,14 +203,19 @@ export interface EncodeOpenStepOptions {
  */
 export function encodeOpenStep(
 	plist: PLType,
-	{ format = FORMAT_OPENSTEP, indent = '\t' }: EncodeOpenStepOptions = {},
+	{
+		format = FORMAT_OPENSTEP,
+		indent = '\t',
+		quote = '"',
+		quoted = false,
+	}: EncodeOpenStepOptions = {},
 ): Uint8Array {
 	let depth = 0;
 	let size = 1;
 	let i = 0;
 	let l = 1;
-	let e: PLType | typeof close;
-	let x: number;
+	let e;
+	let x;
 	let inDict = 0;
 	let inArray = 0;
 
@@ -213,21 +235,25 @@ export function encodeOpenStep(
 		}
 	}
 
-	if (!/^[\t ]*$/.test(indent)) {
+	if (quote !== '"' && quote !== "'") {
+		throw new RangeError(`Invalid quote: ${quote}`);
+	}
+
+	if (!rIndent.test(indent)) {
 		throw new RangeError(`Invalid indent: ${JSON.stringify(indent)}`);
 	}
 
-	const close = Symbol();
+	const qchar = quote.charCodeAt(0) as 34 | 39;
 	const q: (PLType | typeof close)[] = [plist];
 	const ancestors = new Set<PLType>();
 	const stack: (PLArray | PLDict)[] = [];
-	const indentSize = indent.length;
+	const indentSize = x = indent.length;
 	const indentData = new Uint8Array(indentSize);
-	for (let i = indentSize; i--;) {
-		indentData[i] = indent.charCodeAt(i);
+	for (; x--;) {
+		indentData[x] = indent.charCodeAt(x);
 	}
 
-	while (i < l) {
+	do {
 		e = q[i++];
 
 		if (e === close) {
@@ -235,7 +261,7 @@ export function encodeOpenStep(
 				ancestors.delete(stack.pop()!);
 			}
 		} else if (PLString.is(e)) {
-			size += stringLength(e.value);
+			size += stringLength(e.value, qchar, quoted);
 		} else if (PLData.is(e)) {
 			x = e.byteLength;
 			size += x ? 2 + x + x + (x - (x % 4 || 4)) / 4 : 2;
@@ -261,11 +287,12 @@ export function encodeOpenStep(
 				size += 2;
 			}
 		} else if (PLArray.is(e)) {
+			size += 2;
 			if ((x = e.length)) {
 				if (ancestors.has(e)) {
 					throw new TypeError('Circular reference');
 				}
-				size += 2 + ((depth + 1) * indentSize + 2) * x++ +
+				size += ((depth + 1) * indentSize + 2) * x++ +
 					depth * indentSize;
 				q.length = l += x;
 				q.copyWithin(i + x, i);
@@ -277,19 +304,17 @@ export function encodeOpenStep(
 				ancestors.add(e);
 				stack.push(e);
 				depth++;
-			} else {
-				size += 2;
 			}
 		} else {
 			throw new TypeError(`Invalid OpenStep value type: ${e}`);
 		}
-	}
+	} while (i < l);
 
 	const encode = new Uint8Array(size);
 	size = i = 0;
 
 	while (i < l) {
-		e = q[i++];
+		e = q[i++] as PLString | PLData | PLDict | PLArray | typeof close;
 
 		if (inDict === 2) {
 			encode[size++] = 59;
@@ -300,7 +325,7 @@ export function encodeOpenStep(
 		if (e === close) {
 			if (--depth !== -1) {
 				encode[size++] = 10;
-				for (let i = depth; i--;) {
+				for (x = depth; x--;) {
 					encode.set(indentData, size);
 					size += indentSize;
 				}
@@ -317,16 +342,23 @@ export function encodeOpenStep(
 			if (inDict) {
 				if (size) {
 					encode[size++] = 10;
-					for (let i = depth; i--;) {
+					for (x = depth; x--;) {
 						encode.set(indentData, size);
 						size += indentSize;
 					}
 				}
-				size = stringEncode((e as PLString).value, encode, size);
+				size = stringEncode(
+					(e as PLString).value,
+					encode,
+					size,
+					qchar,
+					quoted,
+				);
 				encode[size++] = 32;
 				encode[size++] = 61;
 				encode[size++] = 32;
-				e = q[i++];
+
+				e = q[i++] as PLString | PLData | PLDict | PLArray;
 			} else if (inArray) {
 				if (inArray === 2) {
 					encode[size++] = 44;
@@ -334,38 +366,46 @@ export function encodeOpenStep(
 					inArray = 2;
 				}
 				encode[size++] = 10;
-				for (let i = depth; i--;) {
+				for (x = depth; x--;) {
 					encode.set(indentData, size);
 					size += indentSize;
 				}
 			}
 
 			if (PLString.is(e)) {
-				size = stringEncode(e.value, encode, size);
+				size = stringEncode(
+					e.value,
+					encode,
+					size,
+					qchar,
+					quoted,
+				);
 			} else if (PLData.is(e)) {
-				size = dataEncode(new Uint8Array(e.buffer), encode, size);
+				size = dataEncode(
+					new Uint8Array(e.buffer),
+					encode,
+					size,
+				);
 			} else if (PLDict.is(e)) {
+				if ((x = depth !== -1)) {
+					encode[size++] = 123;
+				}
 				if (e.size) {
-					if (depth !== -1) {
-						encode[size++] = 123;
-					}
 					stack.push(e);
 					depth++;
 					inDict = 1;
 					inArray = 0;
-				} else if (depth !== -1) {
-					encode[size++] = 123;
+				} else if (x) {
 					encode[size++] = 125;
 				}
 			} else {
-				if ((e as PLArray).length) {
-					encode[size++] = 40;
-					stack.push(e as PLArray);
+				encode[size++] = 40;
+				if (e.length) {
+					stack.push(e);
 					depth++;
 					inArray = 1;
 					inDict = 0;
 				} else {
-					encode[size++] = 40;
 					encode[size++] = 41;
 				}
 			}
