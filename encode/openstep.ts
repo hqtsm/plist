@@ -321,7 +321,7 @@ export function encodeOpenStep(
 					size += indentSize;
 				}
 				r[size++] = inDict ? 125 : 41;
-				if (PLDict.is(e = stack[--stack.length - 1])) {
+				if (PLDict.is(stack[--stack.length - 1])) {
 					inDict = 2;
 					inArray = 0;
 				} else {
