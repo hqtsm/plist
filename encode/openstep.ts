@@ -324,7 +324,7 @@ export function encodeOpenStep(
 				if (PLDict.is(e = stack[--stack.length - 1])) {
 					inDict = 2;
 					inArray = 0;
-				} else if (PLArray.is(e)) {
+				} else {
 					inArray = 2;
 					inDict = 0;
 				}
