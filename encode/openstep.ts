@@ -76,12 +76,7 @@ function stringEncode(
 	let chr: number;
 	let x: number;
 	if (!(quoted ||= !l)) {
-		do {
-			if (!unquoted(str.charCodeAt(i++))) {
-				quoted = true;
-				break;
-			}
-		} while (i < l);
+		while (!(quoted = !unquoted(str.charCodeAt(i++))) && i < l);
 		i = 0;
 	}
 	if (quoted) {
@@ -114,14 +109,10 @@ function stringEncode(
 				dest[start++] = dest[start++] = 55;
 			} else {
 				dest[start++] = 85;
-				x = chr >> 12;
-				dest[start++] = x + (x > 9 ? 87 : 48);
-				x = chr >> 8 & 15;
-				dest[start++] = x + (x > 9 ? 87 : 48);
-				x = chr >> 4 & 15;
-				dest[start++] = x + (x > 9 ? 87 : 48);
-				x = chr & 15;
-				dest[start++] = x + (x > 9 ? 87 : 48);
+				dest[start++] = (x = chr >> 12) > 9 ? x + 87 : x + 48;
+				dest[start++] = (x = chr >> 8 & 15) > 9 ? x + 87 : x + 48;
+				dest[start++] = (x = chr >> 4 & 15) > 9 ? x + 87 : x + 48;
+				dest[start++] = (x = chr & 15) > 9 ? x + 87 : x + 48;
 			}
 		} else {
 			dest[start++] = chr;
@@ -153,9 +144,8 @@ function dataEncode(
 		}
 		hi = data[i++];
 		lo = hi & 15;
-		hi >>= 4;
-		dest[start++] = hi + (hi > 9 ? 87 : 48);
-		dest[start++] = lo + (lo > 9 ? 87 : 48);
+		dest[start++] = (hi >>= 4) > 9 ? hi + 87 : hi + 48;
+		dest[start++] = lo > 9 ? lo + 87 : lo + 48;
 	}
 	dest[start++] = 62;
 	return start;
@@ -216,8 +206,9 @@ export function encodeOpenStep(
 	let l = 1;
 	let e;
 	let x;
-	let inDict = 0;
-	let inArray = 0;
+	let r;
+	let inDict;
+	let inArray;
 
 	switch (format) {
 		case FORMAT_OPENSTEP: {
@@ -249,7 +240,7 @@ export function encodeOpenStep(
 	const stack: (PLArray | PLDict)[] = [];
 	const indentSize = x = indent.length;
 	const indentData = new Uint8Array(indentSize);
-	for (; x--;) {
+	while (x--) {
 		indentData[x] = indent.charCodeAt(x);
 	}
 
@@ -275,9 +266,9 @@ export function encodeOpenStep(
 				q.length = l += x += x + 1;
 				q.copyWithin(i + x, i);
 				x = i;
-				for (const [k, v] of e) {
-					q[x++] = k;
-					q[x++] = v;
+				for (r of e) {
+					q[x++] = r[0];
+					q[x++] = r[1];
 				}
 				q[x] = close;
 				ancestors.add(e);
@@ -297,8 +288,8 @@ export function encodeOpenStep(
 				q.length = l += x;
 				q.copyWithin(i + x, i);
 				x = i;
-				for (const v of e) {
-					q[x++] = v;
+				for (r of e) {
+					q[x++] = r;
 				}
 				q[x] = close;
 				ancestors.add(e);
@@ -310,26 +301,26 @@ export function encodeOpenStep(
 		}
 	} while (i < l);
 
-	const encode = new Uint8Array(size);
+	r = new Uint8Array(size);
 	size = i = 0;
 
 	while (i < l) {
 		e = q[i++] as PLString | PLData | PLDict | PLArray | typeof close;
 
 		if (inDict === 2) {
-			encode[size++] = 59;
+			r[size++] = 59;
 		} else if (inDict) {
 			inDict = 2;
 		}
 
 		if (e === close) {
 			if (--depth !== -1) {
-				encode[size++] = 10;
+				r[size++] = 10;
 				for (x = depth; x--;) {
-					encode.set(indentData, size);
+					r.set(indentData, size);
 					size += indentSize;
 				}
-				encode[size++] = inDict ? 125 : 41;
+				r[size++] = inDict ? 125 : 41;
 			}
 			if (PLDict.is(e = stack[--stack.length - 1])) {
 				inDict = 2;
@@ -341,33 +332,32 @@ export function encodeOpenStep(
 		} else {
 			if (inDict) {
 				if (size) {
-					encode[size++] = 10;
+					r[size++] = 10;
 					for (x = depth; x--;) {
-						encode.set(indentData, size);
+						r.set(indentData, size);
 						size += indentSize;
 					}
 				}
 				size = stringEncode(
 					(e as PLString).value,
-					encode,
+					r,
 					size,
 					qchar,
 					quoted,
 				);
-				encode[size++] = 32;
-				encode[size++] = 61;
-				encode[size++] = 32;
-
+				r[size++] = 32;
+				r[size++] = 61;
+				r[size++] = 32;
 				e = q[i++] as PLString | PLData | PLDict | PLArray;
 			} else if (inArray) {
 				if (inArray === 2) {
-					encode[size++] = 44;
+					r[size++] = 44;
 				} else {
 					inArray = 2;
 				}
-				encode[size++] = 10;
+				r[size++] = 10;
 				for (x = depth; x--;) {
-					encode.set(indentData, size);
+					r.set(indentData, size);
 					size += indentSize;
 				}
 			}
@@ -375,7 +365,7 @@ export function encodeOpenStep(
 			if (PLString.is(e)) {
 				size = stringEncode(
 					e.value,
-					encode,
+					r,
 					size,
 					qchar,
 					quoted,
@@ -383,12 +373,12 @@ export function encodeOpenStep(
 			} else if (PLData.is(e)) {
 				size = dataEncode(
 					new Uint8Array(e.buffer),
-					encode,
+					r,
 					size,
 				);
 			} else if (PLDict.is(e)) {
 				if ((x = depth !== -1)) {
-					encode[size++] = 123;
+					r[size++] = 123;
 				}
 				if (e.size) {
 					stack.push(e);
@@ -396,22 +386,22 @@ export function encodeOpenStep(
 					inDict = 1;
 					inArray = 0;
 				} else if (x) {
-					encode[size++] = 125;
+					r[size++] = 125;
 				}
 			} else {
-				encode[size++] = 40;
+				r[size++] = 40;
 				if (e.length) {
 					stack.push(e);
 					depth++;
 					inArray = 1;
 					inDict = 0;
 				} else {
-					encode[size++] = 41;
+					r[size++] = 41;
 				}
 			}
 		}
 	}
 
-	encode[size] = 10;
-	return encode;
+	r[size] = 10;
+	return r;
 }
