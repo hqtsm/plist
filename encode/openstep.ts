@@ -262,10 +262,11 @@ export function encodeOpenStep(
 				if (ancestors.has(e)) {
 					throw new TypeError('Circular reference');
 				}
+				size += x * (depth * indentSize + 5) + (
+					depth ? (depth - 1) * indentSize + 3 : -1
+				);
 				ancestors.add(e);
 				stack.push(e);
-				size += (depth * indentSize + 5) * x +
-					(depth ? 3 + (depth - 1) * indentSize : -1);
 				q.length = l += x += x + 1;
 				q.copyWithin(i + x, i);
 				x = i;
@@ -388,8 +389,8 @@ export function encodeOpenStep(
 			} else {
 				r[size++] = 40;
 				if (e.length) {
-					stack.push(e);
 					depth++;
+					stack.push(e);
 					inArray = 1;
 					inDict = 0;
 				} else {
