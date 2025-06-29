@@ -377,15 +377,14 @@ export function encodeOpenStep(
 					size,
 				);
 			} else if (PLDict.is(e)) {
-				if ((x = depth !== -1)) {
+				if (++depth) {
 					r[size++] = 123;
 				}
 				if (e.size) {
 					stack.push(e);
-					depth++;
 					inDict = 1;
 					inArray = 0;
-				} else if (x) {
+				} else if (depth--) {
 					r[size++] = 125;
 				}
 			} else {
