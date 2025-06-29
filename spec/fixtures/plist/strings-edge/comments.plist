@@ -1,0 +1,4 @@
+/* OpenStep dict without the opening... */
+/**/A = 1;/**/
+/**/B = 2;// Line
+// ... or closing dict characters.

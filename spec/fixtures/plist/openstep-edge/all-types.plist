@@ -1,0 +1,13 @@
+{
+	STRING = Example;
+	DICT = {
+		A = a;
+		B = b;
+	};
+	ARRAY = (
+		1,
+		2,
+		3
+	);
+	DATA = <01234567>;
+}
