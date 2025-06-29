@@ -257,11 +257,11 @@ export function encodeOpenStep(
 			x = e.byteLength;
 			size += x ? 2 + x + x + (x - (x % 4 || 4)) / 4 : 2;
 		} else if (PLDict.is(e)) {
+			depth++;
 			if ((x = e.size)) {
 				if (ancestors.has(e)) {
 					throw new TypeError('Circular reference');
 				}
-				depth++;
 				ancestors.add(e);
 				stack.push(e);
 				size += (depth * indentSize + 5) * x +
@@ -274,7 +274,7 @@ export function encodeOpenStep(
 					q[x++] = r[1];
 				}
 				q[x] = close;
-			} else if (depth !== -1) {
+			} else if (depth--) {
 				size += 2;
 			}
 		} else if (PLArray.is(e)) {
