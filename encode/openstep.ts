@@ -268,8 +268,7 @@ export function encodeOpenStep(
 				ancestors.add(e);
 				stack.push(e);
 				q.length = l += x += x + 1;
-				q.copyWithin(i + x, i);
-				x = i;
+				q.copyWithin(i + x, x = i);
 				for (r of e) {
 					q[x++] = r[0];
 					q[x++] = r[1];
@@ -288,8 +287,7 @@ export function encodeOpenStep(
 				ancestors.add(e);
 				stack.push(e);
 				q.length = l += x;
-				q.copyWithin(i + x, i);
-				x = i;
+				q.copyWithin(i + x, x = i);
 				for (r of e) {
 					q[x++] = r;
 				}
