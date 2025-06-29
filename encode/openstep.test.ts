@@ -365,16 +365,33 @@ Deno.test('spec: dict-reuse', async () => {
 		[new PLString('AAAA'), new PLString('1111')],
 		[new PLString('BBBB'), new PLString('2222')],
 	]);
-	const encode = encodeOpenStep(
-		new PLDict([
-			[new PLString('AA'), reuse],
-			[new PLString('BB'), reuse],
-		]),
-	);
-	assertEquals(
-		encode,
-		await fixturePlist('dict-reuse', 'openstep'),
-	);
+	{
+		const encode = encodeOpenStep(
+			new PLDict([
+				[new PLString('AA'), reuse],
+				[new PLString('BB'), reuse],
+			]),
+		);
+		assertEquals(
+			encode,
+			await fixturePlist('dict-reuse', 'openstep'),
+		);
+	}
+	{
+		const encode = encodeOpenStep(
+			new PLDict([
+				[new PLString('AA'), reuse],
+				[new PLString('BB'), reuse],
+			]),
+			{
+				format: FORMAT_STRINGS,
+			},
+		);
+		assertEquals(
+			encode,
+			await fixturePlist('dict-reuse', 'strings'),
+		);
+	}
 });
 
 Deno.test('spec: dict-repeat', async () => {
