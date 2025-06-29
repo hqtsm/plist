@@ -321,13 +321,13 @@ export function encodeOpenStep(
 					size += indentSize;
 				}
 				r[size++] = inDict ? 125 : 41;
-			}
-			if (PLDict.is(e = stack[--stack.length - 1])) {
-				inDict = 2;
-				inArray = 0;
-			} else if (PLArray.is(e)) {
-				inArray = 2;
-				inDict = 0;
+				if (PLDict.is(e = stack[--stack.length - 1])) {
+					inDict = 2;
+					inArray = 0;
+				} else if (PLArray.is(e)) {
+					inArray = 2;
+					inDict = 0;
+				}
 			}
 		} else {
 			if (inDict) {
