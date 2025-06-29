@@ -524,6 +524,42 @@ Deno.test('spec: openstep-edge escapes-octal', async () => {
 	);
 });
 
+Deno.test('spec: openstep-edge all-types', async () => {
+	const data = new PLData(4);
+	new Uint8Array(data.buffer).set(new Uint8Array([0x01, 0x23, 0x45, 0x67]));
+	const encode = encodeOpenStep(
+		new PLDict<PLType>([
+			[
+				new PLString('STRING'),
+				new PLString('Example'),
+			],
+			[
+				new PLString('DICT'),
+				new PLDict([
+					[new PLString('A'), new PLString('a')],
+					[new PLString('B'), new PLString('b')],
+				]),
+			],
+			[
+				new PLString('ARRAY'),
+				new PLArray([
+					new PLString('1'),
+					new PLString('2'),
+					new PLString('3'),
+				]),
+			],
+			[
+				new PLString('DATA'),
+				data,
+			],
+		]),
+	);
+	assertEquals(
+		encode,
+		await fixturePlist('openstep-edge', 'all-types'),
+	);
+});
+
 Deno.test('spec: strings-edge all-types', async () => {
 	const data = new PLData(4);
 	new Uint8Array(data.buffer).set(new Uint8Array([0x01, 0x23, 0x45, 0x67]));
