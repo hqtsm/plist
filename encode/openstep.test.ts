@@ -95,19 +95,22 @@ Deno.test('Custom indent', () => {
 			]);
 			const encode = encodeOpenStep(dict, { format, indent });
 			const indents = new TextDecoder().decode(encode).split('\n')
-				.map((s) => s.replace(/\S.*$/g, ''))
-				.filter((s) => s);
+				.map((s) => s.replace(/\S.*/g, ''));
 			assertEquals(
 				indents,
 				format === FORMAT_STRINGS
 					? [
+						'',
 						indent,
 						indent + indent,
 						indent + indent + indent,
 						indent + indent,
 						indent,
+						'',
+						'',
 					]
 					: [
+						'',
 						indent,
 						indent + indent,
 						indent + indent + indent,
@@ -115,6 +118,8 @@ Deno.test('Custom indent', () => {
 						indent + indent + indent,
 						indent + indent,
 						indent,
+						'',
+						'',
 					],
 				`${format}: ${JSON.stringify(indent)}`,
 			);
