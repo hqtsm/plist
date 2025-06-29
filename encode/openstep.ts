@@ -248,7 +248,7 @@ export function encodeOpenStep(
 		e = q[i++];
 
 		if (e === close) {
-			if (--depth !== -1) {
+			if (depth--) {
 				ancestors.delete(stack.pop()!);
 			}
 		} else if (PLString.is(e)) {
@@ -314,7 +314,7 @@ export function encodeOpenStep(
 		}
 
 		if (e === close) {
-			if (--depth !== -1) {
+			if (depth--) {
 				r[size++] = 10;
 				for (x = depth; x--;) {
 					r.set(indentData, size);
