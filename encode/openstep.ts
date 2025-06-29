@@ -283,9 +283,7 @@ export function encodeOpenStep(
 				if (ancestors.has(e)) {
 					throw new TypeError('Circular reference');
 				}
-				size += ((depth + 1) * indentSize + 2) * x++ +
-					depth * indentSize;
-				depth++;
+				size += depth++ * indentSize + (depth * indentSize + 2) * x++;
 				ancestors.add(e);
 				stack.push(e);
 				q.length = l += x;
