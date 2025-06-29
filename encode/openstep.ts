@@ -261,8 +261,11 @@ export function encodeOpenStep(
 				if (ancestors.has(e)) {
 					throw new TypeError('Circular reference');
 				}
-				size += ((depth + 1) * indentSize + 5) * x +
-					(depth !== -1 ? 3 + depth * indentSize : -1);
+				depth++;
+				ancestors.add(e);
+				stack.push(e);
+				size += (depth * indentSize + 5) * x +
+					(depth ? 3 + (depth - 1) * indentSize : -1);
 				q.length = l += x += x + 1;
 				q.copyWithin(i + x, i);
 				x = i;
@@ -271,9 +274,6 @@ export function encodeOpenStep(
 					q[x++] = r[1];
 				}
 				q[x] = close;
-				ancestors.add(e);
-				stack.push(e);
-				depth++;
 			} else if (depth !== -1) {
 				size += 2;
 			}
@@ -285,6 +285,9 @@ export function encodeOpenStep(
 				}
 				size += ((depth + 1) * indentSize + 2) * x++ +
 					depth * indentSize;
+				depth++;
+				ancestors.add(e);
+				stack.push(e);
 				q.length = l += x;
 				q.copyWithin(i + x, i);
 				x = i;
@@ -292,9 +295,6 @@ export function encodeOpenStep(
 					q[x++] = r;
 				}
 				q[x] = close;
-				ancestors.add(e);
-				stack.push(e);
-				depth++;
 			}
 		} else {
 			throw new TypeError(`Invalid OpenStep value type: ${e}`);
