@@ -7,7 +7,7 @@ const type = 'PLArray';
 /**
  * Property list array type.
  */
-export class PLArray<T extends PLType = PLType> implements PLType {
+export class PLArray<T extends PLType = PLType> {
 	declare public readonly [Symbol.toStringTag]: string;
 
 	/**

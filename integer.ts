@@ -10,7 +10,7 @@ const type = 'PLInteger';
 /**
  * Property list integer type.
  */
-export class PLInteger implements PLType {
+export class PLInteger {
 	declare public readonly [Symbol.toStringTag]: string;
 
 	/**

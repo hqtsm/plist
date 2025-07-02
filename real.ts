@@ -8,7 +8,7 @@ const type = 'PLReal';
 /**
  * Property list real type.
  */
-export class PLReal implements PLType {
+export class PLReal {
 	declare public readonly [Symbol.toStringTag]: string;
 
 	/**

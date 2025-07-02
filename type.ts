@@ -1,15 +1,29 @@
 /**
  * @module
  *
- * Variable type.
+ * Property list type collection.
  */
 
+import type { PLArray } from './array.ts';
+import type { PLBoolean } from './boolean.ts';
+import type { PLData } from './data.ts';
+import type { PLDate } from './date.ts';
+import type { PLDict } from './dict.ts';
+import type { PLInteger } from './integer.ts';
+import type { PLReal } from './real.ts';
+import type { PLString } from './string.ts';
+import type { PLUID } from './uid.ts';
+
 /**
- * Property list variable type.
+ * Every property list type.
  */
-export interface PLType {
-	/**
-	 * Variable type name identifier.
-	 */
-	readonly [Symbol.toStringTag]: string;
-}
+export type PLType =
+	| PLArray
+	| PLBoolean
+	| PLData
+	| PLDate
+	| PLDict
+	| PLInteger
+	| PLReal
+	| PLString
+	| PLUID;

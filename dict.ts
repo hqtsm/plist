@@ -8,7 +8,7 @@ const type = 'PLDict';
 /**
  * Property list dict type.
  */
-export class PLDict<T extends PLType = PLType> implements PLType {
+export class PLDict<T extends PLType = PLType> {
 	declare public readonly [Symbol.toStringTag]: string;
 
 	/**
@@ -113,7 +113,7 @@ export class PLDict<T extends PLType = PLType> implements PLType {
 	 * @returns Value or undefined.
 	 */
 	public findLast(key: string): T | undefined {
-		let r;
+		let r: T | undefined;
 		for (const [k, v] of (maps.get(this) as Map<PLString, T>)) {
 			if (k.value === key) {
 				r = v;

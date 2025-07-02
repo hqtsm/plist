@@ -9,7 +9,7 @@ const type = 'PLDate';
 /**
  * Property list date type.
  */
-export class PLDate implements PLType {
+export class PLDate {
 	declare public readonly [Symbol.toStringTag]: string;
 
 	/**

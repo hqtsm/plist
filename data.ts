@@ -7,7 +7,7 @@ const type = 'PLData';
 /**
  * Property list data type.
  */
-export class PLData implements PLType {
+export class PLData {
 	declare public readonly [Symbol.toStringTag]: string;
 
 	/**

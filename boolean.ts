@@ -7,7 +7,7 @@ const type = 'PLBoolean';
 /**
  * Property list boolean type.
  */
-export class PLBoolean implements PLType {
+export class PLBoolean {
 	declare public readonly [Symbol.toStringTag]: string;
 
 	/**

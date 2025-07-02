@@ -10,7 +10,7 @@ const type = 'PLUID';
 /**
  * Property list UID type.
  */
-export class PLUID implements PLType {
+export class PLUID {
 	declare public readonly [Symbol.toStringTag]: string;
 
 	/**
