@@ -1,3 +1,9 @@
+/**
+ * @module
+ *
+ * OpenStep encoding.
+ */
+
 import { PLArray } from '../array.ts';
 import { PLData } from '../data.ts';
 import { PLDict } from '../dict.ts';
