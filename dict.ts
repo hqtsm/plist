@@ -1,3 +1,9 @@
+/**
+ * @module
+ *
+ * Property list dict.
+ */
+
 import type { PLString } from './string.ts';
 import type { PLType } from './type.ts';
 

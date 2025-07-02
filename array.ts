@@ -1,3 +1,9 @@
+/**
+ * @module
+ *
+ * Property list array.
+ */
+
 import type { PLType } from './type.ts';
 
 let arrays: WeakMap<PLArray, Array<PLType>>;

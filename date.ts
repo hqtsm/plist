@@ -1,3 +1,9 @@
+/**
+ * @module
+ *
+ * Property list date.
+ */
+
 import type { PLType } from './type.ts';
 
 let times: WeakMap<PLDate, number>;

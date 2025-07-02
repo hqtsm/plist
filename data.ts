@@ -1,3 +1,9 @@
+/**
+ * @module
+ *
+ * Property list data.
+ */
+
 import type { PLType } from './type.ts';
 
 let buffers: WeakMap<PLData, ArrayBuffer>;

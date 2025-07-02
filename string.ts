@@ -1,3 +1,9 @@
+/**
+ * @module
+ *
+ * Property list string.
+ */
+
 import type { PLType } from './type.ts';
 
 let values: WeakMap<PLString, string>;

@@ -1,3 +1,9 @@
+/**
+ * @module
+ *
+ * Property list integer.
+ */
+
 import type { PLType } from './type.ts';
 
 let values: WeakMap<PLInteger, bigint>;
