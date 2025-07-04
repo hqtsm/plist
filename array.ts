@@ -274,7 +274,7 @@ export class PLArray<T extends PLType = PLType> {
 	 * @returns Is array type.
 	 */
 	public static is(arg: unknown): arg is PLArray {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
+		return (arg as PLType | null)?.[Symbol.toStringTag] === TYPE;
 	}
 
 	/**

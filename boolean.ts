@@ -50,7 +50,7 @@ export class PLBoolean {
 	 * @returns Is boolean type.
 	 */
 	public static is(arg: unknown): arg is PLBoolean {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
+		return (arg as PLType | null)?.[Symbol.toStringTag] === TYPE;
 	}
 
 	/**

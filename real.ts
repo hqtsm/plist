@@ -80,7 +80,7 @@ export class PLReal {
 	 * @returns Is real type.
 	 */
 	public static is(arg: unknown): arg is PLReal {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
+		return (arg as PLType | null)?.[Symbol.toStringTag] === TYPE;
 	}
 
 	/**

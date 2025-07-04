@@ -59,7 +59,7 @@ export class PLString {
 	 * @returns Is string type.
 	 */
 	public static is(arg: unknown): arg is PLString {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
+		return (arg as PLType | null)?.[Symbol.toStringTag] === TYPE;
 	}
 
 	/**

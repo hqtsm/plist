@@ -61,7 +61,7 @@ export class PLDate {
 	 * @returns Is date type.
 	 */
 	public static is(arg: unknown): arg is PLDate {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
+		return (arg as PLType | null)?.[Symbol.toStringTag] === TYPE;
 	}
 
 	/**

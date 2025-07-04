@@ -50,7 +50,7 @@ export class PLData {
 	 * @returns Is data type.
 	 */
 	public static is(arg: unknown): arg is PLData {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
+		return (arg as PLType | null)?.[Symbol.toStringTag] === TYPE;
 	}
 
 	/**

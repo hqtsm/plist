@@ -187,7 +187,7 @@ export class PLDict<T extends PLType = PLType> {
 	 * @returns Is dict type.
 	 */
 	public static is(arg: unknown): arg is PLDict {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
+		return (arg as PLType | null)?.[Symbol.toStringTag] === TYPE;
 	}
 
 	/**
