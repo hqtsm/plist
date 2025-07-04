@@ -5,7 +5,9 @@
 int main() {
 	double values[] = {
 		0.0,
-		-0.0,
+		// CoreFoundation is weird when creating a -0.0 date.
+		// CFDateGetAbsoluteTime returns 0xbeefffffffffffff (~-0.000015).
+		// -0.0,
 		1.0,
 		-1.0,
 		0.000001,
@@ -48,7 +50,7 @@ int main() {
 		} v = {.d = value};
 		htonll(v.u);
 		char keyhex[1024] = {0};
-		sprintf(keyhex, "%f %016llx", value, v.u);
+		sprintf(keyhex, "%lf %016llx", value, v.u);
 		CFStringRef key = CFStringCreateWithBytes(NULL, (unsigned char *)keyhex, strlen(keyhex), kCFStringEncodingUTF8, false);
 		CFDateRef val = CFDateCreate(NULL, value);
 		CFDictionarySetValue(plist, key, val);
