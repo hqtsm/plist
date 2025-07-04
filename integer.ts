@@ -62,11 +62,6 @@ export class PLInteger {
 	}
 
 	/**
-	 * Variable type.
-	 */
-	public static readonly TYPE: typeof TYPE;
-
-	/**
 	 * Maximum integer value.
 	 */
 	public static readonly MAX_VALUE: bigint;
@@ -77,9 +72,9 @@ export class PLInteger {
 	public static readonly MIN_VALUE: bigint;
 
 	static {
-		const type = { value: TYPE };
-		Object.defineProperty(this.prototype, Symbol.toStringTag, type);
-		Object.defineProperty(this, 'TYPE', type);
+		Object.defineProperty(this.prototype, Symbol.toStringTag, {
+			value: TYPE,
+		});
 		Object.defineProperty(this, 'MAX_VALUE', { value: MAX_VALUE });
 		Object.defineProperty(this, 'MIN_VALUE', { value: MIN_VALUE });
 	}

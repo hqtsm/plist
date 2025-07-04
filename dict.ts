@@ -190,14 +190,9 @@ export class PLDict<T extends PLType = PLType> {
 		return (arg as PLType | null)?.[Symbol.toStringTag] === TYPE;
 	}
 
-	/**
-	 * Variable type.
-	 */
-	public static readonly TYPE: typeof TYPE;
-
 	static {
-		const type = { value: TYPE };
-		Object.defineProperty(this.prototype, Symbol.toStringTag, type);
-		Object.defineProperty(this, 'TYPE', type);
+		Object.defineProperty(this.prototype, Symbol.toStringTag, {
+			value: TYPE,
+		});
 	}
 }

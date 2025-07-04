@@ -84,11 +84,6 @@ export class PLDate {
 	}
 
 	/**
-	 * Variable type.
-	 */
-	public static readonly TYPE: typeof TYPE;
-
-	/**
 	 * Date time for the UNIX epoch.
 	 *
 	 * @returns UNIX epoch date time.
@@ -96,9 +91,9 @@ export class PLDate {
 	public static readonly UNIX_EPOCH: number;
 
 	static {
-		const type = { value: TYPE };
-		Object.defineProperty(this.prototype, Symbol.toStringTag, type);
-		Object.defineProperty(this, 'TYPE', type);
+		Object.defineProperty(this.prototype, Symbol.toStringTag, {
+			value: TYPE,
+		});
 		Object.defineProperty(this, 'UNIX_EPOCH', { value: UNIX_EPOCH });
 	}
 }
