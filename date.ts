@@ -10,13 +10,13 @@ let times: WeakMap<PLDate, number>;
 
 const UNIX_EPOCH = -978307200;
 
-const type = 'PLDate';
+const TYPE = 'PLDate' as const;
 
 /**
  * Property list date type.
  */
 export class PLDate {
-	declare public readonly [Symbol.toStringTag]: string;
+	declare public readonly [Symbol.toStringTag]: typeof TYPE;
 
 	/**
 	 * Create property list date reference.
@@ -61,7 +61,7 @@ export class PLDate {
 	 * @returns Is date type.
 	 */
 	public static is(arg: unknown): arg is PLDate {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
+		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
 	}
 
 	/**
@@ -84,6 +84,11 @@ export class PLDate {
 	}
 
 	/**
+	 * Variable type.
+	 */
+	public static readonly TYPE: typeof TYPE;
+
+	/**
 	 * Date time for the UNIX epoch.
 	 *
 	 * @returns UNIX epoch date time.
@@ -91,13 +96,9 @@ export class PLDate {
 	public static readonly UNIX_EPOCH: number;
 
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: type,
-			configurable: true,
-		});
-		Object.defineProperty(this, 'UNIX_EPOCH', {
-			value: UNIX_EPOCH,
-			configurable: true,
-		});
+		const type = { value: TYPE };
+		Object.defineProperty(this.prototype, Symbol.toStringTag, type);
+		Object.defineProperty(this, 'TYPE', type);
+		Object.defineProperty(this, 'UNIX_EPOCH', { value: UNIX_EPOCH });
 	}
 }

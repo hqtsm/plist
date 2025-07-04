@@ -8,13 +8,13 @@ import type { PLType } from './type.ts';
 
 let arrays: WeakMap<PLArray, Array<PLType>>;
 
-const type = 'PLArray';
+const TYPE = 'PLArray' as const;
 
 /**
  * Property list array type.
  */
 export class PLArray<T extends PLType = PLType> {
-	declare public readonly [Symbol.toStringTag]: string;
+	declare public readonly [Symbol.toStringTag]: typeof TYPE;
 
 	/**
 	 * Create property list array reference.
@@ -274,13 +274,17 @@ export class PLArray<T extends PLType = PLType> {
 	 * @returns Is array type.
 	 */
 	public static is(arg: unknown): arg is PLArray {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
+		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
 	}
 
+	/**
+	 * Variable type.
+	 */
+	public static readonly TYPE: typeof TYPE;
+
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: type,
-			configurable: true,
-		});
+		const type = { value: TYPE };
+		Object.defineProperty(this.prototype, Symbol.toStringTag, type);
+		Object.defineProperty(this, 'TYPE', type);
 	}
 }

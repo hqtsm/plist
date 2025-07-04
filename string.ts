@@ -8,13 +8,13 @@ import type { PLType } from './type.ts';
 
 let values: WeakMap<PLString, string>;
 
-const type = 'PLString';
+const TYPE = 'PLString' as const;
 
 /**
  * Property list string type.
  */
 export class PLString {
-	declare public readonly [Symbol.toStringTag]: string;
+	declare public readonly [Symbol.toStringTag]: typeof TYPE;
 
 	/**
 	 * Create property list string reference.
@@ -59,13 +59,17 @@ export class PLString {
 	 * @returns Is string type.
 	 */
 	public static is(arg: unknown): arg is PLString {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
+		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
 	}
 
+	/**
+	 * Variable type.
+	 */
+	public static readonly TYPE: typeof TYPE;
+
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: type,
-			configurable: true,
-		});
+		const type = { value: TYPE };
+		Object.defineProperty(this.prototype, Symbol.toStringTag, type);
+		Object.defineProperty(this, 'TYPE', type);
 	}
 }

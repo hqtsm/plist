@@ -11,13 +11,13 @@ let values: WeakMap<PLUID, bigint>;
 const MIN_VALUE = 0n;
 const MAX_VALUE = 0xffffffffn;
 
-const type = 'PLUID';
+const TYPE = 'PLUID' as const;
 
 /**
  * Property list UID type.
  */
 export class PLUID {
-	declare public readonly [Symbol.toStringTag]: string;
+	declare public readonly [Symbol.toStringTag]: typeof TYPE;
 
 	/**
 	 * Create property list UID reference.
@@ -58,8 +58,13 @@ export class PLUID {
 	 * @returns Is UID type.
 	 */
 	public static is(arg: unknown): arg is PLUID {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
+		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
 	}
+
+	/**
+	 * Variable type.
+	 */
+	public static readonly TYPE: typeof TYPE;
 
 	/**
 	 * Maximum UID value.
@@ -72,17 +77,10 @@ export class PLUID {
 	public static readonly MIN_VALUE: bigint;
 
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: type,
-			configurable: true,
-		});
-		Object.defineProperty(this, 'MAX_VALUE', {
-			value: MAX_VALUE,
-			configurable: true,
-		});
-		Object.defineProperty(this, 'MIN_VALUE', {
-			value: MIN_VALUE,
-			configurable: true,
-		});
+		const type = { value: TYPE };
+		Object.defineProperty(this.prototype, Symbol.toStringTag, type);
+		Object.defineProperty(this, 'TYPE', type);
+		Object.defineProperty(this, 'MAX_VALUE', { value: MAX_VALUE });
+		Object.defineProperty(this, 'MIN_VALUE', { value: MIN_VALUE });
 	}
 }

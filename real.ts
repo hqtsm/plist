@@ -9,13 +9,13 @@ import type { PLType } from './type.ts';
 let values: WeakMap<PLReal, number>;
 let bitses: WeakMap<PLReal, 32 | 64>;
 
-const type = 'PLReal';
+const TYPE = 'PLReal' as const;
 
 /**
  * Property list real type.
  */
 export class PLReal {
-	declare public readonly [Symbol.toStringTag]: string;
+	declare public readonly [Symbol.toStringTag]: typeof TYPE;
 
 	/**
 	 * Create property list real reference.
@@ -80,13 +80,17 @@ export class PLReal {
 	 * @returns Is real type.
 	 */
 	public static is(arg: unknown): arg is PLReal {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
+		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
 	}
 
+	/**
+	 * Variable type.
+	 */
+	public static readonly TYPE: typeof TYPE;
+
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: type,
-			configurable: true,
-		});
+		const type = { value: TYPE };
+		Object.defineProperty(this.prototype, Symbol.toStringTag, type);
+		Object.defineProperty(this, 'TYPE', type);
 	}
 }

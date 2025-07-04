@@ -11,13 +11,13 @@ let values: WeakMap<PLInteger, bigint>;
 const MAX_VALUE = 0xffffffffffffffffn;
 const MIN_VALUE = -0x8000000000000000n;
 
-const type = 'PLInteger';
+const TYPE = 'PLInteger' as const;
 
 /**
  * Property list integer type.
  */
 export class PLInteger {
-	declare public readonly [Symbol.toStringTag]: string;
+	declare public readonly [Symbol.toStringTag]: typeof TYPE;
 
 	/**
 	 * Create property list integer reference.
@@ -58,8 +58,13 @@ export class PLInteger {
 	 * @returns Is integer type.
 	 */
 	public static is(arg: unknown): arg is PLInteger {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
+		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
 	}
+
+	/**
+	 * Variable type.
+	 */
+	public static readonly TYPE: typeof TYPE;
 
 	/**
 	 * Maximum integer value.
@@ -72,17 +77,10 @@ export class PLInteger {
 	public static readonly MIN_VALUE: bigint;
 
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: type,
-			configurable: true,
-		});
-		Object.defineProperty(this, 'MAX_VALUE', {
-			value: MAX_VALUE,
-			configurable: true,
-		});
-		Object.defineProperty(this, 'MIN_VALUE', {
-			value: MIN_VALUE,
-			configurable: true,
-		});
+		const type = { value: TYPE };
+		Object.defineProperty(this.prototype, Symbol.toStringTag, type);
+		Object.defineProperty(this, 'TYPE', type);
+		Object.defineProperty(this, 'MAX_VALUE', { value: MAX_VALUE });
+		Object.defineProperty(this, 'MIN_VALUE', { value: MIN_VALUE });
 	}
 }

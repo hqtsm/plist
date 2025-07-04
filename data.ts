@@ -8,13 +8,13 @@ import type { PLType } from './type.ts';
 
 let buffers: WeakMap<PLData, ArrayBuffer>;
 
-const type = 'PLData';
+const TYPE = 'PLData' as const;
 
 /**
  * Property list data type.
  */
 export class PLData {
-	declare public readonly [Symbol.toStringTag]: string;
+	declare public readonly [Symbol.toStringTag]: typeof TYPE;
 
 	/**
 	 * Create property list data reference.
@@ -50,13 +50,17 @@ export class PLData {
 	 * @returns Is data type.
 	 */
 	public static is(arg: unknown): arg is PLData {
-		return arg ? (arg as PLType)[Symbol.toStringTag] === type : false;
+		return arg ? (arg as PLType)[Symbol.toStringTag] === TYPE : false;
 	}
 
+	/**
+	 * Variable type.
+	 */
+	public static readonly TYPE: typeof TYPE;
+
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: type,
-			configurable: true,
-		});
+		const type = { value: TYPE };
+		Object.defineProperty(this.prototype, Symbol.toStringTag, type);
+		Object.defineProperty(this, 'TYPE', type);
 	}
 }
