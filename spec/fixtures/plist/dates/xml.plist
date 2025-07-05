@@ -2,6 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>-0.000001 beb0c6f7a0b5ed8d</key>
+	<date>2000-12-31T23:59:59Z</date>
+	<key>-0.000010 bee4f8b588e368f1</key>
+	<date>2000-12-31T23:59:59Z</date>
+	<key>-0.000100 bf1a36e2eb1c432d</key>
+	<date>2000-12-31T23:59:59Z</date>
+	<key>-0.001000 bf50624dd2f1a9fc</key>
+	<date>2000-12-31T23:59:59Z</date>
+	<key>-0.010000 bf847ae147ae147b</key>
+	<date>2000-12-31T23:59:59Z</date>
+	<key>-0.100000 bfb999999999999a</key>
+	<date>2000-12-31T23:59:59Z</date>
+	<key>-0.500000 bfe0000000000000</key>
+	<date>2000-12-31T23:59:59Z</date>
+	<key>-0.900000 bfeccccccccccccd</key>
+	<date>2000-12-31T23:59:59Z</date>
+	<key>-0.999990 bfefffeb074a771d</key>
+	<date>2000-12-31T23:59:59Z</date>
 	<key>-1.000000 bff0000000000000</key>
 	<date>2000-12-31T23:59:59Z</date>
 	<key>-59011441438.000000 c22b7ab6463c0000</key>
@@ -45,6 +63,8 @@
 	<key>0.785398 3fe921fb54442d18</key>
 	<date>2001-01-01T00:00:00Z</date>
 	<key>0.900000 3feccccccccccccd</key>
+	<date>2001-01-01T00:00:00Z</date>
+	<key>0.999990 3fefffeb074a771d</key>
 	<date>2001-01-01T00:00:00Z</date>
 	<key>1.000000 3ff0000000000000</key>
 	<date>2001-01-01T00:00:01Z</date>
