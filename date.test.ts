@@ -135,6 +135,23 @@ Deno.test('is type', () => {
 	}
 });
 
+Deno.test('set month', () => {
+	const deltas = [
+		...(new Array(5000)).fill(0).map((_, i) => i),
+		Math.PI,
+		NaN,
+	];
+	for (const start of startTimes) {
+		for (const month of new Set([...deltas, ...deltas.map((d) => -d)])) {
+			const pld = new PLDate(start);
+			pld.month = month;
+			const jsd = new Date((start - PLDate.UNIX_EPOCH) * 1000);
+			jsd.setUTCMonth((month || 0) - 1);
+			assertEquals(pld.toISOString(), jsd.toISOString());
+		}
+	}
+});
+
 Deno.test('set day', () => {
 	const deltas = [
 		...new Array(1000).fill(0).map((_, i) => i),

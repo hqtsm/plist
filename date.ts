@@ -15,6 +15,19 @@ const UNIX_EPOCH = -978307200;
 
 const TYPE = 'PLDate' as const;
 
+const dbm = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+
+/**
+ * Is year leap year.
+ *
+ * @param year Year.
+ * @returns Is leap year.
+ */
+function leap(year: number): 0 | 1 {
+	year = (year < 0 ? -year : year) % 400;
+	return +!(year & 3 || (year && !(year % 100))) as 0 | 1;
+}
+
 /**
  * Get year, month, day.
  *
@@ -208,6 +221,33 @@ export class PLDate {
 	public get month(): number {
 		getYMD(this.time, null, M);
 		return M[0];
+	}
+
+	/**
+	 * Set month.
+	 *
+	 * @param month Month.
+	 */
+	public set month(month: number) {
+		const { time } = this;
+		month = (+month || 0) - (month % 1 || 0);
+		getYMD(time, Y, M);
+		let [y] = Y;
+		const [m] = M;
+		const days = dbm[m] + (m > 2 ? leap(y) : 0);
+		let d = 0;
+		if (month > 0) {
+			for (; month > 12; month -= 12) {
+				d += 365 + leap(y++);
+			}
+			d += dbm[month] + (month > 2 ? leap(y) : 0);
+		} else {
+			for (; month <= -12; month += 12) {
+				d -= 365 + leap(--y);
+			}
+			d -= 365 - dbm[month += 12] + (month > 2 ? 0 : leap(y - 1));
+		}
+		this.time = time + (d - days) * 86400;
 	}
 
 	/**
