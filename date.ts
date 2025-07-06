@@ -8,9 +8,154 @@ import type { PLType } from './type.ts';
 
 let times: WeakMap<PLDate, number>;
 
+const Y: [number] = [0];
+const M: [number] = [0];
+const D: [number] = [0];
 const UNIX_EPOCH = -978307200;
 
 const TYPE = 'PLDate' as const;
+
+/**
+ * Get year, month, day.
+ *
+ * @param time Date value.
+ * @param year Year pointer.
+ * @param month Month pointer.
+ * @param day Day pointer.
+ */
+function getYMD(
+	time: number,
+	year?: [number] | null,
+	month?: [number] | null,
+	day?: [number] | null,
+): void {
+	// Convert time to days.
+	let z: bigint | number = time < 0
+		? (time === -Infinity
+			? -0x8000000000000000n
+			: BigInt.asIntN(64, BigInt(Math.floor(time / 86400))))
+		: (time === Infinity
+			? 0x7fffffffffffffffn
+			: BigInt.asIntN(64, BigInt(Math.floor(time / 86400 || 0))));
+
+	// Years of full 400 year cycles, and the remaining days.
+	let x: bigint | number = z / 146097n;
+	let y: bigint | number = x * 400n;
+	let m = 0;
+	z -= x * 146097n;
+
+	// Turn the remaining years of days into years.
+	if (z < 0) {
+		do {
+			x = -(y--) % 400n;
+			m = +!(3n & x || (x && !(x % 100n)));
+			z += m ? 366n : 365n;
+		} while (z < 0);
+	} else {
+		for (let d = 365n; z >= d;) {
+			z -= d;
+			x = ++y + 1n % 400n;
+			m = +!(3n & x || (x && !(x % 100n)));
+			d = m ? 366n : 365n;
+		}
+	}
+	if (year) {
+		year[0] = (y > 0x7fffffff - 2001)
+			? 0x7fffffff
+			: Number(BigInt.asIntN(32, y + 2001n));
+	}
+
+	if (month || day) {
+		// Days into year to month and day by lookup tree.
+		let d = Number(z);
+		d -= (d > (z = 180 + m))
+			? (
+				(d > (y = 272 + m))
+					? (d > (x = 333 + m)
+						? ((m = 12), x)
+						: (d > (x = 303 + m))
+						? ((m = 11), x)
+						: ((m = 10), y))
+					: (d > (x = 242 + m)
+						? ((m = 9), x)
+						: (d > (x = 211 + m))
+						? ((m = 8), x)
+						: ((m = 7), z))
+			)
+			: (
+				(d > (y = 89 + m))
+					? (d > (x = 150 + m)
+						? ((m = 6), x)
+						: (d > (x = 119 + m))
+						? ((m = 5), x)
+						: ((m = 4), y))
+					: (d > (x = 58 + m)
+						? ((m = 3), x)
+						: (d > 30)
+						? ((m = 2), 30)
+						: -(m = 1))
+			);
+		if (month) {
+			month[0] = m;
+		}
+		if (day) {
+			day[0] = d;
+		}
+	}
+}
+
+/**
+ * Get hour.
+ *
+ * @param time Date time.
+ * @returns Hour.
+ */
+function getH(time: number): number {
+	time = Math.floor(time / 3600);
+	return Math.floor(time - Math.floor(time / 24) * 24) | 0;
+}
+
+/**
+ * Get minute.
+ *
+ * @param time Date time.
+ * @returns Minute.
+ */
+function getM(time: number): number {
+	time = Math.floor(time / 60);
+	return Math.floor(time - Math.floor(time / 60) * 60) | 0;
+}
+
+/**
+ * Get second.
+ *
+ * @param time Date time.
+ * @returns Second.
+ */
+function getS(time: number): number {
+	return time - Math.floor(time / 60) * 60 || 0;
+}
+
+/**
+ * Encode date time to ISO format.
+ *
+ * @param time Date time.
+ * @returns ISO string.
+ */
+function iso(time: number): string {
+	getYMD(time, Y, M, D);
+	let [x] = Y as [bigint | number];
+	const YY = x < 0
+		? '-' + `${-x}`.padStart(6, '0')
+		: (x > 9999 ? '+' + `${x}`.padStart(6, '0') : `${x}`.padStart(4, '0'));
+	const MM = `${M[0]}`.padStart(2, '0');
+	const DD = `${D[0]}`.padStart(2, '0');
+	const hh = `${getH(time)}`.padStart(2, '0');
+	const mm = `${getM(time)}`.padStart(2, '0');
+	const ss = `${time = (x = getS(time)) | 0}`.padStart(2, '0');
+	const f = `${(x * 1000 | 0) - time * 1000}`.padStart(3, '0');
+	return `${YY}-${MM}-${DD}T${hh}:${mm}:${ss}.${f}Z`;
+}
 
 /**
  * Property list date type.
@@ -28,21 +173,78 @@ export class PLDate {
 	}
 
 	/**
-	 * Get date value.
+	 * Get date time.
 	 *
-	 * @returns Date value.
+	 * @returns Date time.
 	 */
 	public get time(): number {
 		return times.get(this)!;
 	}
 
 	/**
-	 * Set date value.
+	 * Set date time.
 	 *
-	 * @param value Date value.
+	 * @param time Date time.
 	 */
 	public set time(time: number) {
 		(times ??= new WeakMap()).set(this, time);
+	}
+
+	/**
+	 * Get year.
+	 *
+	 * @returns Year.
+	 */
+	public get year(): number {
+		getYMD(this.time, Y);
+		return Y[0];
+	}
+
+	/**
+	 * Get month.
+	 *
+	 * @returns Month.
+	 */
+	public get month(): number {
+		getYMD(this.time, null, M);
+		return M[0];
+	}
+
+	/**
+	 * Get day.
+	 *
+	 * @returns Day.
+	 */
+	public get day(): number {
+		getYMD(this.time, null, null, D);
+		return D[0];
+	}
+
+	/**
+	 * Get hour.
+	 *
+	 * @returns Hour.
+	 */
+	public get hour(): number {
+		return getH(this.time);
+	}
+
+	/**
+	 * Get minute.
+	 *
+	 * @returns Minute.
+	 */
+	public get minute(): number {
+		return getM(this.time);
+	}
+
+	/**
+	 * Get second.
+	 *
+	 * @returns Second.
+	 */
+	public get second(): number {
+		return getS(this.time);
 	}
 
 	/**
@@ -52,6 +254,15 @@ export class PLDate {
 	 */
 	public toDate(): Date {
 		return new Date((this.time - UNIX_EPOCH) * 1000);
+	}
+
+	/**
+	 * Convert to ISO string.
+	 *
+	 * @returns ISO string.
+	 */
+	public toISOString(): string {
+		return iso(this.time);
 	}
 
 	/**
@@ -81,6 +292,16 @@ export class PLDate {
 	 */
 	public static from(date: Date): PLDate {
 		return new PLDate(date.getTime() / 1000 + UNIX_EPOCH);
+	}
+
+	/**
+	 * Encode date time to ISO format.
+	 *
+	 * @param time Date time.
+	 * @returns ISO format.
+	 */
+	public static ISO(time: number): string {
+		return iso(time);
 	}
 
 	/**

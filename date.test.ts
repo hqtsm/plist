@@ -1,10 +1,62 @@
 import {
+	assertAlmostEquals,
 	assertEquals,
 	assertGreaterOrEqual,
 	assertLessOrEqual,
+	assertStrictEquals,
 } from '@std/assert';
 import { PLDate } from './date.ts';
 import { PLReal } from './real.ts';
+
+const rISO = /^([-+]?\d+)-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}\.\d{3})Z$/;
+
+const sampleISO = [
+	['2001-01-01T00:00:00.000Z', 0.0],
+	['2001-01-01T00:00:01.000Z', 1.0],
+	['2000-12-31T23:59:59.000Z', -1.0],
+	['0131-01-02T04:56:02.000Z', -59011441438.0],
+	['-000005-02-08T02:40:00.000Z', -63300000000.0],
+	['2001-01-01T00:00:00.000Z', 0.000001],
+	['2000-12-31T23:59:59.999Z', -0.000001],
+	['2001-01-01T00:00:00.000Z', 0.00001],
+	['2000-12-31T23:59:59.999Z', -0.00001],
+	['2001-01-01T00:00:00.000Z', 0.0001],
+	['2000-12-31T23:59:59.999Z', -0.0001],
+	['2001-01-01T00:00:00.001Z', 0.001],
+	['2000-12-31T23:59:59.999Z', -0.001],
+	['2001-01-01T00:00:00.010Z', 0.01],
+	['2000-12-31T23:59:59.990Z', -0.01],
+	['2001-01-01T00:00:00.100Z', 0.1],
+	['2000-12-31T23:59:59.900Z', -0.1],
+	['2001-01-01T00:00:00.500Z', 0.5],
+	['2000-12-31T23:59:59.500Z', -0.5],
+	['2001-01-01T00:00:00.900Z', 0.9],
+	['2000-12-31T23:59:59.100Z', -0.9],
+	['2001-01-01T00:00:00.999Z', 0.99999],
+	['2000-12-31T23:59:59.000Z', -0.99999],
+	['2001-01-01T00:00:00.000Z', 2.220446049250313e-16],
+	['2001-01-01T00:00:02.718Z', Math.E],
+	['2001-01-01T00:00:01.442Z', Math.LOG2E],
+	['2001-01-01T00:00:00.434Z', Math.LOG10E],
+	['2001-01-01T00:00:00.693Z', Math.LN2],
+	['2001-01-01T00:00:02.302Z', Math.LN10],
+	['2001-01-01T00:00:03.141Z', Math.PI],
+	['2001-01-01T00:00:01.570Z', Math.PI / 2],
+	['2001-01-01T00:00:00.785Z', Math.PI / 4],
+	['2001-01-01T00:00:00.318Z', 1 / Math.PI],
+	['2001-01-01T00:00:00.636Z', 2 / Math.PI],
+	['2001-01-01T00:00:01.128Z', 2 / Math.sqrt(Math.PI)],
+	['2001-01-01T00:00:01.414Z', Math.SQRT2],
+	['2001-01-01T00:00:00.707Z', Math.SQRT1_2],
+	['1970-01-01T00:00:00.000Z', -978307200.0],
+	['2032-01-02T00:00:00.000Z', 978307200.0],
+	['2004-11-29T21:33:09.000Z', 123456789.0],
+	['+285428782-11-12T07:36:31.000Z', 9007199254740991.0],
+	['-285424781-02-20T16:23:29.000Z', -9007199254740991.0],
+	['2001-01-01T00:00:00.000Z', NaN],
+	['+2147483647-07-28T00:00:00.000Z', Infinity],
+	['+2030437302-06-07T00:00:00.000Z', -Infinity],
+] as const;
 
 Deno.test('initial value', () => {
 	assertEquals(new PLDate().time, 0);
@@ -26,6 +78,17 @@ Deno.test('to date', () => {
 	);
 	assertEquals(
 		(new PLDate(PLDate.UNIX_EPOCH)).toDate().toISOString(),
+		new Date(0).toISOString(),
+	);
+});
+
+Deno.test('to ISO', () => {
+	assertEquals(
+		(new PLDate(0)).toISOString(),
+		'2001-01-01T00:00:00.000Z',
+	);
+	assertEquals(
+		(new PLDate(PLDate.UNIX_EPOCH)).toISOString(),
 		new Date(0).toISOString(),
 	);
 });
@@ -56,6 +119,73 @@ Deno.test('is type', () => {
 	for (const v of [new PLDate(), new PLReal(), {}, null]) {
 		if (PLDate.is(v)) {
 			assertEquals(v.time, 0);
+		}
+	}
+});
+
+Deno.test('time to date', () => {
+	for (const [iso, time] of sampleISO) {
+		assertEquals(PLDate.ISO(time), iso);
+
+		const date = new PLDate(time);
+		assertEquals(date.toISOString(), iso);
+
+		const [_, Y, M, D, h, m, s] = iso.match(rISO)!;
+		assertStrictEquals(date.year, +Y);
+		assertStrictEquals(date.month, +M);
+		assertStrictEquals(date.day, +D);
+		assertStrictEquals(date.hour, +h);
+		assertStrictEquals(date.minute, +m);
+		assertAlmostEquals(date.second, +s, 0.001);
+		assertStrictEquals(
+			`${date.second * 1000 | 0}`.padStart(5, '0'),
+			s.replace('.', ''),
+		);
+	}
+});
+
+Deno.test('every day 2001', () => {
+	let i = 0;
+	const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	for (const [month, days] of months.entries()) {
+		const mm = `${month + 1}`.padStart(2, '0');
+		for (let day = 0; day < days; day++) {
+			const dd = `${day + 1}`.padStart(2, '0');
+			const iso = `2001-${mm}-${dd}T00:00:00.000Z`;
+			const time = 86400 * i++;
+			assertEquals(PLDate.ISO(time), iso);
+
+			const date = new PLDate(time);
+			assertEquals(date.toISOString(), iso);
+			assertStrictEquals(date.year, 2001);
+			assertStrictEquals(date.month, month + 1);
+			assertStrictEquals(date.day, day + 1);
+			assertStrictEquals(date.hour, 0);
+			assertStrictEquals(date.minute, 0);
+			assertAlmostEquals(date.second, 0);
+		}
+	}
+});
+
+Deno.test('every day 2004', () => {
+	let i = 0;
+	const months = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	for (const [month, days] of months.entries()) {
+		const mm = `${month + 1}`.padStart(2, '0');
+		for (let day = 0; day < days; day++) {
+			const dd = `${day + 1}`.padStart(2, '0');
+			const iso = `2004-${mm}-${dd}T00:00:00.000Z`;
+			const time = 94608000 + 86400 * i++;
+			assertEquals(PLDate.ISO(time), iso);
+
+			const date = new PLDate(time);
+			assertEquals(date.toISOString(), iso);
+			assertStrictEquals(date.year, 2004);
+			assertStrictEquals(date.month, month + 1);
+			assertStrictEquals(date.day, day + 1);
+			assertStrictEquals(date.hour, 0);
+			assertStrictEquals(date.minute, 0);
+			assertAlmostEquals(date.second, 0);
 		}
 	}
 });
