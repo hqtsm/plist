@@ -54,7 +54,7 @@ function getYMD(
 	} else {
 		for (let d = 365n; z >= d;) {
 			z -= d;
-			x = ++y + 1n % 400n;
+			x = (++y + 1n) % 400n;
 			m = +!(3n & x || (x && !(x % 100n)));
 			d = m ? 366n : 365n;
 		}
