@@ -227,8 +227,9 @@ export class PLDate {
 	 */
 	public set day(day: number) {
 		const { time } = this;
+		day = (+day || 0) - (day % 1 || 0);
 		getYMD(time, null, null, D);
-		this.time = time + ((+day || 0) - (day % 1 || 0) - D[0]) * 86400;
+		this.time = time + (day - D[0]) * 86400;
 	}
 
 	/**
