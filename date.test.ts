@@ -59,6 +59,17 @@ const sampleISO = [
 	['+2030437302-06-07T00:00:00.000Z', -Infinity],
 ] as const;
 
+const startTimes = [
+	// 2001-01-01T00:00:00.000Z
+	0,
+	// 2004-01-01T00:00:00.000Z
+	94608000,
+	// 2400-03-01T00:00:00.000Z
+	12596342400,
+	// -000005-02-08T02:40:00.000Z
+	-63300000000,
+];
+
 Deno.test('initial value', () => {
 	assertEquals(new PLDate().time, 0);
 	assertEquals(new PLDate(42).time, 42);
@@ -126,23 +137,21 @@ Deno.test('is type', () => {
 
 Deno.test('set day', () => {
 	const deltas = [
-		0,
-		1,
-		2,
-		30,
-		31,
-		32,
-		64,
+		...new Array(1000).fill(0).map((_, i) => i),
 		10000,
 		Math.PI,
 		NaN,
 	];
-	for (const day of new Set([...deltas, ...deltas.map((d) => -d)])) {
-		const pld = new PLDate(94608000);
-		pld.day = day;
-		const jsd = new Date((94608000 - PLDate.UNIX_EPOCH) * 1000);
-		jsd.setUTCDate(day || 0);
-		assertEquals(pld.toISOString(), jsd.toISOString());
+	const allDeltas = new Set([...deltas, ...deltas.map((d) => -d)]);
+	for (const start of startTimes) {
+		for (const day of allDeltas) {
+			const tag = `${start}: ${day}`;
+			const pld = new PLDate(start);
+			pld.day = day;
+			const jsd = new Date((start - PLDate.UNIX_EPOCH) * 1000);
+			jsd.setUTCDate(day || 0);
+			assertEquals(pld.toISOString(), jsd.toISOString(), tag);
+		}
 	}
 });
 
@@ -159,12 +168,16 @@ Deno.test('set hour', () => {
 		Math.PI,
 		NaN,
 	];
-	for (const hour of new Set([...deltas, ...deltas.map((d) => -d)])) {
-		const pld = new PLDate(94608000);
-		pld.hour = hour;
-		const jsd = new Date((94608000 - PLDate.UNIX_EPOCH) * 1000);
-		jsd.setUTCHours(hour || 0);
-		assertEquals(pld.toISOString(), jsd.toISOString());
+	const allDeltas = new Set([...deltas, ...deltas.map((d) => -d)]);
+	for (const start of startTimes) {
+		for (const hour of allDeltas) {
+			const tag = `${start}: ${hour}`;
+			const pld = new PLDate(start);
+			pld.hour = hour;
+			const jsd = new Date((start - PLDate.UNIX_EPOCH) * 1000);
+			jsd.setUTCHours(hour || 0);
+			assertEquals(pld.toISOString(), jsd.toISOString(), tag);
+		}
 	}
 });
 
@@ -181,33 +194,45 @@ Deno.test('set minute', () => {
 		Math.PI,
 		NaN,
 	];
-	for (const minute of new Set([...deltas, ...deltas.map((d) => -d)])) {
-		const pld = new PLDate(94608000);
-		pld.minute = minute;
-		const jsd = new Date((94608000 - PLDate.UNIX_EPOCH) * 1000);
-		jsd.setUTCMinutes(minute || 0);
-		assertEquals(pld.toISOString(), jsd.toISOString());
+	const allDeltas = new Set([...deltas, ...deltas.map((d) => -d)]);
+	for (const start of startTimes) {
+		for (const minute of allDeltas) {
+			const tag = `${start}: ${minute}`;
+			const pld = new PLDate(start);
+			pld.minute = minute;
+			const jsd = new Date((start - PLDate.UNIX_EPOCH) * 1000);
+			jsd.setUTCMinutes(minute || 0);
+			assertEquals(pld.toISOString(), jsd.toISOString(), tag);
+		}
 	}
 });
 
 Deno.test('set second', () => {
-	for (
-		const second of [
-			0,
-			1,
-			-1,
-			100000000,
-			-100000000,
-			Math.PI,
-			-Math.PI,
-			NaN,
-		]
-	) {
-		const pld = new PLDate(94608000);
-		pld.second = second;
-		const jsd = new Date((94608000 - PLDate.UNIX_EPOCH) * 1000);
-		jsd.setUTCMilliseconds(Math.floor(second * 1000) || 0);
-		assertEquals(pld.toISOString(), jsd.toISOString());
+	const deltas = [
+		0,
+		1,
+		2,
+		10,
+		100,
+		1000,
+		10000,
+		100000,
+		1000000,
+		10000000,
+		100000000,
+		Math.PI,
+		NaN,
+	];
+	const allDeltas = new Set([...deltas, ...deltas.map((d) => -d)]);
+	for (const start of startTimes) {
+		for (const second of allDeltas) {
+			const tag = `${start}: ${second}`;
+			const pld = new PLDate(start);
+			pld.second = second;
+			const jsd = new Date((start - PLDate.UNIX_EPOCH) * 1000);
+			jsd.setUTCMilliseconds(Math.floor(second * 1000) || 0);
+			assertEquals(pld.toISOString(), jsd.toISOString(), tag);
+		}
 	}
 });
 
