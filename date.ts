@@ -48,14 +48,14 @@ function getYMD(
 	if (z < 0) {
 		do {
 			x = -(y--) % 400n;
-			m = +!(3n & x || (x && !(x % 100n)));
+			m = +!(x & 3n || (x && !(x % 100n)));
 			z += m ? 366n : 365n;
 		} while (z < 0);
 	} else {
 		for (let d = 365n; z >= d;) {
 			z -= d;
 			x = (++y + 1n) % 400n;
-			m = +!(3n & x || (x && !(x % 100n)));
+			m = +!(x & 3n || (x && !(x % 100n)));
 			d = m ? 366n : 365n;
 		}
 	}
