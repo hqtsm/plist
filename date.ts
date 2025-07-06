@@ -221,12 +221,33 @@ export class PLDate {
 	}
 
 	/**
+	 * Set day.
+	 *
+	 * @param day Day.
+	 */
+	public set day(day: number) {
+		const { time } = this;
+		getYMD(time, null, null, D);
+		this.time = time + ((+day || 0) - (day % 1 || 0) - D[0]) * 86400;
+	}
+
+	/**
 	 * Get hour.
 	 *
 	 * @returns Hour.
 	 */
 	public get hour(): number {
 		return getH(this.time);
+	}
+
+	/**
+	 * Set hour.
+	 *
+	 * @param hour Hour.
+	 */
+	public set hour(hour: number) {
+		const { time } = this;
+		this.time = time + ((+hour || 0) - (hour % 1 || 0) - getH(time)) * 3600;
 	}
 
 	/**
@@ -239,12 +260,33 @@ export class PLDate {
 	}
 
 	/**
+	 * Set minute.
+	 *
+	 * @param minute Minute.
+	 */
+	public set minute(minute: number) {
+		const { time } = this;
+		this.time = time +
+			((+minute || 0) - (minute % 1 || 0) - getM(time)) * 60;
+	}
+
+	/**
 	 * Get second.
 	 *
 	 * @returns Second.
 	 */
 	public get second(): number {
 		return getS(this.time);
+	}
+
+	/**
+	 * Set second.
+	 *
+	 * @param second Second.
+	 */
+	public set second(second: number) {
+		const { time } = this;
+		this.time = time + (+second || 0) - getS(time);
 	}
 
 	/**
@@ -303,6 +345,16 @@ export class PLDate {
 	public static ISO(time: number): string {
 		return iso(time);
 	}
+
+	/**
+	 * Parse ISO format to date time.
+	 *
+	 * @param date ISO date.
+	 * @returns Date time.
+	 */
+	// public static parse(date: string): number {
+	// 	return 0;
+	// }
 
 	/**
 	 * Date time for the UNIX epoch.
