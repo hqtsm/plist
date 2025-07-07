@@ -150,6 +150,23 @@ Deno.test('is type', () => {
 	}
 });
 
+Deno.test('set year', () => {
+	const deltas = [
+		...(new Array(800)).fill(0).map((_, i) => i),
+		Math.PI,
+		NaN,
+	];
+	for (const start of startTimes) {
+		for (const year of new Set([...deltas, ...deltas.map((d) => -d)])) {
+			const pld = new PLDate(start);
+			pld.year = year;
+			const jsd = new Date((start - PLDate.UNIX_EPOCH) * 1000);
+			jsd.setUTCFullYear(year || 0);
+			assertEquals(pld.toISOString(), jsd.toISOString());
+		}
+	}
+});
+
 Deno.test('set month', () => {
 	const deltas = [
 		...(new Array(5000)).fill(0).map((_, i) => i),

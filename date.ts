@@ -262,6 +262,25 @@ export class PLDate {
 	}
 
 	/**
+	 * Set year.
+	 *
+	 * @param year Year.
+	 */
+	public set year(year: number) {
+		const { time } = this;
+		year = (+year || 0) - (year % 1 || 0);
+		getYMD(time, null, M, D);
+		this.time = getTime(
+			year,
+			M[0],
+			D[0],
+			getH(time),
+			getM(time),
+			getS(time),
+		);
+	}
+
+	/**
 	 * Get month.
 	 *
 	 * @returns Month.
