@@ -208,14 +208,23 @@ function getTime(
 			r += (x & 3n || (x && !(x % 100n))) ? 365 : 366;
 		}
 	}
-	r += DBM[month] + day - 1;
-	if (month > 2) {
-		x = (++y < 0 ? -y : y) % 400n;
-		if (!(x & 3n || (x && !(x % 100n)))) {
-			r++;
-		}
-	}
-	return 86400 * r + 3600 * hour + 60 * minute + second;
+	return (
+		86400 * (
+				r +
+				DBM[month] + day + (
+					month > 2 &&
+						(
+							!((x = (++y < 0 ? -y : y) % 400n) & 3n ||
+								(x && !(x % 100n)))
+						)
+						? 0
+						: -1
+				)
+			) +
+		3600 * hour +
+		60 * minute +
+		second
+	);
 }
 
 /**
