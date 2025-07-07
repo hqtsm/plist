@@ -189,16 +189,15 @@ function getTime(
 	minute: number,
 	second: number,
 ): number {
-	if (!month) {
+	let x;
+	if (month > 12) {
+		x = month % 12;
+		year += (month - x) / 12;
+		month = x;
+	} else if (!month) {
 		month = 12;
 		year--;
-	} else {
-		while (month > 12) {
-			month -= 12;
-			year++;
-		}
 	}
-	let x;
 	let y = BigInt.asIntN(64, BigInt(year - 2001));
 	let z = y / 400n;
 	let time = Number(BigInt.asIntN(64, z * 146097n));
