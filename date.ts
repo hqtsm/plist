@@ -189,14 +189,19 @@ function getTime(
 	minute: number,
 	second: number,
 ): number {
+	// Roll months into years.
 	let r;
 	let x: number | bigint = (month > 12)
 		? (r = month % 12, (month - (month = r)) / 12)
 		: (month ? 0 : (month = 12, -1));
 	let y = BigInt.asIntN(64, BigInt(year + x - 2001));
+
+	// Years of full 400 year cycles, and the remaining days.
 	let z = y / 400n;
 	r = Number(BigInt.asIntN(64, z * 146097n));
 	y -= z * 400n;
+
+	// Remaining years of days.
 	if (y < 0) {
 		for (z = y; z;) {
 			x = -(++z) % 400n;
@@ -208,6 +213,8 @@ function getTime(
 			r += (x & 3n || (x && !(x % 100n))) ? 365 : 366;
 		}
 	}
+
+	// Remaining months of days and add all together.
 	return (
 		86400 * (
 				r +
