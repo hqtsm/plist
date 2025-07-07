@@ -125,7 +125,7 @@ function getYMD(
  */
 function getH(time: number): number {
 	time = Math.floor(time / 3600);
-	return Math.floor(time - Math.floor(time / 24) * 24) | 0;
+	return (time - Math.floor(time / 24) * 24) | 0;
 }
 
 /**
@@ -136,7 +136,7 @@ function getH(time: number): number {
  */
 function getM(time: number): number {
 	time = Math.floor(time / 60);
-	return Math.floor(time - Math.floor(time / 60) * 60) | 0;
+	return (time - Math.floor(time / 60) * 60) | 0;
 }
 
 /**
