@@ -137,6 +137,58 @@ Deno.test('parse', () => {
 	assertEquals(PLDate.parse(''), NaN);
 });
 
+Deno.test('parse second over', () => {
+	const date = new PLDate();
+
+	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
+	date.second = 60;
+	assertEquals(date.time, PLDate.parse('2004-01-01T00:00:60.000Z'));
+
+	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
+	date.second = 99;
+	assertEquals(date.time, PLDate.parse('2004-01-01T00:00:99.000Z'));
+});
+
+Deno.test('parse minute over', () => {
+	const date = new PLDate();
+
+	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
+	date.minute = 60;
+	assertEquals(date.time, PLDate.parse('2004-01-01T00:60:00.000Z'));
+
+	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
+	date.minute = 99;
+	assertEquals(date.time, PLDate.parse('2004-01-01T00:99:00.000Z'));
+});
+
+Deno.test('parse hour over', () => {
+	const date = new PLDate();
+
+	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
+	date.hour = 60;
+	assertEquals(date.time, PLDate.parse('2004-01-01T60:00:00.000Z'));
+
+	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
+	date.hour = 99;
+	assertEquals(date.time, PLDate.parse('2004-01-01T99:00:00.000Z'));
+});
+
+Deno.test('parse day under over', () => {
+	const date = new PLDate();
+
+	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
+	date.day = 0;
+	assertEquals(PLDate.parse('2004-01-00T00:00:00.000Z'), date.time);
+
+	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
+	date.day = 32;
+	assertEquals(PLDate.parse('2004-01-32T00:00:00.000Z'), date.time);
+
+	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
+	date.day = 99;
+	assertEquals(PLDate.parse('2004-01-99T00:00:00.000Z'), date.time);
+});
+
 Deno.test('is type', () => {
 	assertEquals(PLDate.is(new PLDate()), true);
 	assertEquals(PLDate.is(new PLReal()), false);
