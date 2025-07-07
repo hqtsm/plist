@@ -12,6 +12,7 @@ const Y: [number] = [0];
 const M: [number] = [0];
 const D: [number] = [0];
 const DBM = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+const rISO = /^([-+]?\d+)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d(\.\d+)?)Z$/;
 const UNIX_EPOCH = -978307200;
 
 const TYPE = 'PLDate' as const;
@@ -167,6 +168,54 @@ function iso(time: number): string {
 	const ss = `${time = (x = getS(time)) | 0}`.padStart(2, '0');
 	const f = `${(x * 1000 | 0) - time * 1000}`.padStart(3, '0');
 	return `${YY}-${MM}-${DD}T${hh}:${mm}:${ss}.${f}Z`;
+}
+
+/**
+ * Create time ISO values, only the year can be negative.
+ *
+ * @param year Year.
+ * @param month Month.
+ * @param day Day.
+ * @param hour Hour.
+ * @param minute Minute.
+ * @param second Second.
+ * @returns Time.
+ */
+function getTime(
+	year: number,
+	month: number,
+	day: number,
+	hour: number,
+	minute: number,
+	second: number,
+): number {
+	// TODO: Wrap arounds.
+	let x;
+	let y = BigInt.asIntN(64, BigInt(year - 2001));
+	let z = y / 400n;
+	let time = Number(BigInt.asIntN(64, z * 146097n));
+	y -= z * 400n;
+	if (y < 0) {
+		for (z = y; z;) {
+			x = -(++z) % 400n;
+			time -= (x & 3n || (x && !(x % 100n))) ? 365 : 366;
+		}
+	} else {
+		for (z = 0n; z < y;) {
+			x = ++z % 400n;
+			time += (x & 3n || (x && !(x % 100n))) ? 365 : 366;
+		}
+	}
+	time += DBM[month] + day - 1;
+	if (month > 2) {
+		x = (++y < 0 ? -y : y) % 400n;
+		if (!(x & 3n || (x && !(x % 100n)))) {
+			time++;
+		}
+	}
+	time *= 86400;
+	time += 3600 * hour + 60 * minute + second;
+	return time;
 }
 
 /**
@@ -392,9 +441,10 @@ export class PLDate {
 	 * @param date ISO date.
 	 * @returns Date time.
 	 */
-	// public static parse(date: string): number {
-	// 	return 0;
-	// }
+	public static parse(date: string): number {
+		const m = date.match(rISO);
+		return m ? getTime(+m[1] | 0, +m[2], +m[3], +m[4], +m[5], +m[6]) : NaN;
+	}
 
 	/**
 	 * Date time for the UNIX epoch.

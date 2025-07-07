@@ -10,6 +10,8 @@ import { PLReal } from './real.ts';
 
 const rISO = /^([-+]?\d+)-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}\.\d{3})Z$/;
 
+const timePosInf = +'67767975241660800';
+const timeNegInf = +'64074349346284800';
 const sampleISO = [
 	['2001-01-01T00:00:00.000Z', 0.0],
 	['2001-01-01T00:00:01.000Z', 1.0],
@@ -109,13 +111,6 @@ Deno.test('to ISO', () => {
 	);
 });
 
-Deno.test('from date', () => {
-	assertEquals(
-		PLDate.from(new Date(0)).toDate().toISOString(),
-		new Date(0).toISOString(),
-	);
-});
-
 Deno.test('now', () => {
 	const befUMS = Date.now();
 	const now = PLDate.now();
@@ -124,6 +119,22 @@ Deno.test('now', () => {
 	const nowUMS = (now - PLDate.UNIX_EPOCH) * 1000;
 	assertGreaterOrEqual(nowUMS, befUMS);
 	assertLessOrEqual(nowUMS, aftUMS);
+});
+
+Deno.test('from date', () => {
+	assertEquals(
+		PLDate.from(new Date(0)).toDate().toISOString(),
+		new Date(0).toISOString(),
+	);
+});
+
+Deno.test('parse', () => {
+	assertEquals(PLDate.parse('2001-01-01T00:00:00.000Z'), 0);
+	assertEquals(PLDate.parse(new Date(0).toISOString()), PLDate.UNIX_EPOCH);
+	assertEquals(PLDate.parse('+2004-11-29T21:33:09.000Z'), 123456789);
+	assertEquals(PLDate.parse('BAD'), NaN);
+	assertEquals(PLDate.parse('1'), NaN);
+	assertEquals(PLDate.parse(''), NaN);
 });
 
 Deno.test('is type', () => {
@@ -278,6 +289,29 @@ Deno.test('time to date', () => {
 	}
 });
 
+Deno.test('date to time', () => {
+	for (const [iso, time] of sampleISO) {
+		const parsed = PLDate.parse(iso);
+		if (Number.isNaN(time)) {
+			assertStrictEquals(parsed, 0);
+			continue;
+		}
+		if (time === Infinity) {
+			assertStrictEquals(parsed, timePosInf);
+			continue;
+		}
+		if (time === -Infinity) {
+			assertStrictEquals(parsed, timeNegInf);
+			continue;
+		}
+		if (iso.endsWith('.000Z')) {
+			assertStrictEquals(parsed, Math.round(time));
+			continue;
+		}
+		assertAlmostEquals(parsed, time, 0.001);
+	}
+});
+
 Deno.test('every day 1990', () => {
 	let i = 0;
 	const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -297,6 +331,8 @@ Deno.test('every day 1990', () => {
 			assertStrictEquals(date.hour, 0);
 			assertStrictEquals(date.minute, 0);
 			assertAlmostEquals(date.second, 0);
+
+			assertEquals(PLDate.parse(iso), time);
 		}
 	}
 });
@@ -320,6 +356,8 @@ Deno.test('every day 2001', () => {
 			assertStrictEquals(date.hour, 0);
 			assertStrictEquals(date.minute, 0);
 			assertAlmostEquals(date.second, 0);
+
+			assertEquals(PLDate.parse(iso), time);
 		}
 	}
 });
@@ -343,6 +381,8 @@ Deno.test('every day 2004', () => {
 			assertStrictEquals(date.hour, 0);
 			assertStrictEquals(date.minute, 0);
 			assertAlmostEquals(date.second, 0);
+
+			assertEquals(PLDate.parse(iso), time);
 		}
 	}
 });
