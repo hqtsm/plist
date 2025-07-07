@@ -278,6 +278,29 @@ Deno.test('time to date', () => {
 	}
 });
 
+Deno.test('every day 1990', () => {
+	let i = 0;
+	const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	for (const [month, days] of months.entries()) {
+		const mm = `${month + 1}`.padStart(2, '0');
+		for (let day = 0; day < days; day++) {
+			const dd = `${day + 1}`.padStart(2, '0');
+			const iso = `1990-${mm}-${dd}T00:00:00.000Z`;
+			const time = -347155200 + 86400 * i++;
+			assertEquals(PLDate.ISO(time), iso);
+
+			const date = new PLDate(time);
+			assertEquals(date.toISOString(), iso);
+			assertStrictEquals(date.year, 1990);
+			assertStrictEquals(date.month, month + 1);
+			assertStrictEquals(date.day, day + 1);
+			assertStrictEquals(date.hour, 0);
+			assertStrictEquals(date.minute, 0);
+			assertAlmostEquals(date.second, 0);
+		}
+	}
+});
+
 Deno.test('every day 2001', () => {
 	let i = 0;
 	const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
