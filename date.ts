@@ -189,40 +189,33 @@ function getTime(
 	minute: number,
 	second: number,
 ): number {
-	let x;
-	if (month > 12) {
-		x = month % 12;
-		year += (month - x) / 12;
-		month = x;
-	} else if (!month) {
-		month = 12;
-		year--;
-	}
-	let y = BigInt.asIntN(64, BigInt(year - 2001));
+	let r;
+	let x: number | bigint = (month > 12)
+		? (r = month % 12, (month - (month = r)) / 12)
+		: (month ? 0 : (month = 12, -1));
+	let y = BigInt.asIntN(64, BigInt(year + x - 2001));
 	let z = y / 400n;
-	let time = Number(BigInt.asIntN(64, z * 146097n));
+	r = Number(BigInt.asIntN(64, z * 146097n));
 	y -= z * 400n;
 	if (y < 0) {
 		for (z = y; z;) {
 			x = -(++z) % 400n;
-			time -= (x & 3n || (x && !(x % 100n))) ? 365 : 366;
+			r -= (x & 3n || (x && !(x % 100n))) ? 365 : 366;
 		}
 	} else {
 		for (z = 0n; z < y;) {
 			x = ++z % 400n;
-			time += (x & 3n || (x && !(x % 100n))) ? 365 : 366;
+			r += (x & 3n || (x && !(x % 100n))) ? 365 : 366;
 		}
 	}
-	time += DBM[month] + day - 1;
+	r += DBM[month] + day - 1;
 	if (month > 2) {
 		x = (++y < 0 ? -y : y) % 400n;
 		if (!(x & 3n || (x && !(x % 100n)))) {
-			time++;
+			r++;
 		}
 	}
-	time *= 86400;
-	time += 3600 * hour + 60 * minute + second;
-	return time;
+	return 86400 * r + 3600 * hour + 60 * minute + second;
 }
 
 /**
