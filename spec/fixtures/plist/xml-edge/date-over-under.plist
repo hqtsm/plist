@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>month-0</key>
+	<date>2002-00-01T00:00:00Z</date>
+	<key>month-13</key>
+	<date>2002-13-01T00:00:00Z</date>
+	<key>day-0</key>
+	<date>2002-01-00T00:00:00Z</date>
+	<key>day-32</key>
+	<date>2002-01-32T00:00:00Z</date>
+	<key>hour-24</key>
+	<date>2002-01-01T24:00:00Z</date>
+	<key>minute-60</key>
+	<date>2002-01-01T00:60:00Z</date>
+	<key>second-60</key>
+	<date>2002-01-01T00:00:60Z</date>
+</dict>
+</plist>
