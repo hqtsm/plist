@@ -189,7 +189,15 @@ function getTime(
 	minute: number,
 	second: number,
 ): number {
-	// TODO: Wrap arounds.
+	if (!month) {
+		month = 12;
+		year--;
+	} else {
+		while (month > 12) {
+			month -= 12;
+			year++;
+		}
+	}
 	let x;
 	let y = BigInt.asIntN(64, BigInt(year - 2001));
 	let z = y / 400n;

@@ -189,6 +189,26 @@ Deno.test('parse day under over', () => {
 	assertEquals(PLDate.parse('2004-01-99T00:00:00.000Z'), date.time);
 });
 
+Deno.test('parse month under over', () => {
+	const date = new PLDate();
+
+	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
+	date.month = 0;
+	assertEquals(PLDate.parse('2004-00-01T00:00:00.000Z'), date.time);
+
+	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
+	date.month = 13;
+	assertEquals(PLDate.parse('2004-13-01T00:00:00.000Z'), date.time);
+
+	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
+	date.month = 25;
+	assertEquals(PLDate.parse('2004-25-01T00:00:00.000Z'), date.time);
+
+	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
+	date.month = 99;
+	assertEquals(PLDate.parse('2004-99-01T00:00:00.000Z'), date.time);
+});
+
 Deno.test('is type', () => {
 	assertEquals(PLDate.is(new PLDate()), true);
 	assertEquals(PLDate.is(new PLReal()), false);
