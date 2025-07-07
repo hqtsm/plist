@@ -11,11 +11,10 @@ let times: WeakMap<PLDate, number>;
 const Y: [number] = [0];
 const M: [number] = [0];
 const D: [number] = [0];
+const dbm = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
 const UNIX_EPOCH = -978307200;
 
 const TYPE = 'PLDate' as const;
-
-const dbm = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
 
 /**
  * Is year leap year.
