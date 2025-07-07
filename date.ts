@@ -11,7 +11,7 @@ let times: WeakMap<PLDate, number>;
 const Y: [number] = [0];
 const M: [number] = [0];
 const D: [number] = [0];
-const dbm = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+const DBM = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
 const UNIX_EPOCH = -978307200;
 
 const TYPE = 'PLDate' as const;
@@ -233,18 +233,18 @@ export class PLDate {
 		getYMD(time, Y, M);
 		let [y] = Y;
 		const [m] = M;
-		const days = dbm[m] + (m > 2 ? leap(y) : 0);
+		const days = DBM[m] + (m > 2 ? leap(y) : 0);
 		let d = 0;
 		if (month > 0) {
 			for (; month > 12; month -= 12) {
 				d += 365 + leap(y++);
 			}
-			d += dbm[month] + (month > 2 ? leap(y) : 0);
+			d += DBM[month] + (month > 2 ? leap(y) : 0);
 		} else {
 			for (; month <= -12; month += 12) {
 				d -= 365 + leap(--y);
 			}
-			d -= 365 - dbm[month += 12] + (month > 2 ? 0 : leap(y - 1));
+			d -= 365 - DBM[month += 12] + (month > 2 ? 0 : leap(y - 1));
 		}
 		this.time = time + (d - days) * 86400;
 	}
