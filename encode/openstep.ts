@@ -284,12 +284,12 @@ export function encodeOpenStep(
 				size += 2;
 			}
 		} else if (PLArray.is(e)) {
-			size += 2;
 			if ((x = e.length)) {
 				if (ancestors.has(e)) {
 					throw new TypeError('Circular reference');
 				}
-				size += depth++ * indentSize + (depth * indentSize + 2) * x++;
+				size += 2 + depth++ * indentSize +
+					(depth * indentSize + 2) * x++;
 				ancestors.add(e);
 				stack.push(e);
 				q.length = l += x;
@@ -298,6 +298,8 @@ export function encodeOpenStep(
 					q[x++] = r;
 				}
 				q[x] = close;
+			} else {
+				size += 2;
 			}
 		} else {
 			throw new TypeError(`Invalid OpenStep value type: ${e}`);
