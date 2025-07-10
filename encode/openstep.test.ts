@@ -19,10 +19,8 @@ function diff(a: Uint8Array, b: Uint8Array): number {
 
 Deno.test('Default format', () => {
 	assertEquals(
-		new Uint8Array(encodeOpenStep(new PLString())),
-		new Uint8Array(
-			encodeOpenStep(new PLString(), { format: FORMAT_OPENSTEP }),
-		),
+		encodeOpenStep(new PLString()),
+		encodeOpenStep(new PLString(), { format: FORMAT_OPENSTEP }),
 	);
 });
 
