@@ -26,7 +26,7 @@ const b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 /**
  * Public doctype.
  */
-export const XML_DOCTYPE_PUBLIC =
+export const XML_DOCTYPE_PUBLIC_V1_0 =
 	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
 
 /**
@@ -212,14 +212,14 @@ export interface EncodeXmlOptions {
 	/**
 	 * XML doctype.
 	 *
-	 * @default XML_PUBLIC_DOCTYPE
+	 * @default string Matching format.
 	 */
 	doctype?: string;
 
 	/**
-	 * Plist version.
+	 * Plist version attribute value.
 	 *
-	 * @default '1.0'
+	 * @default string Matching format.
 	 */
 	version?: string;
 }
@@ -236,8 +236,8 @@ export function encodeXml(
 	{
 		format = FORMAT_XML_V1_0,
 		indent = '\t',
-		doctype = XML_DOCTYPE_PUBLIC,
-		version = '1.0',
+		doctype,
+		version,
 	}: EncodeXmlOptions = {},
 ): Uint8Array {
 	let depth = 0;
@@ -251,6 +251,8 @@ export function encodeXml(
 
 	switch (format) {
 		case FORMAT_XML_V1_0: {
+			doctype ??= XML_DOCTYPE_PUBLIC_V1_0;
+			version ??= '1.0';
 			break;
 		}
 		default: {
