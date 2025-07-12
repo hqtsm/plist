@@ -31,9 +31,15 @@ export const XML_DOCTYPE_PUBLIC_V1_0 =
 
 /**
  * System doctype.
+ * Known to pair with version '0.9'.
  */
 export const XML_DOCTYPE_SYSTEM =
 	'<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">';
+
+/**
+ * XML version.
+ */
+export const XML_VERSION_V1_0 = '1.0';
 
 /**
  * Calculate string encode size.
@@ -252,7 +258,7 @@ export function encodeXml(
 	switch (format) {
 		case FORMAT_XML_V1_0: {
 			doctype ??= XML_DOCTYPE_PUBLIC_V1_0;
-			version ??= '1.0';
+			version ??= XML_VERSION_V1_0;
 			break;
 		}
 		default: {
