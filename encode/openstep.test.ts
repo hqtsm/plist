@@ -58,7 +58,7 @@ Deno.test('Circular reference: array', () => {
 	);
 });
 
-Deno.test('Circular reference:  dict', () => {
+Deno.test('Circular reference: dict', () => {
 	const dict = new PLDict();
 	dict.set(new PLString('A'), new PLArray([dict]));
 	assertThrows(
