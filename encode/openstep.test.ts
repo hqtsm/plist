@@ -32,7 +32,7 @@ Deno.test('Invalid format', () => {
 			});
 		},
 		RangeError,
-		`Unknown format: UNKNOWN`,
+		'Invalid format',
 	);
 });
 
@@ -42,7 +42,7 @@ Deno.test('Invalid strings root', () => {
 			encodeOpenStep(new PLString(), { format: FORMAT_STRINGS });
 		},
 		TypeError,
-		`Invalid strings root type: ${new PLString()}`,
+		'Invalid strings root type',
 	);
 });
 
@@ -131,7 +131,7 @@ Deno.test('Invalid indent', () => {
 			encodeOpenStep(new PLString(), { indent: '\n' });
 		},
 		RangeError,
-		'Invalid indent: "\\n"',
+		'Invalid indent',
 	);
 });
 
@@ -141,7 +141,7 @@ Deno.test('Invalid type', () => {
 			encodeOpenStep({} as unknown as PLType);
 		},
 		TypeError,
-		`Invalid OpenStep value type: ${{}}`,
+		'Invalid OpenStep value type',
 	);
 });
 
@@ -159,7 +159,7 @@ Deno.test('Invalid quote', () => {
 			encodeOpenStep(new PLString(), { quote: '`' as "'" });
 		},
 		RangeError,
-		'Invalid quote: `',
+		'Invalid quote',
 	);
 });
 

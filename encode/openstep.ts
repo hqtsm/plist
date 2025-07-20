@@ -225,19 +225,19 @@ export function encodeOpenStep(
 				depth--;
 				break;
 			}
-			throw new TypeError(`Invalid strings root type: ${plist}`);
+			throw new TypeError('Invalid strings root type');
 		}
 		default: {
-			throw new RangeError(`Unknown format: ${format}`);
+			throw new RangeError('Invalid format');
 		}
 	}
 
 	if (quote !== '"' && quote !== "'") {
-		throw new RangeError(`Invalid quote: ${quote}`);
+		throw new RangeError('Invalid quote');
 	}
 
 	if (!rIndent.test(indent)) {
-		throw new RangeError(`Invalid indent: ${JSON.stringify(indent)}`);
+		throw new RangeError('Invalid indent');
 	}
 
 	const qchar = quote.charCodeAt(0) as 34 | 39;
@@ -302,7 +302,7 @@ export function encodeOpenStep(
 				size += 2;
 			}
 		} else {
-			throw new TypeError(`Invalid OpenStep value type: ${e}`);
+			throw new TypeError('Invalid OpenStep value type');
 		}
 	} while (i < l);
 

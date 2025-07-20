@@ -30,7 +30,7 @@ Deno.test('Invalid format', () => {
 			});
 		},
 		RangeError,
-		`Unknown format: UNKNOWN`,
+		'Invalid format',
 	);
 });
 
@@ -64,7 +64,7 @@ Deno.test('Invalid indent', () => {
 			encodeXml(new PLString(), { indent: '\n' });
 		},
 		RangeError,
-		'Invalid indent: "\\n"',
+		'Invalid indent',
 	);
 });
 
@@ -74,7 +74,7 @@ Deno.test('Invalid type', () => {
 			encodeXml({} as unknown as PLType);
 		},
 		TypeError,
-		`Invalid XML value type: ${{}}`,
+		'Invalid XML value type',
 	);
 });
 

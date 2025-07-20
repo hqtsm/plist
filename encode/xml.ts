@@ -262,12 +262,12 @@ export function encodeXml(
 			break;
 		}
 		default: {
-			throw new RangeError(`Unknown format: ${format}`);
+			throw new RangeError('Invalid format');
 		}
 	}
 
 	if (!rIndent.test(indent)) {
-		throw new RangeError(`Invalid indent: ${JSON.stringify(indent)}`);
+		throw new RangeError('Invalid indent');
 	}
 
 	if (doctype) {
@@ -343,7 +343,7 @@ export function encodeXml(
 				size += 8;
 			}
 		} else {
-			throw new TypeError(`Invalid XML value type: ${e}`);
+			throw new TypeError('Invalid XML value type');
 		}
 	} while (i < l);
 
