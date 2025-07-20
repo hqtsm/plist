@@ -221,6 +221,30 @@ Deno.test('spec: array-256', async () => {
 	);
 });
 
+Deno.test('spec: array-65534', async () => {
+	const array = new PLArray();
+	for (let i = 0; i < 65534; i++) {
+		array.push(new PLBoolean(!!(i % 2)));
+	}
+	const encode = encodeXml(array);
+	assertEquals(
+		encode,
+		await fixturePlist('array-65534', 'xml'),
+	);
+});
+
+Deno.test('spec: array-65535', async () => {
+	const array = new PLArray();
+	for (let i = 0; i < 65535; i++) {
+		array.push(new PLBoolean(!!(i % 2)));
+	}
+	const encode = encodeXml(array);
+	assertEquals(
+		encode,
+		await fixturePlist('array-65535', 'xml'),
+	);
+});
+
 Deno.test('spec: array-65536', async () => {
 	const array = new PLArray();
 	for (let i = 0; i < 65536; i++) {
