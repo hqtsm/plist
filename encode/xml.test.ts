@@ -312,6 +312,55 @@ Deno.test('spec: dict-empty', async () => {
 	);
 });
 
+Deno.test('spec: dict-nesting', async () => {
+	const encode = encodeXml(
+		new PLDict([
+			[
+				new PLString('A'),
+				new PLDict([
+					[
+						new PLString('AA'),
+						new PLDict([
+							[new PLString('AAA'), new PLString('aaa')],
+							[new PLString('AAB'), new PLString('aab')],
+						]),
+					],
+					[
+						new PLString('AB'),
+						new PLDict([
+							[new PLString('ABA'), new PLString('aba')],
+							[new PLString('ABB'), new PLString('abb')],
+						]),
+					],
+				]),
+			],
+			[
+				new PLString('B'),
+				new PLDict([
+					[
+						new PLString('BA'),
+						new PLDict([
+							[new PLString('BAA'), new PLString('baa')],
+							[new PLString('BAB'), new PLString('bab')],
+						]),
+					],
+					[
+						new PLString('BB'),
+						new PLDict([
+							[new PLString('BBA'), new PLString('bba')],
+							[new PLString('BBB'), new PLString('bbb')],
+						]),
+					],
+				]),
+			],
+		]),
+	);
+	assertEquals(
+		encode,
+		await fixturePlist('dict-nesting', 'xml'),
+	);
+});
+
 Deno.test('spec: dict-chars', async () => {
 	const dict = new PLDict();
 	for (let i = 0; i <= 0xffff; i++) {
