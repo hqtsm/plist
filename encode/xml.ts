@@ -105,7 +105,7 @@ function stringEncode(
 		if ((chr = str.charCodeAt(i++)) < 128) {
 			if (encode) {
 				if (chr === 38) {
-					dest[start++] = chr;
+					dest[start++] = 38;
 					dest[start++] = 97;
 					dest[start++] = 109;
 					dest[start++] = 112;
