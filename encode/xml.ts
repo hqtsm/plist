@@ -24,7 +24,7 @@ const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>';
 const b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 /**
- * Public doctype.
+ * Public doctype 1.0.
  */
 export const XML_DOCTYPE_PUBLIC_V1_0 =
 	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
@@ -37,7 +37,7 @@ export const XML_DOCTYPE_SYSTEM =
 	'<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">';
 
 /**
- * XML version.
+ * XML version 1.0.
  */
 export const XML_VERSION_V1_0 = '1.0';
 
