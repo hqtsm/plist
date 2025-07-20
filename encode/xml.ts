@@ -218,14 +218,14 @@ export interface EncodeXmlOptions {
 	/**
 	 * XML doctype.
 	 *
-	 * @default string Matching format.
+	 * @default string Matches format.
 	 */
 	doctype?: string;
 
 	/**
 	 * Plist version attribute value.
 	 *
-	 * @default string Matching format.
+	 * @default string Matches format.
 	 */
 	version?: string;
 }
