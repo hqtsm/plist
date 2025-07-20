@@ -324,10 +324,7 @@ Deno.test('spec: dict-chars', async () => {
 	{
 		const encode = encodeOpenStep(dict);
 		assertEquals(
-			diff(
-				encode,
-				await fixturePlist('dict-chars', 'openstep'),
-			),
+			diff(encode, await fixturePlist('dict-chars', 'openstep')),
 			-1,
 		);
 	}
@@ -336,10 +333,7 @@ Deno.test('spec: dict-chars', async () => {
 			format: FORMAT_STRINGS,
 		});
 		assertEquals(
-			diff(
-				encode,
-				await fixturePlist('dict-chars', 'strings'),
-			),
+			diff(encode, await fixturePlist('dict-chars', 'strings')),
 			-1,
 		);
 	}
@@ -443,10 +437,7 @@ Deno.test('spec: string-chars', async () => {
 	{
 		const encode = encodeOpenStep(dict);
 		assertEquals(
-			diff(
-				encode,
-				await fixturePlist('string-chars', 'openstep'),
-			),
+			diff(encode, await fixturePlist('string-chars', 'openstep')),
 			-1,
 		);
 	}
@@ -455,10 +446,7 @@ Deno.test('spec: string-chars', async () => {
 			format: FORMAT_STRINGS,
 		});
 		assertEquals(
-			diff(
-				encode,
-				await fixturePlist('string-chars', 'strings'),
-			),
+			diff(encode, await fixturePlist('string-chars', 'strings')),
 			-1,
 		);
 	}

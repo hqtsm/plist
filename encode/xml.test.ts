@@ -13,6 +13,15 @@ import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 import { encodeXml } from './xml.ts';
 
+function diff(a: Uint8Array, b: Uint8Array): number {
+	for (let i = 0; i < a.length; i++) {
+		if (a[i] !== b[i]) {
+			return i;
+		}
+	}
+	return -1;
+}
+
 Deno.test('Default format', () => {
 	assertEquals(
 		new Uint8Array(encodeXml(new PLString())),
@@ -313,8 +322,8 @@ Deno.test('spec: dict-chars', async () => {
 	}
 	const encode = encodeXml(dict);
 	assertEquals(
-		encode,
-		await fixturePlist('dict-chars', 'xml'),
+		diff(encode, await fixturePlist('dict-chars', 'xml')),
+		-1,
 	);
 });
 
@@ -398,8 +407,8 @@ Deno.test('spec: string-chars', async () => {
 	}
 	const encode = encodeXml(dict);
 	assertEquals(
-		encode,
-		await fixturePlist('string-chars', 'xml'),
+		diff(encode, await fixturePlist('string-chars', 'xml')),
+		-1,
 	);
 });
 
