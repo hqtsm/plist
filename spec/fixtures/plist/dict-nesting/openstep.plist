@@ -1,0 +1,22 @@
+{
+	A = {
+		AA = {
+			AAA = aaa;
+			AAB = aab;
+		};
+		AB = {
+			ABA = aba;
+			ABB = abb;
+		};
+	};
+	B = {
+		BA = {
+			BAA = baa;
+			BAB = bab;
+		};
+		BB = {
+			BBA = bba;
+			BBB = bbb;
+		};
+	};
+}
