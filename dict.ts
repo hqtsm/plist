@@ -9,13 +9,13 @@ import type { PLType } from './type.ts';
 
 let maps: WeakMap<PLDict, Map<PLString, PLType>>;
 
-const TYPE = 'PLDict' as const;
+export const PLTYPE_DICT = 'PLDict' as const;
 
 /**
  * Property list dict type.
  */
 export class PLDict<T extends PLType = PLType> {
-	declare public readonly [Symbol.toStringTag]: typeof TYPE;
+	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_DICT;
 
 	/**
 	 * Create property list dict reference.
@@ -187,12 +187,12 @@ export class PLDict<T extends PLType = PLType> {
 	 * @returns Is dict type.
 	 */
 	public static is(arg: unknown): arg is PLDict {
-		return (arg as PLType | null)?.[Symbol.toStringTag] === TYPE;
+		return (arg as PLType | null)?.[Symbol.toStringTag] === PLTYPE_DICT;
 	}
 
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: TYPE,
+			value: PLTYPE_DICT,
 		});
 	}
 }

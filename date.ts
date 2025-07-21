@@ -15,7 +15,7 @@ const DBM = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
 const rISO = /^([-+]?\d+)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d(\.\d+)?)Z$/;
 const UNIX_EPOCH = -978307200;
 
-const TYPE = 'PLDate' as const;
+export const PLTYPE_DATE = 'PLDate' as const;
 
 /**
  * Is year leap year.
@@ -238,7 +238,7 @@ function getTime(
  * Property list date type.
  */
 export class PLDate {
-	declare public readonly [Symbol.toStringTag]: typeof TYPE;
+	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_DATE;
 
 	/**
 	 * Create property list date reference.
@@ -438,7 +438,7 @@ export class PLDate {
 	 * @returns Is date type.
 	 */
 	public static is(arg: unknown): arg is PLDate {
-		return (arg as PLType | null)?.[Symbol.toStringTag] === TYPE;
+		return (arg as PLType | null)?.[Symbol.toStringTag] === PLTYPE_DATE;
 	}
 
 	/**
@@ -490,7 +490,7 @@ export class PLDate {
 
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: TYPE,
+			value: PLTYPE_DATE,
 		});
 		Object.defineProperty(this, 'UNIX_EPOCH', { value: UNIX_EPOCH });
 	}

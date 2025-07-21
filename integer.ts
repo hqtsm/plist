@@ -11,13 +11,13 @@ let values: WeakMap<PLInteger, bigint>;
 const MAX_VALUE = 0xffffffffffffffffn;
 const MIN_VALUE = -0x8000000000000000n;
 
-const TYPE = 'PLInteger' as const;
+export const PLTYPE_INTEGER = 'PLInteger' as const;
 
 /**
  * Property list integer type.
  */
 export class PLInteger {
-	declare public readonly [Symbol.toStringTag]: typeof TYPE;
+	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_INTEGER;
 
 	/**
 	 * Create property list integer reference.
@@ -58,7 +58,7 @@ export class PLInteger {
 	 * @returns Is integer type.
 	 */
 	public static is(arg: unknown): arg is PLInteger {
-		return (arg as PLType | null)?.[Symbol.toStringTag] === TYPE;
+		return (arg as PLType | null)?.[Symbol.toStringTag] === PLTYPE_INTEGER;
 	}
 
 	/**
@@ -73,7 +73,7 @@ export class PLInteger {
 
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: TYPE,
+			value: PLTYPE_INTEGER,
 		});
 		Object.defineProperty(this, 'MAX_VALUE', { value: MAX_VALUE });
 		Object.defineProperty(this, 'MIN_VALUE', { value: MIN_VALUE });

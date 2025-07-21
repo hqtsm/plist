@@ -8,13 +8,13 @@ import type { PLType } from './type.ts';
 
 let values: WeakMap<PLBoolean, boolean>;
 
-const TYPE = 'PLBoolean' as const;
+export const PLTYPE_BOOLEAN = 'PLBoolean' as const;
 
 /**
  * Property list boolean type.
  */
 export class PLBoolean {
-	declare public readonly [Symbol.toStringTag]: typeof TYPE;
+	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_BOOLEAN;
 
 	/**
 	 * Create property list boolean reference.
@@ -50,12 +50,12 @@ export class PLBoolean {
 	 * @returns Is boolean type.
 	 */
 	public static is(arg: unknown): arg is PLBoolean {
-		return (arg as PLType | null)?.[Symbol.toStringTag] === TYPE;
+		return (arg as PLType | null)?.[Symbol.toStringTag] === PLTYPE_BOOLEAN;
 	}
 
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: TYPE,
+			value: PLTYPE_BOOLEAN,
 		});
 	}
 }
