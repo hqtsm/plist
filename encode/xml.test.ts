@@ -336,6 +336,17 @@ Deno.test('spec: dict-empty', async () => {
 	);
 });
 
+Deno.test('spec: dict-empties', async () => {
+	const dict = new PLDict();
+	dict.set(new PLString('array'), new PLArray());
+	dict.set(new PLString('dict'), new PLDict());
+	const encode = encodeXml(dict);
+	assertEquals(
+		encode,
+		await fixturePlist('dict-empties', 'xml'),
+	);
+});
+
 Deno.test('spec: dict-nesting', async () => {
 	const encode = encodeXml(
 		new PLDict([
