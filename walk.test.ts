@@ -23,7 +23,7 @@ function parentsDepths(
 	const parents = new Map<PLType, WalkParent>();
 	const depths = new Map<PLType, number>();
 	const visitors = {
-		default(visit: PLType, parent: WalkParent, depth: number): void {
+		default(visit: PLType, depth: number, parent: WalkParent): void {
 			parents.set(visit, parent);
 			depths.set(visit, depth);
 		},
@@ -51,7 +51,7 @@ Deno.test('walk: key: default', () => {
 	const keys: (number | string)[] = [];
 	walk(plist, {
 		key: {
-			default(visit, parent, depth): void {
+			default(visit, depth, parent): void {
 				if (typeof visit === 'number') {
 					keys.push(visit);
 					assertEquals(parent, plist);
@@ -76,10 +76,10 @@ Deno.test('walk: key: array', () => {
 	const keys: number[] = [];
 	walk(plist, {
 		key: {
-			[PLTYPE_ARRAY](visit, parent, depth): void {
+			[PLTYPE_ARRAY](visit, depth, parent): void {
 				keys.push(visit);
-				assertEquals(parent, plist);
 				assertEquals(depth, 1);
+				assertEquals(parent, plist);
 			},
 		},
 	});
@@ -95,10 +95,10 @@ Deno.test('walk: key: dict', () => {
 	const keys: string[] = [];
 	walk(plist, {
 		key: {
-			[PLTYPE_DICT](visit, parent, depth): void {
+			[PLTYPE_DICT](visit, depth, parent): void {
 				keys.push(visit.value);
-				assertEquals(parent, plist);
 				assertEquals(depth, 1);
+				assertEquals(parent, plist);
 			},
 		},
 	});
@@ -117,23 +117,23 @@ Deno.test('walk: leave: default', () => {
 		[new PLString('Z'), new PLString('z')],
 	]);
 	const plist = new PLArray([dictABC, dictXYZ]);
-	const visitied: [PLArray | PLDict, WalkParent, number][] = [];
+	const visitied: [PLArray | PLDict, number, WalkParent][] = [];
 	walk(plist, {
 		leave: {
-			default(visit, parent, depth): void {
-				visitied.push([visit, parent, depth]);
+			default(visit, depth, parent): void {
+				visitied.push([visit, depth, parent]);
 			},
 		},
 	});
-	const expected: [PLArray | PLDict, WalkParent, number][] = [
-		[dictABC, plist, 1],
-		[dictXYZ, plist, 1],
-		[plist, null, 0],
+	const expected: [PLArray | PLDict, number, WalkParent][] = [
+		[dictABC, 1, plist],
+		[dictXYZ, 1, plist],
+		[plist, 0, null],
 	];
 	for (let i = 0; i < expected.length; i++) {
 		assertStrictEquals(visitied[i][0], expected[i][0], `[${i}]: visit`);
-		assertStrictEquals(visitied[i][1], expected[i][1], `[${i}]: parent`);
-		assertStrictEquals(visitied[i][2], expected[i][2], `[${i}]: depth`);
+		assertStrictEquals(visitied[i][1], expected[i][1], `[${i}]: depth`);
+		assertStrictEquals(visitied[i][2], expected[i][2], `[${i}]: parent`);
 	}
 	assertEquals(visitied.length, expected.length);
 });
@@ -153,11 +153,11 @@ Deno.test('walk: leave: array', () => {
 	plist.push(new PLInteger(1n));
 	walk(plist, {
 		leave: {
-			[PLTYPE_ARRAY](visit, parent, depth): void {
+			[PLTYPE_ARRAY](visit, depth, parent): void {
 				leaves++;
 				assertStrictEquals(visit, plist);
-				assertEquals(parent, null);
 				assertEquals(depth, 0);
+				assertEquals(parent, null);
 			},
 		},
 	});
@@ -179,11 +179,11 @@ Deno.test('walk: leave: dict', () => {
 	plist.set(new PLString('A'), new PLString('a'));
 	walk(plist, {
 		leave: {
-			[PLTYPE_DICT](visit, parent, depth): void {
+			[PLTYPE_DICT](visit, depth, parent): void {
 				leaves++;
 				assertStrictEquals(visit, plist);
-				assertEquals(parent, null);
 				assertEquals(depth, 0);
+				assertEquals(parent, null);
 			},
 		},
 	});
@@ -201,16 +201,16 @@ Deno.test('walk: value: default', () => {
 	plist.push(new PLString());
 	plist.push(new PLUID());
 
-	const visitied: [PLType, WalkParent, number][] = [];
+	const visitied: [PLType, number, WalkParent][] = [];
 	walk(plist, {
 		enter: {
-			default(visit, parent, depth): void {
-				visitied.push([visit, parent, depth]);
+			default(visit, depth, parent): void {
+				visitied.push([visit, depth, parent]);
 			},
 		},
 		value: {
-			default(visit, parent, depth): void {
-				visitied.push([visit, parent, depth]);
+			default(visit, depth, parent): void {
+				visitied.push([visit, depth, parent]);
 			},
 		},
 	});
@@ -218,8 +218,8 @@ Deno.test('walk: value: default', () => {
 	for (let i = 0; i < plist.length; i++) {
 		const expect = i ? plist.get(i - 1) : plist;
 		assertStrictEquals(visitied[i][0], expect, `[${i}]: visit`);
-		assertStrictEquals(visitied[i][1], i ? plist : null, `[${i}]: parent`);
-		assertStrictEquals(visitied[i][2], i ? 1 : 0, `[${i}]: depth`);
+		assertStrictEquals(visitied[i][1], i ? 1 : 0, `[${i}]: depth`);
+		assertStrictEquals(visitied[i][2], i ? plist : null, `[${i}]: parent`);
 	}
 });
 
@@ -263,90 +263,90 @@ Deno.test('walk: all', () => {
 	const uid = new PLUID(42n);
 	plist.set(kUID, uid);
 
-	const visitied: [string, PLType | number, WalkParent, number][] = [];
-	const visitiedger = (method: string) => {
+	const visitied: [string, PLType | number, number, WalkParent][] = [];
+	const visiter = (method: string) => {
 		return (
 			visit: PLType | number,
-			parent: WalkParent,
 			depth: number,
+			parent: WalkParent,
 		) => {
 			visitied.push([
 				method,
 				visit,
-				parent,
 				depth,
+				parent,
 			]);
 		};
 	};
 	walk(plist, {
 		enter: {
-			[PLTYPE_ARRAY]: visitiedger(`enter.${PLTYPE_ARRAY}`),
-			[PLTYPE_DICT]: visitiedger(`enter.${PLTYPE_DICT}`),
-			default: visitiedger('enter.default'),
+			[PLTYPE_ARRAY]: visiter(`enter.${PLTYPE_ARRAY}`),
+			[PLTYPE_DICT]: visiter(`enter.${PLTYPE_DICT}`),
+			default: visiter('enter.default'),
 		},
 		key: {
-			[PLTYPE_ARRAY]: visitiedger(`key.${PLTYPE_ARRAY}`),
-			[PLTYPE_DICT]: visitiedger(`key.${PLTYPE_DICT}`),
-			default: visitiedger('key.default'),
+			[PLTYPE_ARRAY]: visiter(`key.${PLTYPE_ARRAY}`),
+			[PLTYPE_DICT]: visiter(`key.${PLTYPE_DICT}`),
+			default: visiter('key.default'),
 		},
 		value: {
-			[PLTYPE_BOOLEAN]: visitiedger(`value.${PLTYPE_BOOLEAN}`),
-			[PLTYPE_DATA]: visitiedger(`value.${PLTYPE_DATA}`),
-			[PLTYPE_DATE]: visitiedger(`value.${PLTYPE_DATE}`),
-			[PLTYPE_INTEGER]: visitiedger(`value.${PLTYPE_INTEGER}`),
-			[PLTYPE_REAL]: visitiedger(`value.${PLTYPE_REAL}`),
-			[PLTYPE_STRING]: visitiedger(`value.${PLTYPE_STRING}`),
-			[PLTYPE_UID]: visitiedger(`value.${PLTYPE_UID}`),
-			default: visitiedger('value.default'),
+			[PLTYPE_BOOLEAN]: visiter(`value.${PLTYPE_BOOLEAN}`),
+			[PLTYPE_DATA]: visiter(`value.${PLTYPE_DATA}`),
+			[PLTYPE_DATE]: visiter(`value.${PLTYPE_DATE}`),
+			[PLTYPE_INTEGER]: visiter(`value.${PLTYPE_INTEGER}`),
+			[PLTYPE_REAL]: visiter(`value.${PLTYPE_REAL}`),
+			[PLTYPE_STRING]: visiter(`value.${PLTYPE_STRING}`),
+			[PLTYPE_UID]: visiter(`value.${PLTYPE_UID}`),
+			default: visiter('value.default'),
 		},
 		leave: {
-			[PLTYPE_ARRAY]: visitiedger(`leave.${PLTYPE_ARRAY}`),
-			[PLTYPE_DICT]: visitiedger(`leave.${PLTYPE_DICT}`),
-			default: visitiedger('leave.default'),
+			[PLTYPE_ARRAY]: visiter(`leave.${PLTYPE_ARRAY}`),
+			[PLTYPE_DICT]: visiter(`leave.${PLTYPE_DICT}`),
+			default: visiter('leave.default'),
 		},
 	});
 	const expected = [
-		[`enter.${PLTYPE_DICT}`, plist, null, 0],
+		[`enter.${PLTYPE_DICT}`, plist, 0, null],
 
-		[`key.${PLTYPE_DICT}`, kArray, plist, 1],
-		[`enter.${PLTYPE_ARRAY}`, array, plist, 1],
+		[`key.${PLTYPE_DICT}`, kArray, 1, plist],
+		[`enter.${PLTYPE_ARRAY}`, array, 1, plist],
 
-		[`key.${PLTYPE_ARRAY}`, 0, array, 2],
-		[`value.${PLTYPE_INTEGER}`, int0, array, 2],
-		[`key.${PLTYPE_ARRAY}`, 1, array, 2],
-		[`value.${PLTYPE_INTEGER}`, int1, array, 2],
-		[`key.${PLTYPE_ARRAY}`, 2, array, 2],
-		[`value.${PLTYPE_INTEGER}`, int2, array, 2],
+		[`key.${PLTYPE_ARRAY}`, 0, 2, array],
+		[`value.${PLTYPE_INTEGER}`, int0, 2, array],
+		[`key.${PLTYPE_ARRAY}`, 1, 2, array],
+		[`value.${PLTYPE_INTEGER}`, int1, 2, array],
+		[`key.${PLTYPE_ARRAY}`, 2, 2, array],
+		[`value.${PLTYPE_INTEGER}`, int2, 2, array],
 
-		[`leave.${PLTYPE_ARRAY}`, array, plist, 1],
+		[`leave.${PLTYPE_ARRAY}`, array, 1, plist],
 
-		[`key.${PLTYPE_DICT}`, kData, plist, 1],
-		[`value.${PLTYPE_DATA}`, data, plist, 1],
+		[`key.${PLTYPE_DICT}`, kData, 1, plist],
+		[`value.${PLTYPE_DATA}`, data, 1, plist],
 
-		[`key.${PLTYPE_DICT}`, kDate, plist, 1],
-		[`value.${PLTYPE_DATE}`, date, plist, 1],
+		[`key.${PLTYPE_DICT}`, kDate, 1, plist],
+		[`value.${PLTYPE_DATE}`, date, 1, plist],
 
-		[`key.${PLTYPE_DICT}`, kDict, plist, 1],
-		[`enter.${PLTYPE_DICT}`, dict, plist, 1],
+		[`key.${PLTYPE_DICT}`, kDict, 1, plist],
+		[`enter.${PLTYPE_DICT}`, dict, 1, plist],
 
-		[`key.${PLTYPE_DICT}`, kTrue, dict, 2],
-		[`value.${PLTYPE_BOOLEAN}`, boolTrue, dict, 2],
+		[`key.${PLTYPE_DICT}`, kTrue, 2, dict],
+		[`value.${PLTYPE_BOOLEAN}`, boolTrue, 2, dict],
 
-		[`key.${PLTYPE_DICT}`, kFalse, dict, 2],
-		[`value.${PLTYPE_BOOLEAN}`, boolFalse, dict, 2],
+		[`key.${PLTYPE_DICT}`, kFalse, 2, dict],
+		[`value.${PLTYPE_BOOLEAN}`, boolFalse, 2, dict],
 
-		[`leave.${PLTYPE_DICT}`, dict, plist, 1],
+		[`leave.${PLTYPE_DICT}`, dict, 1, plist],
 
-		[`key.${PLTYPE_DICT}`, kReal, plist, 1],
-		[`value.${PLTYPE_REAL}`, real, plist, 1],
+		[`key.${PLTYPE_DICT}`, kReal, 1, plist],
+		[`value.${PLTYPE_REAL}`, real, 1, plist],
 
-		[`key.${PLTYPE_DICT}`, kString, plist, 1],
-		[`value.${PLTYPE_STRING}`, string, plist, 1],
+		[`key.${PLTYPE_DICT}`, kString, 1, plist],
+		[`value.${PLTYPE_STRING}`, string, 1, plist],
 
-		[`key.${PLTYPE_DICT}`, kUID, plist, 1],
-		[`value.${PLTYPE_UID}`, uid, plist, 1],
+		[`key.${PLTYPE_DICT}`, kUID, 1, plist],
+		[`value.${PLTYPE_UID}`, uid, 1, plist],
 
-		[`leave.${PLTYPE_DICT}`, plist, null, 0],
+		[`leave.${PLTYPE_DICT}`, plist, 0, null],
 	];
 	for (let i = 0; i < expected.length; i++) {
 		assertStrictEquals(visitied[i][0], expected[i][0], `[${i}]: method`);
@@ -676,7 +676,7 @@ Deno.test('walk: skip: enter', () => {
 		const visited: unknown[] = [];
 		walk(a, {
 			enter: {
-				default(visit, parent, depth): number {
+				default(visit, depth, parent): number {
 					assertStrictEquals(depths.get(visit), depth);
 					assertStrictEquals(parents.get(visit), parent);
 					visited.push(visit);
@@ -684,14 +684,14 @@ Deno.test('walk: skip: enter', () => {
 				},
 			},
 			value: {
-				default(visit, parent, depth): void {
+				default(visit, depth, parent): void {
 					assertStrictEquals(depths.get(visit), depth);
 					assertStrictEquals(parents.get(visit), parent);
 					visited.push(visit);
 				},
 			},
 			leave: {
-				default(visit, parent, depth): void {
+				default(visit, depth, parent): void {
 					assertStrictEquals(depths.get(visit), depth);
 					assertStrictEquals(parents.get(visit), parent);
 					visited.push(visit);
@@ -736,7 +736,7 @@ Deno.test('walk: skip: key', () => {
 		const visited: unknown[] = [];
 		walk(a, {
 			enter: {
-				default(visit, parent, depth): void {
+				default(visit, depth, parent): void {
 					assertStrictEquals(depths.get(visit), depth);
 					assertStrictEquals(parents.get(visit), parent);
 					visited.push(visit);
@@ -748,14 +748,14 @@ Deno.test('walk: skip: key', () => {
 				},
 			},
 			value: {
-				default(visit, parent, depth): void {
+				default(visit, depth, parent): void {
 					assertStrictEquals(depths.get(visit), depth);
 					assertStrictEquals(parents.get(visit), parent);
 					visited.push(visit);
 				},
 			},
 			leave: {
-				default(visit, parent, depth): void {
+				default(visit, depth, parent): void {
 					assertStrictEquals(depths.get(visit), depth);
 					assertStrictEquals(parents.get(visit), parent);
 					visited.push(visit);
@@ -799,14 +799,14 @@ Deno.test('walk: skip: value', () => {
 		const visited: unknown[] = [];
 		walk(a, {
 			enter: {
-				default(visit, parent, depth): void {
+				default(visit, depth, parent): void {
 					assertStrictEquals(depths.get(visit), depth);
 					assertStrictEquals(parents.get(visit), parent);
 					visited.push(visit);
 				},
 			},
 			value: {
-				default(visit, parent, depth): number {
+				default(visit, depth, parent): number {
 					assertStrictEquals(depths.get(visit), depth);
 					assertStrictEquals(parents.get(visit), parent);
 					visited.push(visit);
@@ -814,7 +814,7 @@ Deno.test('walk: skip: value', () => {
 				},
 			},
 			leave: {
-				default(visit, parent, depth): void {
+				default(visit, depth, parent): void {
 					assertStrictEquals(depths.get(visit), depth);
 					assertStrictEquals(parents.get(visit), parent);
 					visited.push(visit);
@@ -856,14 +856,14 @@ Deno.test('walk: skip: leave', () => {
 		const visited: unknown[] = [];
 		walk(a, {
 			enter: {
-				default(visit, parent, depth): void {
+				default(visit, depth, parent): void {
 					assertStrictEquals(depths.get(visit), depth);
 					assertStrictEquals(parents.get(visit), parent);
 					visited.push(visit);
 				},
 			},
 			leave: {
-				default(visit, parent, depth): number {
+				default(visit, depth, parent): number {
 					assertStrictEquals(depths.get(visit), depth);
 					assertStrictEquals(parents.get(visit), parent);
 					visited.push(visit);

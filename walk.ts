@@ -24,14 +24,14 @@ export type WalkParent = PLArray | PLDict | null;
  * When stopping, leave callbacks are not called.
  *
  * @param visit Key or value visited.
- * @param parent Parent collection or null for root node.
  * @param depth Depth visited.
+ * @param parent Parent collection or null for root node.
  * @returns Negative to stop, positive to skip, decimals ignored.
  */
 export type WalkVisitor<T, P extends WalkParent = WalkParent> = (
 	visit: T,
-	parent: P,
 	depth: number,
+	parent: P,
 ) => number | null | void;
 
 /**
@@ -232,7 +232,7 @@ export function walk(
 					break;
 				}
 			}
-			each = visitor(p, p = node.p, --depth) || 0;
+			each = visitor(p, --depth, p = node.p) || 0;
 			if (each <= -1) {
 				return;
 			}
@@ -256,7 +256,7 @@ export function walk(
 						break;
 					}
 				}
-				each = visitor(next[0], p, depth) || 0;
+				each = visitor(next[0], depth, p) || 0;
 				if (each <= -1) {
 					return;
 				}
@@ -311,7 +311,7 @@ export function walk(
 					break;
 				}
 			}
-			each = visitor(each, p, depth) || 0;
+			each = visitor(each, depth, p) || 0;
 			if (each <= -1) {
 				return;
 			}
