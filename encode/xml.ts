@@ -291,7 +291,7 @@ export function encodeXml(
 					}
 					ancestors.add(visit);
 					i += 14 + depth++ * indentSize +
-						((depth * indentSize + 1) * 2) * x;
+						(depth * indentSize + 1) * 2 * x;
 					return;
 				}
 				i += 7;
