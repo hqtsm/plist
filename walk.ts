@@ -18,7 +18,6 @@ export type WalkParent = PLArray | PLDict | null;
 
 /**
  * Walk visitor.
- * Decimals in return values are ignored.
  * When skipping an enter, the leave callback is not called.
  * When skipping a key, no callbacks are called for value.
  * When skipping upwards, leave callbacks are called for each collection.
@@ -27,7 +26,7 @@ export type WalkParent = PLArray | PLDict | null;
  * @param visit Key or value visited.
  * @param parent Parent collection or null for root node.
  * @param depth Depth visited.
- * @returns Return negative to stop, positive to skip levels.
+ * @returns Negative to stop, positive to skip, decimals ignored.
  */
 export type WalkVisitor<T, P extends WalkParent = WalkParent> = (
 	visit: T,
@@ -148,30 +147,37 @@ export interface WalkVisitors {
 /**
  * Linked list node type.
  */
-type NodeType<P, K, V> = {
+interface Node {
 	/**
 	 * Parent of the itter, null for root.
 	 */
-	p: P;
+	p: PLArray | PLDict | null;
 
 	/**
 	 * Key value generator.
 	 */
-	g: { next(): { done?: boolean; value?: [K, V] } };
+	g: {
+		/**
+		 * Next key value pair.
+		 */
+		next(): {
+			/**
+			 * Generator done flag.
+			 */
+			done?: boolean;
+
+			/**
+			 * Key value pair.
+			 */
+			value?: [number | PLString, PLType];
+		};
+	};
 
 	/**
 	 * Next node.
 	 */
 	n: Node | null;
-};
-
-/**
- * Linked list node types.
- */
-type Node =
-	| NodeType<PLArray, number, PLType>
-	| NodeType<PLDict, PLString, PLType>
-	| NodeType<null, number, PLType>;
+}
 
 /**
  * Wall through a plist.
@@ -200,12 +206,12 @@ export function walk(
 	const leaveDefault = leave?.default ?? noop;
 	const leaveArray = leave?.[PLTYPE_ARRAY] ?? leaveDefault;
 	const leaveDict = leave?.[PLTYPE_DICT] ?? leaveDefault;
+	const g = [plist].entries();
 	let each;
 	let next;
 	let depth = 0;
 	let p: WalkParent = null;
-	const g = [plist].entries();
-	let node: Node | null = { p, g, n: null };
+	let node: Node | null = { p, g, n: p };
 	// deno-lint-ignore no-explicit-any
 	let visitor: WalkVisitor<any, any>;
 	do {
@@ -317,7 +323,11 @@ export function walk(
 				continue;
 			}
 			if (next) {
-				node = { p: p = next, g: next.entries(), n: node } as Node;
+				node = {
+					p: p = next,
+					g: next.entries(),
+					n: node,
+				} as Node;
 				depth++;
 			}
 		}
