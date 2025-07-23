@@ -262,36 +262,34 @@ export function encodeXml(
 	}
 	i += stringLength(version, 2);
 
-	const ancestors = new Set<PLType>();
-	const indentSize = x = indent.length;
-	const indentData = new Uint8Array(indentSize);
+	const a = new Set<PLType>();
+	const il = x = indent.length;
+	const id = new Uint8Array(il);
 	while (x--) {
-		indentData[x] = indent.charCodeAt(x);
+		id[x] = indent.charCodeAt(x);
 	}
 
 	walk(plist, {
 		enter: {
-			PLArray(visit, depth): number | void {
-				if ((x = visit.length)) {
-					if (ancestors.has(visit)) {
+			PLArray(v, d): number | void {
+				if ((x = v.length)) {
+					if (a.has(v)) {
 						throw new TypeError('Circular reference');
 					}
-					ancestors.add(visit);
-					i += 16 + depth++ * indentSize +
-						(depth * indentSize + 1) * x;
+					a.add(v);
+					i += 16 + d++ * il + (d * il + 1) * x;
 					return;
 				}
 				i += 8;
 				return 1;
 			},
-			PLDict(visit, depth): number | void {
-				if ((x = visit.size)) {
-					if (ancestors.has(visit)) {
+			PLDict(v, d): number | void {
+				if ((x = v.size)) {
+					if (a.has(v)) {
 						throw new TypeError('Circular reference');
 					}
-					ancestors.add(visit);
-					i += 14 + depth++ * indentSize +
-						(depth * indentSize + 1) * 2 * x;
+					a.add(v);
+					i += 14 + d++ * il + (d * il + 1) * 2 * x;
 					return;
 				}
 				i += 7;
@@ -299,45 +297,41 @@ export function encodeXml(
 			},
 		},
 		key: {
-			PLDict(visit): void {
-				i += 11 + stringLength(visit.value, 1);
+			PLDict(v): void {
+				i += 11 + stringLength(v.value, 1);
 			},
 		},
 		value: {
-			PLBoolean(visit): void {
-				i += visit.value ? 7 : 8;
+			PLBoolean(v): void {
+				i += v.value ? 7 : 8;
 			},
-			PLData(visit, depth): void {
-				x = visit.byteLength;
+			PLData(v, d): void {
+				x = v.byteLength;
 				x = ((x - (x % 3 || 3)) / 3 + 1) * 4;
-				i += 13 + x +
-					(depth * indentSize + 1) *
-						((x - (x % 76 || 76)) / 76 + 2);
+				i += 13 + x + (d * il + 1) * ((x - (x % 76 || 76)) / 76 + 2);
 			},
-			PLDate(visit): void {
-				i += 13 + dateString(visit).length;
+			PLDate(v): void {
+				i += 13 + dateString(v).length;
 			},
-			PLInteger(visit): void {
-				i += 19 + visit.value.toString().length;
+			PLInteger(d): void {
+				i += 19 + d.value.toString().length;
 			},
-			PLReal(visit): void {
-				i += 13 + realString(visit.value).length;
+			PLReal(v): void {
+				i += 13 + realString(v.value).length;
 			},
-			PLString(visit): void {
-				i += 17 + stringLength(visit.value, 1);
+			PLString(v): void {
+				i += 17 + stringLength(v.value, 1);
 			},
-			PLUID(visit, depth): void {
-				i += 52 + visit.value.toString().length +
-					depth++ * indentSize +
-					depth * indentSize * 2;
+			PLUID(v, d): void {
+				i += 52 + v.value.toString().length + d++ * il + d * il * 2;
 			},
 			default(): void {
 				throw new TypeError('Invalid XML value type');
 			},
 		},
 		leave: {
-			default(visit): void {
-				ancestors.delete(visit);
+			default(v): void {
+				a.delete(v);
 			},
 		},
 	});
@@ -354,11 +348,11 @@ export function encodeXml(
 
 	walk(plist, {
 		enter: {
-			PLArray(visit, depth): number | void {
-				for (; depth--; i += indentSize) {
-					r.set(indentData, i);
+			PLArray(v, d): number | void {
+				for (; d--; i += il) {
+					r.set(id, i);
 				}
-				if (visit.length) {
+				if (v.length) {
 					i = stringEncode('<array>', r, i);
 					r[i++] = 10;
 					return;
@@ -367,11 +361,11 @@ export function encodeXml(
 				r[i++] = 10;
 				return 1;
 			},
-			PLDict(visit, depth): number | void {
-				for (; depth--; i += indentSize) {
-					r.set(indentData, i);
+			PLDict(v, d): number | void {
+				for (; d--; i += il) {
+					r.set(id, i);
 				}
-				if (visit.size) {
+				if (v.size) {
 					i = stringEncode('<dict>', r, i);
 					r[i++] = 10;
 					return;
@@ -382,54 +376,54 @@ export function encodeXml(
 			},
 		},
 		key: {
-			PLDict(visit, depth): void {
-				for (; depth--; i += indentSize) {
-					r.set(indentData, i);
+			PLDict(v, d): void {
+				for (; d--; i += il) {
+					r.set(id, i);
 				}
 				i = stringEncode('<key>', r, i);
-				i = stringEncode(visit.value, r, i, 1);
+				i = stringEncode(v.value, r, i, 1);
 				i = stringEncode('</key>', r, i);
 				r[i++] = 10;
 			},
 		},
 		value: {
-			PLBoolean(visit, depth): void {
-				for (; depth--; i += indentSize) {
-					r.set(indentData, i);
+			PLBoolean(v, d): void {
+				for (; d--; i += il) {
+					r.set(id, i);
 				}
-				i = stringEncode(visit.value ? '<true/>' : '<false/>', r, i);
+				i = stringEncode(v.value ? '<true/>' : '<false/>', r, i);
 				r[i++] = 10;
 			},
-			PLData(visit, depth): void {
-				for (x = depth; x--; i += indentSize) {
-					r.set(indentData, i);
+			PLData(v, d): void {
+				for (x = d; x--; i += il) {
+					r.set(id, i);
 				}
 				i = stringEncode('<data>', r, i);
 				r[i++] = 10;
 				for (
-					let d = new Uint8Array(visit.buffer),
-						l = d.length,
+					let u = new Uint8Array(v.buffer),
+						l = u.length,
 						l3 = l - (l % 3),
 						b = 0;
 					b < l;
 				) {
-					for (x = depth; x--; i += indentSize) {
-						r.set(indentData, i);
+					for (x = d; x--; i += il) {
+						r.set(id, i);
 					}
 					for (x = 20; b < l3 && --x;) {
-						e = d[b++];
+						e = u[b++];
 						r[i++] = b64.charCodeAt(e >> 2);
-						e = e << 8 | d[b++];
+						e = e << 8 | u[b++];
 						r[i++] = b64.charCodeAt(e >> 4 & 63);
-						e = e << 8 | d[b++];
+						e = e << 8 | u[b++];
 						r[i++] = b64.charCodeAt(e >> 6 & 63);
 						r[i++] = b64.charCodeAt(e & 63);
 					}
 					if (x && b < l) {
-						e = d[b++];
+						e = u[b++];
 						r[i++] = b64.charCodeAt(e >> 2);
 						if (b < l) {
-							e = e << 8 | d[b++];
+							e = e << 8 | u[b++];
 							r[i++] = b64.charCodeAt(e >> 4 & 63);
 							r[i++] = b64.charCodeAt(e << 2 & 63);
 						} else {
@@ -440,84 +434,84 @@ export function encodeXml(
 					}
 					r[i++] = 10;
 				}
-				for (; depth--; i += indentSize) {
-					r.set(indentData, i);
+				for (; d--; i += il) {
+					r.set(id, i);
 				}
 				i = stringEncode('</data>', r, i);
 				r[i++] = 10;
 			},
-			PLDate(visit, depth): void {
-				for (; depth--; i += indentSize) {
-					r.set(indentData, i);
+			PLDate(v, d): void {
+				for (; d--; i += il) {
+					r.set(id, i);
 				}
 				i = stringEncode('<date>', r, i);
-				i = stringEncode(dateString(visit), r, i);
+				i = stringEncode(dateString(v), r, i);
 				i = stringEncode('</date>', r, i);
 				r[i++] = 10;
 			},
-			PLInteger(visit, depth): void {
-				for (; depth--; i += indentSize) {
-					r.set(indentData, i);
+			PLInteger(v, d): void {
+				for (; d--; i += il) {
+					r.set(id, i);
 				}
 				i = stringEncode('<integer>', r, i);
-				i = stringEncode(visit.value.toString(), r, i);
+				i = stringEncode(v.value.toString(), r, i);
 				i = stringEncode('</integer>', r, i);
 				r[i++] = 10;
 			},
-			PLReal(visit, depth): void {
-				for (; depth--; i += indentSize) {
-					r.set(indentData, i);
+			PLReal(v, d): void {
+				for (; d--; i += il) {
+					r.set(id, i);
 				}
 				i = stringEncode('<real>', r, i);
-				i = stringEncode(realString(visit.value), r, i);
+				i = stringEncode(realString(v.value), r, i);
 				i = stringEncode('</real>', r, i);
 				r[i++] = 10;
 			},
-			PLString(visit, depth): void {
-				for (; depth--; i += indentSize) {
-					r.set(indentData, i);
+			PLString(v, d): void {
+				for (; d--; i += il) {
+					r.set(id, i);
 				}
 				i = stringEncode('<string>', r, i);
-				i = stringEncode(visit.value, r, i, 1);
+				i = stringEncode(v.value, r, i, 1);
 				i = stringEncode('</string>', r, i);
 				r[i++] = 10;
 			},
-			PLUID(visit, depth): void {
-				for (x = depth++; x--; i += indentSize) {
-					r.set(indentData, i);
+			PLUID(v, d): void {
+				for (x = d++; x--; i += il) {
+					r.set(id, i);
 				}
 				i = stringEncode('<dict>', r, i);
 				r[i++] = 10;
-				for (x = depth; x--; i += indentSize) {
-					r.set(indentData, i);
+				for (x = d; x--; i += il) {
+					r.set(id, i);
 				}
 				i = stringEncode('<key>CF$UID</key>', r, i);
 				r[i++] = 10;
-				for (x = depth--; x--; i += indentSize) {
-					r.set(indentData, i);
+				for (x = d--; x--; i += il) {
+					r.set(id, i);
 				}
 				i = stringEncode('<integer>', r, i);
-				i = stringEncode(visit.value.toString(), r, i);
+				i = stringEncode(v.value.toString(), r, i);
 				i = stringEncode('</integer>', r, i);
 				r[i++] = 10;
-				for (; depth--; i += indentSize) {
-					r.set(indentData, i);
+				for (; d--; i += il) {
+					r.set(id, i);
 				}
 				i = stringEncode('</dict>', r, i);
 				r[i++] = 10;
 			},
 		},
 		leave: {
-			PLArray(_, depth): void {
-				for (; depth--; i += indentSize) {
-					r.set(indentData, i);
+			PLArray(_, d): void {
+				for (; d--; i += il) {
+					r.set(id, i);
 				}
 				i = stringEncode('</array>', r, i);
 				r[i++] = 10;
 			},
-			PLDict(_, depth): void {
-				for (; depth--; i += indentSize) {
-					r.set(indentData, i);
+			PLDict(_, d): void {
+				for (; d--; i += il) {
+					r.set(id, i);
 				}
 				i = stringEncode('</dict>', r, i);
 				r[i++] = 10;

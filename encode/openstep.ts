@@ -203,9 +203,9 @@ export function encodeOpenStep(
 		quoted = false,
 	}: EncodeOpenStepOptions = {},
 ): Uint8Array {
-	let base = 0;
+	let b = 0;
 	let i = 1;
-	let dict = false;
+	let s = false;
 	let x;
 
 	switch (format) {
@@ -214,7 +214,7 @@ export function encodeOpenStep(
 		}
 		case FORMAT_STRINGS: {
 			if (PLDict.is(plist)) {
-				base--;
+				b--;
 				break;
 			}
 			throw new TypeError('Invalid strings root type');
@@ -233,67 +233,64 @@ export function encodeOpenStep(
 	}
 
 	const q = quote.charCodeAt(0) as 34 | 39;
-	const ancestors = new Set<PLType>();
-	const indentSize = x = indent.length;
-	const indentData = new Uint8Array(indentSize);
+	const a = new Set<PLType>();
+	const il = x = indent.length;
+	const id = new Uint8Array(il);
 	while (x--) {
-		indentData[x] = indent.charCodeAt(x);
+		id[x] = indent.charCodeAt(x);
 	}
 
 	walk(plist, {
 		enter: {
-			PLArray(visit, depth): number | void {
-				if ((x = visit.length)) {
-					if (ancestors.has(visit)) {
+			PLArray(v, d): number | void {
+				if ((x = v.length)) {
+					if (a.has(v)) {
 						throw new TypeError('Circular reference');
 					}
-					ancestors.add(visit);
-					depth += base;
-					i += 2 + depth++ * indentSize +
-						(depth * indentSize + 2) * x;
+					a.add(v);
+					d += b;
+					i += 2 + d++ * il + (d * il + 2) * x;
 					return;
 				}
 				i += 2;
 				return 1;
 			},
-			PLDict(visit, depth): number | void {
-				depth += base + 1;
-				if ((x = visit.size)) {
-					if (ancestors.has(visit)) {
+			PLDict(v, d): number | void {
+				d += b + 1;
+				if ((x = v.size)) {
+					if (a.has(v)) {
 						throw new TypeError('Circular reference');
 					}
-					ancestors.add(visit);
-					i += x * (depth * indentSize + 5) + (
-						depth ? (depth - 1) * indentSize + 3 : -1
-					);
+					a.add(v);
+					i += x * (d * il + 5) + (d ? (d - 1) * il + 3 : -1);
 					return;
 				}
-				if (depth) {
+				if (d) {
 					i += 2;
 				}
 				return 1;
 			},
 		},
 		key: {
-			PLDict(visit): void {
-				i += stringLength(visit.value, q, quoted);
+			PLDict(v): void {
+				i += stringLength(v.value, q, quoted);
 			},
 		},
 		value: {
-			PLData(visit): void {
-				x = visit.byteLength;
+			PLData(v): void {
+				x = v.byteLength;
 				i += x ? 2 + x + x + (x - (x % 4 || 4)) / 4 : 2;
 			},
-			PLString(visit): void {
-				i += stringLength(visit.value, q, quoted);
+			PLString(v): void {
+				i += stringLength(v.value, q, quoted);
 			},
 			default(): void {
 				throw new TypeError('Invalid OpenStep value type');
 			},
 		},
 		leave: {
-			default(visit): void {
-				ancestors.delete(visit);
+			default(v): void {
+				a.delete(v);
 			},
 		},
 	});
@@ -303,29 +300,29 @@ export function encodeOpenStep(
 
 	walk(plist, {
 		enter: {
-			PLArray(visit): number | void {
+			PLArray(v): number | void {
 				r[i++] = 40;
-				if (visit.length) {
-					dict = false;
+				if (v.length) {
+					s = false;
 					return;
 				}
 				r[i++] = 41;
-				if (dict) {
+				if (s) {
 					r[i++] = 59;
 				}
 				return 1;
 			},
-			PLDict(visit, depth): number | void {
-				if ((depth += base + 1)) {
+			PLDict(v, d): number | void {
+				if ((d += b + 1)) {
 					r[i++] = 123;
 				}
-				if (visit.size) {
-					dict = true;
+				if (v.size) {
+					s = true;
 					return;
 				}
-				if (depth) {
+				if (d) {
 					r[i++] = 125;
-					if (dict) {
+					if (s) {
 						r[i++] = 59;
 					}
 				}
@@ -333,63 +330,63 @@ export function encodeOpenStep(
 			},
 		},
 		key: {
-			PLArray(visit, depth): void {
-				if (visit) {
+			PLArray(v, d): void {
+				if (v) {
 					r[i++] = 44;
 				}
 				r[i++] = 10;
-				for (depth += base; depth--; i += indentSize) {
-					r.set(indentData, i);
+				for (d += b; d--; i += il) {
+					r.set(id, i);
 				}
 			},
-			PLDict(visit, depth): void {
+			PLDict(v, d): void {
 				if (i) {
 					r[i++] = 10;
-					for (depth += base; depth--; i += indentSize) {
-						r.set(indentData, i);
+					for (d += b; d--; i += il) {
+						r.set(id, i);
 					}
 				}
-				i = stringEncode(visit.value, r, i, q, quoted);
+				i = stringEncode(v.value, r, i, q, quoted);
 				r[i++] = 32;
 				r[i++] = 61;
 				r[i++] = 32;
 			},
 		},
 		value: {
-			PLData(visit): void {
-				i = dataEncode(new Uint8Array(visit.buffer), r, i);
-				if (dict) {
+			PLData(v): void {
+				i = dataEncode(new Uint8Array(v.buffer), r, i);
+				if (s) {
 					r[i++] = 59;
 				}
 			},
-			PLString(visit): void {
-				i = stringEncode(visit.value, r, i, q, quoted);
-				if (dict) {
+			PLString(v): void {
+				i = stringEncode(v.value, r, i, q, quoted);
+				if (s) {
 					r[i++] = 59;
 				}
 			},
 		},
 		leave: {
-			PLArray(_, depth, parent): void {
-				if ((depth += base + 1)) {
+			PLArray(_, d, p): void {
+				if ((d += b + 1)) {
 					r[i++] = 10;
-					for (; --depth; i += indentSize) {
-						r.set(indentData, i);
+					for (; --d; i += il) {
+						r.set(id, i);
 					}
 					r[i++] = 41;
-					if ((dict = PLDict.is(parent))) {
+					if ((s = PLDict.is(p))) {
 						r[i++] = 59;
 					}
 				}
 			},
-			PLDict(_, depth, parent): void {
-				if ((depth += base + 1)) {
+			PLDict(_, d, p): void {
+				if ((d += b + 1)) {
 					r[i++] = 10;
-					for (; --depth; i += indentSize) {
-						r.set(indentData, i);
+					for (; --d; i += il) {
+						r.set(id, i);
 					}
 					r[i++] = 125;
-					if ((dict = PLDict.is(parent))) {
+					if ((s = PLDict.is(p))) {
 						r[i++] = 59;
 					}
 				}
