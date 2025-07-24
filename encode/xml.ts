@@ -313,8 +313,8 @@ export function encodeXml(
 			PLDate(v): void {
 				i += 13 + dateString(v).length;
 			},
-			PLInteger(d): void {
-				i += 19 + d.value.toString().length;
+			PLInteger(v): void {
+				i += 19 + v.value.toString().length;
 			},
 			PLReal(v): void {
 				i += 13 + realString(v.value).length;
