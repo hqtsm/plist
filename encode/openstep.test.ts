@@ -44,6 +44,20 @@ Deno.test('Invalid strings root', () => {
 		TypeError,
 		'Invalid strings root type',
 	);
+	assertThrows(
+		() => {
+			encodeOpenStep(new PLData(), { format: FORMAT_STRINGS });
+		},
+		TypeError,
+		'Invalid strings root type',
+	);
+	assertThrows(
+		() => {
+			encodeOpenStep(new PLArray(), { format: FORMAT_STRINGS });
+		},
+		TypeError,
+		'Invalid strings root type',
+	);
 });
 
 Deno.test('Circular reference: array', () => {

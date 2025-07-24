@@ -4,7 +4,7 @@
  * OpenStep encoding.
  */
 
-import { PLDict } from '../dict.ts';
+import { PLTYPE_DICT } from '../dict.ts';
 import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
 import type { PLType } from '../type.ts';
 import { walk } from '../walk.ts';
@@ -209,15 +209,12 @@ export function encodeOpenStep(
 	let x;
 
 	switch (format) {
+		case FORMAT_STRINGS: {
+			b--;
+		}
+		// Fall through.
 		case FORMAT_OPENSTEP: {
 			break;
-		}
-		case FORMAT_STRINGS: {
-			if (PLDict.is(plist)) {
-				b--;
-				break;
-			}
-			throw new TypeError('Invalid strings root type');
 		}
 		default: {
 			throw new RangeError('Invalid format');
@@ -242,7 +239,10 @@ export function encodeOpenStep(
 
 	walk(plist, {
 		enter: {
-			PLArray(v, d): number | void {
+			PLArray(v, d, p): number | void {
+				if (!p && b) {
+					throw new TypeError('Invalid strings root type');
+				}
 				if ((x = v.length)) {
 					if (a.has(v)) {
 						throw new TypeError('Circular reference');
@@ -277,11 +277,17 @@ export function encodeOpenStep(
 			},
 		},
 		value: {
-			PLData(v): void {
+			PLData(v, _, p): void {
+				if (!p && b) {
+					throw new TypeError('Invalid strings root type');
+				}
 				x = v.byteLength;
 				i += x ? 2 + x + x + (x - (x % 4 || 4)) / 4 : 2;
 			},
-			PLString(v): void {
+			PLString(v, _, p): void {
+				if (!p && b) {
+					throw new TypeError('Invalid strings root type');
+				}
 				i += stringLength(v.value, q, quoted);
 			},
 			default(): void {
@@ -374,7 +380,7 @@ export function encodeOpenStep(
 						r.set(id, i);
 					}
 					r[i++] = 41;
-					if ((s = PLDict.is(p))) {
+					if ((s = p?.[Symbol.toStringTag] === PLTYPE_DICT)) {
 						r[i++] = 59;
 					}
 				}
@@ -386,7 +392,7 @@ export function encodeOpenStep(
 						r.set(id, i);
 					}
 					r[i++] = 125;
-					if ((s = PLDict.is(p))) {
+					if ((s = p?.[Symbol.toStringTag] === PLTYPE_DICT)) {
 						r[i++] = 59;
 					}
 				}
