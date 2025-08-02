@@ -12,6 +12,31 @@ let bitses: WeakMap<PLReal, 32 | 64>;
 export const PLTYPE_REAL = 'PLReal' as const;
 
 /**
+ * Set the internal values.
+ *
+ * @param t PLReal.
+ * @param value Value.
+ * @param bits Bits.
+ */
+const set = (t: PLReal, value?: number | null, bits?: number | null): void => {
+	values ??= new WeakMap();
+	bitses ??= new WeakMap();
+	switch (bits ?? bitses.get(t)) {
+		case 32: {
+			values.set(t, Math.fround(value ?? values.get(t)!));
+			bitses.set(t, 32);
+			return;
+		}
+		case 64: {
+			values.set(t, value ?? values.get(t)!);
+			bitses.set(t, 64);
+			return;
+		}
+	}
+	throw new RangeError('Invalid bits');
+};
+
+/**
  * Property list real type.
  */
 export class PLReal {
@@ -24,8 +49,7 @@ export class PLReal {
 	 * @param bits Real bits.
 	 */
 	constructor(value = 0, bits: 32 | 64 = 64) {
-		this.value = value;
-		this.bits = bits;
+		set(this, +value, +bits);
 	}
 
 	/**
@@ -43,10 +67,7 @@ export class PLReal {
 	 * @param value Real value.
 	 */
 	public set value(value: number) {
-		(values ??= new WeakMap()).set(
-			this,
-			bitses?.get(this) === 32 ? Math.fround(value) : Number(value),
-		);
+		set(this, +value);
 	}
 
 	/**
@@ -54,8 +75,8 @@ export class PLReal {
 	 *
 	 * @returns Real bits.
 	 */
-	public get bits(): number {
-		return bitses?.get(this) ?? 64;
+	public get bits(): 32 | 64 {
+		return bitses.get(this)!;
 	}
 
 	/**
@@ -64,22 +85,7 @@ export class PLReal {
 	 * @param bits Real bits.
 	 */
 	public set bits(bits: 32 | 64) {
-		switch (+bits) {
-			case 32: {
-				if (bitses?.get(this) !== 32) {
-					(bitses ??= new WeakMap()).set(this, 32);
-					values.set(this, Math.fround(values.get(this)!));
-				}
-				break;
-			}
-			case 64: {
-				bitses?.delete(this);
-				break;
-			}
-			default: {
-				throw new RangeError('Invalid bits');
-			}
-		}
+		set(this, null, +bits);
 	}
 
 	/**
