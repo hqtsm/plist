@@ -36,6 +36,13 @@ Deno.test('set value', () => {
 });
 
 Deno.test('bad bits', () => {
+	assertThrows(
+		() => {
+			new PLReal(0, 0 as 32 | 64);
+		},
+		RangeError,
+		'Invalid bits',
+	);
 	const pl = new PLReal();
 	assertThrows(
 		() => {

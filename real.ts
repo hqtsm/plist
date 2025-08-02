@@ -8,20 +8,23 @@ import type { PLType } from './type.ts';
 
 const values: WeakMap<PLReal, number> = new WeakMap();
 const bitses: WeakMap<PLReal, 32 | 64> = new WeakMap();
-const set = (t: PLReal, value?: number | null, bits?: number | null): void => {
+const set = (
+	t: PLReal,
+	value?: number | null,
+	bits?: number | null,
+): 1 | void => {
 	switch (bits ?? bitses.get(t)) {
 		case 32: {
 			values.set(t, Math.fround(value ?? values.get(t)!));
 			bitses.set(t, 32);
-			return;
+			return 1;
 		}
 		case 64: {
 			values.set(t, value ?? values.get(t)!);
 			bitses.set(t, 64);
-			return;
+			return 1;
 		}
 	}
-	throw new RangeError('Invalid bits');
 };
 
 export const PLTYPE_REAL = 'PLReal' as const;
@@ -39,7 +42,9 @@ export class PLReal {
 	 * @param bits Real bits.
 	 */
 	constructor(value = 0, bits: 32 | 64 = 64) {
-		set(this, +value, +bits);
+		if (!set(this, +value, +bits)) {
+			throw new RangeError('Invalid bits');
+		}
 	}
 
 	/**
@@ -75,7 +80,9 @@ export class PLReal {
 	 * @param bits Real bits.
 	 */
 	public set bits(bits: 32 | 64) {
-		set(this, null, +bits);
+		if (!set(this, null, +bits)) {
+			throw new RangeError('Invalid bits');
+		}
 	}
 
 	/**
