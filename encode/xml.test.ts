@@ -612,6 +612,14 @@ Deno.test('spec: integer-negative', async () => {
 	);
 });
 
+Deno.test('spec: integer-min', async () => {
+	const encode = encodeXml(new PLInteger(-0x8000000000000000n));
+	assertEquals(
+		encode,
+		await fixturePlist('integer-min', 'xml'),
+	);
+});
+
 Deno.test('spec: integer-sizes', async () => {
 	const sizes = new Map([
 		0x0n,
