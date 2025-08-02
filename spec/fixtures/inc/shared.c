@@ -10,6 +10,19 @@
 	CFKeyedArchiverUIDRef _CFKeyedArchiverUIDCreate(CFAllocatorRef allocator, uint32_t value);
 #endif
 
+#ifndef kCFNumberSInt128Type
+	enum {
+		kCFNumberSInt128Type = 17
+	};
+#endif
+
+#ifndef CFSInt128Struct
+	typedef struct {
+		int64_t high;
+		uint64_t low;
+	} CFSInt128Struct;
+#endif
+
 CFPropertyListRef plr(CFStringRef file, CFPropertyListFormat * format) {
 	CFURLRef url = CFURLCreateWithFileSystemPath(NULL, file, kCFURLPOSIXPathStyle, false);
 	CFReadStreamRef stream = CFReadStreamCreateWithFile(NULL, url);
