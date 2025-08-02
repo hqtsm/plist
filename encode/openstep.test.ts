@@ -293,6 +293,28 @@ Deno.test('spec: data-4', async () => {
 	);
 });
 
+Deno.test('spec: data-14', async () => {
+	const chars = [...'abcdefghijklmn'].map((c) => c.charCodeAt(0));
+	const data = new PLData(chars.length);
+	new Uint8Array(data.buffer).set(chars);
+	const encode = encodeOpenStep(data);
+	assertEquals(
+		encode,
+		await fixturePlist('data-14', 'openstep'),
+	);
+});
+
+Deno.test('spec: data-15', async () => {
+	const chars = [...'abcdefghijklmno'].map((c) => c.charCodeAt(0));
+	const data = new PLData(chars.length);
+	new Uint8Array(data.buffer).set(chars);
+	const encode = encodeOpenStep(data);
+	assertEquals(
+		encode,
+		await fixturePlist('data-15', 'openstep'),
+	);
+});
+
 Deno.test('spec: data-256', async () => {
 	const bytes = new Uint8Array(256);
 	for (let i = 0; i < 256; i++) {
