@@ -315,6 +315,20 @@ Deno.test('spec: data-15', async () => {
 	);
 });
 
+Deno.test('spec: data-255', async () => {
+	const bytes = new Uint8Array(255);
+	for (let i = 0; i < 255; i++) {
+		bytes[i] = i;
+	}
+	const data = new PLData(255);
+	new Uint8Array(data.buffer).set(bytes);
+	const encode = encodeOpenStep(data);
+	assertEquals(
+		encode,
+		await fixturePlist('data-255', 'openstep'),
+	);
+});
+
 Deno.test('spec: data-256', async () => {
 	const bytes = new Uint8Array(256);
 	for (let i = 0; i < 256; i++) {
