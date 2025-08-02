@@ -8,6 +8,9 @@ import type { PLType } from './type.ts';
 
 const values: WeakMap<PLBoolean, boolean> = new WeakMap();
 
+/**
+ * PLBoolean type.
+ */
 export const PLTYPE_BOOLEAN = 'PLBoolean' as const;
 
 /**

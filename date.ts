@@ -15,8 +15,6 @@ const DBM = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
 const rISO = /^([-+]?\d+)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d(\.\d+)?)Z$/;
 const UNIX_EPOCH = -978307200;
 
-export const PLTYPE_DATE = 'PLDate' as const;
-
 /**
  * Is year leap year.
  *
@@ -233,6 +231,11 @@ function getTime(
 		second
 	);
 }
+
+/**
+ * PLDate type.
+ */
+export const PLTYPE_DATE = 'PLDate' as const;
 
 /**
  * Property list date type.

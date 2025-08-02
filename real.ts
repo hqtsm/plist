@@ -9,6 +9,9 @@ import type { PLType } from './type.ts';
 const values: WeakMap<PLReal, number> = new WeakMap();
 const bitses: WeakMap<PLReal, 32 | 64> = new WeakMap();
 
+/**
+ * PLReal type.
+ */
 export const PLTYPE_REAL = 'PLReal' as const;
 
 /**

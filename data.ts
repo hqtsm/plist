@@ -8,6 +8,9 @@ import type { PLType } from './type.ts';
 
 const buffers: WeakMap<PLData, ArrayBuffer> = new WeakMap();
 
+/**
+ * PLData type.
+ */
 export const PLTYPE_DATA = 'PLData' as const;
 
 /**

@@ -16,6 +16,9 @@ const set = (t: PLInteger, value: bigint): void => {
 	);
 };
 
+/**
+ * PLInteger type.
+ */
 export const PLTYPE_INTEGER = 'PLInteger' as const;
 
 /**

@@ -9,6 +9,9 @@ import type { PLType } from './type.ts';
 
 const maps: WeakMap<PLDict, Map<PLString, PLType>> = new WeakMap();
 
+/**
+ * PLDict type.
+ */
 export const PLTYPE_DICT = 'PLDict' as const;
 
 /**

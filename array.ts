@@ -8,6 +8,9 @@ import type { PLType } from './type.ts';
 
 const arrays: WeakMap<PLArray, Array<PLType>> = new WeakMap();
 
+/**
+ * PLArray type.
+ */
 export const PLTYPE_ARRAY = 'PLArray' as const;
 
 /**

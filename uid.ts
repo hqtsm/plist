@@ -8,6 +8,9 @@ import type { PLType } from './type.ts';
 
 const values: WeakMap<PLUID, bigint> = new WeakMap();
 
+/**
+ * PLUID type.
+ */
 export const PLTYPE_UID = 'PLUID' as const;
 
 /**

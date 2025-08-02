@@ -8,6 +8,9 @@ import type { PLType } from './type.ts';
 
 const values: WeakMap<PLString, string> = new WeakMap();
 
+/**
+ * PLString type.
+ */
 export const PLTYPE_STRING = 'PLString' as const;
 
 /**
