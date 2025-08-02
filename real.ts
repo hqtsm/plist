@@ -18,7 +18,7 @@ export const PLTYPE_REAL = 'PLReal' as const;
  * @param value Value.
  * @param bits Bits.
  */
-const set = (t: PLReal, value?: number | null, bits?: number | null): void => {
+function set(t: PLReal, value?: number | null, bits?: number | null): void {
 	values ??= new WeakMap();
 	bitses ??= new WeakMap();
 	switch (bits ?? bitses.get(t)) {
@@ -34,7 +34,7 @@ const set = (t: PLReal, value?: number | null, bits?: number | null): void => {
 		}
 	}
 	throw new RangeError('Invalid bits');
-};
+}
 
 /**
  * Property list real type.
