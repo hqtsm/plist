@@ -28,7 +28,7 @@ export class PLInteger {
 	 */
 	constructor(value = 0n, bits: 8 | 16 | 32 | 64 | 128 = 64) {
 		value = BigInt(value);
-		switch (+bits) {
+		switch ((+bits || 0) - (bits % 1 || 0)) {
 			case 8: {
 				values.set(this, BigInt.asIntN(8, value));
 				bitses.set(this, 8);
@@ -94,7 +94,7 @@ export class PLInteger {
 	 * @param bits Integer bits.
 	 */
 	public set bits(bits: 8 | 16 | 32 | 64 | 128) {
-		switch (+bits) {
+		switch ((+bits || 0) - (bits % 1 || 0)) {
 			case 8: {
 				values.set(this, BigInt.asIntN(8, values.get(this)!));
 				bitses.set(this, 8);

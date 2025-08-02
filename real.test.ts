@@ -35,29 +35,38 @@ Deno.test('set value', () => {
 	assertEquals(pl.value, PI64);
 });
 
+Deno.test('round bits', () => {
+	for (const bits of [32.1, 32.5, 32.9]) {
+		assertEquals(new PLReal(0, bits as 32).bits, 32);
+		const pl = new PLReal(0);
+		pl.bits = bits as 32;
+		assertEquals(pl.bits, 32);
+	}
+});
+
 Deno.test('bad bits', () => {
-	assertThrows(
-		() => {
-			new PLReal(0, 0 as 32 | 64);
-		},
-		RangeError,
-		'Invalid bits',
-	);
-	const pl = new PLReal();
-	assertThrows(
-		() => {
-			pl.bits = 0 as 32 | 64;
-		},
-		RangeError,
-		'Invalid bits',
-	);
-	assertThrows(
-		() => {
-			pl.bits = 32.1 as 32 | 64;
-		},
-		RangeError,
-		'Invalid bits',
-	);
+	for (const bits of [0, -1, NaN, Infinity, -Infinity, 33]) {
+		const tag = `bits: ${bits}`;
+		assertThrows(
+			() => {
+				new PLReal(0, bits as 32);
+			},
+			RangeError,
+			'Invalid bits',
+			tag,
+		);
+		const pl = new PLReal(Math.PI);
+		assertThrows(
+			() => {
+				pl.bits = bits as 32;
+			},
+			RangeError,
+			'Invalid bits',
+			tag,
+		);
+		assertEquals(pl.bits, 64, tag);
+		assertEquals(pl.value, Math.PI, tag);
+	}
 });
 
 Deno.test('is type', () => {

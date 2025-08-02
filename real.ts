@@ -28,7 +28,7 @@ export class PLReal {
 	 */
 	constructor(value = 0, bits: 32 | 64 = 64) {
 		value = +value;
-		switch (+bits) {
+		switch ((+bits || 0) - (bits % 1 || 0)) {
 			case 32: {
 				values.set(this, Math.fround(value));
 				bitses.set(this, 32);
@@ -79,7 +79,7 @@ export class PLReal {
 	 * @param bits Real bits.
 	 */
 	public set bits(bits: 32 | 64) {
-		switch (+bits) {
+		switch ((+bits || 0) - (bits % 1 || 0)) {
 			case 32: {
 				values.set(this, Math.fround(values.get(this)!));
 				bitses.set(this, 32);
