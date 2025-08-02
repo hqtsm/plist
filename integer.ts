@@ -7,14 +7,7 @@
 import type { PLType } from './type.ts';
 
 const values: WeakMap<PLInteger, bigint> = new WeakMap();
-const MAX_VALUE = 0xffffffffffffffffn;
-const MIN_VALUE = -0x8000000000000000n;
-const set = (t: PLInteger, value: bigint): void => {
-	values.set(
-		t,
-		value > MAX_VALUE ? MAX_VALUE : (value < MIN_VALUE ? MIN_VALUE : value),
-	);
-};
+const bitses: WeakMap<PLInteger, 8 | 16 | 32 | 64 | 128> = new WeakMap();
 
 /**
  * PLInteger type.
@@ -31,9 +24,40 @@ export class PLInteger {
 	 * Create property list integer reference.
 	 *
 	 * @param value Integer value.
+	 * @param bits Integer bits.
 	 */
-	constructor(value = 0n) {
-		set(this, BigInt(value));
+	constructor(value = 0n, bits: 8 | 16 | 32 | 64 | 128 = 64) {
+		value = BigInt(value);
+		switch (+bits) {
+			case 8: {
+				values.set(this, BigInt.asIntN(8, value));
+				bitses.set(this, 8);
+				break;
+			}
+			case 16: {
+				values.set(this, BigInt.asIntN(16, value));
+				bitses.set(this, 16);
+				break;
+			}
+			case 32: {
+				values.set(this, BigInt.asIntN(32, value));
+				bitses.set(this, 32);
+				break;
+			}
+			case 64: {
+				values.set(this, BigInt.asIntN(64, value));
+				bitses.set(this, 64);
+				break;
+			}
+			case 128: {
+				values.set(this, BigInt.asIntN(128, value));
+				bitses.set(this, 128);
+				break;
+			}
+			default: {
+				throw new RangeError('Invalid bits');
+			}
+		}
 	}
 
 	/**
@@ -51,7 +75,54 @@ export class PLInteger {
 	 * @param value Integer value.
 	 */
 	public set value(value: bigint) {
-		set(this, BigInt(value));
+		value = BigInt(value);
+		values.set(this, BigInt.asIntN(bitses.get(this)!, value));
+	}
+
+	/**
+	 * Get integer bits.
+	 *
+	 * @returns Integer bits.
+	 */
+	public get bits(): 8 | 16 | 32 | 64 | 128 {
+		return bitses.get(this)!;
+	}
+
+	/**
+	 * Set integer bits.
+	 *
+	 * @param bits Integer bits.
+	 */
+	public set bits(bits: 8 | 16 | 32 | 64 | 128) {
+		switch (+bits) {
+			case 8: {
+				values.set(this, BigInt.asIntN(8, values.get(this)!));
+				bitses.set(this, 8);
+				break;
+			}
+			case 16: {
+				values.set(this, BigInt.asIntN(16, values.get(this)!));
+				bitses.set(this, 16);
+				break;
+			}
+			case 32: {
+				values.set(this, BigInt.asIntN(32, values.get(this)!));
+				bitses.set(this, 32);
+				break;
+			}
+			case 64: {
+				values.set(this, BigInt.asIntN(64, values.get(this)!));
+				bitses.set(this, 64);
+				break;
+			}
+			case 128: {
+				bitses.set(this, 128);
+				break;
+			}
+			default: {
+				throw new RangeError('Invalid bits');
+			}
+		}
 	}
 
 	/**
@@ -78,7 +149,5 @@ export class PLInteger {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: PLTYPE_INTEGER,
 		});
-		Object.defineProperty(this, 'MAX_VALUE', { value: MAX_VALUE });
-		Object.defineProperty(this, 'MIN_VALUE', { value: MIN_VALUE });
 	}
 }
