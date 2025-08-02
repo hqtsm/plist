@@ -7,14 +7,6 @@
 import type { PLType } from './type.ts';
 
 const values: WeakMap<PLUID, bigint> = new WeakMap();
-const MIN_VALUE = 0n;
-const MAX_VALUE = 0xffffffffn;
-const set = (t: PLUID, value: bigint): void => {
-	values.set(
-		t,
-		value > MAX_VALUE ? MAX_VALUE : (value < MIN_VALUE ? MIN_VALUE : value),
-	);
-};
 
 export const PLTYPE_UID = 'PLUID' as const;
 
@@ -30,7 +22,7 @@ export class PLUID {
 	 * @param value UID value.
 	 */
 	constructor(value = 0n) {
-		set(this, BigInt(value));
+		values.set(this, BigInt.asUintN(32, BigInt(value)));
 	}
 
 	/**
@@ -48,7 +40,7 @@ export class PLUID {
 	 * @param value UID value.
 	 */
 	public set value(value: bigint) {
-		set(this, BigInt(value));
+		values.set(this, BigInt.asUintN(32, BigInt(value)));
 	}
 
 	/**
@@ -75,7 +67,5 @@ export class PLUID {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: PLTYPE_UID,
 		});
-		Object.defineProperty(this, 'MAX_VALUE', { value: MAX_VALUE });
-		Object.defineProperty(this, 'MIN_VALUE', { value: MIN_VALUE });
 	}
 }

@@ -2,7 +2,7 @@ import { assertEquals } from '@std/assert';
 import { PLInteger } from './integer.ts';
 import { PLUID } from './uid.ts';
 
-const { MAX_VALUE, MIN_VALUE } = PLUID;
+const MAX_U32 = 0xffffffffn;
 
 Deno.test('initial value', () => {
 	assertEquals(new PLUID().value, 0n);
@@ -15,40 +15,24 @@ Deno.test('set value', () => {
 	assertEquals(pl.value, 42n);
 });
 
-Deno.test('value clamped', () => {
+Deno.test('value wrap', () => {
 	const pl = new PLUID();
-
-	assertEquals(new PLUID(MAX_VALUE).value, MAX_VALUE);
-	pl.value = MAX_VALUE;
-	assertEquals(pl.value, MAX_VALUE);
-
-	assertEquals(new PLUID(MAX_VALUE + 1n).value, MAX_VALUE);
-	pl.value = MAX_VALUE + 1n;
-	assertEquals(pl.value, MAX_VALUE);
-
-	assertEquals(new PLUID(MAX_VALUE + 2n).value, MAX_VALUE);
-	pl.value = MAX_VALUE + 2n;
-	assertEquals(pl.value, MAX_VALUE);
-
-	assertEquals(new PLUID(MAX_VALUE * 2n).value, MAX_VALUE);
-	pl.value = MAX_VALUE * 2n;
-	assertEquals(pl.value, MAX_VALUE);
-
-	assertEquals(new PLUID(MIN_VALUE).value, MIN_VALUE);
-	pl.value = MIN_VALUE;
-	assertEquals(pl.value, MIN_VALUE);
-
-	assertEquals(new PLUID(MIN_VALUE - 1n).value, MIN_VALUE);
-	pl.value = MIN_VALUE - 1n;
-	assertEquals(pl.value, MIN_VALUE);
-
-	assertEquals(new PLUID(MIN_VALUE - 2n).value, MIN_VALUE);
-	pl.value = MIN_VALUE - 2n;
-	assertEquals(pl.value, MIN_VALUE);
-
-	assertEquals(new PLUID(MIN_VALUE * 2n).value, MIN_VALUE);
-	pl.value = MIN_VALUE * 2n;
-	assertEquals(pl.value, MIN_VALUE);
+	for (
+		const [i, w] of [
+			[0n, 0n],
+			[1n, 1n],
+			[2n, 2n],
+			[MAX_U32, MAX_U32],
+			[MAX_U32 + 1n, 0n],
+			[MAX_U32 + 2n, 1n],
+			[-1n, MAX_U32],
+			[-2n, MAX_U32 - 1n],
+		]
+	) {
+		assertEquals(new PLUID(i).value, w, `${i} -> ${w}`);
+		pl.value = i;
+		assertEquals(pl.value, w, `${i} -> ${w}`);
+	}
 });
 
 Deno.test('is type', () => {
