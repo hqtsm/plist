@@ -40,7 +40,7 @@ export class PLBoolean {
 	 * @param value Boolean value.
 	 */
 	public set value(value: boolean) {
-		(values ??= new WeakMap()).set(this, value);
+		(values ??= new WeakMap()).set(this, !!value);
 	}
 
 	/**

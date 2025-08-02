@@ -264,7 +264,7 @@ export class PLDate {
 	 * @param time Date time.
 	 */
 	public set time(time: number) {
-		(times ??= new WeakMap()).set(this, time);
+		(times ??= new WeakMap()).set(this, +time);
 	}
 
 	/**

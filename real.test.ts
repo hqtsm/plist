@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert';
+import { assertEquals, assertThrows } from '@std/assert';
 import { PLReal } from './real.ts';
 import { PLInteger } from './integer.ts';
 
@@ -33,6 +33,24 @@ Deno.test('set value', () => {
 	assertEquals(pl.value, PI32);
 	pl.value = PI64;
 	assertEquals(pl.value, PI64);
+});
+
+Deno.test('bad bits', () => {
+	const pl = new PLReal();
+	assertThrows(
+		() => {
+			pl.bits = 0 as 32 | 64;
+		},
+		RangeError,
+		'Invalid bits',
+	);
+	assertThrows(
+		() => {
+			pl.bits = 32.1 as 32 | 64;
+		},
+		RangeError,
+		'Invalid bits',
+	);
 });
 
 Deno.test('is type', () => {

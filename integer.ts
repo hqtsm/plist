@@ -43,6 +43,7 @@ export class PLInteger {
 	 * @param value Integer value.
 	 */
 	public set value(value: bigint) {
+		value = BigInt(value);
 		(values ??= new WeakMap()).set(
 			this,
 			value > MAX_VALUE

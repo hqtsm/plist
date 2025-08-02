@@ -40,7 +40,7 @@ export class PLString {
 	 * @param value String value.
 	 */
 	public set value(value: string) {
-		(values ??= new WeakMap()).set(this, value);
+		(values ??= new WeakMap()).set(this, String(value));
 	}
 
 	/**

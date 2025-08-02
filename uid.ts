@@ -43,6 +43,7 @@ export class PLUID {
 	 * @param value UID value.
 	 */
 	public set value(value: bigint) {
+		value = BigInt(value);
 		(values ??= new WeakMap()).set(
 			this,
 			value > MAX_VALUE

@@ -45,7 +45,7 @@ export class PLReal {
 	public set value(value: number) {
 		(values ??= new WeakMap()).set(
 			this,
-			bitses?.get(this) === 32 ? Math.fround(value) : value,
+			bitses?.get(this) === 32 ? Math.fround(value) : Number(value),
 		);
 	}
 
@@ -55,7 +55,7 @@ export class PLReal {
 	 * @returns Real bits.
 	 */
 	public get bits(): number {
-		return bitses.get(this)!;
+		return bitses?.get(this) ?? 64;
 	}
 
 	/**
@@ -64,12 +64,21 @@ export class PLReal {
 	 * @param bits Real bits.
 	 */
 	public set bits(bits: 32 | 64) {
-		bitses ??= new WeakMap();
-		if (bits === 32 && bitses.get(this) !== bits) {
-			bitses.set(this, bits);
-			values.set(this, Math.fround(values.get(this)!));
-		} else {
-			bitses.set(this, bits);
+		switch (+bits) {
+			case 32: {
+				if (bitses?.get(this) !== 32) {
+					(bitses ??= new WeakMap()).set(this, 32);
+					values.set(this, Math.fround(values.get(this)!));
+				}
+				break;
+			}
+			case 64: {
+				bitses?.delete(this);
+				break;
+			}
+			default: {
+				throw new RangeError('Invalid bits');
+			}
 		}
 	}
 
