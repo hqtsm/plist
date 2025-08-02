@@ -6,7 +6,7 @@
 
 import type { PLType } from './type.ts';
 
-let values: WeakMap<PLString, string>;
+const values: WeakMap<PLString, string> = new WeakMap();
 
 export const PLTYPE_STRING = 'PLString' as const;
 
@@ -22,7 +22,7 @@ export class PLString {
 	 * @param value String value.
 	 */
 	constructor(value = '') {
-		this.value = value;
+		values.set(this, '' + value);
 	}
 
 	/**
@@ -40,7 +40,7 @@ export class PLString {
 	 * @param value String value.
 	 */
 	public set value(value: string) {
-		(values ??= new WeakMap()).set(this, String(value));
+		values.set(this, '' + value);
 	}
 
 	/**
@@ -49,7 +49,7 @@ export class PLString {
 	 * @returns String length.
 	 */
 	public get length(): number {
-		return this.value.length;
+		return values.get(this)!.length;
 	}
 
 	/**

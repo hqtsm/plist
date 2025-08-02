@@ -6,7 +6,7 @@
 
 import type { PLType } from './type.ts';
 
-let arrays: WeakMap<PLArray, Array<PLType>>;
+const arrays: WeakMap<PLArray, Array<PLType>> = new WeakMap();
 
 export const PLTYPE_ARRAY = 'PLArray' as const;
 
@@ -22,7 +22,7 @@ export class PLArray<T extends PLType = PLType> {
 	 * @param itter Property list values.
 	 */
 	constructor(itter: Iterable<T> | ArrayLike<T> | null = null) {
-		(arrays ??= new WeakMap()).set(this, itter ? Array.from(itter) : []);
+		arrays.set(this, itter ? Array.from(itter) : []);
 	}
 
 	/**

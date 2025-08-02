@@ -6,21 +6,9 @@
 
 import type { PLType } from './type.ts';
 
-let values: WeakMap<PLReal, number>;
-let bitses: WeakMap<PLReal, 32 | 64>;
-
-export const PLTYPE_REAL = 'PLReal' as const;
-
-/**
- * Set the internal values.
- *
- * @param t PLReal.
- * @param value Value.
- * @param bits Bits.
- */
-function set(t: PLReal, value?: number | null, bits?: number | null): void {
-	values ??= new WeakMap();
-	bitses ??= new WeakMap();
+const values: WeakMap<PLReal, number> = new WeakMap();
+const bitses: WeakMap<PLReal, 32 | 64> = new WeakMap();
+const set = (t: PLReal, value?: number | null, bits?: number | null): void => {
 	switch (bits ?? bitses.get(t)) {
 		case 32: {
 			values.set(t, Math.fround(value ?? values.get(t)!));
@@ -34,7 +22,9 @@ function set(t: PLReal, value?: number | null, bits?: number | null): void {
 		}
 	}
 	throw new RangeError('Invalid bits');
-}
+};
+
+export const PLTYPE_REAL = 'PLReal' as const;
 
 /**
  * Property list real type.

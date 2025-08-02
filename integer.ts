@@ -6,10 +6,15 @@
 
 import type { PLType } from './type.ts';
 
-let values: WeakMap<PLInteger, bigint>;
-
+const values: WeakMap<PLInteger, bigint> = new WeakMap();
 const MAX_VALUE = 0xffffffffffffffffn;
 const MIN_VALUE = -0x8000000000000000n;
+const set = (t: PLInteger, value: bigint): void => {
+	values.set(
+		t,
+		value > MAX_VALUE ? MAX_VALUE : (value < MIN_VALUE ? MIN_VALUE : value),
+	);
+};
 
 export const PLTYPE_INTEGER = 'PLInteger' as const;
 
@@ -25,7 +30,7 @@ export class PLInteger {
 	 * @param value Integer value.
 	 */
 	constructor(value = 0n) {
-		this.value = value;
+		set(this, BigInt(value));
 	}
 
 	/**
@@ -43,13 +48,7 @@ export class PLInteger {
 	 * @param value Integer value.
 	 */
 	public set value(value: bigint) {
-		value = BigInt(value);
-		(values ??= new WeakMap()).set(
-			this,
-			value > MAX_VALUE
-				? MAX_VALUE
-				: (value < MIN_VALUE ? MIN_VALUE : value),
-		);
+		set(this, BigInt(value));
 	}
 
 	/**

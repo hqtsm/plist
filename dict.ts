@@ -7,7 +7,7 @@
 import type { PLString } from './string.ts';
 import type { PLType } from './type.ts';
 
-let maps: WeakMap<PLDict, Map<PLString, PLType>>;
+const maps: WeakMap<PLDict, Map<PLString, PLType>> = new WeakMap();
 
 export const PLTYPE_DICT = 'PLDict' as const;
 
@@ -23,7 +23,7 @@ export class PLDict<T extends PLType = PLType> {
 	 * @param itter Property list key value pairs.
 	 */
 	constructor(itter: Iterable<readonly [PLString, T]> | null = null) {
-		(maps ??= new WeakMap()).set(this, new Map(itter));
+		maps.set(this, new Map(itter));
 	}
 
 	/**

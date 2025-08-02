@@ -6,10 +6,15 @@
 
 import type { PLType } from './type.ts';
 
-let values: WeakMap<PLUID, bigint>;
-
+const values: WeakMap<PLUID, bigint> = new WeakMap();
 const MIN_VALUE = 0n;
 const MAX_VALUE = 0xffffffffn;
+const set = (t: PLUID, value: bigint): void => {
+	values.set(
+		t,
+		value > MAX_VALUE ? MAX_VALUE : (value < MIN_VALUE ? MIN_VALUE : value),
+	);
+};
 
 export const PLTYPE_UID = 'PLUID' as const;
 
@@ -25,7 +30,7 @@ export class PLUID {
 	 * @param value UID value.
 	 */
 	constructor(value = 0n) {
-		this.value = value;
+		set(this, BigInt(value));
 	}
 
 	/**
@@ -43,13 +48,7 @@ export class PLUID {
 	 * @param value UID value.
 	 */
 	public set value(value: bigint) {
-		value = BigInt(value);
-		(values ??= new WeakMap()).set(
-			this,
-			value > MAX_VALUE
-				? MAX_VALUE
-				: (value < MIN_VALUE ? MIN_VALUE : value),
-		);
+		set(this, BigInt(value));
 	}
 
 	/**

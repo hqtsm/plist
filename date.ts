@@ -6,8 +6,8 @@
 
 import type { PLType } from './type.ts';
 
-let times: WeakMap<PLDate, number>;
-
+let t;
+const times: WeakMap<PLDate, number> = new WeakMap();
 const Y: [number] = [0];
 const M: [number] = [0];
 const D: [number] = [0];
@@ -246,7 +246,7 @@ export class PLDate {
 	 * @param time Date time.
 	 */
 	constructor(time = 0) {
-		this.time = time;
+		times.set(this, +time);
 	}
 
 	/**
@@ -264,7 +264,7 @@ export class PLDate {
 	 * @param time Date time.
 	 */
 	public set time(time: number) {
-		(times ??= new WeakMap()).set(this, +time);
+		times.set(this, +time);
 	}
 
 	/**
@@ -273,7 +273,7 @@ export class PLDate {
 	 * @returns Year.
 	 */
 	public get year(): number {
-		getYMD(this.time, Y);
+		getYMD(times.get(this)!, Y);
 		return Y[0];
 	}
 
@@ -283,17 +283,9 @@ export class PLDate {
 	 * @param year Year.
 	 */
 	public set year(year: number) {
-		const { time } = this;
 		year = (+year || 0) - (year % 1 || 0);
-		getYMD(time, null, M, D);
-		this.time = getTime(
-			year,
-			M[0],
-			D[0],
-			getH(time),
-			getM(time),
-			getS(time),
-		);
+		getYMD(t = times.get(this)!, null, M, D);
+		times.set(this, getTime(year, M[0], D[0], getH(t), getM(t), getS(t)));
 	}
 
 	/**
@@ -302,7 +294,7 @@ export class PLDate {
 	 * @returns Month.
 	 */
 	public get month(): number {
-		getYMD(this.time, null, M);
+		getYMD(times.get(this)!, null, M);
 		return M[0];
 	}
 
@@ -312,9 +304,8 @@ export class PLDate {
 	 * @param month Month.
 	 */
 	public set month(month: number) {
-		const { time } = this;
 		month = (+month || 0) - (month % 1 || 0);
-		getYMD(time, Y, M);
+		getYMD(t = times.get(this)!, Y, M);
 		let [y] = Y;
 		const [m] = M;
 		const days = DBM[m] + (m > 2 ? leap(y) : 0);
@@ -330,7 +321,7 @@ export class PLDate {
 			}
 			d -= 365 - DBM[month += 12] + (month > 2 ? 0 : leap(y - 1));
 		}
-		this.time = time + (d - days) * 86400;
+		times.set(this, t + (d - days) * 86400);
 	}
 
 	/**
@@ -339,7 +330,7 @@ export class PLDate {
 	 * @returns Day.
 	 */
 	public get day(): number {
-		getYMD(this.time, null, null, D);
+		getYMD(times.get(this)!, null, null, D);
 		return D[0];
 	}
 
@@ -349,10 +340,9 @@ export class PLDate {
 	 * @param day Day.
 	 */
 	public set day(day: number) {
-		const { time } = this;
 		day = (+day || 0) - (day % 1 || 0);
-		getYMD(time, null, null, D);
-		this.time = time + (day - D[0]) * 86400;
+		getYMD(t = times.get(this)!, null, null, D);
+		times.set(this, t + (day - D[0]) * 86400);
 	}
 
 	/**
@@ -361,7 +351,7 @@ export class PLDate {
 	 * @returns Hour.
 	 */
 	public get hour(): number {
-		return getH(this.time);
+		return getH(times.get(this)!);
 	}
 
 	/**
@@ -370,8 +360,8 @@ export class PLDate {
 	 * @param hour Hour.
 	 */
 	public set hour(hour: number) {
-		const { time } = this;
-		this.time = time + ((+hour || 0) - (hour % 1 || 0) - getH(time)) * 3600;
+		hour = (+hour || 0) - (hour % 1 || 0);
+		times.set(this, (t = times.get(this)!) + (hour - getH(t)) * 3600);
 	}
 
 	/**
@@ -380,7 +370,7 @@ export class PLDate {
 	 * @returns Minute.
 	 */
 	public get minute(): number {
-		return getM(this.time);
+		return getM(times.get(this)!);
 	}
 
 	/**
@@ -389,9 +379,8 @@ export class PLDate {
 	 * @param minute Minute.
 	 */
 	public set minute(minute: number) {
-		const { time } = this;
-		this.time = time +
-			((+minute || 0) - (minute % 1 || 0) - getM(time)) * 60;
+		minute = (+minute || 0) - (minute % 1 || 0);
+		times.set(this, (t = times.get(this)!) + (minute - getM(t)) * 60);
 	}
 
 	/**
@@ -400,7 +389,7 @@ export class PLDate {
 	 * @returns Second.
 	 */
 	public get second(): number {
-		return getS(this.time);
+		return getS(times.get(this)!);
 	}
 
 	/**
@@ -409,8 +398,8 @@ export class PLDate {
 	 * @param second Second.
 	 */
 	public set second(second: number) {
-		const { time } = this;
-		this.time = time + (+second || 0) - getS(time);
+		second = +second || 0;
+		times.set(this, (t = times.get(this)!) + second - getS(t));
 	}
 
 	/**
@@ -419,7 +408,7 @@ export class PLDate {
 	 * @returns Date.
 	 */
 	public toDate(): Date {
-		return new Date((this.time - UNIX_EPOCH) * 1000);
+		return new Date((times.get(this)! - UNIX_EPOCH) * 1000);
 	}
 
 	/**
@@ -428,7 +417,7 @@ export class PLDate {
 	 * @returns ISO string.
 	 */
 	public toISOString(): string {
-		return iso(this.time);
+		return iso(times.get(this)!);
 	}
 
 	/**
