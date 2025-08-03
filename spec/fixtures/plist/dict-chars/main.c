@@ -4,7 +4,7 @@
 
 int main() {
 	CFMutableArrayRef plist = CFArrayCreateMutable(NULL, 0, NULL);
-	for (int i = 0xffff; i >= 0; i--) {
+	for (int i = 0; i <= 0xffff; i++) {
 		unsigned short s = i;
 		CFStringRef key = CFStringCreateWithBytes(NULL, (unsigned char *)&s, 2, kCFStringEncodingUTF16, false);
 		CFNumberRef val = CFNumberCreate(NULL, kCFNumberIntType, &i);
