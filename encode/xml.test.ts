@@ -406,6 +406,18 @@ Deno.test('spec: dict-empties', async () => {
 	);
 });
 
+Deno.test('spec: dict-26', async () => {
+	const dict = new PLDict();
+	for (const C of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+		dict.set(new PLString(C), new PLString(C.toLowerCase()));
+	}
+	const encode = encodeXml(dict);
+	assertEquals(
+		encode,
+		await fixturePlist('dict-26', 'xml'),
+	);
+});
+
 Deno.test('spec: dict-long-key', async () => {
 	const dict = new PLDict();
 	dict.set(
@@ -418,6 +430,19 @@ Deno.test('spec: dict-long-key', async () => {
 	assertEquals(
 		encode,
 		await fixturePlist('dict-long-key', 'xml'),
+	);
+});
+
+Deno.test('spec: dict-unicode-key', async () => {
+	const dict = new PLDict();
+	dict.set(
+		new PLString('UTF\u20138'),
+		new PLString('utf-8'),
+	);
+	const encode = encodeXml(dict);
+	assertEquals(
+		encode,
+		await fixturePlist('dict-unicode-key', 'xml'),
 	);
 });
 
