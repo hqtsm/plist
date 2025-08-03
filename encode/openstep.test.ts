@@ -582,6 +582,16 @@ Deno.test('spec: string-unicode', async () => {
 	);
 });
 
+Deno.test('spec: string-long-unicode', async () => {
+	const encode = encodeOpenStep(
+		new PLString(new Array(8).fill('UTF\u20138').join(' ')),
+	);
+	assertEquals(
+		encode,
+		await fixturePlist('string-long-unicode', 'openstep'),
+	);
+});
+
 Deno.test('spec: string-utf8-mb2-divide', async () => {
 	const encode = encodeOpenStep(new PLString('\u00f7'));
 	assertEquals(
