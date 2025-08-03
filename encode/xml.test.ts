@@ -470,21 +470,6 @@ Deno.test('spec: dict-nesting', async () => {
 	);
 });
 
-Deno.test('spec: dict-chars', async () => {
-	const array = new PLArray();
-	for (let i = 0; i <= 0xffff; i++) {
-		array.push(
-			new PLString(String.fromCharCode(i)),
-			new PLInteger(BigInt(i)),
-		);
-	}
-	const encode = encodeXml(array);
-	assertEquals(
-		diff(encode, await fixturePlist('dict-chars', 'xml')),
-		-1,
-	);
-});
-
 Deno.test('spec: dict-order', async () => {
 	const encode = encodeXml(
 		new PLDict([

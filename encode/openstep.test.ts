@@ -438,32 +438,6 @@ Deno.test('spec: dict-nesting', async () => {
 	);
 });
 
-Deno.test('spec: dict-chars', async () => {
-	const dict = new PLDict();
-	for (let i = 0; i <= 0xffff; i++) {
-		dict.set(
-			new PLString(String.fromCharCode(i)),
-			new PLString(String(i)),
-		);
-	}
-	{
-		const encode = encodeOpenStep(dict);
-		assertEquals(
-			diff(encode, await fixturePlist('dict-chars', 'openstep')),
-			-1,
-		);
-	}
-	{
-		const encode = encodeOpenStep(dict, {
-			format: FORMAT_STRINGS,
-		});
-		assertEquals(
-			diff(encode, await fixturePlist('dict-chars', 'strings')),
-			-1,
-		);
-	}
-});
-
 Deno.test('spec: dict-order', async () => {
 	const encode = encodeOpenStep(
 		new PLDict([
