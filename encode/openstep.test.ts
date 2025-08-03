@@ -535,14 +535,12 @@ Deno.test('spec: string-ascii', async () => {
 });
 
 Deno.test('spec: string-chars', async () => {
-	const keys = [];
-	for (let i = 0; i <= 0xffff; i++) {
-		keys.push(String(i));
-	}
-	keys.sort();
 	const dict = new PLDict();
-	for (const key of keys) {
-		dict.set(new PLString(key), new PLString(String.fromCharCode(+key)));
+	for (let i = 0; i <= 0xffff; i++) {
+		dict.set(
+			new PLString(`${i}`.padStart(5, '0')),
+			new PLString(String.fromCharCode(i)),
+		);
 	}
 	{
 		const encode = encodeOpenStep(dict);

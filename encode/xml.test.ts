@@ -548,16 +548,14 @@ Deno.test('spec: string-ascii', async () => {
 });
 
 Deno.test('spec: string-chars', async () => {
-	const keys = [];
+	const array = new PLArray();
 	for (let i = 0; i <= 0xffff; i++) {
-		keys.push(String(i));
+		array.push(
+			new PLString(`${i}`.padStart(5, '0')),
+			new PLString(String.fromCharCode(i)),
+		);
 	}
-	keys.sort();
-	const dict = new PLDict();
-	for (const key of keys) {
-		dict.set(new PLString(key), new PLString(String.fromCharCode(+key)));
-	}
-	const encode = encodeXml(dict);
+	const encode = encodeXml(array);
 	assertEquals(
 		diff(encode, await fixturePlist('string-chars', 'xml')),
 		-1,
