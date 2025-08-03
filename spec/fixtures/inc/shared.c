@@ -45,7 +45,7 @@ CFPropertyListRef plr(CFStringRef file, CFPropertyListFormat * format) {
 }
 
 int plw(CFPropertyListRef plist, CFStringRef file, CFPropertyListFormat format) {
-	CFURLRef url = CFURLCreateWithFileSystemPath(NULL, file, kCFURLPOSIXPathStyle, FALSE);
+	CFURLRef url = CFURLCreateWithFileSystemPath(NULL, file, kCFURLPOSIXPathStyle, false);
 	CFWriteStreamRef stream = CFWriteStreamCreateWithFile(NULL, url);
 	CFWriteStreamOpen(stream);
 	CFErrorRef error = NULL;
