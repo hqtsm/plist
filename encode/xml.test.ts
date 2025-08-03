@@ -662,36 +662,36 @@ Deno.test('spec: integer-min', async () => {
 });
 
 Deno.test('spec: integer-sizes', async () => {
-	const sizes = new Map([
-		0x0n,
-		0x1n,
-		0x7fn,
-		0x80n,
-		0xffn,
-		0x100n,
-		0xffffn,
-		0x10000n,
-		0xffffffn,
-		0x1000000n,
-		0xffffffffn,
-		0x100000000n,
-		0xffffffffffn,
-		0x10000000000n,
-		0xffffffffffffn,
-		0x1000000000000n,
-		0xffffffffffffffn,
-		0x100000000000000n,
-		0xffffffffffffffffn,
-	].map((i) => [`0x${i.toString(16)}`, i] as const));
-	const dict = new PLDict();
-	for (const key of [...sizes.keys()].sort()) {
-		const i = sizes.get(key)!;
-		dict.set(
-			new PLString(key),
+	const array = new PLArray();
+	for (
+		const i of [
+			0x0n,
+			0x1n,
+			0x7fn,
+			0x80n,
+			0xffn,
+			0x100n,
+			0xffffn,
+			0x10000n,
+			0xffffffn,
+			0x1000000n,
+			0xffffffffn,
+			0x100000000n,
+			0xffffffffffn,
+			0x10000000000n,
+			0xffffffffffffn,
+			0x1000000000000n,
+			0xffffffffffffffn,
+			0x100000000000000n,
+			0xffffffffffffffffn,
+		]
+	) {
+		array.push(
+			new PLString(`0x${i.toString(16)}`),
 			new PLInteger(i === 0xffffffffffffffffn ? -1n : i),
 		);
 	}
-	const encode = encodeXml(dict);
+	const encode = encodeXml(array);
 	assertEquals(
 		encode,
 		await fixturePlist('integer-sizes', 'xml'),
