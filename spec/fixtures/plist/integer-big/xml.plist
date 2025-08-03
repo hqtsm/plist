@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<integer>22690724228668807035206431743068735240</integer>
+<dict>
+	<key>BIG</key>
+	<integer>22690724228668807035206431743068735240</integer>
+	<key>MAX</key>
+	<integer>170141183460469231731687303715884105727</integer>
+	<key>MIN</key>
+	<integer>-0</integer>
+	<key>MIN+1</key>
+	<integer>-170141183460469231731687303715884105727</integer>
+	<key>MIN+2</key>
+	<integer>-170141183460469231731687303715884105726</integer>
+	<key>SMALL</key>
+	<integer>42</integer>
+</dict>
 </plist>
