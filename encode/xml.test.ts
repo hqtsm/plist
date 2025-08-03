@@ -456,14 +456,14 @@ Deno.test('spec: dict-nesting', async () => {
 });
 
 Deno.test('spec: dict-chars', async () => {
-	const dict = new PLDict();
+	const array = new PLArray();
 	for (let i = 0; i <= 0xffff; i++) {
-		dict.set(
+		array.push(
 			new PLString(String.fromCharCode(i)),
 			new PLInteger(BigInt(i)),
 		);
 	}
-	const encode = encodeXml(dict);
+	const encode = encodeXml(array);
 	assertEquals(
 		diff(encode, await fixturePlist('dict-chars', 'xml')),
 		-1,
