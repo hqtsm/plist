@@ -921,7 +921,7 @@ Deno.test('spec: date-edge', async () => {
 	];
 	const floatBytes = new Uint8Array(8);
 	const floatView = new DataView(floatBytes.buffer);
-	const map = new Map<string, number>();
+	const array = new PLArray();
 	for (const value of values) {
 		let key;
 		if (Object.is(value, -0)) {
@@ -940,14 +940,9 @@ Deno.test('spec: date-edge', async () => {
 		for (const byte of floatBytes) {
 			key += byte.toString(16).padStart(2, '0');
 		}
-		map.set(key, value);
+		array.push(new PLString(key), new PLDate(value));
 	}
-	const dict = new PLDict();
-	for (const key of [...map.keys()].sort()) {
-		const value = map.get(key)!;
-		dict.set(new PLString(key), new PLDate(value));
-	}
-	const encode = encodeXml(dict);
+	const encode = encodeXml(array);
 	assertEquals(
 		encode,
 		await fixturePlist('date-edge', 'xml'),
