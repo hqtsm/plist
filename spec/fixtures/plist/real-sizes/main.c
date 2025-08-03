@@ -8,7 +8,7 @@ struct sample {
 };
 
 int main() {
-	CFMutableDictionaryRef plist = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+	CFMutableArrayRef plist = CFArrayCreateMutable(NULL, 0, NULL);
 	struct sample values[] = {
 		{"0.0", 0.0},
 		{"-0.0", -0.0},
@@ -44,7 +44,8 @@ int main() {
 		sprintf(name, "f64 %016llx %s", f64hex.u, values[i].name);
 		CFStringRef key = CFStringCreateWithBytes(NULL, (const unsigned char *)name, strlen(name), kCFStringEncodingUTF8, false);
 		CFNumberRef val = CFNumberCreate(NULL, kCFNumberFloat64Type, &f64);
-		CFDictionarySetValue(plist, key, val);
+		CFArrayAppendValue(plist, key);
+		CFArrayAppendValue(plist, val);
 
 		float f32 = values[i].value;
 		union {
@@ -55,7 +56,8 @@ int main() {
 		sprintf(name, "f32 %08x %s", f32hex.u, values[i].name);
 		key = CFStringCreateWithBytes(NULL, (const unsigned char *)name, strlen(name), kCFStringEncodingUTF8, false);
 		val = CFNumberCreate(NULL, kCFNumberFloat32Type, &f32);
-		CFDictionarySetValue(plist, key, val);
+		CFArrayAppendValue(plist, key);
+		CFArrayAppendValue(plist, val);
 	}
 	plw(plist, CFSTR("binary.plist"), kCFPropertyListBinaryFormat_v1_0);
 	plw(plist, CFSTR("xml.plist"), kCFPropertyListXMLFormat_v1_0);

@@ -1,90 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>f32 00000000 0.0</key>
+<array>
+	<string>f64 0000000000000000 0.0</string>
 	<real>0.0</real>
-	<key>f32 00000000 5e-324</key>
+	<string>f32 00000000 0.0</string>
 	<real>0.0</real>
-	<key>f32 00000000 5e-46</key>
+	<string>f64 8000000000000000 -0.0</string>
 	<real>0.0</real>
-	<key>f32 00000004 5e-45</key>
-	<real>5.6051938572992683e-45</real>
-	<key>f32 3c23d70a 0.01</key>
-	<real>0.0099999997764825821</real>
-	<key>f32 3f800000 1.0</key>
+	<string>f32 80000000 -0.0</string>
+	<real>0.0</real>
+	<string>f64 3ff0000000000000 1.0</string>
 	<real>1</real>
-	<key>f32 4048f5c3 3.14</key>
-	<real>3.1400001049041748</real>
-	<key>f32 40490fdb PI</key>
-	<real>3.1415927410125732</real>
-	<key>f32 41200000 10.0</key>
-	<real>10</real>
-	<key>f32 7f800000 INFINITY</key>
-	<real>+infinity</real>
-	<key>f32 7fc00000 NAN</key>
-	<real>nan</real>
-	<key>f32 80000000 -0.0</key>
-	<real>0.0</real>
-	<key>f32 80000000 -5e-324</key>
-	<real>0.0</real>
-	<key>f32 80000000 -5e-46</key>
-	<real>0.0</real>
-	<key>f32 80000004 -5e-45</key>
-	<real>-5.6051938572992683e-45</real>
-	<key>f32 bc23d70a -0.01</key>
-	<real>-0.0099999997764825821</real>
-	<key>f32 bf800000 -1.0</key>
+	<string>f32 3f800000 1.0</string>
+	<real>1</real>
+	<string>f64 bff0000000000000 -1.0</string>
 	<real>-1</real>
-	<key>f32 c048f5c3 -3.14</key>
-	<real>-3.1400001049041748</real>
-	<key>f32 c0490fdb -PI</key>
-	<real>-3.1415927410125732</real>
-	<key>f32 c1200000 -10.0</key>
+	<string>f32 bf800000 -1.0</string>
+	<real>-1</real>
+	<string>f64 4024000000000000 10.0</string>
+	<real>10</real>
+	<string>f32 41200000 10.0</string>
+	<real>10</real>
+	<string>f64 c024000000000000 -10.0</string>
 	<real>-10</real>
-	<key>f32 ff800000 -INFINITY</key>
-	<real>-infinity</real>
-	<key>f64 0000000000000000 0.0</key>
-	<real>0.0</real>
-	<key>f64 0000000000000001 5e-324</key>
-	<real>4.9406564584124654e-324</real>
-	<key>f64 3686d601ad376ab9 5e-46</key>
-	<real>4.9999999999999999e-46</real>
-	<key>f64 36bc8b8218854567 5e-45</key>
-	<real>4.9999999999999998e-45</real>
-	<key>f64 3f847ae147ae147b 0.01</key>
+	<string>f32 c1200000 -10.0</string>
+	<real>-10</real>
+	<string>f64 3f847ae147ae147b 0.01</string>
 	<real>0.01</real>
-	<key>f64 3ff0000000000000 1.0</key>
-	<real>1</real>
-	<key>f64 40091eb851eb851f 3.14</key>
-	<real>3.1400000000000001</real>
-	<key>f64 400921fb54442d18 PI</key>
-	<real>3.1415926535897931</real>
-	<key>f64 4024000000000000 10.0</key>
-	<real>10</real>
-	<key>f64 7ff0000000000000 INFINITY</key>
-	<real>+infinity</real>
-	<key>f64 7ff8000000000000 NAN</key>
-	<real>nan</real>
-	<key>f64 8000000000000000 -0.0</key>
-	<real>0.0</real>
-	<key>f64 8000000000000001 -5e-324</key>
-	<real>-4.9406564584124654e-324</real>
-	<key>f64 b686d601ad376ab9 -5e-46</key>
-	<real>-4.9999999999999999e-46</real>
-	<key>f64 b6bc8b8218854567 -5e-45</key>
-	<real>-4.9999999999999998e-45</real>
-	<key>f64 bf847ae147ae147b -0.01</key>
+	<string>f32 3c23d70a 0.01</string>
+	<real>0.0099999997764825821</real>
+	<string>f64 bf847ae147ae147b -0.01</string>
 	<real>-0.01</real>
-	<key>f64 bff0000000000000 -1.0</key>
-	<real>-1</real>
-	<key>f64 c0091eb851eb851f -3.14</key>
+	<string>f32 bc23d70a -0.01</string>
+	<real>-0.0099999997764825821</real>
+	<string>f64 40091eb851eb851f 3.14</string>
+	<real>3.1400000000000001</real>
+	<string>f32 4048f5c3 3.14</string>
+	<real>3.1400001049041748</real>
+	<string>f64 c0091eb851eb851f -3.14</string>
 	<real>-3.1400000000000001</real>
-	<key>f64 c00921fb54442d18 -PI</key>
+	<string>f32 c048f5c3 -3.14</string>
+	<real>-3.1400001049041748</real>
+	<string>f64 36bc8b8218854567 5e-45</string>
+	<real>4.9999999999999998e-45</real>
+	<string>f32 00000004 5e-45</string>
+	<real>5.6051938572992683e-45</real>
+	<string>f64 b6bc8b8218854567 -5e-45</string>
+	<real>-4.9999999999999998e-45</real>
+	<string>f32 80000004 -5e-45</string>
+	<real>-5.6051938572992683e-45</real>
+	<string>f64 3686d601ad376ab9 5e-46</string>
+	<real>4.9999999999999999e-46</real>
+	<string>f32 00000000 5e-46</string>
+	<real>0.0</real>
+	<string>f64 b686d601ad376ab9 -5e-46</string>
+	<real>-4.9999999999999999e-46</real>
+	<string>f32 80000000 -5e-46</string>
+	<real>0.0</real>
+	<string>f64 0000000000000001 5e-324</string>
+	<real>4.9406564584124654e-324</real>
+	<string>f32 00000000 5e-324</string>
+	<real>0.0</real>
+	<string>f64 8000000000000001 -5e-324</string>
+	<real>-4.9406564584124654e-324</real>
+	<string>f32 80000000 -5e-324</string>
+	<real>0.0</real>
+	<string>f64 400921fb54442d18 PI</string>
+	<real>3.1415926535897931</real>
+	<string>f32 40490fdb PI</string>
+	<real>3.1415927410125732</real>
+	<string>f64 c00921fb54442d18 -PI</string>
 	<real>-3.1415926535897931</real>
-	<key>f64 c024000000000000 -10.0</key>
-	<real>-10</real>
-	<key>f64 fff0000000000000 -INFINITY</key>
+	<string>f32 c0490fdb -PI</string>
+	<real>-3.1415927410125732</real>
+	<string>f64 7ff8000000000000 NAN</string>
+	<real>nan</real>
+	<string>f32 7fc00000 NAN</string>
+	<real>nan</real>
+	<string>f64 7ff0000000000000 INFINITY</string>
+	<real>+infinity</real>
+	<string>f32 7f800000 INFINITY</string>
+	<real>+infinity</real>
+	<string>f64 fff0000000000000 -INFINITY</string>
 	<real>-infinity</real>
-</dict>
+	<string>f32 ff800000 -INFINITY</string>
+	<real>-infinity</real>
+</array>
 </plist>
