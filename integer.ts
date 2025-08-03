@@ -140,16 +140,6 @@ export class PLInteger {
 		return (arg as PLType | null)?.[Symbol.toStringTag] === PLTYPE_INTEGER;
 	}
 
-	/**
-	 * Maximum integer value.
-	 */
-	public static readonly MAX_VALUE: bigint;
-
-	/**
-	 * Minimum integer value.
-	 */
-	public static readonly MIN_VALUE: bigint;
-
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: PLTYPE_INTEGER,

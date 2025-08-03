@@ -56,16 +56,6 @@ export class PLUID {
 		return (arg as PLType | null)?.[Symbol.toStringTag] === PLTYPE_UID;
 	}
 
-	/**
-	 * Maximum UID value.
-	 */
-	public static readonly MAX_VALUE: bigint;
-
-	/**
-	 * Minimum UID value.
-	 */
-	public static readonly MIN_VALUE: bigint;
-
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: PLTYPE_UID,

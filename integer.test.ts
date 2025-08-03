@@ -2,8 +2,6 @@ import { assertEquals, assertThrows } from '@std/assert';
 import { PLInteger } from './integer.ts';
 import { PLReal } from './real.ts';
 
-// const { MAX_VALUE, MIN_VALUE } = PLInteger;
-
 Deno.test('initial value', () => {
 	assertEquals(new PLInteger().value, 0n);
 	assertEquals(new PLInteger(42n).value, 42n);
