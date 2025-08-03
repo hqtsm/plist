@@ -953,27 +953,28 @@ Deno.test('spec: uid-reuse', async () => {
 });
 
 Deno.test('spec: uid-sizes', async () => {
-	const values = [
-		0x0,
-		0x1,
-		0x100,
-		0x10000,
-		0x1000000,
-		0x7f,
-		0x80,
-		0xff,
-		0xffff,
-		0xffffff,
-		0xffffffff,
-	];
-	const dict = new PLDict();
-	for (const value of values) {
-		dict.set(
+	const array = new PLArray();
+	for (
+		const value of [
+			0x0,
+			0x1,
+			0x7f,
+			0x80,
+			0xff,
+			0x100,
+			0xffff,
+			0x10000,
+			0xffffff,
+			0x1000000,
+			0xffffffff,
+		]
+	) {
+		array.push(
 			new PLString(`0x${value.toString(16)}`),
 			new PLUID(BigInt(value)),
 		);
 	}
-	const encode = encodeXml(dict);
+	const encode = encodeXml(array);
 	assertEquals(
 		encode,
 		await fixturePlist('uid-sizes', 'xml'),
