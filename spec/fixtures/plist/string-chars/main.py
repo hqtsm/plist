@@ -38,17 +38,12 @@ eschr = {
 	92: b'\\\\',
 	127: b'\\177',
 }
-ints = []
-for i in range(0, 0xffff + 1):
-	ints.append(str(i))
-ints.sort()
 
 with open('openstep.plist', 'wb') as out:
 	with open('strings.plist', 'wb') as strings:
 		out.write(b'{\n')
-		for i in ints:
-			i = int(i)
-			k = str(i).encode()
+		for i in range(0, 0xffff + 1):
+			k = ('%0.5d' % (i)).encode()
 			v = None
 			if i in eschr:
 				v = b'"' + eschr[i] + b'"'
