@@ -6,8 +6,13 @@
 
 import type { PLType } from './type.ts';
 
+/**
+ * Property list integer bits.
+ */
+export type PLIntegerBits = 8 | 16 | 32 | 64 | 128;
+
 const values: WeakMap<PLInteger, bigint> = new WeakMap();
-const bitses: WeakMap<PLInteger, 8 | 16 | 32 | 64 | 128> = new WeakMap();
+const bitses: WeakMap<PLInteger, PLIntegerBits> = new WeakMap();
 
 /**
  * PLInteger type.
@@ -26,7 +31,7 @@ export class PLInteger {
 	 * @param value Integer value.
 	 * @param bits Integer bits.
 	 */
-	constructor(value = 0n, bits: 8 | 16 | 32 | 64 | 128 = 64) {
+	constructor(value = 0n, bits: PLIntegerBits = 64) {
 		value = BigInt(value);
 		switch ((+bits || 0) - (bits % 1 || 0)) {
 			case 8: {
@@ -84,7 +89,7 @@ export class PLInteger {
 	 *
 	 * @returns Integer bits.
 	 */
-	public get bits(): 8 | 16 | 32 | 64 | 128 {
+	public get bits(): PLIntegerBits {
 		return bitses.get(this)!;
 	}
 
@@ -93,7 +98,7 @@ export class PLInteger {
 	 *
 	 * @param bits Integer bits.
 	 */
-	public set bits(bits: 8 | 16 | 32 | 64 | 128) {
+	public set bits(bits: PLIntegerBits) {
 		switch ((+bits || 0) - (bits % 1 || 0)) {
 			case 8: {
 				values.set(this, BigInt.asIntN(8, values.get(this)!));

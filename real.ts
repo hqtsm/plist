@@ -6,8 +6,13 @@
 
 import type { PLType } from './type.ts';
 
+/**
+ * Property list real bits.
+ */
+export type PLRealBits = 32 | 64;
+
 const values: WeakMap<PLReal, number> = new WeakMap();
-const bitses: WeakMap<PLReal, 32 | 64> = new WeakMap();
+const bitses: WeakMap<PLReal, PLRealBits> = new WeakMap();
 
 /**
  * PLReal type.
@@ -26,7 +31,7 @@ export class PLReal {
 	 * @param value Real value.
 	 * @param bits Real bits.
 	 */
-	constructor(value = 0, bits: 32 | 64 = 64) {
+	constructor(value = 0, bits: PLRealBits = 64) {
 		value = +value;
 		switch ((+bits || 0) - (bits % 1 || 0)) {
 			case 32: {
@@ -69,7 +74,7 @@ export class PLReal {
 	 *
 	 * @returns Real bits.
 	 */
-	public get bits(): 32 | 64 {
+	public get bits(): PLRealBits {
 		return bitses.get(this)!;
 	}
 
@@ -78,7 +83,7 @@ export class PLReal {
 	 *
 	 * @param bits Real bits.
 	 */
-	public set bits(bits: 32 | 64) {
+	public set bits(bits: PLRealBits) {
 		switch ((+bits || 0) - (bits % 1 || 0)) {
 			case 32: {
 				values.set(this, Math.fround(values.get(this)!));
