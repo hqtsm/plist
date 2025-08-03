@@ -374,6 +374,21 @@ Deno.test('spec: dict-empties', async () => {
 	);
 });
 
+Deno.test('spec: dict-long-key', async () => {
+	const dict = new PLDict();
+	dict.set(
+		new PLString(
+			'ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789',
+		),
+		new PLString('64'),
+	);
+	const encode = encodeOpenStep(dict);
+	assertEquals(
+		encode,
+		await fixturePlist('dict-long-key', 'openstep'),
+	);
+});
+
 Deno.test('spec: dict-nesting', async () => {
 	const encode = encodeOpenStep(
 		new PLDict([
