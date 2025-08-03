@@ -159,6 +159,18 @@ function stringEncode(
 }
 
 /**
+ * Encode integer to string.
+ *
+ * @param i Integer value.
+ * @returns Integer string.
+ */
+function integerString(i: bigint): string {
+	// Smallest 128-bit encodes as negative zero.
+	// Weird bug?
+	return i === -0x80000000000000000000000000000000n ? '-0' : i.toString();
+}
+
+/**
  * Encode real to string.
  *
  * @param real Real value.
@@ -314,7 +326,7 @@ export function encodeXml(
 				i += 13 + dateString(v).length;
 			},
 			PLInteger(v): void {
-				i += 19 + v.value.toString().length;
+				i += 19 + integerString(v.value).length;
 			},
 			PLReal(v): void {
 				i += 13 + realString(v.value).length;
@@ -454,7 +466,7 @@ export function encodeXml(
 					r.set(id, i);
 				}
 				i = stringEncode('<integer>', r, i);
-				i = stringEncode(v.value.toString(), r, i);
+				i = stringEncode(integerString(v.value), r, i);
 				i = stringEncode('</integer>', r, i);
 				r[i++] = 10;
 			},

@@ -657,6 +657,41 @@ Deno.test('spec: integer-sizes', async () => {
 	);
 });
 
+Deno.test('spec: integer-big', async () => {
+	const MIN = -0x80000000000000000000000000000000n;
+	const dict = new PLDict([
+		[
+			new PLString('BIG'),
+			new PLInteger(0x11121314151617180102030405060708n, 128),
+		],
+		[
+			new PLString('MAX'),
+			new PLInteger(0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFn, 128),
+		],
+		[
+			new PLString('MIN'),
+			new PLInteger(MIN, 128),
+		],
+		[
+			new PLString('MIN+1'),
+			new PLInteger(MIN + 1n, 128),
+		],
+		[
+			new PLString('MIN+2'),
+			new PLInteger(MIN + 2n, 128),
+		],
+		[
+			new PLString('SMALL'),
+			new PLInteger(42n, 128),
+		],
+	]);
+	const encode = encodeXml(dict);
+	assertEquals(
+		encode,
+		await fixturePlist('integer-big', 'xml'),
+	);
+});
+
 Deno.test('spec: real-float-p0.0', async () => {
 	const encode = encodeXml(new PLReal(0, 32));
 	assertEquals(
