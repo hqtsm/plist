@@ -34,6 +34,12 @@ export const XML_DOCPLTYPE_SYSTEM =
 export const XML_VERSION_V1_0 = '1.0';
 
 /**
+ * XML version 0.9.
+ * Known to pair with system doctype.
+ */
+export const XML_VERSION_V0_9 = '0.9';
+
+/**
  * Calculate string encode size.
  *
  * @param str String.
