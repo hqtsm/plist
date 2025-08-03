@@ -16,12 +16,6 @@ const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>';
 const b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 /**
- * Public doctype 1.0.
- */
-export const XML_DOCPLTYPE_PUBLIC_V1_0 =
-	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
-
-/**
  * System doctype.
  * Known to pair with version '0.9'.
  */
@@ -29,15 +23,21 @@ export const XML_DOCPLTYPE_SYSTEM =
 	'<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">';
 
 /**
- * XML version 1.0.
+ * Public doctype 1.0.
  */
-export const XML_VERSION_V1_0 = '1.0';
+export const XML_DOCPLTYPE_PUBLIC_V1_0 =
+	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
 
 /**
  * XML version 0.9.
  * Known to pair with system doctype.
  */
 export const XML_VERSION_V0_9 = '0.9';
+
+/**
+ * XML version 1.0.
+ */
+export const XML_VERSION_V1_0 = '1.0';
 
 /**
  * Calculate string encode size.
