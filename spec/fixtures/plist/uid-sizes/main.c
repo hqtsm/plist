@@ -3,7 +3,7 @@
 #include "../../inc/shared.c"
 
 int main() {
-	CFMutableDictionaryRef plist = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+	CFMutableArrayRef plist = CFArrayCreateMutable(NULL, 0, NULL);
 	unsigned int values[] = {
 		0x0,
 		0x1,
@@ -22,7 +22,8 @@ int main() {
 		sprintf(keyi, "0x%x", values[i]);
 		CFStringRef key = CFStringCreateWithBytes(NULL, (unsigned char *)keyi, strlen(keyi), kCFStringEncodingUTF8, false);
 		CFKeyedArchiverUIDRef val = _CFKeyedArchiverUIDCreate(NULL, values[i]);
-		CFDictionarySetValue(plist, key, val);
+		CFArrayAppendValue(plist, key);
+		CFArrayAppendValue(plist, val);
 	}
 	plw(plist, CFSTR("binary.plist"), kCFPropertyListBinaryFormat_v1_0);
 	plw(plist, CFSTR("xml.plist"), kCFPropertyListXMLFormat_v1_0);

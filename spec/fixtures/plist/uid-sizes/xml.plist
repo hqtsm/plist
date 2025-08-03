@@ -1,61 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>0x0</key>
+<array>
+	<string>0x0</string>
 	<dict>
 		<key>CF$UID</key>
 		<integer>0</integer>
 	</dict>
-	<key>0x1</key>
+	<string>0x1</string>
 	<dict>
 		<key>CF$UID</key>
 		<integer>1</integer>
 	</dict>
-	<key>0x100</key>
-	<dict>
-		<key>CF$UID</key>
-		<integer>256</integer>
-	</dict>
-	<key>0x10000</key>
-	<dict>
-		<key>CF$UID</key>
-		<integer>65536</integer>
-	</dict>
-	<key>0x1000000</key>
-	<dict>
-		<key>CF$UID</key>
-		<integer>16777216</integer>
-	</dict>
-	<key>0x7f</key>
+	<string>0x7f</string>
 	<dict>
 		<key>CF$UID</key>
 		<integer>127</integer>
 	</dict>
-	<key>0x80</key>
+	<string>0x80</string>
 	<dict>
 		<key>CF$UID</key>
 		<integer>128</integer>
 	</dict>
-	<key>0xff</key>
+	<string>0xff</string>
 	<dict>
 		<key>CF$UID</key>
 		<integer>255</integer>
 	</dict>
-	<key>0xffff</key>
+	<string>0x100</string>
+	<dict>
+		<key>CF$UID</key>
+		<integer>256</integer>
+	</dict>
+	<string>0xffff</string>
 	<dict>
 		<key>CF$UID</key>
 		<integer>65535</integer>
 	</dict>
-	<key>0xffffff</key>
+	<string>0x10000</string>
+	<dict>
+		<key>CF$UID</key>
+		<integer>65536</integer>
+	</dict>
+	<string>0xffffff</string>
 	<dict>
 		<key>CF$UID</key>
 		<integer>16777215</integer>
 	</dict>
-	<key>0xffffffff</key>
+	<string>0x1000000</string>
+	<dict>
+		<key>CF$UID</key>
+		<integer>16777216</integer>
+	</dict>
+	<string>0xffffffff</string>
 	<dict>
 		<key>CF$UID</key>
 		<integer>4294967295</integer>
 	</dict>
-</dict>
+</array>
 </plist>
