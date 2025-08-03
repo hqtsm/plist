@@ -133,8 +133,10 @@ Deno.test('spec: array-4', async () => {
 
 Deno.test('spec: array-8', async () => {
 	const array = new PLArray();
+	const A = new PLString('A');
+	const B = new PLString('B');
 	for (let i = 0; i < 8; i++) {
-		array.push(new PLString(i % 2 ? 'B' : 'A'));
+		array.push(i % 2 ? B : A);
 	}
 	const encode = encodeXml(array);
 	assertEquals(
@@ -145,8 +147,10 @@ Deno.test('spec: array-8', async () => {
 
 Deno.test('spec: array-14', async () => {
 	const array = new PLArray();
+	const TRUE = new PLBoolean(true);
+	const FALSE = new PLBoolean(false);
 	for (let i = 0; i < 14; i++) {
-		array.push(new PLBoolean(!!(i % 2)));
+		array.push(i % 2 ? TRUE : FALSE);
 	}
 	const encode = encodeXml(array);
 	assertEquals(
@@ -211,8 +215,10 @@ Deno.test('spec: array-255', async () => {
 
 Deno.test('spec: array-256', async () => {
 	const array = new PLArray();
+	const TRUE = new PLBoolean(true);
+	const FALSE = new PLBoolean(false);
 	for (let i = 0; i < 256; i++) {
-		array.push(new PLBoolean(!!(i % 2)));
+		array.push(i % 2 ? TRUE : FALSE);
 	}
 	const encode = encodeXml(array);
 	assertEquals(
@@ -223,8 +229,10 @@ Deno.test('spec: array-256', async () => {
 
 Deno.test('spec: array-65534', async () => {
 	const array = new PLArray();
+	const TRUE = new PLBoolean(true);
+	const FALSE = new PLBoolean(false);
 	for (let i = 0; i < 65534; i++) {
-		array.push(new PLBoolean(!!(i % 2)));
+		array.push(i % 2 ? TRUE : FALSE);
 	}
 	const encode = encodeXml(array);
 	assertEquals(
@@ -235,8 +243,10 @@ Deno.test('spec: array-65534', async () => {
 
 Deno.test('spec: array-65535', async () => {
 	const array = new PLArray();
+	const TRUE = new PLBoolean(true);
+	const FALSE = new PLBoolean(false);
 	for (let i = 0; i < 65535; i++) {
-		array.push(new PLBoolean(!!(i % 2)));
+		array.push(i % 2 ? TRUE : FALSE);
 	}
 	const encode = encodeXml(array);
 	assertEquals(
@@ -247,8 +257,10 @@ Deno.test('spec: array-65535', async () => {
 
 Deno.test('spec: array-65536', async () => {
 	const array = new PLArray();
+	const TRUE = new PLBoolean(true);
+	const FALSE = new PLBoolean(false);
 	for (let i = 0; i < 65536; i++) {
-		array.push(new PLBoolean(!!(i % 2)));
+		array.push(i % 2 ? TRUE : FALSE);
 	}
 	const encode = encodeXml(array);
 	assertEquals(
