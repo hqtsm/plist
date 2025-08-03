@@ -832,14 +832,14 @@ Deno.test('spec: date-0.0', async () => {
 });
 
 Deno.test('spec: date-every-day-2001', async () => {
-	const dict = new PLDict();
+	const array = new PLArray();
 	for (let day = 1; day <= 365; day++) {
 		const date = new PLDate();
 		date.year = 2001;
 		date.day = day;
-		dict.set(new PLString(String(day).padStart(3, '0')), date);
+		array.push(new PLString(String(day).padStart(3, '0')), date);
 	}
-	const encode = encodeXml(dict);
+	const encode = encodeXml(array);
 	assertEquals(
 		encode,
 		await fixturePlist('date-every-day-2001', 'xml'),
@@ -847,14 +847,14 @@ Deno.test('spec: date-every-day-2001', async () => {
 });
 
 Deno.test('spec: date-every-day-2004', async () => {
-	const dict = new PLDict();
+	const array = new PLArray();
 	for (let day = 1; day <= 366; day++) {
 		const date = new PLDate();
 		date.year = 2004;
 		date.day = day;
-		dict.set(new PLString(String(day).padStart(3, '0')), date);
+		array.push(new PLString(String(day).padStart(3, '0')), date);
 	}
-	const encode = encodeXml(dict);
+	const encode = encodeXml(array);
 	assertEquals(
 		encode,
 		await fixturePlist('date-every-day-2004', 'xml'),
