@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>0x0</key>
+<array>
+	<string>0x0</string>
 	<integer>0</integer>
-	<key>0x1</key>
+	<string>0x1</string>
 	<integer>1</integer>
-	<key>0x100</key>
-	<integer>256</integer>
-	<key>0x10000</key>
-	<integer>65536</integer>
-	<key>0x1000000</key>
-	<integer>16777216</integer>
-	<key>0x100000000</key>
-	<integer>4294967296</integer>
-	<key>0x10000000000</key>
-	<integer>1099511627776</integer>
-	<key>0x1000000000000</key>
-	<integer>281474976710656</integer>
-	<key>0x100000000000000</key>
-	<integer>72057594037927936</integer>
-	<key>0x7f</key>
+	<string>0x7f</string>
 	<integer>127</integer>
-	<key>0x80</key>
+	<string>0x80</string>
 	<integer>128</integer>
-	<key>0xff</key>
+	<string>0xff</string>
 	<integer>255</integer>
-	<key>0xffff</key>
+	<string>0x100</string>
+	<integer>256</integer>
+	<string>0xffff</string>
 	<integer>65535</integer>
-	<key>0xffffff</key>
+	<string>0x10000</string>
+	<integer>65536</integer>
+	<string>0xffffff</string>
 	<integer>16777215</integer>
-	<key>0xffffffff</key>
+	<string>0x1000000</string>
+	<integer>16777216</integer>
+	<string>0xffffffff</string>
 	<integer>4294967295</integer>
-	<key>0xffffffffff</key>
+	<string>0x100000000</string>
+	<integer>4294967296</integer>
+	<string>0xffffffffff</string>
 	<integer>1099511627775</integer>
-	<key>0xffffffffffff</key>
+	<string>0x10000000000</string>
+	<integer>1099511627776</integer>
+	<string>0xffffffffffff</string>
 	<integer>281474976710655</integer>
-	<key>0xffffffffffffff</key>
+	<string>0x1000000000000</string>
+	<integer>281474976710656</integer>
+	<string>0xffffffffffffff</string>
 	<integer>72057594037927935</integer>
-	<key>0xffffffffffffffff</key>
+	<string>0x100000000000000</string>
+	<integer>72057594037927936</integer>
+	<string>0xffffffffffffffff</string>
 	<integer>-1</integer>
-</dict>
+</array>
 </plist>
