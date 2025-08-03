@@ -184,6 +184,38 @@ export class PLDict<T extends PLType = PLType> {
 	}
 
 	/**
+	 * Get as map.
+	 *
+	 * @returns Map.
+	 */
+	public toMap(): Map<PLString, T> {
+		return new Map(maps.get(this) as Map<PLString, T>);
+	}
+
+	/**
+	 * Get key value map.
+	 *
+	 * @param first On duplicate, use the first key.
+	 * @returns Value map.
+	 */
+	public toValueMap(first = false): Map<string, T> {
+		const r = new Map();
+		if (first) {
+			for (const [k, v] of maps.get(this) as Map<PLString, T>) {
+				const { value } = k;
+				if (!r.has(value)) {
+					r.set(value, v);
+				}
+			}
+		} else {
+			for (const [k, v] of maps.get(this) as Map<PLString, T>) {
+				r.set(k.value, v);
+			}
+		}
+		return r;
+	}
+
+	/**
 	 * Check if dict type.
 	 *
 	 * @param arg Variable.

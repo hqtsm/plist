@@ -185,6 +185,46 @@ Deno.test('Symbol.iterator', () => {
 	}
 });
 
+Deno.test('toMap', () => {
+	const a = new PLString('a');
+	const b = new PLString('b');
+	const values = new Map([
+		[a, a],
+		[b, b],
+	]);
+	const dict = new PLDict(values);
+	const map = dict.toMap();
+	assertEquals(map.size, values.size);
+	for (const [k, v] of map) {
+		assertStrictEquals(v, values.get(k));
+	}
+});
+
+Deno.test('toValueMap', () => {
+	const a = new PLString('a');
+	const A1 = new PLString('A');
+	const A2 = new PLString('A');
+	const b = new PLString('b');
+	const B1 = new PLString('B');
+	const dict = new PLDict([
+		[A1, a],
+		[A2, b],
+		[B1, b],
+	]);
+	let map = dict.toValueMap();
+	assertEquals(map.size, 2);
+	assertStrictEquals(map.get('A'), b);
+	assertStrictEquals(map.get('B'), b);
+	map = dict.toValueMap(false);
+	assertEquals(map.size, 2);
+	assertStrictEquals(map.get('A'), b);
+	assertStrictEquals(map.get('B'), b);
+	map = dict.toValueMap(true);
+	assertEquals(map.size, 2);
+	assertStrictEquals(map.get('A'), a);
+	assertStrictEquals(map.get('B'), b);
+});
+
 Deno.test('is type', () => {
 	assertEquals(PLDict.is(new PLDict()), true);
 	assertEquals(PLDict.is(new PLString()), false);
