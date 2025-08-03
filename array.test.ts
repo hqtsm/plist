@@ -144,26 +144,27 @@ Deno.test('slice', () => {
 	const c = new PLInteger(2n);
 	const d = new PLInteger(3n);
 	const array = new PLArray([a, b, c, d]);
-	assertEquals(array.slice(0), [a, b, c, d]);
-	assertEquals(array.slice(1), [b, c, d]);
-	assertEquals(array.slice(2), [c, d]);
-	assertEquals(array.slice(3), [d]);
-	assertEquals(array.slice(4), []);
-	assertEquals(array.slice(-1), [d]);
-	assertEquals(array.slice(-2), [c, d]);
-	assertEquals(array.slice(-3), [b, c, d]);
-	assertEquals(array.slice(-4), [a, b, c, d]);
-	assertEquals(array.slice(-5), [a, b, c, d]);
-	assertEquals(array.slice(0, 1), [a]);
-	assertEquals(array.slice(0, 2), [a, b]);
-	assertEquals(array.slice(0, 3), [a, b, c]);
-	assertEquals(array.slice(0, 4), [a, b, c, d]);
-	assertEquals(array.slice(0, 5), [a, b, c, d]);
-	assertEquals(array.slice(1, 2), [b]);
-	assertEquals(array.slice(1, 3), [b, c]);
-	assertEquals(array.slice(1, 4), [b, c, d]);
-	assertEquals(array.slice(1, 5), [b, c, d]);
-	assertEquals(array.slice(1, -1), [b, c]);
+	assertEquals([...array.slice()], [a, b, c, d]);
+	assertEquals([...array.slice(0)], [a, b, c, d]);
+	assertEquals([...array.slice(1)], [b, c, d]);
+	assertEquals([...array.slice(2)], [c, d]);
+	assertEquals([...array.slice(3)], [d]);
+	assertEquals([...array.slice(4)], []);
+	assertEquals([...array.slice(-1)], [d]);
+	assertEquals([...array.slice(-2)], [c, d]);
+	assertEquals([...array.slice(-3)], [b, c, d]);
+	assertEquals([...array.slice(-4)], [a, b, c, d]);
+	assertEquals([...array.slice(-5)], [a, b, c, d]);
+	assertEquals([...array.slice(0, 1)], [a]);
+	assertEquals([...array.slice(0, 2)], [a, b]);
+	assertEquals([...array.slice(0, 3)], [a, b, c]);
+	assertEquals([...array.slice(0, 4)], [a, b, c, d]);
+	assertEquals([...array.slice(0, 5)], [a, b, c, d]);
+	assertEquals([...array.slice(1, 2)], [b]);
+	assertEquals([...array.slice(1, 3)], [b, c]);
+	assertEquals([...array.slice(1, 4)], [b, c, d]);
+	assertEquals([...array.slice(1, 5)], [b, c, d]);
+	assertEquals([...array.slice(1, -1)], [b, c]);
 });
 
 Deno.test('splice', () => {
@@ -407,6 +408,35 @@ Deno.test('Symbol.iterator', () => {
 	for (const value of array) {
 		assertStrictEquals(value, values[i++]);
 	}
+});
+
+Deno.test('toArray', () => {
+	const a = new PLInteger(0n);
+	const b = new PLInteger(1n);
+	const c = new PLInteger(2n);
+	const d = new PLInteger(3n);
+	const array = new PLArray([a, b, c, d]);
+	assertEquals(array.toArray(), [a, b, c, d]);
+	assertEquals(array.toArray(0), [a, b, c, d]);
+	assertEquals(array.toArray(1), [b, c, d]);
+	assertEquals(array.toArray(2), [c, d]);
+	assertEquals(array.toArray(3), [d]);
+	assertEquals(array.toArray(4), []);
+	assertEquals(array.toArray(-1), [d]);
+	assertEquals(array.toArray(-2), [c, d]);
+	assertEquals(array.toArray(-3), [b, c, d]);
+	assertEquals(array.toArray(-4), [a, b, c, d]);
+	assertEquals(array.toArray(-5), [a, b, c, d]);
+	assertEquals(array.toArray(0, 1), [a]);
+	assertEquals(array.toArray(0, 2), [a, b]);
+	assertEquals(array.toArray(0, 3), [a, b, c]);
+	assertEquals(array.toArray(0, 4), [a, b, c, d]);
+	assertEquals(array.toArray(0, 5), [a, b, c, d]);
+	assertEquals(array.toArray(1, 2), [b]);
+	assertEquals(array.toArray(1, 3), [b, c]);
+	assertEquals(array.toArray(1, 4), [b, c, d]);
+	assertEquals(array.toArray(1, 5), [b, c, d]);
+	assertEquals(array.toArray(1, -1), [b, c]);
 });
 
 Deno.test('is type', () => {

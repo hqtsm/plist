@@ -112,8 +112,8 @@ export class PLArray<T extends PLType = PLType> {
 	 * @param end End index.
 	 * @returns Sliced values.
 	 */
-	public slice(start: number, end?: number): T[] {
-		return (arrays.get(this) as T[]).slice(start, end);
+	public slice(start?: number, end?: number): PLArray<T> {
+		return new PLArray((arrays.get(this) as T[]).slice(start, end));
 	}
 
 	/**
@@ -268,6 +268,17 @@ export class PLArray<T extends PLType = PLType> {
 	 */
 	public [Symbol.iterator](): ReturnType<Array<T>[typeof Symbol.iterator]> {
 		return (arrays.get(this) as T[])[Symbol.iterator]();
+	}
+
+	/**
+	 * To array, optionally slice.
+	 *
+	 * @param start Start index.
+	 * @param end End index.
+	 * @returns Sliced values.
+	 */
+	public toArray(start?: number, end?: number): T[] {
+		return (arrays.get(this) as T[]).slice(start, end);
 	}
 
 	/**
