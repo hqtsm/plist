@@ -761,51 +761,51 @@ Deno.test('spec: real-reuse', async () => {
 Deno.test('spec: real-sizes', async () => {
 	const buffer = new Uint8Array(8);
 	const view = new DataView(buffer.buffer);
-	const dict = new PLDict();
+	const array = new PLArray();
 	for (
 		const key of [
-			'f32 00000000 0.0',
-			'f32 00000000 5e-324',
-			'f32 00000000 5e-46',
-			'f32 00000004 5e-45',
-			'f32 3c23d70a 0.01',
-			'f32 3f800000 1.0',
-			'f32 4048f5c3 3.14',
-			'f32 40490fdb PI',
-			'f32 41200000 10.0',
-			'f32 7f800000 INFINITY',
-			'f32 7fc00000 NAN',
-			'f32 80000000 -0.0',
-			'f32 80000000 -5e-324',
-			'f32 80000000 -5e-46',
-			'f32 80000004 -5e-45',
-			'f32 bc23d70a -0.01',
-			'f32 bf800000 -1.0',
-			'f32 c048f5c3 -3.14',
-			'f32 c0490fdb -PI',
-			'f32 c1200000 -10.0',
-			'f32 ff800000 -INFINITY',
 			'f64 0000000000000000 0.0',
-			'f64 0000000000000001 5e-324',
-			'f64 3686d601ad376ab9 5e-46',
-			'f64 36bc8b8218854567 5e-45',
-			'f64 3f847ae147ae147b 0.01',
-			'f64 3ff0000000000000 1.0',
-			'f64 40091eb851eb851f 3.14',
-			'f64 400921fb54442d18 PI',
-			'f64 4024000000000000 10.0',
-			'f64 7ff0000000000000 INFINITY',
-			'f64 7ff8000000000000 NAN',
+			'f32 00000000 0.0',
 			'f64 8000000000000000 -0.0',
-			'f64 8000000000000001 -5e-324',
-			'f64 b686d601ad376ab9 -5e-46',
-			'f64 b6bc8b8218854567 -5e-45',
-			'f64 bf847ae147ae147b -0.01',
+			'f32 80000000 -0.0',
+			'f64 3ff0000000000000 1.0',
+			'f32 3f800000 1.0',
 			'f64 bff0000000000000 -1.0',
-			'f64 c0091eb851eb851f -3.14',
-			'f64 c00921fb54442d18 -PI',
+			'f32 bf800000 -1.0',
+			'f64 4024000000000000 10.0',
+			'f32 41200000 10.0',
 			'f64 c024000000000000 -10.0',
+			'f32 c1200000 -10.0',
+			'f64 3f847ae147ae147b 0.01',
+			'f32 3c23d70a 0.01',
+			'f64 bf847ae147ae147b -0.01',
+			'f32 bc23d70a -0.01',
+			'f64 40091eb851eb851f 3.14',
+			'f32 4048f5c3 3.14',
+			'f64 c0091eb851eb851f -3.14',
+			'f32 c048f5c3 -3.14',
+			'f64 36bc8b8218854567 5e-45',
+			'f32 00000004 5e-45',
+			'f64 b6bc8b8218854567 -5e-45',
+			'f32 80000004 -5e-45',
+			'f64 3686d601ad376ab9 5e-46',
+			'f32 00000000 5e-46',
+			'f64 b686d601ad376ab9 -5e-46',
+			'f32 80000000 -5e-46',
+			'f64 0000000000000001 5e-324',
+			'f32 00000000 5e-324',
+			'f64 8000000000000001 -5e-324',
+			'f32 80000000 -5e-324',
+			'f64 400921fb54442d18 PI',
+			'f32 40490fdb PI',
+			'f64 c00921fb54442d18 -PI',
+			'f32 c0490fdb -PI',
+			'f64 7ff8000000000000 NAN',
+			'f32 7fc00000 NAN',
+			'f64 7ff0000000000000 INFINITY',
+			'f32 7f800000 INFINITY',
 			'f64 fff0000000000000 -INFINITY',
+			'f32 ff800000 -INFINITY',
 		]
 	) {
 		const [bits, hex] = key.split(' ');
@@ -814,9 +814,9 @@ Deno.test('spec: real-sizes', async () => {
 		}
 		const f32 = bits === 'f32';
 		const value = f32 ? view.getFloat32(0) : view.getFloat64(0);
-		dict.set(new PLString(key), new PLReal(value, f32 ? 32 : 64));
+		array.push(new PLString(key), new PLReal(value, f32 ? 32 : 64));
 	}
-	const encode = encodeXml(dict);
+	const encode = encodeXml(array);
 	assertEquals(
 		encode,
 		await fixturePlist('real-sizes', 'xml'),
