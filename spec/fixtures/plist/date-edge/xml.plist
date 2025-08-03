@@ -1,98 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>-0.000001 beb0c6f7a0b5ed8d</key>
+<array>
+	<string>0.000000 0000000000000000</string>
+	<date>2001-01-01T00:00:00Z</date>
+	<string>1.000000 3ff0000000000000</string>
+	<date>2001-01-01T00:00:01Z</date>
+	<string>-1.000000 bff0000000000000</string>
 	<date>2000-12-31T23:59:59Z</date>
-	<key>-0.000010 bee4f8b588e368f1</key>
-	<date>2000-12-31T23:59:59Z</date>
-	<key>-0.000100 bf1a36e2eb1c432d</key>
-	<date>2000-12-31T23:59:59Z</date>
-	<key>-0.001000 bf50624dd2f1a9fc</key>
-	<date>2000-12-31T23:59:59Z</date>
-	<key>-0.010000 bf847ae147ae147b</key>
-	<date>2000-12-31T23:59:59Z</date>
-	<key>-0.100000 bfb999999999999a</key>
-	<date>2000-12-31T23:59:59Z</date>
-	<key>-0.500000 bfe0000000000000</key>
-	<date>2000-12-31T23:59:59Z</date>
-	<key>-0.900000 bfeccccccccccccd</key>
-	<date>2000-12-31T23:59:59Z</date>
-	<key>-0.999990 bfefffeb074a771d</key>
-	<date>2000-12-31T23:59:59Z</date>
-	<key>-1.000000 bff0000000000000</key>
-	<date>2000-12-31T23:59:59Z</date>
-	<key>-59011441438.000000 c22b7ab6463c0000</key>
+	<string>-59011441438.000000 c22b7ab6463c0000</string>
 	<date>0131-01-02T04:56:02Z</date>
-	<key>-63300000000.000000 c22d79f2b2000000</key>
+	<string>-63300000000.000000 c22d79f2b2000000</string>
 	<date>-005-02-08T02:40:00Z</date>
-	<key>-9007199254740991.000000 c33fffffffffffff</key>
-	<date>-285424781-02-20T16:23:29Z</date>
-	<key>-978307200.000000 c1cd27e440000000</key>
-	<date>1970-01-01T00:00:00Z</date>
-	<key>-inf fff0000000000000</key>
-	<date>2030437302-06-07T00:00:00Z</date>
-	<key>0.000000 0000000000000000</key>
+	<string>0.000001 3eb0c6f7a0b5ed8d</string>
 	<date>2001-01-01T00:00:00Z</date>
-	<key>0.000000 3cb0000000000000</key>
+	<string>-0.000001 beb0c6f7a0b5ed8d</string>
+	<date>2000-12-31T23:59:59Z</date>
+	<string>0.000010 3ee4f8b588e368f1</string>
 	<date>2001-01-01T00:00:00Z</date>
-	<key>0.000001 3eb0c6f7a0b5ed8d</key>
+	<string>-0.000010 bee4f8b588e368f1</string>
+	<date>2000-12-31T23:59:59Z</date>
+	<string>0.000100 3f1a36e2eb1c432d</string>
 	<date>2001-01-01T00:00:00Z</date>
-	<key>0.000010 3ee4f8b588e368f1</key>
+	<string>-0.000100 bf1a36e2eb1c432d</string>
+	<date>2000-12-31T23:59:59Z</date>
+	<string>0.001000 3f50624dd2f1a9fc</string>
 	<date>2001-01-01T00:00:00Z</date>
-	<key>0.000100 3f1a36e2eb1c432d</key>
+	<string>-0.001000 bf50624dd2f1a9fc</string>
+	<date>2000-12-31T23:59:59Z</date>
+	<string>0.010000 3f847ae147ae147b</string>
 	<date>2001-01-01T00:00:00Z</date>
-	<key>0.001000 3f50624dd2f1a9fc</key>
+	<string>-0.010000 bf847ae147ae147b</string>
+	<date>2000-12-31T23:59:59Z</date>
+	<string>0.100000 3fb999999999999a</string>
 	<date>2001-01-01T00:00:00Z</date>
-	<key>0.010000 3f847ae147ae147b</key>
+	<string>-0.100000 bfb999999999999a</string>
+	<date>2000-12-31T23:59:59Z</date>
+	<string>0.500000 3fe0000000000000</string>
 	<date>2001-01-01T00:00:00Z</date>
-	<key>0.100000 3fb999999999999a</key>
+	<string>-0.500000 bfe0000000000000</string>
+	<date>2000-12-31T23:59:59Z</date>
+	<string>0.900000 3feccccccccccccd</string>
 	<date>2001-01-01T00:00:00Z</date>
-	<key>0.318310 3fd45f306dc9c883</key>
+	<string>-0.900000 bfeccccccccccccd</string>
+	<date>2000-12-31T23:59:59Z</date>
+	<string>0.999990 3fefffeb074a771d</string>
 	<date>2001-01-01T00:00:00Z</date>
-	<key>0.434294 3fdbcb7b1526e50e</key>
-	<date>2001-01-01T00:00:00Z</date>
-	<key>0.500000 3fe0000000000000</key>
-	<date>2001-01-01T00:00:00Z</date>
-	<key>0.636620 3fe45f306dc9c883</key>
-	<date>2001-01-01T00:00:00Z</date>
-	<key>0.693147 3fe62e42fefa39ef</key>
-	<date>2001-01-01T00:00:00Z</date>
-	<key>0.707107 3fe6a09e667f3bcd</key>
-	<date>2001-01-01T00:00:00Z</date>
-	<key>0.785398 3fe921fb54442d18</key>
-	<date>2001-01-01T00:00:00Z</date>
-	<key>0.900000 3feccccccccccccd</key>
-	<date>2001-01-01T00:00:00Z</date>
-	<key>0.999990 3fefffeb074a771d</key>
-	<date>2001-01-01T00:00:00Z</date>
-	<key>1.000000 3ff0000000000000</key>
-	<date>2001-01-01T00:00:01Z</date>
-	<key>1.128379 3ff20dd750429b6d</key>
-	<date>2001-01-01T00:00:01Z</date>
-	<key>1.414214 3ff6a09e667f3bcd</key>
-	<date>2001-01-01T00:00:01Z</date>
-	<key>1.442695 3ff71547652b82fe</key>
-	<date>2001-01-01T00:00:01Z</date>
-	<key>1.570796 3ff921fb54442d18</key>
-	<date>2001-01-01T00:00:01Z</date>
-	<key>123456789.000000 419d6f3454000000</key>
-	<date>2004-11-29T21:33:09Z</date>
-	<key>12596342400.000000 4207766774000000</key>
+	<string>-0.999990 bfefffeb074a771d</string>
+	<date>2000-12-31T23:59:59Z</date>
+	<string>12596342400.000000 4207766774000000</string>
 	<date>2400-03-01T00:00:00Z</date>
-	<key>2.302585 40026bb1bbb55516</key>
-	<date>2001-01-01T00:00:02Z</date>
-	<key>2.718282 4005bf0a8b145769</key>
-	<date>2001-01-01T00:00:02Z</date>
-	<key>3.141593 400921fb54442d18</key>
-	<date>2001-01-01T00:00:03Z</date>
-	<key>9007199254740991.000000 433fffffffffffff</key>
-	<date>285428782-11-12T07:36:31Z</date>
-	<key>978307200.000000 41cd27e440000000</key>
-	<date>2032-01-02T00:00:00Z</date>
-	<key>inf 7ff0000000000000</key>
-	<date>2147483647-07-28T00:00:00Z</date>
-	<key>nan 7ff8000000000000</key>
+	<string>0.000000 3cb0000000000000</string>
 	<date>2001-01-01T00:00:00Z</date>
-</dict>
+	<string>2.718282 4005bf0a8b145769</string>
+	<date>2001-01-01T00:00:02Z</date>
+	<string>1.442695 3ff71547652b82fe</string>
+	<date>2001-01-01T00:00:01Z</date>
+	<string>0.434294 3fdbcb7b1526e50e</string>
+	<date>2001-01-01T00:00:00Z</date>
+	<string>0.693147 3fe62e42fefa39ef</string>
+	<date>2001-01-01T00:00:00Z</date>
+	<string>2.302585 40026bb1bbb55516</string>
+	<date>2001-01-01T00:00:02Z</date>
+	<string>3.141593 400921fb54442d18</string>
+	<date>2001-01-01T00:00:03Z</date>
+	<string>1.570796 3ff921fb54442d18</string>
+	<date>2001-01-01T00:00:01Z</date>
+	<string>0.785398 3fe921fb54442d18</string>
+	<date>2001-01-01T00:00:00Z</date>
+	<string>0.318310 3fd45f306dc9c883</string>
+	<date>2001-01-01T00:00:00Z</date>
+	<string>0.636620 3fe45f306dc9c883</string>
+	<date>2001-01-01T00:00:00Z</date>
+	<string>1.128379 3ff20dd750429b6d</string>
+	<date>2001-01-01T00:00:01Z</date>
+	<string>1.414214 3ff6a09e667f3bcd</string>
+	<date>2001-01-01T00:00:01Z</date>
+	<string>0.707107 3fe6a09e667f3bcd</string>
+	<date>2001-01-01T00:00:00Z</date>
+	<string>-978307200.000000 c1cd27e440000000</string>
+	<date>1970-01-01T00:00:00Z</date>
+	<string>978307200.000000 41cd27e440000000</string>
+	<date>2032-01-02T00:00:00Z</date>
+	<string>123456789.000000 419d6f3454000000</string>
+	<date>2004-11-29T21:33:09Z</date>
+	<string>9007199254740991.000000 433fffffffffffff</string>
+	<date>285428782-11-12T07:36:31Z</date>
+	<string>-9007199254740991.000000 c33fffffffffffff</string>
+	<date>-285424781-02-20T16:23:29Z</date>
+	<string>nan 7ff8000000000000</string>
+	<date>2001-01-01T00:00:00Z</date>
+	<string>inf 7ff0000000000000</string>
+	<date>2147483647-07-28T00:00:00Z</date>
+	<string>-inf fff0000000000000</string>
+	<date>2030437302-06-07T00:00:00Z</date>
+</array>
 </plist>

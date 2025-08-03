@@ -54,7 +54,7 @@ int main() {
 		INFINITY,
 		-INFINITY,
 	};
-	CFMutableDictionaryRef plist = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+	CFMutableArrayRef plist = CFArrayCreateMutable(NULL, 0, NULL);
 	for (int i = 0; i < sizeof(values) / sizeof(double); i++) {
 		double value = values[i];
 		union {
@@ -66,7 +66,8 @@ int main() {
 		sprintf(keyhex, "%lf %016llx", value, v.u);
 		CFStringRef key = CFStringCreateWithBytes(NULL, (unsigned char *)keyhex, strlen(keyhex), kCFStringEncodingUTF8, false);
 		CFDateRef val = CFDateCreate(NULL, value);
-		CFDictionarySetValue(plist, key, val);
+		CFArrayAppendValue(plist, key);
+		CFArrayAppendValue(plist, val);
 	}
 	plw(plist, CFSTR("binary.plist"), kCFPropertyListBinaryFormat_v1_0);
 	plw(plist, CFSTR("xml.plist"), kCFPropertyListXMLFormat_v1_0);
