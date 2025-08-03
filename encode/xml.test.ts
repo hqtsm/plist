@@ -363,6 +363,17 @@ Deno.test('spec: data-256', async () => {
 	);
 });
 
+Deno.test('spec: data-reuse', async () => {
+	const bytes = 'reused'.split('').map((c) => c.charCodeAt(0));
+	const reuse = new PLData(bytes.length);
+	new Uint8Array(reuse.buffer).set(bytes);
+	const encode = encodeXml(new PLArray([reuse, reuse]));
+	assertEquals(
+		encode,
+		await fixturePlist('data-reuse', 'xml'),
+	);
+});
+
 Deno.test('spec: dict-empty', async () => {
 	const dict = new PLDict();
 	const encode = encodeXml(dict);
@@ -507,6 +518,15 @@ Deno.test('spec: string-empty', async () => {
 	);
 });
 
+Deno.test('spec: string-reuse', async () => {
+	const reuse = new PLString('reused');
+	const encode = encodeXml(new PLArray([reuse, reuse]));
+	assertEquals(
+		encode,
+		await fixturePlist('string-reuse', 'xml'),
+	);
+});
+
 Deno.test('spec: string-ascii', async () => {
 	const encode = encodeXml(new PLString('ASCII'));
 	assertEquals(
@@ -612,6 +632,15 @@ Deno.test('spec: integer-negative', async () => {
 	);
 });
 
+Deno.test('spec: integer-reuse', async () => {
+	const reuse = new PLInteger(42n);
+	const encode = encodeXml(new PLArray([reuse, reuse]));
+	assertEquals(
+		encode,
+		await fixturePlist('integer-reuse', 'xml'),
+	);
+});
+
 Deno.test('spec: integer-min', async () => {
 	const encode = encodeXml(new PLInteger(-0x8000000000000000n));
 	assertEquals(
@@ -705,6 +734,15 @@ Deno.test('spec: real-double-p0.0', async () => {
 	assertEquals(
 		encode,
 		await fixturePlist('real-double-p0.0', 'xml'),
+	);
+});
+
+Deno.test('spec: real-reuse', async () => {
+	const reuse = new PLReal(3.14);
+	const encode = encodeXml(new PLArray([reuse, reuse]));
+	assertEquals(
+		encode,
+		await fixturePlist('real-reuse', 'xml'),
 	);
 });
 
@@ -811,6 +849,15 @@ Deno.test('spec: date-every-day-2004', async () => {
 	);
 });
 
+Deno.test('spec: date-reuse', async () => {
+	const date = new PLDate(42);
+	const encode = encodeXml(new PLArray([date, date]));
+	assertEquals(
+		encode,
+		await fixturePlist('date-reuse', 'xml'),
+	);
+});
+
 Deno.test('spec: dates', async () => {
 	const values = [
 		0.0,
@@ -900,6 +947,15 @@ Deno.test('spec: uid-42', async () => {
 	assertEquals(
 		encode,
 		await fixturePlist('uid-42', 'xml'),
+	);
+});
+
+Deno.test('spec: uid-reuse', async () => {
+	const uid = new PLUID(42n);
+	const encode = encodeXml(new PLArray([uid, uid]));
+	assertEquals(
+		encode,
+		await fixturePlist('uid-reuse', 'xml'),
 	);
 });
 
