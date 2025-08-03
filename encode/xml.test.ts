@@ -858,7 +858,7 @@ Deno.test('spec: date-reuse', async () => {
 	);
 });
 
-Deno.test('spec: dates', async () => {
+Deno.test('spec: date-edge', async () => {
 	const values = [
 		0.0,
 		1.0,
@@ -938,7 +938,7 @@ Deno.test('spec: dates', async () => {
 	const encode = encodeXml(dict);
 	assertEquals(
 		encode,
-		await fixturePlist('dates', 'xml'),
+		await fixturePlist('date-edge', 'xml'),
 	);
 });
 
