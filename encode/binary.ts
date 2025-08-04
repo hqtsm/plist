@@ -133,10 +133,9 @@ export function encodeBinary(
 	};
 	const str = (v: PLString) => {
 		if (add(v)) {
-			x = v.value;
-			e = x.length;
-			i += (e < 15 ? 1 : 2 + byteCount(e)) + (
-				u.get(v) ?? (u.set(v, x = rUni.test(x)), x) ? e + e : e
+			x = v.length;
+			i += (x < 15 ? 1 : 2 + byteCount(x)) + (
+				u.get(v) ?? (u.set(v, e = rUni.test(v.value)), e) ? x + x : x
 			);
 		}
 	};
@@ -309,8 +308,7 @@ export function encodeBinary(
 				if ((e as PLInteger).bits === 128) {
 					r[i++] = 20;
 					d.setBigInt64(i, x >> 64n);
-					i += 8;
-					d.setBigInt64(i, x & 0xffffffffffffffffn);
+					d.setBigInt64(i += 8, x & 0xffffffffffffffffn);
 					i += 8;
 				} else if (x < 0) {
 					r[i++] = 19;
