@@ -1,0 +1,367 @@
+/**
+ * @module
+ *
+ * Binary encoding.
+ */
+
+import { type PLArray, PLTYPE_ARRAY } from '../array.ts';
+import { type PLBoolean, PLTYPE_BOOLEAN } from '../boolean.ts';
+import { type PLData, PLTYPE_DATA } from '../data.ts';
+import { type PLDate, PLTYPE_DATE } from '../date.ts';
+import { type PLDict, PLTYPE_DICT } from '../dict.ts';
+import { FORMAT_BINARY_V1_0 } from '../format.ts';
+import { type PLInteger, PLTYPE_INTEGER } from '../integer.ts';
+import { type PLReal, PLTYPE_REAL } from '../real.ts';
+import { type PLString, PLTYPE_STRING } from '../string.ts';
+import type { PLType } from '../type.ts';
+import { PLTYPE_UID, type PLUID } from '../uid.ts';
+import { walk } from '../walk.ts';
+
+const rUni = /[^\0-\x7F]/;
+
+/**
+ * Number of bytes needed to encode integer.
+ *
+ * @param v Unsigned integer.
+ * @returns Byte count.
+ */
+const byteCount = (v: number | bigint): 1 | 2 | 4 | 8 =>
+	v > 65535 ? (v > 4294967295 ? 8 : 4) : (v > 255 ? 2 : 1);
+
+/**
+ * Set integer value by byte count.
+ *
+ * @param d Data view.
+ * @param i Offset.
+ * @param c Byte count.
+ * @param v Unsigned integer.
+ */
+const setInt = (
+	d: DataView,
+	i: number,
+	c: 1 | 2 | 4 | 8,
+	v: number | bigint,
+): void => {
+	if (c > 2) {
+		if (c > 4) {
+			d.setBigInt64(i, BigInt(v));
+		} else {
+			d.setInt32(i, Number(v));
+		}
+	} else if (c > 1) {
+		d.setInt16(i, Number(v));
+	} else {
+		d.setInt8(i, Number(v));
+	}
+};
+
+/**
+ * Encode integer.
+ *
+ * @param d Data view.
+ * @param i Offset.
+ * @param v Integer.
+ * @returns Unsigned integer.
+ */
+const encodeInt = (d: DataView, i: number, v: bigint | number): number => {
+	const c = byteCount(v);
+	d.setInt8(i++, c > 2 ? (c > 4 ? 19 : 18) : (c > 1 ? 17 : 16));
+	setInt(d, i, c, v);
+	return i + c;
+};
+
+/**
+ * Encoding options for binary.
+ */
+export interface EncodeBinaryOptions {
+	/**
+	 * Encoding format.
+	 *
+	 * @default FORMAT_BINARY_V1_0
+	 */
+	format?: typeof FORMAT_BINARY_V1_0;
+
+	/**
+	 * Types to be duplicated.
+	 *
+	 * @default [] Empty list.
+	 */
+	duplicates?: Iterable<string>;
+}
+
+/**
+ * Encode plist, BINARY format.
+ *
+ * @param plist Plist object.
+ * @param options Encoding options.
+ * @returns Encoded plist.
+ */
+export function encodeBinary(
+	plist: PLType,
+	{ format = FORMAT_BINARY_V1_0, duplicates }: EncodeBinaryOptions = {},
+): Uint8Array {
+	let e;
+	let x;
+	let i = 8;
+	let t = 0;
+	let l = 0;
+
+	switch (format) {
+		case FORMAT_BINARY_V1_0: {
+			break;
+		}
+		default: {
+			throw new RangeError('Invalid format');
+		}
+	}
+
+	const a = new Set<PLType>();
+	const c = new Set(duplicates ?? []);
+	const q = new Map<number, PLType>();
+	const f = new Map<PLType, number>();
+	const u = new Map<PLType, boolean>();
+	const add = <T extends PLType>(v: T) => {
+		if (f.has(v)) {
+			if (!c.has(v[Symbol.toStringTag])) {
+				return;
+			}
+		} else {
+			f.set(v, l);
+		}
+		q.set(l++, v);
+		return true;
+	};
+	const str = (v: PLString) => {
+		if (add(v)) {
+			x = v.value;
+			e = x.length;
+			i += (e < 15 ? 1 : 2 + byteCount(e)) + (
+				u.get(v) ?? (u.set(v, x = rUni.test(x)), x) ? e + e : e
+			);
+		}
+	};
+
+	walk(plist, {
+		enter: {
+			PLArray(v): number | void {
+				if ((x = v.length)) {
+					if (a.has(v)) {
+						throw new TypeError('Circular reference');
+					}
+					a.add(v);
+					if (add(v)) {
+						i += x < 15 ? 1 : 2 + byteCount(x);
+						t += x;
+					}
+					return;
+				}
+				if (add(v)) {
+					i++;
+				}
+				return 1;
+			},
+			PLDict(v): number | void {
+				if ((x = v.size)) {
+					if (a.has(v)) {
+						throw new TypeError('Circular reference');
+					}
+					a.add(v);
+					if (add(v)) {
+						i += x < 15 ? 1 : 2 + byteCount(x);
+						t += x + x;
+					}
+					for (x of v.keys()) {
+						str(x);
+					}
+					return;
+				}
+				if (add(v)) {
+					i++;
+				}
+				return 1;
+			},
+		},
+		value: {
+			PLBoolean(v): void {
+				if (add(v)) {
+					i++;
+				}
+			},
+			PLData(v): void {
+				if (add(v)) {
+					x = v.byteLength;
+					i += (x < 15 ? 1 : 2 + byteCount(x)) + x;
+				}
+			},
+			PLDate(v): void {
+				if (add(v)) {
+					i += 9;
+				}
+			},
+			PLInteger(v): void {
+				if (add(v)) {
+					i += 128 === v.bits
+						? 17
+						: (x = v.value) < 0
+						? 9
+						: 1 + byteCount(x);
+				}
+			},
+			PLReal(v): void {
+				if (add(v)) {
+					i += v.bits === 32 ? 5 : 9;
+				}
+			},
+			PLString: str,
+			PLUID(v): void {
+				if (add(v)) {
+					i += 1 + byteCount(v.value);
+				}
+			},
+			default(): void {
+				throw new TypeError('Invalid binary value type');
+			},
+		},
+		leave: {
+			default(v): void {
+				a.delete(v);
+			},
+		},
+	});
+
+	const rc = byteCount(l);
+	const ic = byteCount(t = i += rc * t);
+	const d = new DataView(x = new ArrayBuffer((i += ic * l) + 32));
+	const r = new Uint8Array(x);
+	r[0] = 98;
+	r[1] = 112;
+	r[2] = 108;
+	r[3] = 105;
+	r[4] = 115;
+	r[5] = 116;
+	r[6] = r[7] = 48;
+	r[i + 6] = ic;
+	r[i + 7] = rc;
+	d.setBigInt64(i + 8, BigInt(l));
+	d.setBigInt64(i + 24, BigInt(t));
+	i = 8;
+
+	for (e of q.values()) {
+		setInt(d, t, ic, i);
+		t += ic;
+		switch (e?.[Symbol.toStringTag]) {
+			case PLTYPE_ARRAY: {
+				l = (e as PLArray).length;
+				if (l < 15) {
+					r[i++] = 160 | l;
+				} else {
+					r[i++] = 175;
+					i = encodeInt(d, i, l);
+				}
+				for (x of (e as PLArray)) {
+					setInt(d, i, rc, f.get(x)!);
+					i += rc;
+				}
+				break;
+			}
+			case PLTYPE_DICT: {
+				l = (e as PLDict).size;
+				if (l < 15) {
+					r[i++] = 208 | l;
+				} else {
+					r[i++] = 223;
+					i = encodeInt(d, i, l);
+				}
+				for (x of (e as PLDict).keys()) {
+					setInt(d, i, rc, f.get(x)!);
+					i += rc;
+				}
+				for (x of (e as PLDict).values()) {
+					setInt(d, i, rc, f.get(x)!);
+					i += rc;
+				}
+				break;
+			}
+			case PLTYPE_BOOLEAN: {
+				r[i++] = (e as PLBoolean).value ? 9 : 8;
+				break;
+			}
+			case PLTYPE_DATA: {
+				l = (e as PLData).byteLength;
+				if (l < 15) {
+					r[i++] = 64 | l;
+				} else {
+					r[i++] = 79;
+					i = encodeInt(d, i, l);
+				}
+				r.set(new Uint8Array((e as PLData).buffer), i);
+				i += l;
+				break;
+			}
+			case PLTYPE_DATE: {
+				r[i++] = 51;
+				d.setFloat64(i, (e as PLDate).time);
+				i += 8;
+				break;
+			}
+			case PLTYPE_INTEGER: {
+				x = (e as PLInteger).value;
+				if ((e as PLInteger).bits === 128) {
+					r[i++] = 20;
+					d.setBigInt64(i, x >> 64n);
+					i += 8;
+					d.setBigInt64(i, x & 0xffffffffffffffffn);
+					i += 8;
+				} else if (x < 0) {
+					r[i++] = 19;
+					d.setBigInt64(i, x);
+					i += 8;
+				} else {
+					i = encodeInt(d, i, x);
+				}
+				break;
+			}
+			case PLTYPE_REAL: {
+				if ((e as PLReal).bits === 32) {
+					r[i++] = 34;
+					d.setFloat32(i, (e as PLReal).value);
+					i += 4;
+				} else {
+					r[i++] = 35;
+					d.setFloat64(i, (e as PLReal).value);
+					i += 8;
+				}
+				break;
+			}
+			case PLTYPE_STRING: {
+				x = u.get(e);
+				e = (e as PLString).value;
+				l = e.length;
+				if (l < 15) {
+					r[i++] = (x ? 96 : 80) | l;
+				} else {
+					r[i++] = x ? 111 : 95;
+					i = encodeInt(d, i, l);
+				}
+				if (x) {
+					for (
+						x = 0;
+						x < l;
+						d.setInt16(i, e.charCodeAt(x++)), i += 2
+					);
+				} else {
+					for (x = 0; x < l; r[i++] = e.charCodeAt(x++));
+				}
+				break;
+			}
+			case PLTYPE_UID: {
+				x = byteCount(e = (e as PLUID).value);
+				r[i++] = 128 | x - 1;
+				setInt(d, i, x, e);
+				i += x;
+				break;
+			}
+		}
+	}
+	return r;
+}
