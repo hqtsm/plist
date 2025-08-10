@@ -214,8 +214,7 @@ export function encodeOpenStep(
 ): Uint8Array {
 	let b = 0;
 	let i = 1;
-	let s = false;
-	let k: PLString | null = null;
+	let k: PLString | null | undefined;
 	let x;
 
 	switch (format) {
@@ -312,10 +311,7 @@ export function encodeOpenStep(
 					throw new TypeError('Invalid strings root type');
 				}
 				if (!shortcut || v !== k) {
-					if (k) {
-						i += 3;
-					}
-					i += stringLength(v.value, q, quoted);
+					i += (k ? 3 : 0) + stringLength(v.value, q, quoted);
 				}
 				k = null;
 			},
@@ -341,16 +337,16 @@ export function encodeOpenStep(
 					r[i++] = 32;
 					r[i++] = 61;
 					r[i++] = 32;
-					k = null;
 				}
 				r[i++] = 40;
 				if (v.length) {
-					s = false;
+					k = null;
 					return;
 				}
 				r[i++] = 41;
-				if (s) {
+				if (k) {
 					r[i++] = 59;
+					k = null;
 				}
 				return 1;
 			},
@@ -359,21 +355,21 @@ export function encodeOpenStep(
 					r[i++] = 32;
 					r[i++] = 61;
 					r[i++] = 32;
-					k = null;
 				}
 				if ((d += b + 1)) {
 					r[i++] = 123;
 				}
 				if (v.size) {
-					s = true;
+					k = null;
 					return;
 				}
 				if (d) {
 					r[i++] = 125;
-					if (s) {
+					if (k) {
 						r[i++] = 59;
 					}
 				}
+				k = null;
 				return 1;
 			},
 		},
@@ -404,11 +400,11 @@ export function encodeOpenStep(
 					r[i++] = 32;
 					r[i++] = 61;
 					r[i++] = 32;
-					k = null;
 				}
 				i = dataEncode(new Uint8Array(v.buffer), r, i);
-				if (s) {
+				if (k) {
 					r[i++] = 59;
+					k = null;
 				}
 			},
 			PLString(v): void {
@@ -420,9 +416,9 @@ export function encodeOpenStep(
 					}
 					i = stringEncode(v.value, r, i, q, quoted);
 				}
-				k = null;
-				if (s) {
+				if (k) {
 					r[i++] = 59;
+					k = null;
 				}
 			},
 		},
@@ -434,7 +430,7 @@ export function encodeOpenStep(
 						r.set(id, i);
 					}
 					r[i++] = 41;
-					if ((s = p?.[Symbol.toStringTag] === PLTYPE_DICT)) {
+					if (p?.[Symbol.toStringTag] === PLTYPE_DICT) {
 						r[i++] = 59;
 					}
 				}
@@ -446,7 +442,7 @@ export function encodeOpenStep(
 						r.set(id, i);
 					}
 					r[i++] = 125;
-					if ((s = p?.[Symbol.toStringTag] === PLTYPE_DICT)) {
+					if (p?.[Symbol.toStringTag] === PLTYPE_DICT) {
 						r[i++] = 59;
 					}
 				}
