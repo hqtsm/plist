@@ -4,9 +4,9 @@
  * Plist encoding.
  */
 
+export * from './binary.ts';
 export * from './openstep.ts';
 export * from './xml.ts';
-export * from './binary.ts';
 
 import {
 	type Format,
@@ -16,9 +16,9 @@ import {
 	FORMAT_XML_V1_0,
 } from '../format.ts';
 import type { PLType } from '../type.ts';
+import { encodeBinary, type EncodeBinaryOptions } from './binary.ts';
 import { encodeOpenStep, type EncodeOpenStepOptions } from './openstep.ts';
 import { encodeXml, type EncodeXmlOptions } from './xml.ts';
-import { encodeBinary, type EncodeBinaryOptions } from './binary.ts';
 
 /**
  * Encoding options.
