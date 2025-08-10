@@ -6,6 +6,7 @@
 
 import { PLTYPE_DICT } from '../dict.ts';
 import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
+import type { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { walk } from '../walk.ts';
 
@@ -185,6 +186,13 @@ export interface EncodeOpenStepOptions {
 	 * @default false
 	 */
 	quoted?: boolean;
+
+	/**
+	 * Use shortcut format for matching keys and values.
+	 *
+	 * @default false
+	 */
+	shortcut?: boolean;
 }
 
 /**
@@ -201,11 +209,13 @@ export function encodeOpenStep(
 		indent = '\t',
 		quote = '"',
 		quoted = false,
+		shortcut = false,
 	}: EncodeOpenStepOptions = {},
 ): Uint8Array {
 	let b = 0;
 	let i = 1;
 	let s = false;
+	let k: PLString | null = null;
 	let x;
 
 	switch (format) {
@@ -243,6 +253,10 @@ export function encodeOpenStep(
 				if (!p && b) {
 					throw new TypeError('Invalid strings root type');
 				}
+				if (k) {
+					i += 3;
+					k = null;
+				}
 				if ((x = v.length)) {
 					if (a.has(v)) {
 						throw new TypeError('Circular reference');
@@ -256,13 +270,17 @@ export function encodeOpenStep(
 				return 1;
 			},
 			PLDict(v, d): number | void {
+				if (k) {
+					i += 3;
+					k = null;
+				}
 				d += b + 1;
 				if ((x = v.size)) {
 					if (a.has(v)) {
 						throw new TypeError('Circular reference');
 					}
 					a.add(v);
-					i += x * (d * il + 5) + (d ? (d - 1) * il + 3 : -1);
+					i += x * (d * il + 2) + (d ? (d - 1) * il + 3 : -1);
 					return;
 				}
 				if (d) {
@@ -273,6 +291,7 @@ export function encodeOpenStep(
 		},
 		key: {
 			PLDict(v): void {
+				k = v;
 				i += stringLength(v.value, q, quoted);
 			},
 		},
@@ -281,6 +300,10 @@ export function encodeOpenStep(
 				if (!p && b) {
 					throw new TypeError('Invalid strings root type');
 				}
+				if (k) {
+					i += 3;
+					k = null;
+				}
 				x = v.byteLength;
 				i += x ? 2 + x + x + (x - (x % 4 || 4)) / 4 : 2;
 			},
@@ -288,7 +311,13 @@ export function encodeOpenStep(
 				if (!p && b) {
 					throw new TypeError('Invalid strings root type');
 				}
-				i += stringLength(v.value, q, quoted);
+				if (!shortcut || v !== k) {
+					if (k) {
+						i += 3;
+					}
+					i += stringLength(v.value, q, quoted);
+				}
+				k = null;
 			},
 			default(): void {
 				throw new TypeError('Invalid OpenStep value type');
@@ -303,10 +332,17 @@ export function encodeOpenStep(
 
 	const r = new Uint8Array(i);
 	i = 0;
+	k = null;
 
 	walk(plist, {
 		enter: {
 			PLArray(v): number | void {
+				if (k) {
+					r[i++] = 32;
+					r[i++] = 61;
+					r[i++] = 32;
+					k = null;
+				}
 				r[i++] = 40;
 				if (v.length) {
 					s = false;
@@ -319,6 +355,12 @@ export function encodeOpenStep(
 				return 1;
 			},
 			PLDict(v, d): number | void {
+				if (k) {
+					r[i++] = 32;
+					r[i++] = 61;
+					r[i++] = 32;
+					k = null;
+				}
 				if ((d += b + 1)) {
 					r[i++] = 123;
 				}
@@ -346,6 +388,7 @@ export function encodeOpenStep(
 				}
 			},
 			PLDict(v, d): void {
+				k = v;
 				if (i) {
 					r[i++] = 10;
 					for (d += b; d--; i += il) {
@@ -353,20 +396,31 @@ export function encodeOpenStep(
 					}
 				}
 				i = stringEncode(v.value, r, i, q, quoted);
-				r[i++] = 32;
-				r[i++] = 61;
-				r[i++] = 32;
 			},
 		},
 		value: {
 			PLData(v): void {
+				if (k) {
+					r[i++] = 32;
+					r[i++] = 61;
+					r[i++] = 32;
+					k = null;
+				}
 				i = dataEncode(new Uint8Array(v.buffer), r, i);
 				if (s) {
 					r[i++] = 59;
 				}
 			},
 			PLString(v): void {
-				i = stringEncode(v.value, r, i, q, quoted);
+				if (!shortcut || v !== k) {
+					if (k) {
+						r[i++] = 32;
+						r[i++] = 61;
+						r[i++] = 32;
+					}
+					i = stringEncode(v.value, r, i, q, quoted);
+				}
+				k = null;
 				if (s) {
 					r[i++] = 59;
 				}

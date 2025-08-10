@@ -721,3 +721,42 @@ Deno.test('spec: strings-edge all-types', async () => {
 		await fixturePlist('strings-edge', 'all-types'),
 	);
 });
+
+Deno.test('spec: openstep-edge shortcut', async () => {
+	const B = new PLString('B');
+	const E = new PLString('E');
+	const plist = new PLDict([
+		[new PLString('A'), new PLString('C')],
+		[B, B],
+		[new PLString('C'), new PLString('A')],
+		[new PLString('D'), new PLString('D')],
+		[E, E],
+	]);
+	const encode = encodeOpenStep(plist, {
+		shortcut: true,
+	});
+	assertEquals(
+		encode,
+		await fixturePlist('openstep-edge', 'shortcut'),
+	);
+});
+
+Deno.test('spec: strings-edge shortcut', async () => {
+	const B = new PLString('B');
+	const E = new PLString('E');
+	const plist = new PLDict([
+		[new PLString('A'), new PLString('C')],
+		[B, B],
+		[new PLString('C'), new PLString('A')],
+		[new PLString('D'), new PLString('D')],
+		[E, E],
+	]);
+	const encode = encodeOpenStep(plist, {
+		format: FORMAT_STRINGS,
+		shortcut: true,
+	});
+	assertEquals(
+		encode,
+		await fixturePlist('strings-edge', 'shortcut'),
+	);
+});
