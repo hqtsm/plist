@@ -723,6 +723,8 @@ Deno.test('spec: strings-edge all-types', async () => {
 });
 
 Deno.test('spec: openstep-edge shortcut', async () => {
+	// Shortcut syntax for keys and values that are the same.
+	// Intended for strings format but valid in OpenStep.
 	const B = new PLString('B');
 	const E = new PLString('E');
 	const plist = new PLDict([
@@ -742,6 +744,7 @@ Deno.test('spec: openstep-edge shortcut', async () => {
 });
 
 Deno.test('spec: strings-edge shortcut', async () => {
+	// Shortcut syntax for keys and values that are the same.
 	const B = new PLString('B');
 	const E = new PLString('E');
 	const plist = new PLDict([
