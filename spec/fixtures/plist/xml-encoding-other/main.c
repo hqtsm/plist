@@ -236,7 +236,11 @@ int main() {
 					}
 					fprintf(fp, "</key>\n");
 					fprintf(fp, "\t\t<string>");
-					putStr(fp, byte, 1);
+					if (b < 0) {
+						putStr(fp, byte, 1);
+					} else {
+						putStr(fp, bytes, 2);
+					}
 					fprintf(fp, "</string>\n");
 					CFRelease(str);
 					if (b < 0) {
