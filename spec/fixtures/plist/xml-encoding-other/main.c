@@ -2,6 +2,18 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include "../../inc/shared.c"
 
+typedef struct name_node {
+	const char * name;
+	struct name_node * next;
+} name_node;
+
+typedef struct group_node {
+	CFStringEncoding encoding;
+	char * name;
+	name_node * names;
+	struct group_node * next;
+} group_node;
+
 const char * encodings[] = {
 	"iso-8859-1",
 	"iso-8859-2",
@@ -141,43 +153,97 @@ char * getName(CFStringEncoding encoding) {
 	return buffer;
 }
 
+void putStr(FILE * fp, unsigned char * str, size_t len) {
+	for (int i = 0; i < len; i++) {
+		switch (str[i]) {
+			case '<': fprintf(fp, "&lt;"); break;
+			case '>': fprintf(fp, "&gt;"); break;
+			case '&': fprintf(fp, "&amp;"); break;
+			default: fwrite(&str[i], 1, 1, fp);
+		}
+	}
+}
+
 int main() {
-	for (int i = 0; i < sizeof(encodings) / sizeof(char *); i++) {
+	CFStringRef str;
+	unsigned char byte[1];
+	unsigned char bytes[2];
+
+	group_node * groups = NULL;
+	for (int i = sizeof(encodings) / sizeof(char *); i--;) {
 		const char * encoding = encodings[i];
 		CFStringEncoding se = getEncoding(encoding);
 		char * name = getName(se);
-		printf("%s\t0x%x\t%s\n", encoding, se, name);
-		if (name) {
-			free(name);
+
+		group_node * group = groups;
+		while (group && group->next && group->encoding != se) {
+			group = group->next;
 		}
+		if (!group || group->encoding != se) {
+			group_node * g = malloc(sizeof(group_node));
+			g->encoding = se;
+			g->name = name;
+			g->names = NULL;
+			g->next = NULL;
+			if (group) {
+				group->next = g;
+			}
+			if (!groups) {
+				groups = g;
+			}
+			group = g;
+		}
+
+		name_node * n = malloc(sizeof(name_node));
+		n->name = encoding;
+		n->next = group->names;
+		group->names = n;
+	}
+
+	for (group_node * g = groups; g; g = g->next) {
 		char filename[1024];
-		sprintf(filename, "%s.plist", encoding);
+		char * c = &filename[sprintf(filename, "%s", g->name)];
+		for (name_node * n = g->names; n; n = n->next) {
+			c += sprintf(c, "_%s", n->name);
+		}
+		sprintf(c, ".plist");
+		printf("0x%X\t%s\n", g->encoding, filename);
+
 		FILE * fp = fopen(filename, "w");
-		fprintf(fp, "<?xml version=\"1.0\" encoding=\"%s\"?>\n", encoding);
+		fprintf(fp, "<?xml version=\"1.0\" encoding=\"%s\"?>\n", g->name);
 		fprintf(fp, "%s\n", DOCTYPE);
 		fprintf(fp, "<plist version=\"1.0\">\n");
 		fprintf(fp, "\t<dict>\n");
-		for (int i = 0; i < 256; i++) {
-			unsigned char byte[1] = {i};
-			CFStringRef str = CFStringCreateWithBytes(NULL, byte, 1, se, false);
-			if (!str) {
-				continue;
+		for (int a = 0; a < 256; a++) {
+			for (int b = -1; b < 256; b++) {
+				if (b < 0) {
+					byte[0] = a;
+					str = CFStringCreateWithBytes(NULL, byte, 1, g->encoding, false);
+				} else {
+					bytes[0] = a;
+					bytes[1] = b;
+					str = CFStringCreateWithBytes(NULL, bytes, 2, g->encoding, false);
+				}
+				if (str) {
+					if (b < 0) {
+						fprintf(fp, "\t\t<key>%0.02X =", a);
+					} else {
+						fprintf(fp, "\t\t<key>%0.02X %0.02X =", a, b);
+					}
+					for (CFIndex i = 0, l = CFStringGetLength(str); i < l; i++) {
+						UniChar c = CFStringGetCharacterAtIndex(str, i);
+						fprintf(fp, " %d", c);
+					}
+					fprintf(fp, "</key>\n");
+					fprintf(fp, "\t\t<string>");
+					putStr(fp, byte, 1);
+					fprintf(fp, "</string>\n");
+					CFRelease(str);
+					if (b < 0) {
+						break;
+					}
+				}
 			}
-			fprintf(fp, "\t\t<key>%i", i);
-			for (CFIndex i = 0, l = CFStringGetLength(str); i < l; i++) {
-				UniChar c = CFStringGetCharacterAtIndex(str, i);
-				fprintf(fp, " %i", c);
-			}
-			fprintf(fp, "</key>\n");
-			fprintf(fp, "\t\t<string>");
-			switch (i) {
-				case '<': fprintf(fp, "&lt;"); break;
-				case '>': fprintf(fp, "&gt;"); break;
-				case '&': fprintf(fp, "&amp;"); break;
-				default: fwrite(byte, 1, 1, fp);
-			}
-			fprintf(fp, "</string>\n");
-			CFRelease(str);
 		}
 		fprintf(fp, "\t</dict>\n");
 		fprintf(fp, "</plist>\n");
