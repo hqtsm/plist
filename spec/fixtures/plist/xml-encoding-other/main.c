@@ -153,20 +153,22 @@ char * getName(CFStringEncoding encoding) {
 	return buffer;
 }
 
-void putStr(FILE * fp, unsigned char * str, size_t len) {
-	for (int i = 0; i < len; i++) {
-		switch (str[i]) {
-			case '<': fprintf(fp, "&lt;"); break;
-			case '>': fprintf(fp, "&gt;"); break;
-			case '&': fprintf(fp, "&amp;"); break;
-			default: fwrite(&str[i], 1, 1, fp);
-		}
-	}
+void strWrite(FILE * fp, const char * s, CFStringEncoding e) {
+	// fwrite(s, strlen(s), 1, fp);
+	CFStringRef str = CFStringCreateWithBytes(NULL, (UInt8 *)s, strlen(s), kCFStringEncodingASCII, false);
+	CFIndex length = CFStringGetLength(str);
+	CFRange range = CFRangeMake(0, length);
+	CFIndex max = CFStringGetMaximumSizeForEncoding(length, e);
+	UInt8 * bytes = malloc(max);
+	CFIndex l = 0;
+	CFStringGetBytes(str, range, kCFStringEncodingUTF8, '?', false, bytes, max, &l);
+	fwrite(bytes, l, 1, fp);
+	free(bytes);
+	CFRelease(str);
 }
 
 int main() {
 	CFStringRef str;
-	unsigned char byte[1];
 	unsigned char bytes[2];
 
 	group_node * groups = NULL;
@@ -181,6 +183,9 @@ int main() {
 		}
 		if (!group || group->encoding != se) {
 			group_node * g = malloc(sizeof(group_node));
+			if (!g) {
+				return 1;
+			}
 			g->encoding = se;
 			g->name = name;
 			g->names = NULL;
@@ -195,62 +200,75 @@ int main() {
 		}
 
 		name_node * n = malloc(sizeof(name_node));
+		if (!n) {
+			return 1;
+		}
 		n->name = encoding;
 		n->next = group->names;
 		group->names = n;
 	}
 
 	for (group_node * g = groups; g; g = g->next) {
+		CFStringEncoding se = g->encoding;
 		char filename[1024];
 		char * c = &filename[sprintf(filename, "%s", g->name)];
 		for (name_node * n = g->names; n; n = n->next) {
 			c += sprintf(c, "_%s", n->name);
 		}
 		sprintf(c, ".plist");
-		printf("0x%X\t%s\n", g->encoding, filename);
+		printf("0x%X\t%s\n", se, filename);
 
 		FILE * fp = fopen(filename, "w");
-		fprintf(fp, "<?xml version=\"1.0\" encoding=\"%s\"?>\n", g->name);
-		fprintf(fp, "%s\n", DOCTYPE);
-		fprintf(fp, "<plist version=\"1.0\">\n");
-		fprintf(fp, "\t<dict>\n");
+		char buffer[1024];
+		sprintf(buffer, "<?xml version=\"1.0\" encoding=\"%s\"?>\n", g->name);
+		strWrite(fp, buffer, se);
+		sprintf(buffer, "%s\n", DOCTYPE);
+		strWrite(fp, buffer, se);
+		strWrite(fp, "<plist version=\"1.0\">\n", se);
+		strWrite(fp, "\t<dict>\n", se);
 		for (int a = 0; a < 256; a++) {
 			for (int b = -1; b < 256; b++) {
 				if (b < 0) {
-					byte[0] = a;
-					str = CFStringCreateWithBytes(NULL, byte, 1, g->encoding, false);
+					bytes[0] = a;
+					str = CFStringCreateWithBytes(NULL, bytes, 1, se, false);
 				} else {
 					bytes[0] = a;
 					bytes[1] = b;
-					str = CFStringCreateWithBytes(NULL, bytes, 2, g->encoding, false);
+					str = CFStringCreateWithBytes(NULL, bytes, 2, se, false);
 				}
 				if (str) {
+					char * bp = &buffer[sprintf(buffer, "\t\t<key>")];
 					if (b < 0) {
-						fprintf(fp, "\t\t<key>%0.02X =", a);
+						bp += sprintf(bp, "%0.02X", a);
 					} else {
-						fprintf(fp, "\t\t<key>%0.02X %0.02X =", a, b);
+						bp += sprintf(bp, "%0.02X %0.02X", a, b);
 					}
+					bp += sprintf(bp, " = ");
 					for (CFIndex i = 0, l = CFStringGetLength(str); i < l; i++) {
 						UniChar c = CFStringGetCharacterAtIndex(str, i);
-						fprintf(fp, " %d", c);
+						bp += sprintf(bp, " %d", c);
 					}
-					fprintf(fp, "</key>\n");
-					fprintf(fp, "\t\t<string>");
-					if (b < 0) {
-						putStr(fp, byte, 1);
-					} else {
-						putStr(fp, bytes, 2);
-					}
-					fprintf(fp, "</string>\n");
 					CFRelease(str);
+					sprintf(bp, "</key>\n");
+					strWrite(fp, buffer, se);
+					strWrite(fp, "\t\t<string>", se);
+					for (int i = 0, l = b < 0 ? 1 : 2; i < l; i++) {
+						switch (bytes[i]) {
+							case '<': strWrite(fp, "&lt;", se); break;
+							case '>': strWrite(fp, "&gt;", se); break;
+							case '&': strWrite(fp, "&amp;", se); break;
+							default: fwrite(&bytes[i], 1, 1, fp);
+						}
+					}
+					strWrite(fp, "</string>\n", se);
 					if (b < 0) {
 						break;
 					}
 				}
 			}
 		}
-		fprintf(fp, "\t</dict>\n");
-		fprintf(fp, "</plist>\n");
+		strWrite(fp, "\t</dict>\n", se);
+		strWrite(fp, "</plist>\n", se);
 		fclose(fp);
 	}
 	return 0;
