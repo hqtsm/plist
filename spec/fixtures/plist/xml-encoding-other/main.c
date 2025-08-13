@@ -161,7 +161,7 @@ void strWrite(FILE * fp, const char * s, CFStringEncoding e) {
 	CFIndex max = CFStringGetMaximumSizeForEncoding(length, e);
 	UInt8 * bytes = malloc(max);
 	CFIndex l = 0;
-	CFStringGetBytes(str, range, kCFStringEncodingUTF8, '?', false, bytes, max, &l);
+	CFStringGetBytes(str, range, kCFStringEncodingUTF8, 0, false, bytes, max, &l);
 	fwrite(bytes, l, 1, fp);
 	free(bytes);
 	CFRelease(str);
