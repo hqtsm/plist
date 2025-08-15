@@ -243,7 +243,7 @@ int main() {
 					} else {
 						bp += sprintf(bp, "%0.02X %0.02X", a, b);
 					}
-					bp += sprintf(bp, " = ");
+					bp += sprintf(bp, " =");
 					for (CFIndex i = 0, l = CFStringGetLength(str); i < l; i++) {
 						UniChar c = CFStringGetCharacterAtIndex(str, i);
 						bp += sprintf(bp, " %d", c);
