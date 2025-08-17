@@ -4,5 +4,17 @@
 	<dict>
 		<key>hex</key>
 		<string>0123456789ABCDEF</string>
+		<key>esc</key>
+		<string>+-</string>
+		<key>divide</key>
+		<string>+APc-</string>
+		<key>ohm</key>
+		<string>+A6k-</string>
+		<key>plus</key>
+		<string>+/ws-</string>
+		<key>check</key>
+		<string>+JwU-</string>
+		<key>robot</key>
+		<string>+2D7dFg-</string>
 	</dict>
 </plist>
