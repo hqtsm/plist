@@ -6,25 +6,13 @@
 
 import { PLTYPE_DICT } from '../dict.ts';
 import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
+import { unquoted } from '../pri/openstep.ts';
 import type { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { walk } from '../walk.ts';
 
 const abtnvfr = 'abtnvfr';
 const rIndent = /^[\t ]*$/;
-
-/**
- * Check if a character is unquoted.
- *
- * @param chr Character code.
- * @returns True if in: a-zA-Z0-9:_$/.-
- */
-const unquoted = (chr: number) =>
-	chr < 123 && (
-		chr > 96 ||
-		(chr < 91 && (chr > 64 || (chr < 59 && (chr > 44 || chr === 36)))) ||
-		chr === 95
-	);
 
 /**
  * Calculate string encode size.
