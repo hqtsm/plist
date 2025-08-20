@@ -128,3 +128,28 @@ export function utf8Encode(
 	}
 	return start;
 }
+
+/**
+ * Error messages for end of data.
+ *
+ * @param d Data.
+ * @returns Error message.
+ */
+export function utf8ErrorEnd(d: Uint8Array): string {
+	// TODO
+	void d;
+	return 'Unexpected end';
+}
+
+/**
+ * Error messages for unexpected character data.
+ *
+ * @param d Data.
+ * @param p Position.
+ * @returns Error message.
+ */
+export function utf8ErrorChr(d: Uint8Array, p: number): string {
+	// TODO
+	void d, p;
+	return 'Unexpected character';
+}
