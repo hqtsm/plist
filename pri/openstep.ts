@@ -1,4 +1,10 @@
 /**
+ * @module
+ *
+ * OpenStep utils.
+ */
+
+/**
  * Check if a character is unquoted.
  *
  * @param chr Character code.
