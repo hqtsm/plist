@@ -53,8 +53,8 @@ function next(d: Uint8Array, p: [number]): number {
 				continue;
 			}
 			if (c === 47) {
-				c = d[i + 1];
-				if (c === 47) {
+				x = d[i + 1];
+				if (x === 47) {
 					for (i += 2; i < l;) {
 						c = d[i++];
 						if (c === 10 || c === 13) {
@@ -66,7 +66,7 @@ function next(d: Uint8Array, p: [number]): number {
 						}
 					}
 					continue;
-				} else if (c === 42) {
+				} else if (x === 42) {
 					for (i += x = 2; i < l; x = c) {
 						c = d[i++];
 						if (x === 42 && c === 47) {
