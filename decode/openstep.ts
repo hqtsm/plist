@@ -264,18 +264,18 @@ export function decodeOpenStep(
 				throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
 			}
 			c = next(encoded, p);
-			if (c < 0) {
-				throw new SyntaxError(utf8ErrorEnd(encoded));
-			}
-			if (c === 61) {
-				p[0]++;
-			} else if (c === 59) {
-				(plist as PLDict).set(k, k);
-				p[0]++;
-				continue;
-			} else {
+			if (c !== 61) {
+				if (c < 0) {
+					throw new SyntaxError(utf8ErrorEnd(encoded));
+				}
+				if (c === 59) {
+					(plist as PLDict).set(k, k);
+					p[0]++;
+					continue;
+				}
 				throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
 			}
+			p[0]++;
 			c = next(encoded, p);
 			if (c < 0) {
 				throw new SyntaxError(utf8ErrorEnd(encoded));
