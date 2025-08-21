@@ -141,11 +141,11 @@ function decodeStrU(d: Uint8Array, p: [number]): PLString {
  */
 export interface DecodeOpenStepOptions {
 	/**
-	 * Optionally make closing dict delimiter optional.
+	 * Allow missing semicolon on the last dict item.
 	 *
 	 * @default false
 	 */
-	optionalClosingDictDelimiter?: boolean;
+	allowMissingSemi?: boolean;
 }
 
 /**
@@ -172,7 +172,7 @@ export interface DecodeOpenStepResult {
  */
 export function decodeOpenStep(
 	encoded: Uint8Array,
-	{ optionalClosingDictDelimiter = false } = {},
+	{ allowMissingSemi = false } = {},
 ): DecodeOpenStepResult {
 	const p: [number] = [0];
 	let format: DecodeOpenStepResult['format'] = FORMAT_OPENSTEP;
@@ -214,7 +214,7 @@ export function decodeOpenStep(
 		if (d) {
 			c = next(encoded, p);
 			if (c < 1) {
-				if (e! < 0 && optionalClosingDictDelimiter) {
+				if (e! < 0 && allowMissingSemi) {
 					return { format, plist };
 				}
 				if (c) {
@@ -230,7 +230,7 @@ export function decodeOpenStep(
 			} else {
 				if (c === 59) {
 					p[0]++;
-				} else if (c !== 125 || !optionalClosingDictDelimiter) {
+				} else if (c !== 125 || !allowMissingSemi) {
 					throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
 				}
 			}
@@ -264,22 +264,14 @@ export function decodeOpenStep(
 				throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
 			}
 			c = next(encoded, p);
-			if (c < 1) {
-				if (e! < 0 && optionalClosingDictDelimiter) {
-					return { format, plist };
-				}
-				if (c) {
-					throw new SyntaxError(utf8ErrorEnd(encoded));
-				}
+			if (c < 0) {
+				throw new SyntaxError(utf8ErrorEnd(encoded));
 			}
 			if (c === 61) {
 				p[0]++;
 			} else if (c === 59) {
 				(plist as PLDict).set(k, k);
 				p[0]++;
-				continue;
-			} else if (c === 125 && optionalClosingDictDelimiter) {
-				(plist as PLDict).set(k, k);
 				continue;
 			} else {
 				throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
