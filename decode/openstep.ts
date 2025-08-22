@@ -213,37 +213,34 @@ export function decodeOpenStep(
 	while (n) {
 		if (d) {
 			c = next(encoded, p);
-			if (c < 1) {
-				if (e! < 0 && allowMissingSemi) {
-					return { format, plist };
-				}
-				if (c) {
-					throw new SyntaxError(utf8ErrorEnd(encoded));
-				}
-			}
 			if (e === 41) {
 				if (c === 44) {
 					p[0]++;
-				} else if (c !== 41) {
-					throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
+				} else {
+					d = c === 41;
 				}
 			} else {
 				if (c === 59) {
 					p[0]++;
-				} else if (c !== 125 || !allowMissingSemi) {
-					throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
+				} else if (c === 125) {
+					d = allowMissingSemi;
+				} else if ((d = allowMissingSemi && e! < 0)) {
+					return { format, plist };
 				}
 			}
-			d = null;
+			if (!d) {
+				if (c < 0) {
+					throw new SyntaxError(utf8ErrorEnd(encoded));
+				}
+				throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
+			}
 		}
 		c = next(encoded, p);
-		if (c < 1) {
+		if ((d = c < 0)) {
 			if (e! < 0) {
 				return { format, plist };
 			}
-			if (c) {
-				throw new SyntaxError(utf8ErrorEnd(encoded));
-			}
+			throw new SyntaxError(utf8ErrorEnd(encoded));
 		}
 		if (c === e) {
 			p[0]++;
@@ -260,6 +257,8 @@ export function decodeOpenStep(
 				k = decodeStrQ(encoded, p, c);
 			} else if (unquoted(c)) {
 				k = decodeStrU(encoded, p);
+			} else if (e! < 0) {
+				return { format, plist };
 			} else {
 				throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
 			}
