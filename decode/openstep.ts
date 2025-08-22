@@ -33,6 +33,21 @@ interface Node {
 }
 
 /**
+ * Get hex character value.
+ *
+ * @param c Character.
+ * @returns Value, or -1 for invalid.
+ */
+const hexc = (c: number) =>
+	c < 58
+		? c < 48 ? -1 : c - 48
+		: c > 96
+		? c < 103 ? c - 87 : -1
+		: c < 71 && c > 64
+		? c - 55
+		: -1;
+
+/**
  * Advance to next non-whitespace, non-comment, character.
  *
  * @param d Data.
@@ -92,9 +107,40 @@ function next(d: Uint8Array, p: [number]): number {
  * @returns Decoded data.
  */
 function decodeData(d: Uint8Array, p: [number]): PLData {
-	// TODO
-	void d, p;
-	return new PLData();
+	for (let i = p[0] + 1, b = i, c, s = 0, r, l = d.length; i < l;) {
+		if (hexc(c = d[i]) < 0) {
+			if (c === 62) {
+				r = new PLData(s);
+				c = new Uint8Array(r.buffer);
+				for (s = 0; b < i;) {
+					l = hexc(d[b++]);
+					if (~l) {
+						c[s++] = l << 4 | hexc(d[b++]);
+					}
+				}
+				p[0] = i + 1;
+				return r;
+			}
+			if (c === 32 || c === 10 || c === 13 || c === 9) {
+				i++;
+				continue;
+			}
+			if (c === 226 && d[i + 1] === 128 && d[i + 2] >> 1 === 84) {
+				i += 3;
+				continue;
+			}
+			throw new SyntaxError(utf8ErrorChr(d, i));
+		}
+		if (++i < l) {
+			if (hexc(d[i]) < 0) {
+				throw new SyntaxError(utf8ErrorChr(d, i));
+			}
+			i++;
+			s++;
+			continue;
+		}
+	}
+	throw new SyntaxError(utf8ErrorEnd(d));
 }
 
 /**
