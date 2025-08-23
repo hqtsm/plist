@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-console
 import { fixtureNextStepLatin } from '../fixture.ts';
 
 async function main(): Promise<void> {
@@ -13,7 +14,8 @@ async function main(): Promise<void> {
 			table[c - 128] = code - c;
 		}
 	}
-	console.log(JSON.stringify(table));
+	console.log(`const latin = ${JSON.stringify(table)};`);
+	console.log(`console.log(latin[c - 128] + c);`);
 }
 main().catch((err) => {
 	console.error(err);
