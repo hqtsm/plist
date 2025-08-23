@@ -23,11 +23,15 @@ export async function findFixtures(): Promise<string> {
 	return result;
 }
 
+export async function fixture(name: string): Promise<Uint8Array> {
+	const base = await (fixtures ??= findFixtures());
+	const file = `${base}/${name}`;
+	return Deno.readFile(file);
+}
+
 export async function fixturePlist(
 	group: string,
 	name: string,
 ): Promise<Uint8Array> {
-	const base = await (fixtures ??= findFixtures());
-	const file = `${base}/plist/${group}/${name}.plist`;
-	return Deno.readFile(file);
+	return await fixture(`plist/${group}/${name}.plist`);
 }
