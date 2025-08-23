@@ -21,15 +21,18 @@ const rIndent = /^[\t ]*$/;
  * @param quoted Quoted.
  * @returns Size.
  */
-function stringLength(str: string, quote: 34 | 39, quoted: boolean): number {
+function stringLength(
+	str: string,
+	quote: 34 | 39,
+	quoted: boolean | number,
+): number {
 	let i = str.length;
 	let total = i;
 	let next = 0;
 	let chr: number;
 	while (i--) {
 		if (!unquoted(chr = str.charCodeAt(i))) {
-			quoted = true;
-			total += chr < 32
+			quoted = total += chr < 32
 				? (
 					chr > 13
 						? (next < 56 && next > 47) as unknown as number + 2
