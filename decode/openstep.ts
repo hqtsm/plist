@@ -12,6 +12,136 @@ import { unquoted } from '../pri/openstep.ts';
 import { utf8ErrorChr, utf8ErrorEnd } from '../pri/utf8.ts';
 import { PLString } from '../string.ts';
 
+const esc = '\x07\bcde\fghijklm\nopq\rs\tu\v';
+const nsl = [
+	32,
+	63,
+	63,
+	63,
+	63,
+	63,
+	63,
+	64,
+	64,
+	64,
+	64,
+	64,
+	64,
+	64,
+	64,
+	64,
+	64,
+	64,
+	64,
+	64,
+	64,
+	64,
+	64,
+	66,
+	66,
+	66,
+	66,
+	66,
+	66,
+	24,
+	57,
+	88,
+	9,
+	0,
+	0,
+	0,
+	8096,
+	0,
+	236,
+	0,
+	-4,
+	8048,
+	8050,
+	0,
+	8077,
+	8077,
+	64083,
+	64083,
+	-2,
+	8034,
+	8046,
+	8046,
+	3,
+	-15,
+	0,
+	8043,
+	8034,
+	8037,
+	8035,
+	0,
+	8042,
+	8051,
+	-18,
+	0,
+	-7,
+	522,
+	-14,
+	515,
+	536,
+	-22,
+	530,
+	530,
+	-32,
+	-23,
+	528,
+	-19,
+	-25,
+	528,
+	525,
+	504,
+	8004,
+	-32,
+	-22,
+	-22,
+	-22,
+	11,
+	11,
+	11,
+	11,
+	11,
+	11,
+	12,
+	12,
+	12,
+	12,
+	12,
+	12,
+	-27,
+	11,
+	-57,
+	10,
+	10,
+	10,
+	10,
+	89,
+	-17,
+	104,
+	-49,
+	6,
+	6,
+	6,
+	6,
+	6,
+	-11,
+	7,
+	7,
+	7,
+	60,
+	6,
+	6,
+	74,
+	-1,
+	89,
+	-28,
+	2,
+	2,
+];
+
 /**
  * Linked list node type.
  */
@@ -152,14 +282,40 @@ function decodeData(d: Uint8Array, p: [number]): PLData {
  * @returns Decoded string.
  */
 function decodeStrQ(d: Uint8Array, p: [number], q: number): PLString {
-	for (let [i] = p, c, s = '', l = d.length; ++i < l;) {
+	for (let [i] = p, b, c, s = '', l = d.length; ++i < l;) {
 		c = d[i];
 		if (c === q) {
 			p[0] = i + 1;
 			return new PLString(s);
 		}
-		// TODO: Escapes characters and UTF-8.
-		s += String.fromCharCode(c);
+		if (c === 92) {
+			c = d[++i];
+			if (c >> 3 === 6) {
+				c &= 7;
+				b = d[i + 1];
+				if (b >> 3 === 6) {
+					c = c << 3 | b & 7;
+					b = d[++i + 1];
+					if (b >> 3 === 6) {
+						c = (c & 31) << 3 | b & 7;
+						++i;
+					}
+				}
+				if (c < 128) {
+					s += String.fromCharCode(c);
+				} else if (c < 254) {
+					s += String.fromCharCode(nsl[c - 128] + c);
+				}
+			} else if (c === 85) {
+				throw new Error('TODO');
+			} else if (c > 96 && c < 119) {
+				s += esc.charAt(c - 97);
+			} else {
+				s += String.fromCharCode(c);
+			}
+		} else {
+			s += String.fromCharCode(c);
+		}
 	}
 	throw new SyntaxError(utf8ErrorEnd(d));
 }

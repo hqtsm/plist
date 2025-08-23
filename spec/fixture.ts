@@ -35,3 +35,19 @@ export async function fixturePlist(
 ): Promise<Uint8Array> {
 	return await fixture(`plist/${group}/${name}.plist`);
 }
+
+export async function fixtureNextStepLatin(): Promise<Map<number, number[]>> {
+	const r = new Map<number, number[]>();
+	for (
+		const line of String.fromCharCode(
+			...await fixture('encoding/x-nextstep/x-nextstep.txt'),
+		)
+			.split('\n')
+	) {
+		const [a, b] = line.trim().split(' = ');
+		if (a && b) {
+			r.set(parseInt(a, 16), b.split(' ').map((b) => +b));
+		}
+	}
+	return r;
+}
