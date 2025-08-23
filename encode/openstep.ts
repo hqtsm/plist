@@ -6,12 +6,11 @@
 
 import { PLTYPE_DICT } from '../dict.ts';
 import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
-import { unquoted } from '../pri/openstep.ts';
+import { esc, unquoted } from '../pri/openstep.ts';
 import type { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { walk } from '../walk.ts';
 
-const abtnvfr = 'abtnvfr';
 const rIndent = /^[\t ]*$/;
 
 /**
@@ -89,7 +88,7 @@ function stringEncode(
 				dest[start++] = 48 + (chr - (x = chr % 8)) / 8;
 				dest[start++] = 48 + x;
 			} else {
-				dest[start++] = abtnvfr.charCodeAt(chr - 7);
+				dest[start++] = esc.charCodeAt(chr - 7);
 			}
 		} else if (chr === quote || chr === 92) {
 			dest[start++] = 92;
