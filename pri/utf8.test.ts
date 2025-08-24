@@ -161,14 +161,14 @@ Deno.test('utf8Check', () => {
 					'Invalid encoding on line 1',
 				);
 
-				data4[0] &= 0b10111111;
+				data4[0] &= 0xBF;
 				assertThrows(
 					() => utf8Encoded(data4),
 					TypeError,
 					'Invalid encoding on line 1',
 				);
 
-				data4[0] = 0b11111111;
+				data4[0] = 0xFF;
 				assertThrows(
 					() => utf8Encoded(data4),
 					TypeError,
