@@ -5,7 +5,7 @@
  */
 
 /**
- * Calculate string encode size.
+ * Get string encode size.
  *
  * @param str String.
  * @param encode XML encode (0: none, 1: text, 2: attr).
