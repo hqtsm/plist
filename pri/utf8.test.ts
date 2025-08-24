@@ -62,7 +62,7 @@ Deno.test('utf8Encode', () => {
 	assertEquals(a[0], 'A'.charCodeAt(0));
 });
 
-Deno.test('utf8Check', () => {
+Deno.test('utf8Encoded', () => {
 	{
 		const data1 = new Uint8Array(1);
 		for (let i = 0; i < 128; i++) {
