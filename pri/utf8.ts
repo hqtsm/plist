@@ -132,34 +132,90 @@ export function utf8Encode(
 /**
  * Check that data is valid UTF-8.
  *
- * @param d Data.
+ * @param data Data.
  */
-export function utf8Check(d: Uint8Array): void {
-	// TODO
-	void d;
+export function utf8Check(data: Uint8Array): void {
+	for (
+		let start = 0, end = data.length, b, c, i, m, n;
+		start < end;
+		start += n
+	) {
+		c = data[start];
+		n = 1;
+		m = 128;
+		if (c & m) {
+			if (!(c & 64)) {
+				c = -1;
+			} else if (!(c & 32)) {
+				c &= 31;
+				n = 2;
+			} else if (!(c & 16)) {
+				c &= 15;
+				n = 3;
+				m = 2048;
+			} else if (!(c & 8)) {
+				c &= 7;
+				n = 4;
+				m = 65536;
+			} else {
+				c = -1;
+			}
+			for (i = 1; i < n;) {
+				b = data[start + i++];
+				c = b >> 6 === 2 ? c << 6 | b & 63 : -1;
+			}
+			if (c < m || c > 1114111) {
+				throw new TypeError(utf8ErrorEnc(data, start));
+			}
+		}
+	}
 }
 
 /**
- * Error messages for end of data.
+ * Find the line number of offset.
  *
- * @param d Data.
- * @returns Error message.
+ * @param data Data.
+ * @param offset Offset.
+ * @returns Line number.
  */
-export function utf8ErrorEnd(d: Uint8Array): string {
-	// TODO
-	void d;
-	return 'Unexpected end';
+function lineNumber(data: Uint8Array, offset: number): number {
+	let line = 1, i = 0, c, p;
+	for (; i < offset; i++) {
+		c = data[i];
+		line += (c === 10 ? p !== 13 : c === 13) as unknown as number;
+		p = c;
+	}
+	return line;
 }
 
 /**
- * Error messages for unexpected character data.
+ * Error message for invalid data.
  *
- * @param d Data.
- * @param p Position.
+ * @param data Data.
+ * @param offset Offset.
  * @returns Error message.
  */
-export function utf8ErrorChr(d: Uint8Array, p: number): string {
-	// TODO
-	void d, p;
-	return 'Unexpected character';
+export function utf8ErrorEnc(data: Uint8Array, offset: number): string {
+	return `Invalid encoding on line ${lineNumber(data, offset)}`;
+}
+
+/**
+ * Error message for end of data.
+ *
+ * @param data Data.
+ * @returns Error message.
+ */
+export function utf8ErrorEnd(data: Uint8Array): string {
+	return `Invalid end on line ${lineNumber(data, data.length)}`;
+}
+
+/**
+ * Error message for invalid character data.
+ *
+ * @param data Data.
+ * @param offset Offset.
+ * @returns Error message.
+ */
+export function utf8ErrorChr(data: Uint8Array, offset: number): string {
+	return `Invalid character on line ${lineNumber(data, offset)}`;
 }

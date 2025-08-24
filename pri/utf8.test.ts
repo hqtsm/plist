@@ -1,5 +1,5 @@
-import { assertEquals } from '@std/assert';
-import { utf8Encode, utf8Length } from './utf8.ts';
+import { assertEquals, assertThrows } from '@std/assert';
+import { utf8Check, utf8Encode, utf8Length } from './utf8.ts';
 
 Deno.test('utf8Length', () => {
 	const te = new TextEncoder();
@@ -60,4 +60,149 @@ Deno.test('utf8Encode', () => {
 	a[0] = 0;
 	assertEquals(utf8Encode('\ud83e\ud83eA', a, 0), 1);
 	assertEquals(a[0], 'A'.charCodeAt(0));
+});
+
+Deno.test('utf8Check', () => {
+	{
+		const data1 = new Uint8Array(1);
+		for (let i = 0; i < 128; i++) {
+			data1[0] = i;
+			utf8Check(data1);
+		}
+	}
+	{
+		const data2 = new Uint8Array(2);
+		for (let i = 0x0080 - 1; i <= 0x07FF; i++) {
+			data2[0] = (i >> 6) | 0xC0;
+			data2[1] = (i & 0x3F) | 0x80;
+			if (i < 0x0080) {
+				assertThrows(
+					() => utf8Check(data2),
+					TypeError,
+					'Invalid encoding on line 1',
+				);
+			} else {
+				utf8Check(data2);
+			}
+			if (i === 0x0080 || i === 0x07FF) {
+				assertThrows(
+					() => utf8Check(data2.slice(0, 1)),
+					TypeError,
+					'Invalid encoding on line 1',
+				);
+			}
+		}
+	}
+	{
+		const data3 = new Uint8Array(3);
+		for (let i = 0x0800 - 1; i <= 0xFFFF; i++) {
+			data3[0] = (i >> 12) | 0xE0;
+			data3[1] = ((i >> 6) & 0x3F) | 0x80;
+			data3[2] = (i & 0x3F) | 0x80;
+			if (i < 0x0800) {
+				assertThrows(
+					() => utf8Check(data3),
+					TypeError,
+					'Invalid encoding on line 1',
+				);
+			} else {
+				utf8Check(data3);
+			}
+			if (i === 0x0800 || i === 0xFFFF) {
+				assertThrows(
+					() => utf8Check(data3.slice(0, 1)),
+					TypeError,
+					'Invalid encoding on line 1',
+				);
+				assertThrows(
+					() => utf8Check(data3.slice(0, 2)),
+					TypeError,
+					'Invalid encoding on line 1',
+				);
+			}
+		}
+	}
+	{
+		const data4 = new Uint8Array(4);
+		for (let i = 0x10000 - 1; i <= 0x10FFFF + 1; i++) {
+			data4[0] = (i >> 18) | 0xF0;
+			data4[1] = ((i >> 12) & 0x3F) | 0x80;
+			data4[2] = ((i >> 6) & 0x3F) | 0x80;
+			data4[3] = (i & 0x3F) | 0x80;
+			if (i < 0x10000) {
+				assertThrows(
+					() => utf8Check(data4),
+					TypeError,
+					'Invalid encoding on line 1',
+				);
+			} else if (i > 0x10FFFF) {
+				assertThrows(
+					() => utf8Check(data4),
+					TypeError,
+					'Invalid encoding on line 1',
+				);
+			} else {
+				utf8Check(data4);
+			}
+			if (i === 0x10000 || i === 0x10FFFF) {
+				assertThrows(
+					() => utf8Check(data4.slice(0, 1)),
+					TypeError,
+					'Invalid encoding on line 1',
+				);
+				assertThrows(
+					() => utf8Check(data4.slice(0, 2)),
+					TypeError,
+					'Invalid encoding on line 1',
+				);
+				assertThrows(
+					() => utf8Check(data4.slice(0, 3)),
+					TypeError,
+					'Invalid encoding on line 1',
+				);
+
+				data4[0] &= 0b10111111;
+				assertThrows(
+					() => utf8Check(data4),
+					TypeError,
+					'Invalid encoding on line 1',
+				);
+
+				data4[0] = 0b11111111;
+				assertThrows(
+					() => utf8Check(data4),
+					TypeError,
+					'Invalid encoding on line 1',
+				);
+			}
+		}
+	}
+	{
+		const data = new Uint8Array(5);
+		data[4] = 0x80;
+		data.set([...'\r\n\r\n'].map((c) => c.charCodeAt(0)));
+		assertThrows(
+			() => utf8Check(data),
+			TypeError,
+			'Invalid encoding on line 3',
+		);
+		data.set([...'\n\r\n\r'].map((c) => c.charCodeAt(0)));
+		assertThrows(
+			() => utf8Check(data),
+			TypeError,
+			'Invalid encoding on line 4',
+		);
+		data.set([...'\r\r\r\r'].map((c) => c.charCodeAt(0)));
+		assertThrows(
+			() => utf8Check(data),
+			TypeError,
+			'Invalid encoding on line 5',
+		);
+		data.set([...'\n\n\n\n'].map((c) => c.charCodeAt(0)));
+		assertThrows(
+			() => utf8Check(data),
+			TypeError,
+			'Invalid encoding on line 5',
+		);
+	}
 });
