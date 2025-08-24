@@ -130,6 +130,16 @@ export function utf8Encode(
 }
 
 /**
+ * Check that data is valid UTF-8.
+ *
+ * @param d Data.
+ */
+export function utf8Check(d: Uint8Array): void {
+	// TODO
+	void d;
+}
+
+/**
  * Error messages for end of data.
  *
  * @param d Data.
