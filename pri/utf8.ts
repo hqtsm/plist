@@ -141,8 +141,8 @@ export function utf8Length(
 	start = 0,
 	end = data.length,
 ): number {
-	let l = 0, b, c, i, m, n;
-	for (; start < end; start += n, l++) {
+	let len = 0, b, c, i, m, n;
+	for (; start < end; start += n, len++) {
 		c = data[start];
 		n = 1;
 		m = 128;
@@ -160,7 +160,7 @@ export function utf8Length(
 				c &= 7;
 				n = 4;
 				m = 65536;
-				l++;
+				len++;
 			} else {
 				c = -1;
 			}
@@ -173,7 +173,7 @@ export function utf8Length(
 			}
 		}
 	}
-	return l;
+	return len;
 }
 
 /**
