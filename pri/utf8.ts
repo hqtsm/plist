@@ -169,7 +169,7 @@ export function utf8Length(
 				c = b >> 6 === 2 ? c << 6 | b & 63 : -1;
 			}
 			if (c < m || c > 1114111) {
-				throw new TypeError(utf8ErrorEnc(data, start));
+				throw new TypeError(utf8ErrorEncoded(data, start));
 			}
 		}
 	}
@@ -200,7 +200,7 @@ function lineNumber(data: Uint8Array, offset: number): number {
  * @param offset Offset.
  * @returns Error message.
  */
-export function utf8ErrorEnc(data: Uint8Array, offset: number): string {
+export function utf8ErrorEncoded(data: Uint8Array, offset: number): string {
 	return `Invalid UTF-8 encoded text on line ${lineNumber(data, offset)}`;
 }
 
@@ -211,8 +211,8 @@ export function utf8ErrorEnc(data: Uint8Array, offset: number): string {
  * @param offset Offset.
  * @returns Error message.
  */
-export function utf8ErrorChr(data: Uint8Array, offset: number): string {
-	return `Invalid character on line ${lineNumber(data, offset)}`;
+export function utf8ErrorToken(data: Uint8Array, offset: number): string {
+	return `Invalid token on line ${lineNumber(data, offset)}`;
 }
 
 /**

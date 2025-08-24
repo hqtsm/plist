@@ -9,7 +9,7 @@ import { PLData } from '../data.ts';
 import { PLDict } from '../dict.ts';
 import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
 import { latin, unesc, unquoted } from '../pri/openstep.ts';
-import { utf8ErrorChr, utf8ErrorEnd, utf8Length } from '../pri/utf8.ts';
+import { utf8ErrorEnd, utf8ErrorToken, utf8Length } from '../pri/utf8.ts';
 import { PLString } from '../string.ts';
 
 /**
@@ -129,11 +129,11 @@ function decodeData(d: Uint8Array, p: [number]): PLData {
 				i += 3;
 				continue;
 			}
-			throw new SyntaxError(utf8ErrorChr(d, i));
+			throw new SyntaxError(utf8ErrorToken(d, i));
 		}
 		if (++i < l) {
 			if (hexc(d[i]) < 0) {
-				throw new SyntaxError(utf8ErrorChr(d, i));
+				throw new SyntaxError(utf8ErrorToken(d, i));
 			}
 			i++;
 			s++;
@@ -307,7 +307,7 @@ export function decodeOpenStep(
 		n = { o: plist = new PLArray(), e: e = 41, n };
 		p[0]++;
 	} else {
-		throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
+		throw new SyntaxError(utf8ErrorToken(encoded, p[0]));
 	}
 	while (n) {
 		if (d) {
@@ -331,7 +331,7 @@ export function decodeOpenStep(
 				if (c < 0) {
 					throw new SyntaxError(utf8ErrorEnd(encoded));
 				}
-				throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
+				throw new SyntaxError(utf8ErrorToken(encoded, p[0]));
 			}
 		}
 		c = next(encoded, p);
@@ -359,7 +359,7 @@ export function decodeOpenStep(
 			} else if (e! < 0) {
 				return { format, plist };
 			} else {
-				throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
+				throw new SyntaxError(utf8ErrorToken(encoded, p[0]));
 			}
 			c = next(encoded, p);
 			if (c !== 61) {
@@ -371,7 +371,7 @@ export function decodeOpenStep(
 					p[0]++;
 					continue;
 				}
-				throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
+				throw new SyntaxError(utf8ErrorToken(encoded, p[0]));
 			}
 			p[0]++;
 			c = next(encoded, p);
@@ -392,7 +392,7 @@ export function decodeOpenStep(
 			n = { o: v = new PLArray(), e: e = 41, n };
 			p[0]++;
 		} else {
-			throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
+			throw new SyntaxError(utf8ErrorToken(encoded, p[0]));
 		}
 		if (k) {
 			(plist as PLDict).set(k, v);
@@ -407,5 +407,5 @@ export function decodeOpenStep(
 	if (c < 0) {
 		return { format, plist };
 	}
-	throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
+	throw new SyntaxError(utf8ErrorToken(encoded, p[0]));
 }
