@@ -130,11 +130,11 @@ export function utf8Encode(
 }
 
 /**
- * Check that data is valid UTF-8.
+ * Check that data is valid UTF-8 encoded data.
  *
  * @param data Data.
  */
-export function utf8Check(data: Uint8Array): void {
+export function utf8Encoded(data: Uint8Array): void {
 	for (
 		let start = 0, end = data.length, b, c, i, m, n;
 		start < end;
