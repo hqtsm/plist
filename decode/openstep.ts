@@ -176,16 +176,17 @@ function decodeStrQ(d: Uint8Array, p: [number], q: number): PLString {
 				} else if (c < 254) {
 					s += String.fromCharCode(latin[c - 128] + c);
 				}
-			} else if (c === 85) {
-				throw new Error('TODO');
-			} else if (c > 96 && c < 119) {
-				s += unesc.charAt(c - 97);
-			} else {
-				s += String.fromCharCode(c);
+				continue;
 			}
-		} else {
-			s += String.fromCharCode(c);
+			if (c === 85) {
+				throw new Error('TODO');
+			}
+			if (c > 96 && c < 119) {
+				s += unesc.charAt(c - 97);
+				continue;
+			}
 		}
+		s += String.fromCharCode(c);
 	}
 	throw new SyntaxError(utf8ErrorEnd(d));
 }
