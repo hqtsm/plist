@@ -205,16 +205,6 @@ export function utf8ErrorEnc(data: Uint8Array, offset: number): string {
 }
 
 /**
- * Error message for end of data.
- *
- * @param data Data.
- * @returns Error message.
- */
-export function utf8ErrorEnd(data: Uint8Array): string {
-	return `Invalid end on line ${lineNumber(data, data.length)}`;
-}
-
-/**
  * Error message for invalid character data.
  *
  * @param data Data.
@@ -223,4 +213,14 @@ export function utf8ErrorEnd(data: Uint8Array): string {
  */
 export function utf8ErrorChr(data: Uint8Array, offset: number): string {
 	return `Invalid character on line ${lineNumber(data, offset)}`;
+}
+
+/**
+ * Error message for end of data.
+ *
+ * @param data Data.
+ * @returns Error message.
+ */
+export function utf8ErrorEnd(data: Uint8Array): string {
+	return `Invalid end on line ${lineNumber(data, data.length)}`;
 }
