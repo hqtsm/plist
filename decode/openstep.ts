@@ -9,7 +9,7 @@ import { PLData } from '../data.ts';
 import { PLDict } from '../dict.ts';
 import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
 import { latin, unesc, unquoted } from '../pri/openstep.ts';
-import { utf8Encoded, utf8ErrorChr, utf8ErrorEnd } from '../pri/utf8.ts';
+import { utf8ErrorChr, utf8ErrorEnd, utf8Length } from '../pri/utf8.ts';
 import { PLString } from '../string.ts';
 
 /**
@@ -272,7 +272,7 @@ export function decodeOpenStep(
 	encoded: Uint8Array,
 	{ allowMissingSemi = false } = {},
 ): DecodeOpenStepResult {
-	utf8Encoded(encoded);
+	utf8Length(encoded);
 	const p: [number] = [0];
 	let format: DecodeOpenStepResult['format'] = FORMAT_OPENSTEP;
 	let n: Node | null = null;

@@ -130,16 +130,19 @@ export function utf8Encode(
 }
 
 /**
- * Check that data is valid UTF-8 encoded data.
+ * Get string decode length.
  *
  * @param data Data.
+ * @param start Offset.
+ * @param end End.
  */
-export function utf8Encoded(data: Uint8Array): void {
-	for (
-		let start = 0, end = data.length, b, c, i, m, n;
-		start < end;
-		start += n
-	) {
+export function utf8Length(
+	data: Uint8Array,
+	start = 0,
+	end = data.length,
+): number {
+	let l = 0, b, c, i, m, n;
+	for (; start < end; start += n, l++) {
 		c = data[start];
 		n = 1;
 		m = 128;
@@ -157,6 +160,7 @@ export function utf8Encoded(data: Uint8Array): void {
 				c &= 7;
 				n = 4;
 				m = 65536;
+				l++;
 			} else {
 				c = -1;
 			}
@@ -169,6 +173,7 @@ export function utf8Encoded(data: Uint8Array): void {
 			}
 		}
 	}
+	return l;
 }
 
 /**
