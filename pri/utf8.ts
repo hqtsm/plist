@@ -205,7 +205,7 @@ export function utf8ErrorEncoded(data: Uint8Array, offset: number): string {
 }
 
 /**
- * Error message for invalid character data.
+ * Error message for invalid token.
  *
  * @param data Data.
  * @param offset Offset.
@@ -216,7 +216,7 @@ export function utf8ErrorToken(data: Uint8Array, offset: number): string {
 }
 
 /**
- * Error message for end of data.
+ * Error message for end of input.
  *
  * @param data Data.
  * @returns Error message.
