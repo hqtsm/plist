@@ -11,7 +11,7 @@
  * @param encode XML encode (0: none, 1: text, 2: attr).
  * @returns Size.
  */
-export function utf8Length(str: string, encode: 0 | 1 | 2 = 0): number {
+export function utf8Size(str: string, encode: 0 | 1 | 2 = 0): number {
 	let len = 0;
 	for (let l = str.length, i = 0, hi = 0, chr; i < l;) {
 		if ((chr = str.charCodeAt(i++)) < 128) {

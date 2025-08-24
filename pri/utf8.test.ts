@@ -1,7 +1,7 @@
 import { assertEquals, assertThrows } from '@std/assert';
-import { utf8Encode, utf8Encoded, utf8Length } from './utf8.ts';
+import { utf8Encode, utf8Encoded, utf8Size } from './utf8.ts';
 
-Deno.test('utf8Length', () => {
+Deno.test('utf8Size', () => {
 	const te = new TextEncoder();
 	for (
 		const s of [
@@ -18,13 +18,13 @@ Deno.test('utf8Length', () => {
 		]
 	) {
 		const l = te.encode(s).length;
-		assertEquals(utf8Length(s), l, JSON.stringify(s));
-		assertEquals(utf8Length(`${s}${s}`), l + l, JSON.stringify(`${s}${s}`));
+		assertEquals(utf8Size(s), l, JSON.stringify(s));
+		assertEquals(utf8Size(`${s}${s}`), l + l, JSON.stringify(`${s}${s}`));
 	}
-	assertEquals(utf8Length('\ud83e'), 0);
-	assertEquals(utf8Length('\ud83e\ud83e'), 0);
-	assertEquals(utf8Length('\ud83eA'), 1);
-	assertEquals(utf8Length('\ud83e\ud83eA'), 1);
+	assertEquals(utf8Size('\ud83e'), 0);
+	assertEquals(utf8Size('\ud83e\ud83e'), 0);
+	assertEquals(utf8Size('\ud83eA'), 1);
+	assertEquals(utf8Size('\ud83e\ud83eA'), 1);
 });
 
 Deno.test('utf8Encode', () => {

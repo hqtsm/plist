@@ -5,7 +5,7 @@
  */
 
 import type { PLDate } from '../date.ts';
-import { utf8Encode, utf8Length } from '../pri/utf8.ts';
+import { utf8Encode, utf8Size } from '../pri/utf8.ts';
 import { FORMAT_XML_V1_0 } from '../format.ts';
 import type { PLType } from '../type.ts';
 import { walk } from '../walk.ts';
@@ -152,9 +152,9 @@ export function encodeXml(
 	}
 
 	if (doctype) {
-		i += utf8Length(doctype) + 1;
+		i += utf8Size(doctype) + 1;
 	}
-	i += utf8Length(version, 2);
+	i += utf8Size(version, 2);
 
 	const a = new Set<PLType>();
 	const il = x = indent.length;
@@ -192,7 +192,7 @@ export function encodeXml(
 		},
 		key: {
 			PLDict(v): void {
-				i += 11 + utf8Length(v.value, 1);
+				i += 11 + utf8Size(v.value, 1);
 			},
 		},
 		value: {
@@ -214,7 +214,7 @@ export function encodeXml(
 				i += 13 + realString(v.value).length;
 			},
 			PLString(v): void {
-				i += 17 + utf8Length(v.value, 1);
+				i += 17 + utf8Size(v.value, 1);
 			},
 			PLUID(v, d): void {
 				i += 52 + v.value.toString().length + d++ * il + d * il * 2;
