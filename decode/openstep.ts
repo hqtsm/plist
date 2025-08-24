@@ -193,6 +193,24 @@ function decodeStrQ(d: Uint8Array, p: [number], q: number): PLString {
 				continue;
 			}
 		}
+		if (c & 128) {
+			if (c & 32) {
+				if (c & 16) {
+					c = (
+						(c & 7) << 18 |
+						(d[++i] & 63) << 12 |
+						(d[++i] & 63) << 6 |
+						d[++i] & 63
+					) - 65536;
+					s += String.fromCharCode(c >> 10 | 55296);
+					c = c & 1023 | 56320;
+				} else {
+					c = (c & 15) << 12 | (d[++i] & 63) << 6 | d[++i] & 63;
+				}
+			} else {
+				c = (c & 31) << 6 | d[++i] & 63;
+			}
+		}
 		s += String.fromCharCode(c);
 	}
 	throw new SyntaxError(utf8ErrorEnd(d));
