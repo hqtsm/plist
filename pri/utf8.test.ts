@@ -1,5 +1,5 @@
 import { assertEquals, assertThrows } from '@std/assert';
-import { utf8Encode, utf8Length, utf8Size } from './utf8.ts';
+import { utf8Decode, utf8Encode, utf8Length, utf8Size } from './utf8.ts';
 
 Deno.test('utf8Size', () => {
 	const te = new TextEncoder();
@@ -62,12 +62,14 @@ Deno.test('utf8Encode', () => {
 	assertEquals(a[0], 'A'.charCodeAt(0));
 });
 
-Deno.test('utf8Encoded', () => {
+Deno.test('utf8Length + utf8Decode', () => {
 	{
 		const data1 = new Uint8Array(1);
 		for (let i = 0; i < 128; i++) {
 			data1[0] = i;
+
 			assertEquals(utf8Length(data1), 1);
+			assertEquals(utf8Decode(data1), String.fromCharCode(i));
 		}
 	}
 	{
@@ -75,18 +77,31 @@ Deno.test('utf8Encoded', () => {
 		for (let i = 0x0080 - 1; i <= 0x07FF; i++) {
 			data2[0] = (i >> 6) | 0xC0;
 			data2[1] = (i & 0x3F) | 0x80;
+
 			if (i < 0x0080) {
 				assertThrows(
 					() => utf8Length(data2),
 					TypeError,
 					'Invalid UTF-8 encoded text on line 1',
 				);
+				assertThrows(
+					() => utf8Decode(data2),
+					TypeError,
+					'Invalid UTF-8 encoded text on line 1',
+				);
 			} else {
 				assertEquals(utf8Length(data2), 1);
+				assertEquals(utf8Decode(data2), String.fromCharCode(i));
 			}
+
 			if (i === 0x0080 || i === 0x07FF) {
 				assertThrows(
 					() => utf8Length(data2.slice(0, 1)),
+					TypeError,
+					'Invalid UTF-8 encoded text on line 1',
+				);
+				assertThrows(
+					() => utf8Decode(data2.slice(0, 1)),
 					TypeError,
 					'Invalid UTF-8 encoded text on line 1',
 				);
@@ -99,15 +114,23 @@ Deno.test('utf8Encoded', () => {
 			data3[0] = (i >> 12) | 0xE0;
 			data3[1] = ((i >> 6) & 0x3F) | 0x80;
 			data3[2] = (i & 0x3F) | 0x80;
+
 			if (i < 0x0800) {
 				assertThrows(
 					() => utf8Length(data3),
 					TypeError,
 					'Invalid UTF-8 encoded text on line 1',
 				);
+				assertThrows(
+					() => utf8Decode(data3),
+					TypeError,
+					'Invalid UTF-8 encoded text on line 1',
+				);
 			} else {
 				assertEquals(utf8Length(data3), 1);
+				assertEquals(utf8Decode(data3), String.fromCharCode(i));
 			}
+
 			if (i === 0x0800 || i === 0xFFFF) {
 				assertThrows(
 					() => utf8Length(data3.slice(0, 1)),
@@ -115,7 +138,17 @@ Deno.test('utf8Encoded', () => {
 					'Invalid UTF-8 encoded text on line 1',
 				);
 				assertThrows(
+					() => utf8Decode(data3.slice(0, 1)),
+					TypeError,
+					'Invalid UTF-8 encoded text on line 1',
+				);
+				assertThrows(
 					() => utf8Length(data3.slice(0, 2)),
+					TypeError,
+					'Invalid UTF-8 encoded text on line 1',
+				);
+				assertThrows(
+					() => utf8Decode(data3.slice(0, 2)),
 					TypeError,
 					'Invalid UTF-8 encoded text on line 1',
 				);
@@ -129,9 +162,15 @@ Deno.test('utf8Encoded', () => {
 			data4[1] = ((i >> 12) & 0x3F) | 0x80;
 			data4[2] = ((i >> 6) & 0x3F) | 0x80;
 			data4[3] = (i & 0x3F) | 0x80;
+
 			if (i < 0x10000) {
 				assertThrows(
 					() => utf8Length(data4),
+					TypeError,
+					'Invalid UTF-8 encoded text on line 1',
+				);
+				assertThrows(
+					() => utf8Decode(data4),
 					TypeError,
 					'Invalid UTF-8 encoded text on line 1',
 				);
@@ -141,12 +180,24 @@ Deno.test('utf8Encoded', () => {
 					TypeError,
 					'Invalid UTF-8 encoded text on line 1',
 				);
+				assertThrows(
+					() => utf8Decode(data4),
+					TypeError,
+					'Invalid UTF-8 encoded text on line 1',
+				);
 			} else {
 				assertEquals(utf8Length(data4), 2);
+				assertEquals(utf8Decode(data4, 0, 2).length, 2);
 			}
+
 			if (i === 0x10000 || i === 0x10FFFF) {
 				assertThrows(
 					() => utf8Length(data4.slice(0, 1)),
+					TypeError,
+					'Invalid UTF-8 encoded text on line 1',
+				);
+				assertThrows(
+					() => utf8Decode(data4.slice(0, 1)),
 					TypeError,
 					'Invalid UTF-8 encoded text on line 1',
 				);
@@ -156,7 +207,17 @@ Deno.test('utf8Encoded', () => {
 					'Invalid UTF-8 encoded text on line 1',
 				);
 				assertThrows(
+					() => utf8Decode(data4.slice(0, 2)),
+					TypeError,
+					'Invalid UTF-8 encoded text on line 1',
+				);
+				assertThrows(
 					() => utf8Length(data4.slice(0, 3)),
+					TypeError,
+					'Invalid UTF-8 encoded text on line 1',
+				);
+				assertThrows(
+					() => utf8Decode(data4.slice(0, 3)),
 					TypeError,
 					'Invalid UTF-8 encoded text on line 1',
 				);
@@ -167,10 +228,20 @@ Deno.test('utf8Encoded', () => {
 					TypeError,
 					'Invalid UTF-8 encoded text on line 1',
 				);
+				assertThrows(
+					() => utf8Decode(data4),
+					TypeError,
+					'Invalid UTF-8 encoded text on line 1',
+				);
 
 				data4[0] = 0xFF;
 				assertThrows(
 					() => utf8Length(data4),
+					TypeError,
+					'Invalid UTF-8 encoded text on line 1',
+				);
+				assertThrows(
+					() => utf8Decode(data4),
 					TypeError,
 					'Invalid UTF-8 encoded text on line 1',
 				);
@@ -204,5 +275,9 @@ Deno.test('utf8Encoded', () => {
 			TypeError,
 			'Invalid UTF-8 encoded text on line 5',
 		);
+	}
+	{
+		const data = new Uint8Array([0xF0, 0x9F, 0xA4, 0x96]);
+		assertEquals(utf8Decode(data), '\ud83e\udd16');
 	}
 });

@@ -141,8 +141,8 @@ export function utf8Length(
 	start = 0,
 	end = data.length,
 ): number {
-	let len = 0, b, c, i, m, n;
-	for (; start < end; start += n, len++) {
+	let r = 0, b, c, i, m, n;
+	for (; start < end; start += n, r++) {
 		c = data[start];
 		n = 1;
 		m = 128;
@@ -160,7 +160,7 @@ export function utf8Length(
 				c &= 7;
 				n = 4;
 				m = 65536;
-				len++;
+				r++;
 			} else {
 				c = -1;
 			}
@@ -173,7 +173,58 @@ export function utf8Length(
 			}
 		}
 	}
-	return len;
+	return r;
+}
+
+/**
+ * Get string decode length.
+ *
+ * @param data Data.
+ * @param start Offset.
+ * @param end End.
+ */
+export function utf8Decode(
+	data: Uint8Array,
+	start = 0,
+	end = data.length,
+): string {
+	let r = '', b, c, i, m, n;
+	for (; start < end; start += n, r += String.fromCharCode(c)) {
+		c = data[start];
+		n = 1;
+		m = 128;
+		if (c & m) {
+			if (!(c & 64)) {
+				c = -1;
+			} else if (!(c & 32)) {
+				c &= 31;
+				n = 2;
+			} else if (!(c & 16)) {
+				c &= 15;
+				n = 3;
+				m = 2048;
+			} else if (!(c & 8)) {
+				c &= 7;
+				n = 4;
+				m = 65536;
+			} else {
+				c = -1;
+			}
+			for (i = 1; i < n;) {
+				b = data[start + i++];
+				c = b >> 6 === 2 ? c << 6 | b & 63 : -1;
+			}
+			if (c < m || c > 1114111) {
+				throw new TypeError(utf8ErrorEncoded(data, start));
+			}
+			if (n === 4) {
+				c -= 65536;
+				r += String.fromCharCode(c >> 10 | 55296);
+				c = c & 1023 | 56320;
+			}
+		}
+	}
+	return r;
 }
 
 /**
