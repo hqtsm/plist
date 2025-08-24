@@ -407,5 +407,5 @@ export function decodeOpenStep(
 	if (c < 0) {
 		return { format, plist };
 	}
-	throw new Error(utf8ErrorChr(encoded, p[0]));
+	throw new SyntaxError(utf8ErrorChr(encoded, p[0]));
 }

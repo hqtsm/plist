@@ -201,7 +201,7 @@ function lineNumber(data: Uint8Array, offset: number): number {
  * @returns Error message.
  */
 export function utf8ErrorEnc(data: Uint8Array, offset: number): string {
-	return `Invalid encoding on line ${lineNumber(data, offset)}`;
+	return `Invalid UTF-8 encoded text on line ${lineNumber(data, offset)}`;
 }
 
 /**
@@ -222,5 +222,5 @@ export function utf8ErrorChr(data: Uint8Array, offset: number): string {
  * @returns Error message.
  */
 export function utf8ErrorEnd(data: Uint8Array): string {
-	return `Invalid end on line ${lineNumber(data, data.length)}`;
+	return `Unexpected end of input on line ${lineNumber(data, data.length)}`;
 }
