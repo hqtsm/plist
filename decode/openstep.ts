@@ -152,7 +152,7 @@ function decodeData(d: Uint8Array, p: [number]): PLData {
  * @returns Decoded string.
  */
 function decodeStrQ(d: Uint8Array, p: [number], q: number): PLString {
-	for (let [i] = p, b, c, s = '', l = d.length; ++i < l;) {
+	for (let [i] = p, b, c, n, s = '', l = d.length; ++i < l;) {
 		c = d[i];
 		if (c === q) {
 			p[0] = i + 1;
@@ -179,7 +179,14 @@ function decodeStrQ(d: Uint8Array, p: [number], q: number): PLString {
 				continue;
 			}
 			if (c === 85) {
-				throw new Error('TODO');
+				for (c = 0, n = 4; n--; i++) {
+					if ((b = hexc(d[i + 1])) < 0) {
+						break;
+					}
+					c = c << 4 | b;
+				}
+				s += String.fromCharCode(c);
+				continue;
 			}
 			if (c > 96 && c < 119) {
 				s += unesc.charAt(c - 97);
