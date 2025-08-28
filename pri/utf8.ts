@@ -5,12 +5,30 @@
  */
 
 /**
+ * Char codes interface.
+ */
+export interface CharCodes {
+	/**
+	 * Length.
+	 */
+	readonly length: number;
+
+	/**
+	 * Get char code.
+	 *
+	 * @param index Index.
+	 * @returns Char code.
+	 */
+	charCodeAt(index: number): number;
+}
+
+/**
  * Get string encode size.
  *
  * @param str String.
  * @returns Size.
  */
-export function utf8Size(str: string): number {
+export function utf8Size(str: CharCodes): number {
 	let len = 0;
 	for (let l = str.length, i = 0, hi = 0, chr; i < l;) {
 		if ((chr = str.charCodeAt(i++)) < 128) {
@@ -48,7 +66,7 @@ export function utf8Size(str: string): number {
  * @returns End.
  */
 export function utf8Encode(
-	str: string,
+	str: CharCodes,
 	dest: Uint8Array,
 	start: number,
 ): number {
