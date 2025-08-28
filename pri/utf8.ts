@@ -23,7 +23,7 @@ export interface CharCodes {
 }
 
 /**
- * Get string encode size.
+ * Get string encode size, from UTF-16.
  *
  * @param str String.
  * @returns Size.
@@ -85,7 +85,7 @@ export function utf8Size32(str: CharCodes): number {
 }
 
 /**
- * Encode string into buffer.
+ * Encode string into buffer, from UTF-16.
  *
  * @param str String.
  * @param dest Buffer.
@@ -172,7 +172,7 @@ export function utf8Encode32(
 }
 
 /**
- * Get string decode length.
+ * Get string decode length, to UTF-16.
  *
  * @param data Data.
  * @param start Offset.
@@ -219,7 +219,7 @@ export function utf8Length(
 }
 
 /**
- * Get string decode length.
+ * Get string decode length, to UTF-16.
  *
  * @param data Data.
  * @param start Offset.
