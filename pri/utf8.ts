@@ -58,6 +58,33 @@ export function utf8Size(str: CharCodes): number {
 }
 
 /**
+ * Get string encode size, from UTF-32.
+ *
+ * @param str String.
+ * @returns Size.
+ */
+export function utf8Size32(str: CharCodes): number {
+	let len = 0;
+	for (let l = str.length, i = 0, chr; i < l; i++) {
+		if ((chr = str.charCodeAt(i)) < 128) {
+			len++;
+		} else if (chr < 2048) {
+			len += 2;
+		} else if (chr < 65536) {
+			if (chr > 55295 && chr < 57344) {
+				throw new TypeError(errorCharCode(str, i));
+			}
+			len += 3;
+		} else if (chr > 1114111) {
+			throw new TypeError(errorCharCode(str, i));
+		} else {
+			len += 4;
+		}
+	}
+	return len;
+}
+
+/**
  * Encode string into buffer.
  *
  * @param str String.
@@ -101,6 +128,44 @@ export function utf8Encode(
 			dest[start++] = 128 | ((chr >> 6) & 63);
 			dest[start++] = 128 | (chr & 63);
 			hi = 0;
+		}
+	}
+	return start;
+}
+
+/**
+ * Encode string into buffer, from UTF-32.
+ *
+ * @param str String.
+ * @param dest Buffer.
+ * @param start Offset.
+ * @returns End.
+ */
+export function utf8Encode32(
+	str: CharCodes,
+	dest: Uint8Array,
+	start: number,
+): number {
+	for (let l = str.length, i = 0, chr; i < l; i++) {
+		if ((chr = str.charCodeAt(i)) < 128) {
+			dest[start++] = chr;
+		} else if (chr < 2048) {
+			dest[start++] = 192 | (chr >> 6);
+			dest[start++] = 128 | (chr & 63);
+		} else if (chr < 65536) {
+			if (chr > 55295 && chr < 57344) {
+				throw new TypeError(errorCharCode(str, i));
+			}
+			dest[start++] = 224 | (chr >> 12);
+			dest[start++] = 128 | ((chr >> 6) & 63);
+			dest[start++] = 128 | (chr & 63);
+		} else if (chr > 1114111) {
+			throw new TypeError(errorCharCode(str, i));
+		} else {
+			dest[start++] = 240 | (chr >> 18);
+			dest[start++] = 128 | ((chr >> 12) & 63);
+			dest[start++] = 128 | ((chr >> 6) & 63);
+			dest[start++] = 128 | (chr & 63);
 		}
 	}
 	return start;
@@ -222,6 +287,34 @@ function lineNumber(data: Uint8Array, offset: number): number {
 }
 
 /**
+ * Find the line number of offset.
+ *
+ * @param data Data.
+ * @param offset Offset.
+ * @returns Line number.
+ */
+function lineNumberChars(data: CharCodes, offset: number): number {
+	let line = 1, i = 0, c, p;
+	for (; i < offset; i++) {
+		c = data.charCodeAt(i);
+		line += (c === 10 ? p !== 13 : c === 13) as unknown as number;
+		p = c;
+	}
+	return line;
+}
+
+/**
+ * Error message for invalid data.
+ *
+ * @param data Data.
+ * @param offset Offset.
+ * @returns Error message.
+ */
+function errorCharCode(data: CharCodes, offset: number): string {
+	return `Invalid code point on line ${lineNumberChars(data, offset)}`;
+}
+
+/**
  * Error message for invalid data.
  *
  * @param data Data.
@@ -229,7 +322,7 @@ function lineNumber(data: Uint8Array, offset: number): number {
  * @returns Error message.
  */
 export function utf8ErrorEncoded(data: Uint8Array, offset: number): string {
-	return `Invalid UTF-8 encoded text on line ${lineNumber(data, offset)}`;
+	return `Invalid code point on line ${lineNumber(data, offset)}`;
 }
 
 /**

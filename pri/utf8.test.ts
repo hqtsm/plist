@@ -1,8 +1,32 @@
 import { assertEquals, assertThrows } from '@std/assert';
-import { utf8Decode, utf8Encode, utf8Length, utf8Size } from './utf8.ts';
+import {
+	type CharCodes,
+	utf8Decode,
+	utf8Encode,
+	utf8Encode32,
+	utf8Length,
+	utf8Size,
+	utf8Size32,
+} from './utf8.ts';
+
+const TE = new TextEncoder();
+
+const BAD_UTF32 = [
+	[1, new Uint32Array([...TE.encode('ABC'), 0xD800])],
+	[2, new Uint32Array([...TE.encode('\n'), 0xDBFF])],
+	[2, new Uint32Array([...TE.encode('\r'), 0xDC00])],
+	[2, new Uint32Array([...TE.encode('\r\n'), 0xDFFF])],
+	[3, new Uint32Array([...TE.encode('\n\n'), 0x110000])],
+] as const;
+
+function charCodes(a: Uint32Array): CharCodes {
+	return {
+		length: a.length,
+		charCodeAt: (index: number) => a[index],
+	};
+}
 
 Deno.test('utf8Size', () => {
-	const te = new TextEncoder();
 	for (
 		const s of [
 			'',
@@ -17,7 +41,7 @@ Deno.test('utf8Size', () => {
 			'\ud83e\udd16',
 		]
 	) {
-		const l = te.encode(s).length;
+		const l = TE.encode(s).length;
 		assertEquals(utf8Size(s), l, JSON.stringify(s));
 		assertEquals(utf8Size(`${s}${s}`), l + l, JSON.stringify(`${s}${s}`));
 	}
@@ -28,7 +52,6 @@ Deno.test('utf8Size', () => {
 });
 
 Deno.test('utf8Encode', () => {
-	const te = new TextEncoder();
 	for (
 		const s of [
 			'',
@@ -43,11 +66,11 @@ Deno.test('utf8Encode', () => {
 			'\ud83e\udd16',
 		]
 	) {
-		const a1 = te.encode(s);
+		const a1 = TE.encode(s);
 		const a2 = new Uint8Array(a1.length);
 		assertEquals(utf8Encode(s, a2, 0), a1.length);
 		assertEquals(a1, a2, JSON.stringify(s));
-		const b1 = te.encode(`${s}${s}`);
+		const b1 = TE.encode(`${s}${s}`);
 		const b2 = new Uint8Array(b1.length);
 		assertEquals(utf8Encode(`${s}${s}`, b2, 0), b1.length);
 		assertEquals(b1, b2, JSON.stringify(`${s}${s}`));
@@ -60,6 +83,59 @@ Deno.test('utf8Encode', () => {
 	a[0] = 0;
 	assertEquals(utf8Encode('\ud83e\ud83eA', a, 0), 1);
 	assertEquals(a[0], 'A'.charCodeAt(0));
+});
+
+Deno.test('utf8Size32', () => {
+	assertEquals(utf8Size32(charCodes(new Uint32Array([0x0000]))), 1);
+	assertEquals(utf8Size32(charCodes(new Uint32Array([0x007F]))), 1);
+	assertEquals(utf8Size32(charCodes(new Uint32Array([0x0080]))), 2);
+	assertEquals(utf8Size32(charCodes(new Uint32Array([0x07FF]))), 2);
+	assertEquals(utf8Size32(charCodes(new Uint32Array([0x0800]))), 3);
+	assertEquals(utf8Size32(charCodes(new Uint32Array([0xD800 - 1]))), 3);
+	assertEquals(utf8Size32(charCodes(new Uint32Array([0xDFFF + 1]))), 3);
+	assertEquals(utf8Size32(charCodes(new Uint32Array([0xFFFF]))), 3);
+	assertEquals(utf8Size32(charCodes(new Uint32Array([0x10000]))), 4);
+	assertEquals(utf8Size32(charCodes(new Uint32Array([0x10FFFF]))), 4);
+	for (const [i, [line, utf32]] of BAD_UTF32.entries()) {
+		assertThrows(
+			() => utf8Size32(charCodes(utf32)),
+			TypeError,
+			`Invalid code point on line ${line}`,
+			`${i}: ${utf32.join(' ')}`,
+		);
+	}
+});
+
+Deno.test('utf8Encode32', () => {
+	const buffer = new Uint8Array(256);
+	for (
+		const s of [
+			'',
+			'A',
+			'AB',
+			'ABC',
+			'\u2013',
+			'\u00f7',
+			'\u03a9',
+			'\u2705',
+			'\uff0b',
+			'\ud83e\udd16',
+		]
+	) {
+		const tag = JSON.stringify(s);
+		const u32 = new Uint32Array([...s].map((c) => c.codePointAt(0)!));
+		const l = utf8Encode32(charCodes(u32), buffer, 0);
+		assertEquals(l, utf8Size32(charCodes(u32)), tag);
+		assertEquals(buffer.slice(0, l), TE.encode(s), tag);
+	}
+	for (const [i, [line, utf32]] of BAD_UTF32.entries()) {
+		assertThrows(
+			() => utf8Encode32(charCodes(utf32), buffer, 0),
+			TypeError,
+			`Invalid code point on line ${line}`,
+			`${i}: ${utf32.join(' ')}`,
+		);
+	}
 });
 
 Deno.test('utf8Length + utf8Decode', () => {
@@ -82,12 +158,12 @@ Deno.test('utf8Length + utf8Decode', () => {
 				assertThrows(
 					() => utf8Length(data2),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Decode(data2),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 			} else {
 				assertEquals(utf8Length(data2), 1);
@@ -98,12 +174,12 @@ Deno.test('utf8Length + utf8Decode', () => {
 				assertThrows(
 					() => utf8Length(data2.slice(0, 1)),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Decode(data2.slice(0, 1)),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 			}
 		}
@@ -119,12 +195,12 @@ Deno.test('utf8Length + utf8Decode', () => {
 				assertThrows(
 					() => utf8Length(data3),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Decode(data3),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 			} else {
 				assertEquals(utf8Length(data3), 1);
@@ -135,22 +211,22 @@ Deno.test('utf8Length + utf8Decode', () => {
 				assertThrows(
 					() => utf8Length(data3.slice(0, 1)),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Decode(data3.slice(0, 1)),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Length(data3.slice(0, 2)),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Decode(data3.slice(0, 2)),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 			}
 		}
@@ -167,23 +243,23 @@ Deno.test('utf8Length + utf8Decode', () => {
 				assertThrows(
 					() => utf8Length(data4),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Decode(data4),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 			} else if (i > 0x10FFFF) {
 				assertThrows(
 					() => utf8Length(data4),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Decode(data4),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 			} else {
 				assertEquals(utf8Length(data4), 2);
@@ -194,56 +270,56 @@ Deno.test('utf8Length + utf8Decode', () => {
 				assertThrows(
 					() => utf8Length(data4.slice(0, 1)),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Decode(data4.slice(0, 1)),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Length(data4.slice(0, 2)),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Decode(data4.slice(0, 2)),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Length(data4.slice(0, 3)),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Decode(data4.slice(0, 3)),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 
 				data4[0] &= 0xBF;
 				assertThrows(
 					() => utf8Length(data4),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Decode(data4),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 
 				data4[0] = 0xFF;
 				assertThrows(
 					() => utf8Length(data4),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 				assertThrows(
 					() => utf8Decode(data4),
 					TypeError,
-					'Invalid UTF-8 encoded text on line 1',
+					'Invalid code point on line 1',
 				);
 			}
 		}
@@ -255,25 +331,25 @@ Deno.test('utf8Length + utf8Decode', () => {
 		assertThrows(
 			() => utf8Length(data),
 			TypeError,
-			'Invalid UTF-8 encoded text on line 3',
+			'Invalid code point on line 3',
 		);
 		data.set([...'\n\r\n\r'].map((c) => c.charCodeAt(0)));
 		assertThrows(
 			() => utf8Length(data),
 			TypeError,
-			'Invalid UTF-8 encoded text on line 4',
+			'Invalid code point on line 4',
 		);
 		data.set([...'\r\r\r\r'].map((c) => c.charCodeAt(0)));
 		assertThrows(
 			() => utf8Length(data),
 			TypeError,
-			'Invalid UTF-8 encoded text on line 5',
+			'Invalid code point on line 5',
 		);
 		data.set([...'\n\n\n\n'].map((c) => c.charCodeAt(0)));
 		assertThrows(
 			() => utf8Length(data),
 			TypeError,
-			'Invalid UTF-8 encoded text on line 5',
+			'Invalid code point on line 5',
 		);
 	}
 	{
