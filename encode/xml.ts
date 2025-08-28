@@ -237,8 +237,10 @@ export function encodeXml(
 	const r = new Uint8Array(i);
 	i = utf8Encode(xmlHeader, r, 0);
 	r[i++] = 10;
-	i = utf8Encode(doctype, r, i);
-	r[i++] = 10;
+	if (doctype) {
+		i = utf8Encode(doctype, r, i);
+		r[i++] = 10;
+	}
 	i = utf8Encode(`<plist version="${version.replace(rEntQ, ent)}">`, r, i);
 	r[i++] = 10;
 
