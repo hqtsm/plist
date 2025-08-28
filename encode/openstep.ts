@@ -238,7 +238,7 @@ export function encodeOpenStep(
 
 	walk(plist, {
 		enter: {
-			PLArray(v, d, p): number | void {
+			PLArray(v, d, p): number {
 				if (!p && b) {
 					throw new TypeError('Invalid strings root type');
 				}
@@ -253,12 +253,12 @@ export function encodeOpenStep(
 					a.add(v);
 					d += b;
 					i += 2 + d++ * il + (d * il + 2) * x;
-					return;
+					return 0;
 				}
 				i += 2;
 				return 1;
 			},
-			PLDict(v, d): number | void {
+			PLDict(v, d): number {
 				if (k) {
 					i += 3;
 					k = null;
@@ -270,7 +270,7 @@ export function encodeOpenStep(
 					}
 					a.add(v);
 					i += x * (d * il + 2) + (d ? (d - 1) * il + 3 : -1);
-					return;
+					return 0;
 				}
 				if (d) {
 					i += 2;
@@ -322,7 +322,7 @@ export function encodeOpenStep(
 
 	walk(plist, {
 		enter: {
-			PLArray(v): number | void {
+			PLArray(v): number {
 				if (k) {
 					r[i++] = 32;
 					r[i++] = 61;
@@ -331,7 +331,7 @@ export function encodeOpenStep(
 				r[i++] = 40;
 				if (v.length) {
 					k = null;
-					return;
+					return 0;
 				}
 				r[i++] = 41;
 				if (k) {
@@ -340,7 +340,7 @@ export function encodeOpenStep(
 				}
 				return 1;
 			},
-			PLDict(v, d): number | void {
+			PLDict(v, d): number {
 				if (k) {
 					r[i++] = 32;
 					r[i++] = 61;
@@ -351,7 +351,7 @@ export function encodeOpenStep(
 				}
 				if (v.size) {
 					k = null;
-					return;
+					return 0;
 				}
 				if (d) {
 					r[i++] = 125;

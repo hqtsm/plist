@@ -142,7 +142,7 @@ export function encodeBinary(
 
 	walk(plist, {
 		enter: {
-			PLArray(v): number | void {
+			PLArray(v): number {
 				if ((x = v.length)) {
 					if (a.has(v)) {
 						throw new TypeError('Circular reference');
@@ -152,14 +152,14 @@ export function encodeBinary(
 						i += x < 15 ? 1 : 2 + byteCount(x);
 						t += x;
 					}
-					return;
+					return 0;
 				}
 				if (add(v)) {
 					i++;
 				}
 				return 1;
 			},
-			PLDict(v): number | void {
+			PLDict(v): number {
 				if ((x = v.size)) {
 					if (a.has(v)) {
 						throw new TypeError('Circular reference');
@@ -172,7 +172,7 @@ export function encodeBinary(
 					for (x of v.keys()) {
 						str(x);
 					}
-					return;
+					return 0;
 				}
 				if (add(v)) {
 					i++;

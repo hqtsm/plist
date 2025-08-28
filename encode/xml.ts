@@ -169,26 +169,26 @@ export function encodeXml(
 
 	walk(plist, {
 		enter: {
-			PLArray(v, d): number | void {
+			PLArray(v, d): number {
 				if ((x = v.length)) {
 					if (a.has(v)) {
 						throw new TypeError('Circular reference');
 					}
 					a.add(v);
 					i += 16 + d++ * il + (d * il + 1) * x;
-					return;
+					return 0;
 				}
 				i += 8;
 				return 1;
 			},
-			PLDict(v, d): number | void {
+			PLDict(v, d): number {
 				if ((x = v.size)) {
 					if (a.has(v)) {
 						throw new TypeError('Circular reference');
 					}
 					a.add(v);
 					i += 14 + d++ * il + (d * il + 1) * 2 * x;
-					return;
+					return 0;
 				}
 				i += 7;
 				return 1;
@@ -246,27 +246,27 @@ export function encodeXml(
 
 	walk(plist, {
 		enter: {
-			PLArray(v, d): number | void {
+			PLArray(v, d): number {
 				for (; d--; i += il) {
 					r.set(id, i);
 				}
 				if (v.length) {
 					i = utf8Encode('<array>', r, i);
 					r[i++] = 10;
-					return;
+					return 0;
 				}
 				i = utf8Encode('<array/>', r, i);
 				r[i++] = 10;
 				return 1;
 			},
-			PLDict(v, d): number | void {
+			PLDict(v, d): number {
 				for (; d--; i += il) {
 					r.set(id, i);
 				}
 				if (v.size) {
 					i = utf8Encode('<dict>', r, i);
 					r[i++] = 10;
-					return;
+					return 0;
 				}
 				i = utf8Encode('<dict/>', r, i);
 				r[i++] = 10;
