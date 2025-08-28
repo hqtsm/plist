@@ -15,6 +15,8 @@ const rDateY4 = /^(-)0*(\d{3}-)|\+?0*(\d{4,}-)/;
 const rRealTrim = /\.?0+$/;
 const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>';
 const b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+const ent = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as const;
+const enc = (s: string) => ent[s as keyof typeof ent];
 
 /**
  * System doctype.
@@ -39,6 +41,17 @@ export const XML_VERSION_V0_9 = '0.9';
  * XML version 1.0.
  */
 export const XML_VERSION_V1_0 = '1.0';
+
+/**
+ * XML encode.
+ *
+ * @param s String.
+ * @param attr Encode for attribute.
+ * @returns Encoded string.
+ */
+function xmlEncode(s: string, attr = 0): string {
+	return s.replace(attr ? /[&"<>]/g : /[&<>]/g, enc);
+}
 
 /**
  * Encode integer to string.
@@ -154,7 +167,7 @@ export function encodeXml(
 	if (doctype) {
 		i += utf8Size(doctype) + 1;
 	}
-	i += utf8Size(version, 2);
+	i += utf8Size(xmlEncode(version, 1));
 
 	const a = new Set<PLType>();
 	const il = x = indent.length;
@@ -192,7 +205,7 @@ export function encodeXml(
 		},
 		key: {
 			PLDict(v): void {
-				i += 11 + utf8Size(v.value, 1);
+				i += 11 + utf8Size(xmlEncode(v.value));
 			},
 		},
 		value: {
@@ -214,7 +227,7 @@ export function encodeXml(
 				i += 13 + realString(v.value).length;
 			},
 			PLString(v): void {
-				i += 17 + utf8Size(v.value, 1);
+				i += 17 + utf8Size(xmlEncode(v.value));
 			},
 			PLUID(v, d): void {
 				i += 52 + v.value.toString().length + d++ * il + d * il * 2;
@@ -235,9 +248,7 @@ export function encodeXml(
 	r[i++] = 10;
 	i = utf8Encode(doctype, r, i);
 	r[i++] = 10;
-	i = utf8Encode('<plist version="', r, i);
-	i = utf8Encode(version, r, i, 2);
-	i = utf8Encode('">', r, i);
+	i = utf8Encode(`<plist version="${xmlEncode(version, 1)}">`, r, i);
 	r[i++] = 10;
 
 	walk(plist, {
@@ -275,7 +286,7 @@ export function encodeXml(
 					r.set(id, i);
 				}
 				i = utf8Encode('<key>', r, i);
-				i = utf8Encode(v.value, r, i, 1);
+				i = utf8Encode(xmlEncode(v.value), r, i);
 				i = utf8Encode('</key>', r, i);
 				r[i++] = 10;
 			},
@@ -366,7 +377,7 @@ export function encodeXml(
 					r.set(id, i);
 				}
 				i = utf8Encode('<string>', r, i);
-				i = utf8Encode(v.value, r, i, 1);
+				i = utf8Encode(xmlEncode(v.value), r, i);
 				i = utf8Encode('</string>', r, i);
 				r[i++] = 10;
 			},
