@@ -428,3 +428,14 @@ export function utf8ErrorToken(data: Uint8Array, offset: number): string {
 export function utf8ErrorEnd(data: Uint8Array): string {
 	return `End of input on line ${lineNumber(data, data.length)}`;
 }
+
+/**
+ * Error message for invalid XML.
+ *
+ * @param data Data.
+ * @param offset Offset.
+ * @returns Error message.
+ */
+export function utf8ErrorXML(data: Uint8Array, offset: number): string {
+	return `Invalid XML on line ${lineNumber(data, offset)}`;
+}
