@@ -58,6 +58,12 @@ export interface DecodeXmlResult {
 	version?: string;
 }
 
+/**
+ * Get XML encoding from XML header.
+ *
+ * @param d Data.
+ * @returns Encoding.
+ */
 function xmlEncoding(d: Uint8Array): string {
 	let i = 0, j, l, c;
 	if (
