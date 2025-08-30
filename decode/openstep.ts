@@ -11,6 +11,7 @@ import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
 import { latin, unesc, unquoted } from '../pri/openstep.ts';
 import {
 	utf8Decode,
+	utf8Encoded,
 	utf8ErrorEnd,
 	utf8ErrorToken,
 	utf8Length,
@@ -233,6 +234,11 @@ export interface DecodeOpenStepOptions {
 	 * @default false
 	 */
 	allowMissingSemi?: boolean;
+
+	/**
+	 * Optional UTF-16 endian flag.
+	 */
+	utf16le?: boolean;
 }
 
 /**
@@ -259,8 +265,9 @@ export interface DecodeOpenStepResult {
  */
 export function decodeOpenStep(
 	encoded: Uint8Array,
-	{ allowMissingSemi = false }: DecodeOpenStepOptions = {},
+	{ allowMissingSemi = false, utf16le }: DecodeOpenStepOptions = {},
 ): DecodeOpenStepResult {
+	encoded = utf8Encoded(encoded, utf16le);
 	utf8Length(encoded);
 	const p: [number] = [0];
 	let format: DecodeOpenStepResult['format'] = FORMAT_OPENSTEP;
