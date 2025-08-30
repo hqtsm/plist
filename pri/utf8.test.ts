@@ -1,9 +1,15 @@
-import { assertEquals, assertThrows } from '@std/assert';
+import {
+	assertEquals,
+	assertNotEquals,
+	assertStrictEquals,
+	assertThrows,
+} from '@std/assert';
 import {
 	type CharCodes,
 	utf8Decode,
 	utf8Encode,
 	utf8Encode32,
+	utf8Encoded,
 	utf8Length,
 	utf8Size,
 	utf8Size32,
@@ -356,4 +362,66 @@ Deno.test('utf8Length + utf8Decode', () => {
 		const data = new Uint8Array([0xF0, 0x9F, 0xA4, 0x96]);
 		assertEquals(utf8Decode(data), '\ud83e\udd16');
 	}
+});
+
+Deno.test('utf8Encoded: UTF-32BE BOM', () => {
+	const A = 'A'.charCodeAt(0);
+	const d = new Uint8Array(
+		[0x00, 0x00, 0xFE, 0xFF, 0x00, 0x00, 0x00, A, 0x00],
+	);
+	assertEquals(utf8Encoded(d), new Uint8Array([A]));
+});
+
+Deno.test('utf8Encoded: UTF-32LE BOM', () => {
+	const A = 'A'.charCodeAt(0);
+	const d = new Uint8Array(
+		[0xFF, 0xFE, 0x00, 0x00, A, 0x00, 0x00, 0x00, 0x00],
+	);
+	assertEquals(utf8Encoded(d), new Uint8Array([A]));
+});
+
+Deno.test('utf8Encoded: UTF-16BE BOM', () => {
+	const A = 'A'.charCodeAt(0);
+	const d = new Uint8Array([0xFF, 0xFE, A, 0x00, 0x00]);
+	assertEquals(utf8Encoded(d), new Uint8Array([A]));
+});
+
+Deno.test('utf8Encoded: UTF-16BE NO-BOM', () => {
+	const _ = ' '.charCodeAt(0);
+	const A = 'A'.charCodeAt(0);
+	const d = new Uint8Array([0x00, _, 0x00, A]);
+	assertEquals(utf8Encoded(d), new Uint8Array([A]));
+	assertEquals(utf8Encoded(d, false), new Uint8Array([A]));
+	assertNotEquals(utf8Encoded(d, true), new Uint8Array([A]));
+});
+
+Deno.test('utf8Encoded: UTF-16LE BOM', () => {
+	const A = 'A'.charCodeAt(0);
+	const d = new Uint8Array([0xFE, 0xFF, 0x00, A, 0x00]);
+	assertEquals(utf8Encoded(d), new Uint8Array([A]));
+});
+
+Deno.test('utf8Encoded: UTF-16LE NO-BOM', () => {
+	const _ = ' '.charCodeAt(0);
+	const A = 'A'.charCodeAt(0);
+	const d = new Uint8Array([_, 0x00, A, 0x00]);
+	assertEquals(utf8Encoded(d), new Uint8Array([A]));
+	assertEquals(utf8Encoded(d, true), new Uint8Array([A]));
+	assertNotEquals(utf8Encoded(d, false), new Uint8Array([A]));
+});
+
+Deno.test('utf8Encoded: UTF-8 BOM', () => {
+	const A = 'A'.charCodeAt(0);
+	const d = new Uint8Array([0xEF, 0xBB, 0xBF, A, A]);
+	const dec = utf8Encoded(d);
+	assertEquals(dec, new Uint8Array([A, A]));
+	assertEquals(dec.byteOffset, 3);
+});
+
+Deno.test('utf8Encoded: UTF-8 NO-BOM', () => {
+	const A = 'A'.charCodeAt(0);
+	const d = new Uint8Array([A, A]);
+	const dec = utf8Encoded(d);
+	assertEquals(dec, new Uint8Array([A, A]));
+	assertStrictEquals(dec, d);
 });

@@ -270,6 +270,92 @@ export function utf8Decode(
 }
 
 /**
+ * Convert UTF-32 to UTF-8.
+ *
+ * @param data UTF-32 data with BOM.
+ * @param littleEndian Endian flag.
+ * @returns UTF-8 data.
+ */
+function utf8Encoded32(data: Uint8Array, littleEndian: boolean): Uint8Array {
+	const { length } = data;
+	const o = {
+		length: (length - 4 - length % 4) / 4,
+		charCodeAt: littleEndian
+			? (i: number) =>
+				data[i = i * 4 + 4] |
+				data[++i] << 8 |
+				data[++i] << 16 |
+				data[i + 1] << 24
+			: (i: number) =>
+				data[i = i * 4 + 4] << 24 |
+				data[++i] << 16 |
+				data[++i] << 8 |
+				data[i + 1],
+	};
+	const r = new Uint8Array(utf8Size32(o));
+	utf8Encode32(o, r, 0);
+	return r;
+}
+
+/**
+ * Convert UTF-16 to UTF-8.
+ *
+ * @param data UTF-16 data with BOM.
+ * @param littleEndian Endian flag.
+ * @returns UTF-8 data.
+ */
+function utf8Encoded16(data: Uint8Array, littleEndian: boolean): Uint8Array {
+	const { length } = data;
+	const o = {
+		length: (length - 2 - length % 2) / 2,
+		charCodeAt: littleEndian
+			? (i: number) => data[i = i * 2 + 2] | data[i + 1] << 8
+			: (i: number) => data[i = i * 2 + 2] << 8 | data[i + 1],
+	};
+	const r = new Uint8Array(utf8Size(o));
+	utf8Encode(o, r, 0);
+	return r;
+}
+
+/**
+ * Get UTF-8 encoded form of unicode data.
+ *
+ * @param data Data, may include BOM, UTF-16 and UTF-32 data get converted.
+ * @param utf16le Default UTF-16 endian flag when BOM not found.
+ * @returns UTF-8 encoded data.
+ */
+export function utf8Encoded(data: Uint8Array, utf16le?: boolean): Uint8Array {
+	const [a, b, c, d] = data;
+	if (a === 0) {
+		if (b === 0 && c === 254 && d === 255) {
+			return utf8Encoded32(data, false);
+		}
+		return utf8Encoded16(data, utf16le ?? false);
+	}
+	if (a === 255) {
+		if (b === 254) {
+			if (c === 0 && d === 0) {
+				return utf8Encoded32(data, true);
+			} else {
+				return utf8Encoded16(data, true);
+			}
+		}
+	} else if (a === 254) {
+		if (b === 255) {
+			return utf8Encoded16(data, false);
+		}
+	} else if (a === 239) {
+		if (b === 187 && c === 191) {
+			return data.subarray(3);
+		}
+	}
+	if (b === 0) {
+		return utf8Encoded16(data, utf16le ?? true);
+	}
+	return data;
+}
+
+/**
  * Find the line number of offset.
  *
  * @param data Data.
