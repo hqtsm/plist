@@ -326,33 +326,26 @@ function utf8Encoded16(data: Uint8Array, littleEndian: boolean): Uint8Array {
  */
 export function utf8Encoded(data: Uint8Array, utf16le?: boolean): Uint8Array {
 	const [a, b, c, d] = data;
+	if (a === 239 && b === 187 && c === 191) {
+		return data.subarray(3);
+	}
 	if (a === 0) {
-		if (b === 0 && c === 254 && d === 255) {
-			return utf8Encoded32(data, false);
-		}
-		return utf8Encoded16(data, utf16le ?? false);
+		return (b === 0 && c === 254 && d === 255)
+			? utf8Encoded32(data, false)
+			: utf8Encoded16(data, utf16le ?? false);
 	}
 	if (a === 255) {
 		if (b === 254) {
-			if (c === 0 && d === 0) {
-				return utf8Encoded32(data, true);
-			} else {
-				return utf8Encoded16(data, true);
-			}
+			return (c === 0 && d === 0)
+				? utf8Encoded32(data, true)
+				: utf8Encoded16(data, true);
 		}
 	} else if (a === 254) {
 		if (b === 255) {
 			return utf8Encoded16(data, false);
 		}
-	} else if (a === 239) {
-		if (b === 187 && c === 191) {
-			return data.subarray(3);
-		}
 	}
-	if (b === 0) {
-		return utf8Encoded16(data, utf16le ?? true);
-	}
-	return data;
+	return b === 0 ? utf8Encoded16(data, utf16le ?? true) : data;
 }
 
 /**
