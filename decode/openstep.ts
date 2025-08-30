@@ -217,9 +217,7 @@ function decodeStrU(d: Uint8Array, p: [number]): PLString {
 	let [i] = p;
 	let c;
 	let s = String.fromCharCode(d[i]);
-	while (unquoted(c = d[++i])) {
-		s += String.fromCharCode(c);
-	}
+	for (; unquoted(c = d[++i]); s += String.fromCharCode(c));
 	p[0] = i;
 	return new PLString(s);
 }
@@ -237,6 +235,7 @@ export interface DecodeOpenStepOptions {
 
 	/**
 	 * Optional UTF-16 endian flag.
+	 * Defaults to auto detect.
 	 */
 	utf16le?: boolean;
 }
@@ -267,8 +266,7 @@ export function decodeOpenStep(
 	encoded: Uint8Array,
 	{ allowMissingSemi = false, utf16le }: DecodeOpenStepOptions = {},
 ): DecodeOpenStepResult {
-	encoded = utf8Encoded(encoded, utf16le);
-	utf8Length(encoded);
+	utf8Length(encoded = utf8Encoded(encoded, utf16le) || encoded);
 	const p: [number] = [0];
 	let format: DecodeOpenStepResult['format'] = FORMAT_OPENSTEP;
 	let n: Node | null = null;

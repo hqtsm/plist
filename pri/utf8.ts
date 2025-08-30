@@ -318,13 +318,17 @@ function utf8Encoded16(data: Uint8Array, littleEndian: boolean): Uint8Array {
 }
 
 /**
- * Get UTF-8 encoded form of unicode data.
+ * Get UTF-8 encoded form of unicode data based on any BOM present.
+ * UTF-8 is subviewed while UTF-16 and UTF-32 data are converted.
  *
- * @param data Data, may include BOM, UTF-16 and UTF-32 data get converted.
- * @param utf16le Default UTF-16 endian flag when BOM not found.
- * @returns UTF-8 encoded data.
+ * @param data Data potentially including BOM.
+ * @param utf16le Default UTF-16 endian flag when BOM is invalid.
+ * @returns UTF-8 encoded data or null if no BOM.
  */
-export function utf8Encoded(data: Uint8Array, utf16le?: boolean): Uint8Array {
+export function utf8Encoded(
+	data: Uint8Array,
+	utf16le?: boolean,
+): Uint8Array | null {
 	const [a, b, c, d] = data;
 	if (a === 239 && b === 187 && c === 191) {
 		return data.subarray(3);
@@ -345,7 +349,7 @@ export function utf8Encoded(data: Uint8Array, utf16le?: boolean): Uint8Array {
 			return utf8Encoded16(data, false);
 		}
 	}
-	return b === 0 ? utf8Encoded16(data, utf16le ?? true) : data;
+	return b === 0 ? utf8Encoded16(data, utf16le ?? true) : null;
 }
 
 /**

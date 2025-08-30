@@ -1,9 +1,4 @@
-import {
-	assertEquals,
-	assertNotEquals,
-	assertStrictEquals,
-	assertThrows,
-} from '@std/assert';
+import { assertEquals, assertNotEquals, assertThrows } from '@std/assert';
 import {
 	type CharCodes,
 	utf8Decode,
@@ -415,13 +410,12 @@ Deno.test('utf8Encoded: UTF-8 BOM', () => {
 	const d = new Uint8Array([0xEF, 0xBB, 0xBF, A, A]);
 	const dec = utf8Encoded(d);
 	assertEquals(dec, new Uint8Array([A, A]));
-	assertEquals(dec.byteOffset, 3);
+	assertEquals(dec?.byteOffset, 3);
 });
 
 Deno.test('utf8Encoded: UTF-8 NO-BOM', () => {
 	const A = 'A'.charCodeAt(0);
 	const d = new Uint8Array([A, A]);
 	const dec = utf8Encoded(d);
-	assertEquals(dec, new Uint8Array([A, A]));
-	assertStrictEquals(dec, d);
+	assertEquals(dec, null);
 });
