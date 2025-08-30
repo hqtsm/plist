@@ -259,7 +259,7 @@ export interface DecodeOpenStepResult {
  */
 export function decodeOpenStep(
 	encoded: Uint8Array,
-	{ allowMissingSemi = false } = {},
+	{ allowMissingSemi = false }: DecodeOpenStepOptions = {},
 ): DecodeOpenStepResult {
 	utf8Length(encoded);
 	const p: [number] = [0];
