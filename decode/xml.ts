@@ -10,7 +10,7 @@ const rUTF8 = /^(X-MAC-)?UTF-8$/i;
  *
  * @param encoding Encoding.
  * @param data Data.
- * @returns Decoded data or null if unsupported.
+ * @returns Data converted to UTF-8 or null if unsupported.
  */
 export type DecodeXmlDecoder = (
 	encoding: string,
@@ -22,7 +22,7 @@ export type DecodeXmlDecoder = (
  */
 export interface DecodeXmlOptions {
 	/**
-	 * Optonal decoder from encoding to UTF-8.
+	 * Optonal decoder for converting to UTF-8.
 	 */
 	decoder?: DecodeXmlDecoder;
 
