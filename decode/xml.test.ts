@@ -1,8 +1,10 @@
-import { assertThrows } from '@std/assert';
+import { assertEquals, assertThrows } from '@std/assert';
 import { XML_DOCTYPE_PUBLIC_V1_0, XML_VERSION_V1_0 } from '../encode/xml.ts';
 import { decodeXml } from './xml.ts';
 
 const TE = new TextEncoder();
+const TDASCII = new TextDecoder('ascii', { fatal: true });
+const ascii2utf8 = (data: Uint8Array) => TE.encode(TDASCII.decode(data));
 
 Deno.test('XML encoding default', () => {
 	const options = {
@@ -26,19 +28,6 @@ Deno.test('XML encoding default', () => {
 		TE.encode(
 			[
 				'<?xml version="1.0"?>',
-				XML_DOCTYPE_PUBLIC_V1_0,
-				`<plist version="${XML_VERSION_V1_0}">`,
-				'<true/>',
-				'</plist>',
-				'',
-			].join('\n'),
-		),
-		options,
-	);
-	decodeXml(
-		TE.encode(
-			[
-				'<?xml version="1.0">',
 				XML_DOCTYPE_PUBLIC_V1_0,
 				`<plist version="${XML_VERSION_V1_0}">`,
 				'<true/>',
@@ -106,34 +95,33 @@ Deno.test('XML encoding: Error EOF', () => {
 });
 
 Deno.test('XML encoding: custom', () => {
+	let count = 0;
 	const options = {
 		decoder(
 			encoding: string,
 			data: Uint8Array,
 		): Uint8Array | null {
-			return encoding === 'ascii'
-				? new TextEncoder().encode(
-					new TextDecoder(encoding).decode(data),
-				)
-				: null;
+			count++;
+			return encoding === 'ascii' ? ascii2utf8(data) : null;
 		},
 	};
-	{
-		decodeXml(
-			TE.encode(
-				[
-					'<?xml version="1.0" encoding="ascii"?>',
-					XML_DOCTYPE_PUBLIC_V1_0,
-					`<plist version="${XML_VERSION_V1_0}">`,
-					'<true/>',
-					'</plist>',
-					'',
-				].join('\n'),
-			),
-			options,
-		);
-	}
-	assertThrows(() => {
+
+	decodeXml(
+		TE.encode(
+			[
+				'<?xml version="1.0" encoding="ascii"?>',
+				XML_DOCTYPE_PUBLIC_V1_0,
+				`<plist version="${XML_VERSION_V1_0}">`,
+				'<true/>',
+				'</plist>',
+				'',
+			].join('\n'),
+		),
+		options,
+	);
+	assertEquals(count, 1);
+
+	assertThrows(() =>
 		decodeXml(
 			TE.encode(
 				[
@@ -146,6 +134,24 @@ Deno.test('XML encoding: custom', () => {
 				].join('\n'),
 			),
 			options,
-		);
-	});
+		)
+	);
+	assertEquals(count, 2);
+
+	assertThrows(() =>
+		decodeXml(
+			TE.encode(
+				[
+					'<?xml version="1.0" encoding="ascii">',
+					XML_DOCTYPE_PUBLIC_V1_0,
+					`<plist version="${XML_VERSION_V1_0}">`,
+					'<true/>',
+					'</plist>',
+					'',
+				].join('\n'),
+			),
+			options,
+		)
+	);
+	assertEquals(count, 3);
 });
