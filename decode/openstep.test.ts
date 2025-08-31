@@ -87,7 +87,7 @@ Deno.test('String EOF', () => {
 	assertThrows(
 		() => decodeOpenStep(data),
 		SyntaxError,
-		'End of input on line 1',
+		'Invalid end on line 1',
 	);
 });
 
@@ -114,7 +114,7 @@ Deno.test('Array EOF', () => {
 	assertThrows(
 		() => decodeOpenStep(data),
 		SyntaxError,
-		'End of input on line 2',
+		'Invalid end on line 2',
 	);
 });
 
@@ -141,7 +141,7 @@ Deno.test('Dict EOF before equal', () => {
 	assertThrows(
 		() => decodeOpenStep(data),
 		SyntaxError,
-		'End of input on line 2',
+		'Invalid end on line 2',
 	);
 });
 
@@ -150,7 +150,7 @@ Deno.test('Dict EOF after equal', () => {
 	assertThrows(
 		() => decodeOpenStep(data),
 		SyntaxError,
-		'End of input on line 2',
+		'Invalid end on line 2',
 	);
 });
 
@@ -159,7 +159,7 @@ Deno.test('Dict EOF after semi-colon', () => {
 	assertThrows(
 		() => decodeOpenStep(data),
 		SyntaxError,
-		'End of input on line 2',
+		'Invalid end on line 2',
 	);
 });
 
@@ -201,7 +201,7 @@ Deno.test('Data EOF', () => {
 	assertThrows(
 		() => decodeOpenStep(data),
 		SyntaxError,
-		'End of input on line 1',
+		'Invalid end on line 1',
 	);
 });
 

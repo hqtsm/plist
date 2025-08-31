@@ -426,7 +426,7 @@ export function utf8ErrorToken(data: Uint8Array, offset: number): string {
  * @returns Error message.
  */
 export function utf8ErrorEnd(data: Uint8Array): string {
-	return `End of input on line ${lineNumber(data, data.length)}`;
+	return `Invalid end on line ${lineNumber(data, data.length)}`;
 }
 
 /**
