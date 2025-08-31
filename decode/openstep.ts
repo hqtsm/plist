@@ -260,7 +260,7 @@ export interface DecodeOpenStepResult {
  *
  * @param encoded OpenStep plist encoded data.
  * @param options Decoding options.
- * @returns Decoded plist.
+ * @returns Decode result.
  */
 export function decodeOpenStep(
 	encoded: Uint8Array,
