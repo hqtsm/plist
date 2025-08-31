@@ -6,7 +6,7 @@ const TE = new TextEncoder();
 const TDASCII = new TextDecoder('ascii', { fatal: true });
 const ascii2utf8 = (data: Uint8Array) => TE.encode(TDASCII.decode(data));
 
-Deno.test('XML encoding default', () => {
+Deno.test('XML encoding: default', () => {
 	const options = {
 		decoder(encoding: string): Uint8Array | null {
 			throw new Error(`Called for: ${encoding}`);
@@ -154,4 +154,75 @@ Deno.test('XML encoding: custom', () => {
 		)
 	);
 	assertEquals(count, 3);
+});
+
+Deno.test('XML doctype: Error EOF', () => {
+	assertThrows(
+		() =>
+			decodeXml(
+				TE.encode(
+					[
+						'<?xml version="1.0" encoding="UTF-8"?>',
+						XML_DOCTYPE_PUBLIC_V1_0.replaceAll('>', ''),
+						'',
+					].join('\n'),
+				),
+			),
+		SyntaxError,
+		'Invalid XML on line 3',
+	);
+});
+
+Deno.test('XML header comments', () => {
+	decodeXml(
+		TE.encode(
+			[
+				'<!--->-->',
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				'<!--->-->',
+				XML_DOCTYPE_PUBLIC_V1_0,
+				'<!--->-->',
+				`<plist version="${XML_VERSION_V1_0}">`,
+				'<true/>',
+				'</plist>',
+				'',
+			].join('\n'),
+		),
+	);
+	assertThrows(
+		() =>
+			decodeXml(
+				TE.encode(
+					[
+						'<!--',
+						'<?xml version="1.0" encoding="UTF-8"?>',
+						XML_DOCTYPE_PUBLIC_V1_0,
+						`<plist version="${XML_VERSION_V1_0}">`,
+						'<true/>',
+						'</plist>',
+						'',
+					].join('\n'),
+				),
+			),
+		SyntaxError,
+		'Invalid XML on line 7',
+	);
+});
+
+Deno.test('XML non-tag content', () => {
+	assertThrows(
+		() =>
+			decodeXml(
+				TE.encode(
+					[
+						'<?xml version="1.0" encoding="UTF-8"?>',
+						XML_DOCTYPE_PUBLIC_V1_0,
+						'plist',
+						'',
+					].join('\n'),
+				),
+			),
+		SyntaxError,
+		'Invalid XML on line 3',
+	);
 });
