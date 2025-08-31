@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist [
+	<!ELEMENT plist (string)>
+	<!ENTITY % externalDTD SYSTEM "common.dtd">
+	%externalDTD;
+	<!---->
+]>
+<plist>
+<string>Inline Subset</string>
+</plist>
