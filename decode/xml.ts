@@ -111,6 +111,7 @@ function xmlEncoding(d: Uint8Array): string {
  * Decode OpenStep encoded plist.
  *
  * @param encoded OpenStep plist encoded data.
+ * @param options Decoding options.
  * @returns Decoded plist.
  */
 export function decodeXml(
