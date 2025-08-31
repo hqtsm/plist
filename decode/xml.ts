@@ -221,7 +221,7 @@ export function decodeXml(
 	for (;;) {
 		c = d[i = skipWS(d, i)];
 		if (c !== 60) {
-			throw new SyntaxError(utf8ErrorXML(d, i));
+			throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
 		}
 		c = d[i + 1];
 		if (c === 33) {

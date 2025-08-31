@@ -210,7 +210,24 @@ Deno.test('XML header comments', () => {
 	);
 });
 
-Deno.test('XML non-tag content', () => {
+Deno.test('XML bad content: empty', () => {
+	assertThrows(
+		() =>
+			decodeXml(
+				TE.encode(
+					[
+						'<?xml version="1.0" encoding="UTF-8"?>',
+						XML_DOCTYPE_PUBLIC_V1_0,
+						'',
+					].join('\n'),
+				),
+			),
+		SyntaxError,
+		'Invalid end on line 3',
+	);
+});
+
+Deno.test('XML bad content: not a tag', () => {
 	assertThrows(
 		() =>
 			decodeXml(
