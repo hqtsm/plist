@@ -1,6 +1,6 @@
 import { PLDict } from '../dict.ts';
 import { FORMAT_XML_V1_0 } from '../format.ts';
-import { utf8Encoded, utf8ErrorXML } from '../pri/utf8.ts';
+import { utf8Encoded, utf8ErrorEnd, utf8ErrorXML } from '../pri/utf8.ts';
 import type { PLType } from '../type.ts';
 
 const rUTF8 = /^(X-MAC-)?UTF-8$/i;
@@ -100,7 +100,7 @@ function xmlEncoding(d: Uint8Array): string | null {
 				return null;
 			}
 		}
-		throw new SyntaxError(utf8ErrorXML(d, l));
+		throw new SyntaxError(utf8ErrorEnd(d));
 	}
 	return null;
 }
@@ -134,7 +134,7 @@ function skipC(d: Uint8Array, i: number, l: number): number {
 			return i;
 		}
 	}
-	throw new SyntaxError(utf8ErrorXML(d, i));
+	throw new SyntaxError(utf8ErrorEnd(d));
 }
 
 /**
@@ -153,7 +153,7 @@ function skipPI(d: Uint8Array, i: number, l: number): number {
 			return i;
 		}
 	}
-	throw new SyntaxError(utf8ErrorXML(d, i));
+	throw new SyntaxError(utf8ErrorEnd(d));
 }
 
 /**
@@ -178,12 +178,17 @@ function skipDTD(
 		d[i + 5] === 80 &&
 		d[i + 6] === 69
 	) {
-		for (i = skipWS(d, i + 7); i < l;) {
-			// Inline DTD parsing is absent or broken in official parsers.
-			if (d[i++] === 62) {
-				return i;
+		for (i = skipWS(d, i + 7); i < l; i++) {
+			const c = d[i];
+			if (c === 62) {
+				return i + 1;
+			}
+			if (c === 91) {
+				// Inline DTD parsing is absent or broken in official parsers.
+				throw new SyntaxError(utf8ErrorXML(d, i));
 			}
 		}
+		throw new SyntaxError(utf8ErrorEnd(d));
 	}
 	throw new SyntaxError(utf8ErrorXML(d, i));
 }

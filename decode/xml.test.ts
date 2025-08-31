@@ -1,5 +1,6 @@
 import { assertEquals, assertThrows } from '@std/assert';
 import { XML_DOCTYPE_PUBLIC_V1_0, XML_VERSION_V1_0 } from '../encode/xml.ts';
+import { fixturePlist } from '../spec/fixture.ts';
 import { decodeXml } from './xml.ts';
 
 const TE = new TextEncoder();
@@ -90,7 +91,7 @@ Deno.test('XML encoding: Error EOF', () => {
 	assertThrows(
 		() => decodeXml(TE.encode('<?xml version="1.0"')),
 		SyntaxError,
-		'Invalid XML on line 1',
+		'Invalid end on line 1',
 	);
 });
 
@@ -169,7 +170,7 @@ Deno.test('XML doctype: Error EOF', () => {
 				),
 			),
 		SyntaxError,
-		'Invalid XML on line 3',
+		'Invalid end on line 3',
 	);
 });
 
@@ -205,7 +206,7 @@ Deno.test('XML header comments', () => {
 				),
 			),
 		SyntaxError,
-		'Invalid XML on line 7',
+		'Invalid end on line 7',
 	);
 });
 
@@ -224,5 +225,23 @@ Deno.test('XML non-tag content', () => {
 			),
 		SyntaxError,
 		'Invalid XML on line 3',
+	);
+});
+
+Deno.test('spec: xml-edge doctype-internal-subset', async () => {
+	const data = await fixturePlist('xml-edge', 'doctype-internal-subset');
+	assertThrows(
+		() => decodeXml(data),
+		SyntaxError,
+		'Invalid XML on line 2',
+	);
+});
+
+Deno.test('spec: xml-edge doctype-lowercase', async () => {
+	const data = await fixturePlist('xml-edge', 'doctype-lowercase');
+	assertThrows(
+		() => decodeXml(data),
+		SyntaxError,
+		'Invalid XML on line 2',
 	);
 });
