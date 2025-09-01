@@ -277,12 +277,12 @@ export function decodeXml(
 				break;
 			}
 			case 100: {
-				x = d[t + 1];
-				if (x === 105) {
+				c = d[t + 1];
+				if (c === 105) {
 					if (d[t + 2] === 99 && d[t + 3] === 116) {
 						p = new PLDict();
 					}
-				} else if (x === 97 && d[t + 2] === 116) {
+				} else if (c === 97 && d[t + 2] === 116) {
 					if (d[t + 3] === 97) {
 						p = new PLData();
 					} else if (d[t + 3] === 101) {
