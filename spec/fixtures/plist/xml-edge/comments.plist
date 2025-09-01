@@ -8,9 +8,11 @@
 <dict>
 	<!-- dict -->
 	<key>dict</key>
+	<!-- dict -->
 	<dict/>
 	<!-- array -->
 	<key>array</key>
+	<!-- array -->
 	<array>
 		<!-- 1 -->
 		<integer>1</integer>
@@ -18,7 +20,8 @@
 		<integer>2</integer>
 		<!-- 3 -->
 	</array>
+	<!-- -->
 </dict>
-<!---->
+<!-- -->
 </plist>
 <!-- -->
