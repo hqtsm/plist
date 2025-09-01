@@ -3,7 +3,7 @@ import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
 import { PLDict } from '../dict.ts';
-import { FORMAT_XML_V1_0 } from '../format.ts';
+import { type FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { utf8Encoded, utf8ErrorEnd, utf8ErrorXML } from '../pri/utf8.ts';
 import { PLReal } from '../real.ts';
@@ -77,7 +77,7 @@ export interface DecodeXmlResult {
 	/**
 	 * Encoded format.
 	 */
-	format: typeof FORMAT_XML_V1_0;
+	format: typeof FORMAT_XML_V1_0 | typeof FORMAT_XML_V0_9;
 
 	/**
 	 * Decoded plist.
