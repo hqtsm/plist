@@ -10,7 +10,7 @@ import { PLReal } from '../real.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 
-const rUTF8 = /^(x-mac-)?UTF-8$/i;
+const rUTF8 = /^(x-mac-)?utf-8$/i;
 
 /**
  * XML decoder.
