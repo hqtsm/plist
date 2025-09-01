@@ -217,7 +217,9 @@ function skipCT(
 	j: number,
 	s: number,
 ): number {
-	for (; s && d[i] === d[j++]; i++, s--);
+	if (d[i] === 60 && d[++i] === 47) {
+		for (; s && d[++i] === d[j++]; s--);
+	}
 	if (s || d[i = skipWS(d, i)] !== 62) {
 		throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
 	}
