@@ -40,7 +40,7 @@ export async function fixtureNextStepLatin(): Promise<Map<number, number[]>> {
 	const r = new Map<number, number[]>();
 	for (
 		const line of String.fromCharCode(
-			...await fixture('encoding/x-nextstep/x-nextstep.txt'),
+			...await fixture('encoding/x-nextstep/table.txt'),
 		)
 			.split('\n')
 	) {

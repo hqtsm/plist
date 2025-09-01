@@ -2,7 +2,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 int main() {
-	FILE * fp = fopen("iso-8859-1.txt", "w");
+	FILE * fp = fopen("table.txt", "w");
 	for (int a = 0; a < 256; a++) {
 		unsigned char byte = a;
 		CFStringRef str = CFStringCreateWithBytes(NULL, &byte, 1, kCFStringEncodingISOLatin1, false);
