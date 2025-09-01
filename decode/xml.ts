@@ -306,27 +306,64 @@ export function decodeXml(
 					break;
 				}
 				case 105: {
-					p = new PLInteger();
+					if (
+						d[t + 1] === 110 &&
+						d[t + 2] === 116 &&
+						d[t + 3] === 101 &&
+						d[t + 4] === 103 &&
+						d[t + 5] === 101
+					) {
+						p = new PLInteger();
+					}
 					break;
 				}
 				case 107: {
-					p = new PLString();
+					if (d[t + 1] === 101 && d[t + 2] === 121) {
+						p = new PLString();
+					}
 					break;
 				}
 				case 112: {
-					p = [null];
+					if (
+						d[t + 1] === 108 &&
+						d[t + 2] === 105 &&
+						d[t + 3] === 115 &&
+						d[t + 4] === 116
+					) {
+						p = [null];
+					}
 					break;
 				}
 				case 114: {
-					p = new PLReal();
+					if (
+						d[t + 1] === 101 &&
+						d[t + 2] === 97 &&
+						d[t + 3] === 108
+					) {
+						p = new PLReal();
+					}
 					break;
 				}
 				case 115: {
-					p = new PLString();
+					if (
+						d[t + 1] === 116 &&
+						d[t + 2] === 114 &&
+						d[t + 3] === 105 &&
+						d[t + 4] === 110 &&
+						d[t + 5] === 103
+					) {
+						p = new PLString();
+					}
 					break;
 				}
 				case 116: {
-					p = new PLBoolean(true);
+					if (
+						d[t + 1] === 114 &&
+						d[t + 2] === 117 &&
+						d[t + 3] === 101
+					) {
+						p = new PLBoolean(true);
+					}
 					break;
 				}
 			}
