@@ -1,6 +1,13 @@
+import { PLArray } from '../array.ts';
+import { PLBoolean } from '../boolean.ts';
+import { PLData } from '../data.ts';
+import { PLDate } from '../date.ts';
 import { PLDict } from '../dict.ts';
 import { FORMAT_XML_V1_0 } from '../format.ts';
+import { PLInteger } from '../integer.ts';
 import { utf8Encoded, utf8ErrorEnd, utf8ErrorXML } from '../pri/utf8.ts';
+import { PLReal } from '../real.ts';
+import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 
 const rUTF8 = /^(X-MAC-)?UTF-8$/i;
@@ -216,8 +223,13 @@ export function decodeXml(
 	}
 	d ||= encoded;
 	const l = d.length;
+	let b;
 	let c;
+	let f;
 	let i = 0;
+	let p;
+	let s;
+	let t;
 	for (;;) {
 		c = d[i = skipWS(d, i)];
 		if (c !== 60) {
@@ -234,5 +246,90 @@ export function decodeXml(
 			break;
 		}
 	}
+	i++;
+	do {
+		for (f = s = -1, t = i; i < l && (b = d[i]) !== 60; f = b, i++) {
+			if (s < 0 && (b === 32 || b === 9 || b === 10 || b === 13)) {
+				s = i - t;
+			}
+		}
+		if (i >= l) {
+			throw new SyntaxError(utf8ErrorEnd(d));
+		}
+		f = f === 47;
+		if (s < 0) {
+			s = i - t - (f as unknown as number);
+		}
+		if ((p = !s)) {
+			throw new SyntaxError(utf8ErrorXML(d, t));
+		}
+		i++;
+		switch (c) {
+			case 97: {
+				if (
+					d[t + 1] === 114 &&
+					d[t + 2] === 114 &&
+					d[t + 3] === 97 &&
+					d[t + 4] === 121
+				) {
+					p = new PLArray();
+				}
+				break;
+			}
+			case 100: {
+				x = d[t + 1];
+				if (x === 105) {
+					if (d[t + 2] === 99 && d[t + 3] === 116) {
+						p = new PLDict();
+					}
+				} else if (x === 97 && d[t + 2] === 116) {
+					if (d[t + 3] === 97) {
+						p = new PLData();
+					} else if (d[t + 3] === 101) {
+						p = new PLDate();
+					}
+				}
+				break;
+			}
+			case 102: {
+				if (
+					d[t + 1] === 97 &&
+					d[t + 2] === 108 &&
+					d[t + 3] === 115 &&
+					d[t + 4] === 101
+				) {
+					p = new PLBoolean();
+				}
+				break;
+			}
+			case 105: {
+				p = new PLInteger();
+				break;
+			}
+			case 107: {
+				p = new PLString();
+				break;
+			}
+			case 112: {
+				p = [null];
+				break;
+			}
+			case 114: {
+				p = new PLReal();
+				break;
+			}
+			case 115: {
+				p = new PLString();
+				break;
+			}
+			case 116: {
+				p = new PLBoolean(true);
+				break;
+			}
+		}
+		if (!p) {
+			throw new SyntaxError(utf8ErrorXML(d, t));
+		}
+	} while (false);
 	return { format: FORMAT_XML_V1_0, plist: new PLDict() };
 }
