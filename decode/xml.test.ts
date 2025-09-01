@@ -172,6 +172,19 @@ Deno.test('XML doctype: Error EOF', () => {
 		SyntaxError,
 		'Invalid end on line 3',
 	);
+	assertThrows(
+		() =>
+			decodeXml(
+				TE.encode(
+					[
+						'<?xml version="1.0" encoding="UTF-8"?>',
+						'<!',
+					].join('\n'),
+				),
+			),
+		SyntaxError,
+		'Invalid XML on line 2',
+	);
 });
 
 Deno.test('XML header comments', () => {
