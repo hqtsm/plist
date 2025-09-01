@@ -127,13 +127,13 @@ export function encodeXml(
 
 	switch (format) {
 		case FORMAT_XML_V1_0: {
-			doctype ??= XML_DOCTYPE_PUBLIC_V1_0;
-			version ??= XML_VERSION_V1_0;
+			doctype = XML_DOCTYPE_PUBLIC_V1_0;
+			version = XML_VERSION_V1_0;
 			break;
 		}
 		case FORMAT_XML_V0_9: {
-			doctype ??= XML_DOCTYPE_SYSTEM;
-			version ??= XML_VERSION_V0_9;
+			doctype = XML_DOCTYPE_SYSTEM;
+			version = XML_VERSION_V0_9;
 			break;
 		}
 		default: {
@@ -145,10 +145,7 @@ export function encodeXml(
 		throw new RangeError('Invalid indent');
 	}
 
-	if (doctype) {
-		i += utf8Size(doctype) + 1;
-	}
-	i += utf8Size(version);
+	i += utf8Size(doctype) + 1 + utf8Size(version);
 
 	const a = new Set<PLType>();
 	const il = x = indent.length;
@@ -227,10 +224,8 @@ export function encodeXml(
 	const r = new Uint8Array(i);
 	i = utf8Encode(xmlHeader, r, 0);
 	r[i++] = 10;
-	if (doctype) {
-		i = utf8Encode(doctype, r, i);
-		r[i++] = 10;
-	}
+	i = utf8Encode(doctype, r, i);
+	r[i++] = 10;
 	i = utf8Encode(`<plist version="${version}">`, r, i);
 	r[i++] = 10;
 
