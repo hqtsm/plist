@@ -235,18 +235,17 @@ export function decodeXml(
 		if (c !== 60) {
 			throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
 		}
-		c = d[i + 1];
+		c = d[++i];
 		if (c === 33) {
-			i = d[i + 2] === 45 && d[i + 3] === 45
-				? skipC(d, i + 4, l)
-				: skipDTD(d, i + 2, l);
+			i = d[i + 1] === 45 && d[i + 2] === 45
+				? skipC(d, i + 3, l)
+				: skipDTD(d, i + 1, l);
 		} else if (c === 63) {
-			i = skipPI(d, i + 2, l);
+			i = skipPI(d, i + 1, l);
 		} else {
 			break;
 		}
 	}
-	i++;
 	do {
 		if (c === 47) {
 			throw new Error('TODO: XML closing tag');
