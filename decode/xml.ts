@@ -248,87 +248,91 @@ export function decodeXml(
 	}
 	i++;
 	do {
-		for (f = s = -1, t = i; i < l && (b = d[i]) !== 60; f = b, i++) {
-			if (s < 0 && (b === 32 || b === 9 || b === 10 || b === 13)) {
-				s = i - t;
-			}
-		}
-		if (i >= l) {
-			throw new SyntaxError(utf8ErrorEnd(d));
-		}
-		f = f === 47;
-		if (s < 0) {
-			s = i - t - (f as unknown as number);
-		}
-		if ((p = !s)) {
-			throw new SyntaxError(utf8ErrorXML(d, t));
-		}
-		i++;
-		switch (c) {
-			case 97: {
-				if (
-					d[t + 1] === 114 &&
-					d[t + 2] === 114 &&
-					d[t + 3] === 97 &&
-					d[t + 4] === 121
-				) {
-					p = new PLArray();
+		if (c === 47) {
+			throw new Error('TODO: XML closing tag');
+		} else {
+			for (f = s = -1, t = i; i < l && (b = d[i]) !== 60; f = b, i++) {
+				if (s < 0 && (b === 32 || b === 9 || b === 10 || b === 13)) {
+					s = i - t;
 				}
-				break;
 			}
-			case 100: {
-				c = d[t + 1];
-				if (c === 105) {
-					if (d[t + 2] === 99 && d[t + 3] === 116) {
-						p = new PLDict();
+			if (i >= l) {
+				throw new SyntaxError(utf8ErrorEnd(d));
+			}
+			f = f === 47;
+			if (s < 0) {
+				s = i - t - (f as unknown as number);
+			}
+			if ((p = !s)) {
+				throw new SyntaxError(utf8ErrorXML(d, t));
+			}
+			i++;
+			switch (c) {
+				case 97: {
+					if (
+						d[t + 1] === 114 &&
+						d[t + 2] === 114 &&
+						d[t + 3] === 97 &&
+						d[t + 4] === 121
+					) {
+						p = new PLArray();
 					}
-				} else if (c === 97 && d[t + 2] === 116) {
-					if (d[t + 3] === 97) {
-						p = new PLData();
-					} else if (d[t + 3] === 101) {
-						p = new PLDate();
+					break;
+				}
+				case 100: {
+					c = d[t + 1];
+					if (c === 105) {
+						if (d[t + 2] === 99 && d[t + 3] === 116) {
+							p = new PLDict();
+						}
+					} else if (c === 97 && d[t + 2] === 116) {
+						if (d[t + 3] === 97) {
+							p = new PLData();
+						} else if (d[t + 3] === 101) {
+							p = new PLDate();
+						}
 					}
+					break;
 				}
-				break;
-			}
-			case 102: {
-				if (
-					d[t + 1] === 97 &&
-					d[t + 2] === 108 &&
-					d[t + 3] === 115 &&
-					d[t + 4] === 101
-				) {
-					p = new PLBoolean();
+				case 102: {
+					if (
+						d[t + 1] === 97 &&
+						d[t + 2] === 108 &&
+						d[t + 3] === 115 &&
+						d[t + 4] === 101
+					) {
+						p = new PLBoolean();
+					}
+					break;
 				}
-				break;
+				case 105: {
+					p = new PLInteger();
+					break;
+				}
+				case 107: {
+					p = new PLString();
+					break;
+				}
+				case 112: {
+					p = [null];
+					break;
+				}
+				case 114: {
+					p = new PLReal();
+					break;
+				}
+				case 115: {
+					p = new PLString();
+					break;
+				}
+				case 116: {
+					p = new PLBoolean(true);
+					break;
+				}
 			}
-			case 105: {
-				p = new PLInteger();
-				break;
+			if (!p) {
+				throw new SyntaxError(utf8ErrorXML(d, t));
 			}
-			case 107: {
-				p = new PLString();
-				break;
-			}
-			case 112: {
-				p = [null];
-				break;
-			}
-			case 114: {
-				p = new PLReal();
-				break;
-			}
-			case 115: {
-				p = new PLString();
-				break;
-			}
-			case 116: {
-				p = new PLBoolean(true);
-				break;
-			}
-		}
-		if (!p) {
-			throw new SyntaxError(utf8ErrorXML(d, t));
 		}
 	} while (false);
 	return { format: FORMAT_XML_V1_0, plist: new PLDict() };
