@@ -16,7 +16,15 @@ const rUTF8 = /^(x-mac-)?utf-8$/i;
  * Plist wrapper.
  */
 interface Plist {
-	o: PLType | null;
+	/**
+	 * Key when inside dict.
+	 */
+	k: PLString | null;
+
+	/**
+	 * Single value.
+	 */
+	v: PLType | null;
 }
 
 /**
@@ -404,7 +412,7 @@ export function decodeXml(
 						!f
 					) {
 						a = c;
-						p = q = { o: null } satisfies Plist;
+						p = q = { k: null, v: null } satisfies Plist;
 						n = { a, t, s, p, n };
 					}
 					break;
