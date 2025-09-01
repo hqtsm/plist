@@ -83,16 +83,6 @@ export interface DecodeXmlResult {
 	 * Decoded plist.
 	 */
 	plist: PLType;
-
-	/**
-	 * XML doctype.
-	 */
-	doctype?: string;
-
-	/**
-	 * Plist version.
-	 */
-	version?: string;
 }
 
 /**
