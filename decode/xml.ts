@@ -201,6 +201,30 @@ function skipDTD(
 }
 
 /**
+ * Skip over closing tag.
+ *
+ * @param d Data.
+ * @param i Offset.
+ * @param l Length.
+ * @param j Name offset.
+ * @param s Name length.
+ * @returns After offset.
+ */
+function skipCT(
+	d: Uint8Array,
+	i: number,
+	l: number,
+	j: number,
+	s: number,
+): number {
+	for (; s && d[i] === d[j++]; i++, s--);
+	if (s || d[i = skipWS(d, i)] !== 62) {
+		throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
+	}
+	return i + 1;
+}
+
+/**
  * Decode OpenStep encoded plist.
  *
  * @param encoded OpenStep plist encoded data.
@@ -300,6 +324,9 @@ export function decodeXml(
 						d[t + 3] === 115 &&
 						d[t + 4] === 101
 					) {
+						if (!f) {
+							i = skipCT(d, i, l, t, s);
+						}
 						p = new PLBoolean();
 					}
 					break;
@@ -361,6 +388,9 @@ export function decodeXml(
 						d[t + 2] === 117 &&
 						d[t + 3] === 101
 					) {
+						if (!f) {
+							i = skipCT(d, i, l, t, s);
+						}
 						p = new PLBoolean(true);
 					}
 					break;
