@@ -91,7 +91,7 @@ export interface DecodeXmlResult {
  * @param d Data.
  * @returns Encoding.
  */
-function xmlEncoding(d: Uint8Array): string | null {
+function encoding(d: Uint8Array): string | null {
 	let i = 0, j, l, c;
 	if (
 		d[i++] === 60 &&
@@ -139,7 +139,7 @@ function xmlEncoding(d: Uint8Array): string | null {
  * @param i Offset.
  * @returns After offset.
  */
-function skipWS(d: Uint8Array, i: number): number {
+function whitespace(d: Uint8Array, i: number): number {
 	for (let c; (c = d[i]) === 9 || c === 10 || c === 13 || c === 32; i++);
 	return i;
 }
@@ -152,7 +152,7 @@ function skipWS(d: Uint8Array, i: number): number {
  * @param l Length.
  * @returns After offset.
  */
-function skipC(d: Uint8Array, i: number, l: number): number {
+function comment(d: Uint8Array, i: number, l: number): number {
 	for (let a, b, c; i < l;) {
 		a = b;
 		b = c;
@@ -172,7 +172,7 @@ function skipC(d: Uint8Array, i: number, l: number): number {
  * @param l Length.
  * @returns After offset.
  */
-function skipPI(d: Uint8Array, i: number, l: number): number {
+function instruction(d: Uint8Array, i: number, l: number): number {
 	for (let a, b; i < l;) {
 		a = b;
 		b = d[i++];
@@ -191,7 +191,7 @@ function skipPI(d: Uint8Array, i: number, l: number): number {
  * @param l Length.
  * @returns After offset.
  */
-function skipDTD(
+function doctype(
 	d: Uint8Array,
 	i: number,
 	l: number,
@@ -205,7 +205,7 @@ function skipDTD(
 		d[i + 5] === 80 &&
 		d[i + 6] === 69
 	) {
-		for (i = skipWS(d, i + 7); i < l; i++) {
+		for (i = whitespace(d, i + 7); i < l; i++) {
 			const c = d[i];
 			if (c === 62) {
 				return i + 1;
@@ -230,7 +230,7 @@ function skipDTD(
  * @param s Name length.
  * @returns After offset.
  */
-function skipCT(
+function close(
 	d: Uint8Array,
 	i: number,
 	l: number,
@@ -240,7 +240,7 @@ function skipCT(
 	if (d[i] === 60 && d[++i] === 47) {
 		for (; s && d[++i] === d[j++]; s--);
 	}
-	if (s || d[i = skipWS(d, i)] !== 62) {
+	if (s || d[i = whitespace(d, i)] !== 62) {
 		throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
 	}
 	return i + 1;
@@ -261,7 +261,7 @@ export function decodeXml(
 	let d: Uint8Array | null | undefined = utf8Encoded(encoded, utf16le);
 	if (
 		!d &&
-		(x = xmlEncoding(encoded)) !== null &&
+		(x = encoding(encoded)) !== null &&
 		!rUTF8.test(x) &&
 		!(d = decoder?.(x, encoded))
 	) {
@@ -282,17 +282,17 @@ export function decodeXml(
 	let t;
 	let z;
 	for (;;) {
-		c = d[i = skipWS(d, i)];
+		c = d[i = whitespace(d, i)];
 		if (c !== 60) {
 			throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
 		}
 		c = d[++i];
 		if (c === 33) {
 			i = d[i + 1] === 45 && d[i + 2] === 45
-				? skipC(d, i + 3, l)
-				: skipDTD(d, i + 1, l);
+				? comment(d, i + 3, l)
+				: doctype(d, i + 1, l);
 		} else if (c === 63) {
-			i = skipPI(d, i + 1, l);
+			i = instruction(d, i + 1, l);
 		} else {
 			break;
 		}
@@ -364,7 +364,7 @@ export function decodeXml(
 						d[t + 4] === 101
 					) {
 						if (!f) {
-							i = skipCT(d, i, l, t, s);
+							i = close(d, i, l, t, s);
 						}
 						q = new PLBoolean();
 					}
@@ -431,7 +431,7 @@ export function decodeXml(
 						d[t + 3] === 101
 					) {
 						if (!f) {
-							i = skipCT(d, i, l, t, s);
+							i = close(d, i, l, t, s);
 						}
 						q = new PLBoolean(true);
 					}
