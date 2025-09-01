@@ -119,21 +119,23 @@ export function encodeXml(
 		indent = '\t',
 	}: EncodeXmlOptions = {},
 ): Uint8Array {
-	let i = 68;
+	let doctype: string;
+	let version: string;
+	let i: number;
 	let e;
 	let x;
-	let doctype;
-	let version;
 
 	switch (format) {
 		case FORMAT_XML_V1_0: {
 			doctype = XML_DOCTYPE_PUBLIC_V1_0;
 			version = XML_VERSION_V1_0;
+			i = 174;
 			break;
 		}
 		case FORMAT_XML_V0_9: {
 			doctype = XML_DOCTYPE_SYSTEM;
 			version = XML_VERSION_V0_9;
+			i = 151;
 			break;
 		}
 		default: {
@@ -144,8 +146,6 @@ export function encodeXml(
 	if (!rIndent.test(indent)) {
 		throw new RangeError('Invalid indent');
 	}
-
-	i += utf8Size(doctype) + 1 + utf8Size(version);
 
 	const a = new Set<PLType>();
 	const il = x = indent.length;
