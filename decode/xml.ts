@@ -13,6 +13,36 @@ import type { PLType } from '../type.ts';
 const rUTF8 = /^(x-mac-)?utf-8$/i;
 
 /**
+ * Linked list node type.
+ */
+interface Node {
+	/**
+	 * First character.
+	 */
+	a: number;
+
+	/**
+	 * Open tag name position.
+	 */
+	t: number;
+
+	/**
+	 * Size of tag name.
+	 */
+	s: number;
+
+	/**
+	 * Plist object.
+	 */
+	p: PLArray | PLDict | [null | PLType];
+
+	/**
+	 * Next node.
+	 */
+	n: Node | null;
+}
+
+/**
  * XML decoder.
  *
  * @param encoding Encoding.
@@ -249,13 +279,18 @@ export function decodeXml(
 	}
 	d ||= encoded;
 	const l = d.length;
+	let a;
 	let b;
 	let c;
 	let f;
 	let i = 0;
-	let p;
+	let n: Node | null = null;
+	let o: PLArray | PLDict | [null | PLType];
+	let p: typeof o;
+	let q;
 	let s;
 	let t;
+	let z;
 	for (;;) {
 		c = d[i = skipWS(d, i)];
 		if (c !== 60) {
@@ -288,10 +323,12 @@ export function decodeXml(
 			if (s < 0) {
 				s = i - t - (f as unknown as number);
 			}
-			if ((p = !s)) {
+			if ((q = !s)) {
 				throw new SyntaxError(utf8ErrorXML(d, t));
 			}
 			i++;
+			z = a;
+			o = p!;
 			switch (c) {
 				case 97: {
 					if (
@@ -300,21 +337,31 @@ export function decodeXml(
 						d[t + 3] === 97 &&
 						d[t + 4] === 121
 					) {
-						p = new PLArray();
+						q = new PLArray();
+						if (!f) {
+							a = c;
+							p = q;
+							n = { a, t, s, p, n };
+						}
 					}
 					break;
 				}
 				case 100: {
-					c = d[t + 1];
-					if (c === 105) {
+					x = d[t + 1];
+					if (x === 105) {
 						if (d[t + 2] === 99 && d[t + 3] === 116) {
-							p = new PLDict();
+							q = new PLDict();
+							if (!f) {
+								a = c;
+								p = q;
+								n = { a, t, s, p, n };
+							}
 						}
-					} else if (c === 97 && d[t + 2] === 116) {
+					} else if (x === 97 && d[t + 2] === 116) {
 						if (d[t + 3] === 97) {
-							p = new PLData();
+							q = new PLData();
 						} else if (d[t + 3] === 101) {
-							p = new PLDate();
+							q = new PLDate();
 						}
 					}
 					break;
@@ -329,7 +376,7 @@ export function decodeXml(
 						if (!f) {
 							i = skipCT(d, i, l, t, s);
 						}
-						p = new PLBoolean();
+						q = new PLBoolean();
 					}
 					break;
 				}
@@ -341,13 +388,13 @@ export function decodeXml(
 						d[t + 4] === 103 &&
 						d[t + 5] === 101
 					) {
-						p = new PLInteger();
+						q = new PLInteger();
 					}
 					break;
 				}
 				case 107: {
 					if (d[t + 1] === 101 && d[t + 2] === 121) {
-						p = new PLString();
+						q = new PLString();
 					}
 					break;
 				}
@@ -356,9 +403,12 @@ export function decodeXml(
 						d[t + 1] === 108 &&
 						d[t + 2] === 105 &&
 						d[t + 3] === 115 &&
-						d[t + 4] === 116
+						d[t + 4] === 116 &&
+						!f
 					) {
-						p = [null];
+						a = c;
+						p = q = [null] as [null];
+						n = { a, t, s, p, n };
 					}
 					break;
 				}
@@ -368,7 +418,7 @@ export function decodeXml(
 						d[t + 2] === 97 &&
 						d[t + 3] === 108
 					) {
-						p = new PLReal();
+						q = new PLReal();
 					}
 					break;
 				}
@@ -380,7 +430,7 @@ export function decodeXml(
 						d[t + 4] === 110 &&
 						d[t + 5] === 103
 					) {
-						p = new PLString();
+						q = new PLString();
 					}
 					break;
 				}
@@ -393,13 +443,24 @@ export function decodeXml(
 						if (!f) {
 							i = skipCT(d, i, l, t, s);
 						}
-						p = new PLBoolean(true);
+						q = new PLBoolean(true);
 					}
 					break;
 				}
 			}
-			if (!p) {
+			if (!q) {
 				throw new SyntaxError(utf8ErrorXML(d, t));
+			}
+			switch (z as unknown) {
+				case 97: {
+					break;
+				}
+				case 100: {
+					break;
+				}
+				case 112: {
+					break;
+				}
 			}
 		}
 	} while (false);
