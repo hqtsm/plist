@@ -6,7 +6,7 @@
 
 import type { PLDate } from '../date.ts';
 import { utf8Encode, utf8Size } from '../pri/utf8.ts';
-import { FORMAT_XML_V1_0 } from '../format.ts';
+import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import type { PLType } from '../type.ts';
 import { walk } from '../walk.ts';
 
@@ -16,33 +16,32 @@ const rRealTrim = /\.?0+$/;
 const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>';
 const b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 const rEnt = /[&<>]/g;
-const rEntQ = /["&<>]/g;
-const ents = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as const;
+const ents = { '&': '&amp;', '<': '&lt;', '>': '&gt;' } as const;
 const ent = (s: string) => ents[s as keyof typeof ents];
 
 /**
  * System doctype.
  * Known to pair with version '0.9'.
  */
-export const XML_DOCTYPE_SYSTEM =
+const XML_DOCTYPE_SYSTEM =
 	'<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">';
 
 /**
  * Public doctype 1.0.
  */
-export const XML_DOCTYPE_PUBLIC_V1_0 =
+const XML_DOCTYPE_PUBLIC_V1_0 =
 	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
 
 /**
  * XML version 0.9.
  * Known to pair with system doctype.
  */
-export const XML_VERSION_V0_9 = '0.9';
+const XML_VERSION_V0_9 = '0.9';
 
 /**
  * XML version 1.0.
  */
-export const XML_VERSION_V1_0 = '1.0';
+const XML_VERSION_V1_0 = '1.0';
 
 /**
  * Encode integer to string.
@@ -96,7 +95,7 @@ export interface EncodeXmlOptions {
 	 *
 	 * @default FORMAT_XML_V1_0
 	 */
-	format?: typeof FORMAT_XML_V1_0;
+	format?: typeof FORMAT_XML_V1_0 | typeof FORMAT_XML_V0_9;
 
 	/**
 	 * Indentation characters.
@@ -104,20 +103,6 @@ export interface EncodeXmlOptions {
 	 * @default '\t'
 	 */
 	indent?: string;
-
-	/**
-	 * XML doctype.
-	 *
-	 * @default string Matches format.
-	 */
-	doctype?: string;
-
-	/**
-	 * Plist version attribute value.
-	 *
-	 * @default string Matches format.
-	 */
-	version?: string;
 }
 
 /**
@@ -132,18 +117,23 @@ export function encodeXml(
 	{
 		format = FORMAT_XML_V1_0,
 		indent = '\t',
-		doctype,
-		version,
 	}: EncodeXmlOptions = {},
 ): Uint8Array {
 	let i = 68;
 	let e;
 	let x;
+	let doctype;
+	let version;
 
 	switch (format) {
 		case FORMAT_XML_V1_0: {
 			doctype ??= XML_DOCTYPE_PUBLIC_V1_0;
 			version ??= XML_VERSION_V1_0;
+			break;
+		}
+		case FORMAT_XML_V0_9: {
+			doctype ??= XML_DOCTYPE_SYSTEM;
+			version ??= XML_VERSION_V0_9;
 			break;
 		}
 		default: {
@@ -158,7 +148,7 @@ export function encodeXml(
 	if (doctype) {
 		i += utf8Size(doctype) + 1;
 	}
-	i += utf8Size(version.replace(rEntQ, ent));
+	i += utf8Size(version);
 
 	const a = new Set<PLType>();
 	const il = x = indent.length;
@@ -241,7 +231,7 @@ export function encodeXml(
 		i = utf8Encode(doctype, r, i);
 		r[i++] = 10;
 	}
-	i = utf8Encode(`<plist version="${version.replace(rEntQ, ent)}">`, r, i);
+	i = utf8Encode(`<plist version="${version}">`, r, i);
 	r[i++] = 10;
 
 	walk(plist, {

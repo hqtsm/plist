@@ -1,7 +1,9 @@
 import { assertEquals, assertThrows } from '@std/assert';
-import { XML_DOCTYPE_PUBLIC_V1_0, XML_VERSION_V1_0 } from '../encode/xml.ts';
 import { fixturePlist } from '../spec/fixture.ts';
 import { decodeXml } from './xml.ts';
+
+const DOCTYPE =
+	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
 
 const TE = new TextEncoder();
 const TDASCII = new TextDecoder('ascii', { fatal: true });
@@ -16,8 +18,8 @@ Deno.test('XML encoding: default', () => {
 	decodeXml(
 		TE.encode(
 			[
-				XML_DOCTYPE_PUBLIC_V1_0,
-				`<plist version="${XML_VERSION_V1_0}">`,
+				DOCTYPE,
+				'<plist version="1.0">',
 				'<true/>',
 				'</plist>',
 				'',
@@ -29,8 +31,8 @@ Deno.test('XML encoding: default', () => {
 		TE.encode(
 			[
 				'<?xml version="1.0"?>',
-				XML_DOCTYPE_PUBLIC_V1_0,
-				`<plist version="${XML_VERSION_V1_0}">`,
+				DOCTYPE,
+				'<plist version="1.0">',
 				'<true/>',
 				'</plist>',
 				'',
@@ -42,8 +44,8 @@ Deno.test('XML encoding: default', () => {
 		TE.encode(
 			[
 				'<?xml version="1.0" encoding=BAD?>',
-				XML_DOCTYPE_PUBLIC_V1_0,
-				`<plist version="${XML_VERSION_V1_0}">`,
+				DOCTYPE,
+				'<plist version="1.0">',
 				'<true/>',
 				'</plist>',
 				'',
@@ -63,8 +65,8 @@ Deno.test('XML encoding: UTF-8', () => {
 		TE.encode(
 			[
 				'<?xml version="1.0" encoding="UTF-8"?>',
-				XML_DOCTYPE_PUBLIC_V1_0,
-				`<plist version="${XML_VERSION_V1_0}">`,
+				DOCTYPE,
+				'<plist version="1.0">',
 				'<true/>',
 				'</plist>',
 				'',
@@ -76,8 +78,8 @@ Deno.test('XML encoding: UTF-8', () => {
 		TE.encode(
 			[
 				"<?xml version='1.0' encoding='x-mac-utf-8'?>",
-				XML_DOCTYPE_PUBLIC_V1_0,
-				`<plist version="${XML_VERSION_V1_0}">`,
+				DOCTYPE,
+				'<plist version="1.0">',
 				'<true/>',
 				'</plist>',
 				'',
@@ -111,8 +113,8 @@ Deno.test('XML encoding: custom', () => {
 		TE.encode(
 			[
 				'<?xml version="1.0" encoding="ascii"?>',
-				XML_DOCTYPE_PUBLIC_V1_0,
-				`<plist version="${XML_VERSION_V1_0}">`,
+				DOCTYPE,
+				'<plist version="1.0">',
 				'<true/>',
 				'</plist>',
 				'',
@@ -127,8 +129,8 @@ Deno.test('XML encoding: custom', () => {
 			TE.encode(
 				[
 					'<?xml version="1.0" encoding="invalid"?>',
-					XML_DOCTYPE_PUBLIC_V1_0,
-					`<plist version="${XML_VERSION_V1_0}">`,
+					DOCTYPE,
+					'<plist version="1.0">',
 					'<true/>',
 					'</plist>',
 					'',
@@ -144,8 +146,8 @@ Deno.test('XML encoding: custom', () => {
 			TE.encode(
 				[
 					'<?xml version="1.0" encoding="ascii">',
-					XML_DOCTYPE_PUBLIC_V1_0,
-					`<plist version="${XML_VERSION_V1_0}">`,
+					DOCTYPE,
+					'<plist version="1.0">',
 					'<true/>',
 					'</plist>',
 					'',
@@ -164,7 +166,7 @@ Deno.test('XML doctype: Error EOF', () => {
 				TE.encode(
 					[
 						'<?xml version="1.0" encoding="UTF-8"?>',
-						XML_DOCTYPE_PUBLIC_V1_0.replaceAll('>', ''),
+						DOCTYPE.replaceAll('>', ''),
 						'',
 					].join('\n'),
 				),
@@ -194,9 +196,9 @@ Deno.test('XML header comments', () => {
 				'<!--->-->',
 				'<?xml version="1.0" encoding="UTF-8"?>',
 				'<!--->-->',
-				XML_DOCTYPE_PUBLIC_V1_0,
+				DOCTYPE,
 				'<!--->-->',
-				`<plist version="${XML_VERSION_V1_0}">`,
+				'<plist version="1.0">',
 				'<true/>',
 				'</plist>',
 				'',
@@ -210,8 +212,8 @@ Deno.test('XML header comments', () => {
 					[
 						'<!--',
 						'<?xml version="1.0" encoding="UTF-8"?>',
-						XML_DOCTYPE_PUBLIC_V1_0,
-						`<plist version="${XML_VERSION_V1_0}">`,
+						DOCTYPE,
+						'<plist version="1.0">',
 						'<true/>',
 						'</plist>',
 						'',
@@ -230,7 +232,7 @@ Deno.test('XML bad content: empty', () => {
 				TE.encode(
 					[
 						'<?xml version="1.0" encoding="UTF-8"?>',
-						XML_DOCTYPE_PUBLIC_V1_0,
+						DOCTYPE,
 						'',
 					].join('\n'),
 				),
@@ -247,7 +249,7 @@ Deno.test('XML bad content: not a tag', () => {
 				TE.encode(
 					[
 						'<?xml version="1.0" encoding="UTF-8"?>',
-						XML_DOCTYPE_PUBLIC_V1_0,
+						DOCTYPE,
 						'plist',
 						'',
 					].join('\n'),

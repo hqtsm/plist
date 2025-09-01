@@ -9,6 +9,7 @@ Deno.test('format constants', () => {
 		[
 			'FORMAT_STRINGS',
 			'FORMAT_OPENSTEP',
+			'FORMAT_XML_V0_9',
 			'FORMAT_XML_V1_0',
 			'FORMAT_BINARY_V1_0',
 		].sort(),

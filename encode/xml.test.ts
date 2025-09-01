@@ -1,4 +1,4 @@
-import { assertEquals, assertStringIncludes, assertThrows } from '@std/assert';
+import { assertEquals, assertThrows } from '@std/assert';
 import { fixturePlist } from '../spec/fixture.ts';
 import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
@@ -85,14 +85,6 @@ Deno.test('Invalid type', () => {
 		TypeError,
 		'Invalid XML value type',
 	);
-});
-
-Deno.test('Weird version', () => {
-	const encode = encodeXml(new PLBoolean(), {
-		version: `<'&">`,
-	});
-	const xml = new TextDecoder().decode(encode);
-	assertStringIncludes(xml, `<plist version="&lt;'&amp;&quot;&gt;">`);
 });
 
 Deno.test('spec: array-0', async () => {

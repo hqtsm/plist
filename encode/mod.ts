@@ -13,6 +13,7 @@ import {
 	FORMAT_BINARY_V1_0,
 	FORMAT_OPENSTEP,
 	FORMAT_STRINGS,
+	FORMAT_XML_V0_9,
 	FORMAT_XML_V1_0,
 } from '../format.ts';
 import type { PLType } from '../type.ts';
@@ -41,7 +42,8 @@ export function encode(plist: PLType, options: EncodeOptions): Uint8Array {
 		case FORMAT_BINARY_V1_0: {
 			return encodeBinary(plist, options);
 		}
-		case FORMAT_XML_V1_0: {
+		case FORMAT_XML_V1_0:
+		case FORMAT_XML_V0_9: {
 			return encodeXml(plist, options);
 		}
 		case FORMAT_OPENSTEP:

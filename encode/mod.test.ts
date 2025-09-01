@@ -10,15 +10,11 @@ import {
 	FORMAT_BINARY_V1_0,
 	FORMAT_OPENSTEP,
 	FORMAT_STRINGS,
+	FORMAT_XML_V0_9,
 	FORMAT_XML_V1_0,
 } from '../format.ts';
 import { PLString } from '../string.ts';
-import {
-	encode,
-	type EncodeOptions,
-	XML_DOCTYPE_SYSTEM,
-	XML_VERSION_V0_9,
-} from './mod.ts';
+import { encode, type EncodeOptions } from './mod.ts';
 
 Deno.test('Format: FORMAT_OPENSTEP', () => {
 	const plist = new PLDict([
@@ -62,12 +58,27 @@ Deno.test('Format: FORMAT_XML_V1_0', () => {
 	const plist = new PLString('Hello world!');
 	const enc = encode(plist, {
 		format: FORMAT_XML_V1_0,
-		doctype: XML_DOCTYPE_SYSTEM,
-		version: XML_VERSION_V0_9,
 	});
 	const str = new TextDecoder().decode(enc);
-	assertStringIncludes(str, XML_DOCTYPE_SYSTEM);
-	assertStringIncludes(str, XML_VERSION_V0_9);
+	assertStringIncludes(
+		str,
+		'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
+	);
+	assertStringIncludes(str, '<plist version="1.0">');
+	assertStringIncludes(str, 'Hello world!');
+});
+
+Deno.test('Format: FORMAT_XML_V0_9', () => {
+	const plist = new PLString('Hello world!');
+	const enc = encode(plist, {
+		format: FORMAT_XML_V0_9,
+	});
+	const str = new TextDecoder().decode(enc);
+	assertStringIncludes(
+		str,
+		'<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">',
+	);
+	assertStringIncludes(str, '<plist version="0.9">');
 	assertStringIncludes(str, 'Hello world!');
 });
 
