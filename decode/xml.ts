@@ -13,6 +13,13 @@ import type { PLType } from '../type.ts';
 const rUTF8 = /^(x-mac-)?utf-8$/i;
 
 /**
+ * Plist wrapper.
+ */
+interface Plist {
+	o: PLType | null;
+}
+
+/**
  * Linked list node type.
  */
 interface Node {
@@ -34,7 +41,7 @@ interface Node {
 	/**
 	 * Plist object.
 	 */
-	p: PLArray | PLDict | [null | PLType];
+	p: PLArray | PLDict | Plist;
 
 	/**
 	 * Next node.
@@ -275,7 +282,7 @@ export function decodeXml(
 	let f;
 	let i = 0;
 	let n: Node | null = null;
-	let o: PLArray | PLDict | [null | PLType];
+	let o: PLArray | PLDict | Plist;
 	let p: typeof o;
 	let q;
 	let s;
@@ -397,7 +404,7 @@ export function decodeXml(
 						!f
 					) {
 						a = c;
-						p = q = [null] as [null];
+						p = q = { o: null } satisfies Plist;
 						n = { a, t, s, p, n };
 					}
 					break;
