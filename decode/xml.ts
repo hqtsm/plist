@@ -517,10 +517,23 @@ export function decodeXml(
 				}
 			}
 		}
-		c = d[i = whitespace(d, i)];
-		if (c !== 60) {
-			throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
+		for (;;) {
+			c = d[i = whitespace(d, i)];
+			if (c !== 60) {
+				throw new SyntaxError(
+					i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
+				);
+			}
+			c = d[++i];
+			if (c === 33) {
+				if (d[i + 1] === 45 && d[i + 2] === 45) {
+					i = comment(d, i + 3, l);
+				}
+			} else if (c === 63) {
+				i = instruction(d, i + 1, l);
+			} else {
+				break;
+			}
 		}
-		c = d[++i];
 	}
 }
