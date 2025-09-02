@@ -3,7 +3,7 @@ import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
 import { PLDict } from '../dict.ts';
-import { type FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
+import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { utf8Encoded, utf8ErrorEnd, utf8ErrorXML } from '../pri/utf8.ts';
 import { PLReal } from '../real.ts';
@@ -271,7 +271,7 @@ export function decodeXml(
 	let s;
 	let t;
 	let z;
-	const format: DecodeXmlResult['format'] = FORMAT_XML_V1_0;
+	let format: DecodeXmlResult['format'] = FORMAT_XML_V1_0;
 	for (;;) {
 		c = d[i = whitespace(d, i)];
 		if (c !== 60) {
@@ -351,7 +351,7 @@ export function decodeXml(
 			if ((q = !s)) {
 				throw new SyntaxError(utf8ErrorXML(d, t));
 			}
-			i++;
+			x = i++;
 			z = a!;
 			o = p!;
 			switch (c) {
@@ -428,6 +428,39 @@ export function decodeXml(
 						d[t + 4] === 116 &&
 						!f
 					) {
+						if (!n) {
+							for (f = t + s; f < x; f++) {
+								a = d[f];
+								if (
+									a === 9 || a === 10 || a === 13 || a === 32
+								) {
+									if (
+										d[f + 1] === 118 &&
+										d[f + 2] === 101 &&
+										d[f + 3] === 114 &&
+										d[f + 4] === 115 &&
+										d[f + 5] === 105 &&
+										d[f + 6] === 111 &&
+										d[f + 7] === 110 &&
+										d[f + 8] === 61
+									) {
+										a = d[f + 9];
+										if (
+											(a === 34 || a === 39) &&
+											d[f + 10] === 48 &&
+											d[f + 11] === 46 &&
+											d[f + 12] === 57 &&
+											d[f + 13] === a
+										) {
+											format = FORMAT_XML_V0_9;
+										}
+										break;
+									}
+								} else if (a === 34 || a === 39) {
+									for (; f < x && d[++f] !== a;);
+								}
+							}
+						}
 						a = c;
 						p = q = { k, v: null } satisfies Plist;
 						f = n = { a, t, s, p, n };

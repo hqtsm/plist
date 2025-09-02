@@ -3,7 +3,7 @@ import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDict } from '../dict.ts';
-import { FORMAT_XML_V1_0 } from '../format.ts';
+import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { fixturePlist } from '../spec/fixture.ts';
 import { PLString } from '../string.ts';
 import { decodeXml } from './xml.ts';
@@ -301,6 +301,86 @@ Deno.test('XML bad content: not a tag', () => {
 		SyntaxError,
 		'Invalid XML on line 3',
 	);
+});
+
+Deno.test('Format version', () => {
+	for (
+		const tag of [
+			'<plist>',
+			'<plist version="1.0">',
+			"<plist version='1.0'>",
+			'<plist version="9.9">',
+			'<plist data-version="0.9">',
+			'<plist version= version="0.9">',
+			`<plist data=" version='0.9' ">`,
+			`<plist data=' version="0.9" '>`,
+			'<plist version=0.9>',
+			'<plist version="1.0" version="0.9">',
+		]
+	) {
+		const { format, plist } = decodeXml(
+			TE.encode(
+				[
+					'<?xml version="1.0" encoding="UTF-8"?>',
+					DOCTYPE,
+					tag,
+					'<true/>',
+					'</plist>',
+					'',
+				].join('\n'),
+			),
+		);
+		assertEquals(format, FORMAT_XML_V1_0, tag);
+		assertInstanceOf(plist, PLBoolean, tag);
+		assertEquals(plist.value, true, tag);
+	}
+	for (
+		const tag of [
+			'<plist version="0.9">',
+			"<plist version='0.9'>",
+			'<plist version="0.9" version="1.0">',
+		]
+	) {
+		const { format, plist } = decodeXml(
+			TE.encode(
+				[
+					'<?xml version="1.0" encoding="UTF-8"?>',
+					DOCTYPE,
+					tag,
+					'<true/>',
+					'</plist>',
+					'',
+				].join('\n'),
+			),
+		);
+		assertEquals(format, FORMAT_XML_V0_9, tag);
+		assertInstanceOf(plist, PLBoolean, tag);
+		assertEquals(plist.value, true, tag);
+	}
+	for (
+		const tag of [
+			'<plist version="0.9">',
+			"<plist version='0.9'>",
+		]
+	) {
+		const { format, plist } = decodeXml(
+			TE.encode(
+				[
+					'<?xml version="1.0" encoding="UTF-8"?>',
+					DOCTYPE,
+					'<plist>',
+					tag,
+					'<true/>',
+					'</plist>',
+					'</plist>',
+					'',
+				].join('\n'),
+			),
+		);
+		assertEquals(format, FORMAT_XML_V1_0, tag);
+		assertInstanceOf(plist, PLBoolean, tag);
+		assertEquals(plist.value, true, tag);
+	}
 });
 
 Deno.test('spec: xml-edge doctype-internal-subset', async () => {
