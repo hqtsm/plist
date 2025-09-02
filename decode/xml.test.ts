@@ -1,11 +1,12 @@
 import { assertEquals, assertInstanceOf, assertThrows } from '@std/assert';
 import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
+import { PLData } from '../data.ts';
+import { PLDict } from '../dict.ts';
 import { FORMAT_XML_V1_0 } from '../format.ts';
 import { fixturePlist } from '../spec/fixture.ts';
-import { decodeXml } from './xml.ts';
-import { PLDict } from '../dict.ts';
 import { PLString } from '../string.ts';
+import { decodeXml } from './xml.ts';
 
 const DOCTYPE =
 	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
@@ -320,6 +321,43 @@ Deno.test('spec: xml-edge doctype-lowercase', async () => {
 	);
 });
 
+Deno.test('spec: xml-edge empty', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'empty'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 7);
+
+	const t = plist.get(0);
+	assertInstanceOf(t, PLBoolean);
+	assertEquals(t.value, true);
+
+	const f = plist.get(1);
+	assertInstanceOf(f, PLBoolean);
+	assertEquals(f.value, false);
+
+	const dict = plist.get(2);
+	assertInstanceOf(dict, PLDict);
+	assertEquals(dict.size, 0);
+
+	const arr = plist.get(3);
+	assertInstanceOf(arr, PLArray);
+	assertEquals(arr.length, 0);
+
+	const str = plist.get(4);
+	assertInstanceOf(str, PLString);
+	assertEquals(str.value, '');
+
+	const key = plist.get(5);
+	assertInstanceOf(key, PLString);
+	assertEquals(key.value, '');
+
+	const data = plist.get(6);
+	assertInstanceOf(data, PLData);
+	assertEquals(data.byteLength, 0);
+});
+
 Deno.test('spec: xml-edge plist-none-array', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'plist-none-array'),
@@ -374,19 +412,19 @@ Deno.test('spec: xml-edge self-closed', async () => {
 	assertInstanceOf(f, PLBoolean);
 	assertEquals(f.value, false);
 
-	const d = plist.get(2);
-	assertInstanceOf(d, PLDict);
-	assertEquals(d.size, 0);
+	const dict = plist.get(2);
+	assertInstanceOf(dict, PLDict);
+	assertEquals(dict.size, 0);
 
-	const a = plist.get(3);
-	assertInstanceOf(a, PLArray);
-	assertEquals(a.length, 0);
+	const arr = plist.get(3);
+	assertInstanceOf(arr, PLArray);
+	assertEquals(arr.length, 0);
 
-	const s = plist.get(4);
-	assertInstanceOf(s, PLString);
-	assertEquals(s.value, '');
+	const str = plist.get(4);
+	assertInstanceOf(str, PLString);
+	assertEquals(str.value, '');
 
-	const k = plist.get(5);
-	assertInstanceOf(k, PLString);
-	assertEquals(k.value, '');
+	const key = plist.get(5);
+	assertInstanceOf(key, PLString);
+	assertEquals(key.value, '');
 });
