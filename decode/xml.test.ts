@@ -1,4 +1,5 @@
 import { assertEquals, assertInstanceOf, assertThrows } from '@std/assert';
+import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { FORMAT_XML_V1_0 } from '../format.ts';
 import { fixturePlist } from '../spec/fixture.ts';
@@ -315,4 +316,16 @@ Deno.test('spec: xml-edge doctype-lowercase', async () => {
 		SyntaxError,
 		'Invalid XML on line 2',
 	);
+});
+
+Deno.test('spec: xml-edge plist-none-array', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'plist-none-array'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 1);
+	const a = plist.get(0);
+	assertInstanceOf(a, PLBoolean);
+	assertEquals(a.value, true);
 });
