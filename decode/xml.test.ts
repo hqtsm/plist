@@ -339,6 +339,7 @@ Deno.test('Format version', () => {
 			'<plist version="0.9">',
 			"<plist version='0.9'>",
 			'<plist version="0.9" version="1.0">',
+			'<plist data="" version="0.9">',
 		]
 	) {
 		const { format, plist } = decodeXml(
