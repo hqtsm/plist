@@ -1,7 +1,6 @@
 import { assertEquals, assertInstanceOf, assertThrows } from '@std/assert';
 import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
-import { PLDict } from '../dict.ts';
 import { FORMAT_XML_V1_0 } from '../format.ts';
 import { fixturePlist } from '../spec/fixture.ts';
 import { decodeXml } from './xml.ts';
