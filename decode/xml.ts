@@ -289,6 +289,7 @@ export function decodeXml(
 	let c;
 	let f;
 	let i = 0;
+	let k: PLString | null = null;
 	let n: Node | null = null;
 	let o: PLArray | PLDict | Plist;
 	let p: typeof o;
@@ -332,7 +333,7 @@ export function decodeXml(
 				throw new SyntaxError(utf8ErrorXML(d, t));
 			}
 			i++;
-			z = a;
+			z = a!;
 			o = p!;
 			switch (c) {
 				case 97: {
@@ -412,7 +413,7 @@ export function decodeXml(
 						!f
 					) {
 						a = c;
-						p = q = { k: null, v: null } satisfies Plist;
+						p = q = { k, v: null } satisfies Plist;
 						n = { a, t, s, p, n };
 					}
 					break;
@@ -456,14 +457,30 @@ export function decodeXml(
 			if (!q) {
 				throw new SyntaxError(utf8ErrorXML(d, t));
 			}
-			switch (z as unknown) {
+			switch (z) {
 				case 97: {
+					if (c !== 112) {
+						(o as PLArray).push(q as PLType);
+					}
 					break;
 				}
 				case 100: {
+					if (k) {
+						if (c !== 112) {
+							(o as PLDict).set(k, q as PLType);
+						}
+						k = null;
+					} else if (c === 107) {
+						k = q as PLString;
+					} else {
+						throw new SyntaxError(utf8ErrorXML(d, t));
+					}
 					break;
 				}
 				case 112: {
+					if (c !== 112) {
+						(o as Plist).v = q as PLType;
+					}
 					break;
 				}
 			}
