@@ -252,9 +252,7 @@ function close(
 	j: number,
 	s: number,
 ): number {
-	if (d[i] === 60 && d[++i] === 47) {
-		for (i++; s && d[i] === d[j++]; i++, s--);
-	}
+	for (; s && d[i] === d[j++]; i++, s--);
 	if (s || d[i = whitespace(d, i)] !== 62) {
 		throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
 	}
@@ -320,7 +318,8 @@ export function decodeXml(
 				throw new SyntaxError(utf8ErrorXML(d, i));
 			}
 			x = n as Node;
-			s = close(d, i - 1, l, x.t, x.s);
+			t = i++;
+			i = close(d, i, l, x.t, x.s);
 			n = x.n;
 			if (x.a === 112) {
 				x = x.p as Plist;
@@ -329,7 +328,7 @@ export function decodeXml(
 					return { format, plist: q! };
 				}
 				if (!q) {
-					throw new SyntaxError(utf8ErrorXML(d, i));
+					throw new SyntaxError(utf8ErrorXML(d, t));
 				}
 				switch (n.a) {
 					case 97: {
@@ -342,7 +341,7 @@ export function decodeXml(
 							(n.p as PLDict).set(x, q);
 							break;
 						}
-						throw new SyntaxError(utf8ErrorXML(d, i));
+						throw new SyntaxError(utf8ErrorXML(d, t));
 					}
 					case 112: {
 						(n.p as Plist).v = q;
@@ -354,7 +353,6 @@ export function decodeXml(
 			}
 			a = n.a;
 			p = n.p;
-			i = s;
 		} else {
 			for (f = s = -1, t = i; i < l && (b = d[i]) !== 62; f = b, i++) {
 				if (s < 0 && (b === 32 || b === 9 || b === 10 || b === 13)) {
