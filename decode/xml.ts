@@ -479,6 +479,9 @@ export function decodeXml(
 				}
 				case 112: {
 					if (c !== 112) {
+						if ((o as Plist).v) {
+							throw new SyntaxError(utf8ErrorXML(d, t));
+						}
 						(o as Plist).v = q as PLType;
 					}
 					break;
