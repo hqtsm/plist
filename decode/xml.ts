@@ -297,7 +297,7 @@ export function decodeXml(
 	let s;
 	let t;
 	let z;
-	let plist: PLType;
+	const format: DecodeXmlResult['format'] = FORMAT_XML_V1_0;
 	for (;;) {
 		c = d[i = whitespace(d, i)];
 		if (c !== 60) {
@@ -326,8 +326,10 @@ export function decodeXml(
 				x = x.p as Plist;
 				q = x.v;
 				if (!n) {
-					plist = q!;
-					break;
+					return {
+						format,
+						plist: q!,
+					};
 				}
 				if (!q) {
 					throw new SyntaxError(utf8ErrorXML(d, i));
@@ -351,8 +353,10 @@ export function decodeXml(
 					}
 				}
 			} else if (!n) {
-				plist = x.p as PLType;
-				break;
+				return {
+					format,
+					plist: x.p as PLType,
+				};
 			}
 			a = n.a;
 			p = n.p;
@@ -527,6 +531,14 @@ export function decodeXml(
 					}
 					break;
 				}
+				default: {
+					if (!n) {
+						return {
+							format: FORMAT_XML_V1_0,
+							plist: q as PLType,
+						};
+					}
+				}
 			}
 		}
 		c = d[i = whitespace(d, i)];
@@ -535,5 +547,4 @@ export function decodeXml(
 		}
 		c = d[++i];
 	}
-	return { format: FORMAT_XML_V1_0, plist };
 }

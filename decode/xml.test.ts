@@ -329,3 +329,12 @@ Deno.test('spec: xml-edge plist-none-array', async () => {
 	assertInstanceOf(a, PLBoolean);
 	assertEquals(a.value, true);
 });
+
+Deno.test('spec: xml-edge plist-none-true', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'plist-none-true'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLBoolean);
+	assertEquals(plist.value, true);
+});
