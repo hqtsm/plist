@@ -294,7 +294,8 @@ export function decodeXml(
 				throw new SyntaxError(utf8ErrorXML(d, i));
 			}
 			x = n as Node;
-			for (f = t = ++i, s = x.s; s && d[i] === d[f++]; ++i, s--);
+			t = ++i;
+			for (f = n.t, s = x.s; s && d[i] === d[f++]; ++i, s--);
 			if (s || d[i = whitespace(d, i)] !== 62) {
 				throw new SyntaxError(
 					i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
