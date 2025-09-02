@@ -279,9 +279,9 @@ export function decodeXml(
 		}
 		c = d[++i];
 		if (c === 33) {
-			i = d[i + 1] === 45 && d[i + 2] === 45
-				? comment(d, i + 3, l)
-				: doctype(d, i + 1, l);
+			i = d[++i] === 45 && d[i + 1] === 45
+				? comment(d, i + 2, l)
+				: doctype(d, i, l);
 		} else if (c === 63) {
 			i = instruction(d, i + 1, l);
 		} else {
