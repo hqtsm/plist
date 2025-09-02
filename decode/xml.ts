@@ -491,7 +491,15 @@ export function decodeXml(
 				throw new SyntaxError(utf8ErrorXML(d, t));
 			}
 			if (!f) {
-				i = close(d, i, l, t, s);
+				if (d[i] === 60 && d[++i] === 47) {
+					for (f = t, ++i; s && d[i] === d[f++]; ++i, s--);
+				}
+				if (s || d[i = whitespace(d, i)] !== 62) {
+					throw new SyntaxError(
+						i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
+					);
+				}
+				++i;
 			}
 			switch (z) {
 				case 97: {
