@@ -392,7 +392,7 @@ export function decodeXml(
 						if (!f) {
 							a = c;
 							p = q;
-							n = { a, t, s, p, n };
+							f = n = { a, t, s, p, n };
 						}
 					}
 					break;
@@ -405,7 +405,7 @@ export function decodeXml(
 							if (!f) {
 								a = c;
 								p = q;
-								n = { a, t, s, p, n };
+								f = n = { a, t, s, p, n };
 							}
 						}
 					} else if (x === 97 && d[t + 2] === 116) {
@@ -424,9 +424,6 @@ export function decodeXml(
 						d[t + 3] === 115 &&
 						d[t + 4] === 101
 					) {
-						if (!f) {
-							i = close(d, i, l, t, s);
-						}
 						q = new PLBoolean();
 					}
 					break;
@@ -459,7 +456,7 @@ export function decodeXml(
 					) {
 						a = c;
 						p = q = { k, v: null } satisfies Plist;
-						n = { a, t, s, p, n };
+						f = n = { a, t, s, p, n };
 					}
 					break;
 				}
@@ -491,9 +488,6 @@ export function decodeXml(
 						d[t + 2] === 117 &&
 						d[t + 3] === 101
 					) {
-						if (!f) {
-							i = close(d, i, l, t, s);
-						}
 						q = new PLBoolean(true);
 					}
 					break;
@@ -501,6 +495,9 @@ export function decodeXml(
 			}
 			if (!q) {
 				throw new SyntaxError(utf8ErrorXML(d, t));
+			}
+			if (!f) {
+				i = close(d, i, l, t, s);
 			}
 			switch (z) {
 				case 97: {
