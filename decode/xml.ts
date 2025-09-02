@@ -326,10 +326,7 @@ export function decodeXml(
 				x = x.p as Plist;
 				q = x.v;
 				if (!n) {
-					return {
-						format,
-						plist: q!,
-					};
+					return { format, plist: q! };
 				}
 				if (!q) {
 					throw new SyntaxError(utf8ErrorXML(d, i));
@@ -353,10 +350,7 @@ export function decodeXml(
 					}
 				}
 			} else if (!n) {
-				return {
-					format,
-					plist: x.p as PLType,
-				};
+				return { format, plist: x.p as PLType };
 			}
 			a = n.a;
 			p = n.p;
@@ -530,10 +524,7 @@ export function decodeXml(
 				}
 				default: {
 					if (!n) {
-						return {
-							format: FORMAT_XML_V1_0,
-							plist: q as PLType,
-						};
+						return { format, plist: q as PLType };
 					}
 				}
 			}
