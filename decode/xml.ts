@@ -253,7 +253,7 @@ function close(
 	s: number,
 ): number {
 	if (d[i] === 60 && d[++i] === 47) {
-		for (; s && d[++i] === d[j++]; s--);
+		for (i++; s && d[i] === d[j++]; i++, s--);
 	}
 	if (s || d[i = whitespace(d, i)] !== 62) {
 		throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
@@ -297,6 +297,7 @@ export function decodeXml(
 	let s;
 	let t;
 	let z;
+	let plist: PLType;
 	for (;;) {
 		c = d[i = whitespace(d, i)];
 		if (c !== 60) {
@@ -315,7 +316,47 @@ export function decodeXml(
 	}
 	for (;;) {
 		if (c === 47) {
-			throw new Error('TODO: XML closing tag');
+			if (!n || k) {
+				throw new SyntaxError(utf8ErrorXML(d, i));
+			}
+			x = n as Node;
+			s = close(d, i - 1, l, x.t, x.s);
+			n = x.n;
+			if (x.a === 112) {
+				x = x.p as Plist;
+				q = x.v;
+				if (!n) {
+					plist = q!;
+					break;
+				}
+				if (!q) {
+					throw new SyntaxError(utf8ErrorXML(d, i));
+				}
+				switch (n.a) {
+					case 97: {
+						(n.p as PLArray).push(q);
+						break;
+					}
+					case 100: {
+						x = x.k;
+						if (x) {
+							(n.p as PLDict).set(x, q);
+							break;
+						}
+						throw new SyntaxError(utf8ErrorXML(d, i));
+					}
+					case 112: {
+						(n.p as Plist).v = q;
+						break;
+					}
+				}
+			} else if (!n) {
+				plist = x.p as PLType;
+				break;
+			}
+			a = n.a;
+			p = n.p;
+			i = s;
 		} else {
 			for (f = s = -1, t = i; i < l && (b = d[i]) !== 62; f = b, i++) {
 				if (s < 0 && (b === 32 || b === 9 || b === 10 || b === 13)) {
@@ -493,7 +534,6 @@ export function decodeXml(
 			throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
 		}
 		c = d[++i];
-		break;
 	}
-	return { format: FORMAT_XML_V1_0, plist: new PLDict() };
+	return { format: FORMAT_XML_V1_0, plist };
 }

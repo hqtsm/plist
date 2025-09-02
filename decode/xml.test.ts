@@ -1,4 +1,6 @@
-import { assertEquals, assertThrows } from '@std/assert';
+import { assertEquals, assertInstanceOf, assertThrows } from '@std/assert';
+import { PLBoolean } from '../boolean.ts';
+import { FORMAT_XML_V1_0 } from '../format.ts';
 import { fixturePlist } from '../spec/fixture.ts';
 import { decodeXml } from './xml.ts';
 
@@ -15,44 +17,59 @@ Deno.test('XML encoding: default', () => {
 			throw new Error(`Called for: ${encoding}`);
 		},
 	};
-	decodeXml(
-		TE.encode(
-			[
-				DOCTYPE,
-				'<plist version="1.0">',
-				'<true/>',
-				'</plist>',
-				'',
-			].join('\n'),
-		),
-		options,
-	);
-	decodeXml(
-		TE.encode(
-			[
-				'<?xml version="1.0"?>',
-				DOCTYPE,
-				'<plist version="1.0">',
-				'<true/>',
-				'</plist>',
-				'',
-			].join('\n'),
-		),
-		options,
-	);
-	decodeXml(
-		TE.encode(
-			[
-				'<?xml version="1.0" encoding=BAD?>',
-				DOCTYPE,
-				'<plist version="1.0">',
-				'<true/>',
-				'</plist>',
-				'',
-			].join('\n'),
-		),
-		options,
-	);
+	{
+		const { format, plist } = decodeXml(
+			TE.encode(
+				[
+					DOCTYPE,
+					'<plist version="1.0">',
+					'<true/>',
+					'</plist>',
+					'',
+				].join('\n'),
+			),
+			options,
+		);
+		assertEquals(format, FORMAT_XML_V1_0);
+		assertInstanceOf(plist, PLBoolean);
+		assertEquals(plist.value, true);
+	}
+	{
+		const { format, plist } = decodeXml(
+			TE.encode(
+				[
+					'<?xml version="1.0"?>',
+					DOCTYPE,
+					'<plist version="1.0">',
+					'<true/>',
+					'</plist>',
+					'',
+				].join('\n'),
+			),
+			options,
+		);
+		assertEquals(format, FORMAT_XML_V1_0);
+		assertInstanceOf(plist, PLBoolean);
+		assertEquals(plist.value, true);
+	}
+	{
+		const { format, plist } = decodeXml(
+			TE.encode(
+				[
+					'<?xml version="1.0" encoding=BAD?>',
+					DOCTYPE,
+					'<plist version="1.0">',
+					'<true/>',
+					'</plist>',
+					'',
+				].join('\n'),
+			),
+			options,
+		);
+		assertEquals(format, FORMAT_XML_V1_0);
+		assertInstanceOf(plist, PLBoolean);
+		assertEquals(plist.value, true);
+	}
 });
 
 Deno.test('XML encoding: UTF-8', () => {
@@ -61,32 +78,42 @@ Deno.test('XML encoding: UTF-8', () => {
 			throw new Error(`Called for: ${encoding}`);
 		},
 	};
-	decodeXml(
-		TE.encode(
-			[
-				'<?xml version="1.0" encoding="UTF-8"?>',
-				DOCTYPE,
-				'<plist version="1.0">',
-				'<true/>',
-				'</plist>',
-				'',
-			].join('\n'),
-		),
-		options,
-	);
-	decodeXml(
-		TE.encode(
-			[
-				"<?xml version='1.0' encoding='x-mac-utf-8'?>",
-				DOCTYPE,
-				'<plist version="1.0">',
-				'<true/>',
-				'</plist>',
-				'',
-			].join('\n'),
-		),
-		options,
-	);
+	{
+		const { format, plist } = decodeXml(
+			TE.encode(
+				[
+					'<?xml version="1.0" encoding="UTF-8"?>',
+					DOCTYPE,
+					'<plist version="1.0">',
+					'<true/>',
+					'</plist>',
+					'',
+				].join('\n'),
+			),
+			options,
+		);
+		assertEquals(format, FORMAT_XML_V1_0);
+		assertInstanceOf(plist, PLBoolean);
+		assertEquals(plist.value, true);
+	}
+	{
+		const { format, plist } = decodeXml(
+			TE.encode(
+				[
+					"<?xml version='1.0' encoding='x-mac-utf-8'?>",
+					DOCTYPE,
+					'<plist version="1.0">',
+					'<true/>',
+					'</plist>',
+					'',
+				].join('\n'),
+			),
+			options,
+		);
+		assertEquals(format, FORMAT_XML_V1_0);
+		assertInstanceOf(plist, PLBoolean);
+		assertEquals(plist.value, true);
+	}
 });
 
 Deno.test('XML encoding: Error EOF', () => {
@@ -109,26 +136,11 @@ Deno.test('XML encoding: custom', () => {
 		},
 	};
 
-	decodeXml(
-		TE.encode(
-			[
-				'<?xml version="1.0" encoding="ascii"?>',
-				DOCTYPE,
-				'<plist version="1.0">',
-				'<true/>',
-				'</plist>',
-				'',
-			].join('\n'),
-		),
-		options,
-	);
-	assertEquals(count, 1);
-
-	assertThrows(() =>
-		decodeXml(
+	{
+		const { format, plist } = decodeXml(
 			TE.encode(
 				[
-					'<?xml version="1.0" encoding="invalid"?>',
+					'<?xml version="1.0" encoding="ascii"?>',
 					DOCTYPE,
 					'<plist version="1.0">',
 					'<true/>',
@@ -137,26 +149,48 @@ Deno.test('XML encoding: custom', () => {
 				].join('\n'),
 			),
 			options,
-		)
-	);
-	assertEquals(count, 2);
-
-	assertThrows(() =>
-		decodeXml(
-			TE.encode(
-				[
-					'<?xml version="1.0" encoding="ascii">',
-					DOCTYPE,
-					'<plist version="1.0">',
-					'<true/>',
-					'</plist>',
-					'',
-				].join('\n'),
-			),
-			options,
-		)
-	);
-	assertEquals(count, 3);
+		);
+		assertEquals(count, 1);
+		assertEquals(format, FORMAT_XML_V1_0);
+		assertInstanceOf(plist, PLBoolean);
+		assertEquals(plist.value, true);
+	}
+	{
+		assertThrows(() =>
+			decodeXml(
+				TE.encode(
+					[
+						'<?xml version="1.0" encoding="invalid"?>',
+						DOCTYPE,
+						'<plist version="1.0">',
+						'<true/>',
+						'</plist>',
+						'',
+					].join('\n'),
+				),
+				options,
+			)
+		);
+		assertEquals(count, 2);
+	}
+	{
+		assertThrows(() =>
+			decodeXml(
+				TE.encode(
+					[
+						'<?xml version="1.0" encoding="ascii">',
+						DOCTYPE,
+						'<plist version="1.0">',
+						'<true/>',
+						'</plist>',
+						'',
+					].join('\n'),
+				),
+				options,
+			)
+		);
+		assertEquals(count, 3);
+	}
 });
 
 Deno.test('XML doctype: Error EOF', () => {
@@ -190,21 +224,26 @@ Deno.test('XML doctype: Error EOF', () => {
 });
 
 Deno.test('XML header comments', () => {
-	decodeXml(
-		TE.encode(
-			[
-				'<!--->-->',
-				'<?xml version="1.0" encoding="UTF-8"?>',
-				'<!--->-->',
-				DOCTYPE,
-				'<!--->-->',
-				'<plist version="1.0">',
-				'<true/>',
-				'</plist>',
-				'',
-			].join('\n'),
-		),
-	);
+	{
+		const { format, plist } = decodeXml(
+			TE.encode(
+				[
+					'<!--->-->',
+					'<?xml version="1.0" encoding="UTF-8"?>',
+					'<!--->-->',
+					DOCTYPE,
+					'<!--->-->',
+					'<plist version="1.0">',
+					'<true/>',
+					'</plist>',
+					'',
+				].join('\n'),
+			),
+		);
+		assertEquals(format, FORMAT_XML_V1_0);
+		assertInstanceOf(plist, PLBoolean);
+		assertEquals(plist.value, true);
+	}
 	assertThrows(
 		() =>
 			decodeXml(
