@@ -317,7 +317,7 @@ export function decodeXml(
 		if (c === 47) {
 			throw new Error('TODO: XML closing tag');
 		} else {
-			for (f = s = -1, t = i; i < l && (b = d[i]) !== 60; f = b, i++) {
+			for (f = s = -1, t = i; i < l && (b = d[i]) !== 62; f = b, i++) {
 				if (s < 0 && (b === 32 || b === 9 || b === 10 || b === 13)) {
 					s = i - t;
 				}
