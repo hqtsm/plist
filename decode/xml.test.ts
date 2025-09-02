@@ -4,6 +4,8 @@ import { PLBoolean } from '../boolean.ts';
 import { FORMAT_XML_V1_0 } from '../format.ts';
 import { fixturePlist } from '../spec/fixture.ts';
 import { decodeXml } from './xml.ts';
+import { PLDict } from '../dict.ts';
+import { PLString } from '../string.ts';
 
 const DOCTYPE =
 	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
@@ -346,10 +348,45 @@ Deno.test('spec: xml-edge plist-tags-array', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 2);
+
 	const a = plist.get(0);
 	assertInstanceOf(a, PLBoolean);
 	assertEquals(a.value, true);
+
 	const b = plist.get(1);
 	assertInstanceOf(b, PLBoolean);
 	assertEquals(b.value, false);
+});
+
+Deno.test('spec: xml-edge self-closed', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'self-closed'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 6);
+
+	const t = plist.get(0);
+	assertInstanceOf(t, PLBoolean);
+	assertEquals(t.value, true);
+
+	const f = plist.get(1);
+	assertInstanceOf(f, PLBoolean);
+	assertEquals(f.value, false);
+
+	const d = plist.get(2);
+	assertInstanceOf(d, PLDict);
+	assertEquals(d.size, 0);
+
+	const a = plist.get(3);
+	assertInstanceOf(a, PLArray);
+	assertEquals(a.length, 0);
+
+	const s = plist.get(4);
+	assertInstanceOf(s, PLString);
+	assertEquals(s.value, '');
+
+	const k = plist.get(5);
+	assertInstanceOf(k, PLString);
+	assertEquals(k.value, '');
 });
