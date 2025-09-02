@@ -313,7 +313,7 @@ export function decodeXml(
 			break;
 		}
 	}
-	do {
+	for (;;) {
 		if (c === 47) {
 			throw new Error('TODO: XML closing tag');
 		} else {
@@ -485,6 +485,12 @@ export function decodeXml(
 				}
 			}
 		}
-	} while (false);
+		c = d[i = whitespace(d, i)];
+		if (c !== 60) {
+			throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
+		}
+		c = d[++i];
+		break;
+	}
 	return { format: FORMAT_XML_V1_0, plist: new PLDict() };
 }
