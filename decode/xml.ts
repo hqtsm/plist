@@ -236,30 +236,6 @@ function doctype(
 }
 
 /**
- * Skip over closing tag.
- *
- * @param d Data.
- * @param i Offset.
- * @param l Length.
- * @param j Name offset.
- * @param s Name length.
- * @returns After offset.
- */
-function close(
-	d: Uint8Array,
-	i: number,
-	l: number,
-	j: number,
-	s: number,
-): number {
-	for (; s && d[i] === d[j++]; i++, s--);
-	if (s || d[i = whitespace(d, i)] !== 62) {
-		throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
-	}
-	return i + 1;
-}
-
-/**
  * Decode OpenStep encoded plist.
  *
  * @param encoded OpenStep plist encoded data.
@@ -318,8 +294,13 @@ export function decodeXml(
 				throw new SyntaxError(utf8ErrorXML(d, i));
 			}
 			x = n as Node;
-			t = i++;
-			i = close(d, i, l, x.t, x.s);
+			for (f = t = ++i, s = x.s; s && d[i] === d[f++]; ++i, s--);
+			if (s || d[i = whitespace(d, i)] !== 62) {
+				throw new SyntaxError(
+					i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
+				);
+			}
+			++i;
 			n = x.n;
 			if (x.a === 112) {
 				x = x.p as Plist;
