@@ -1,6 +1,7 @@
 import { assertEquals, assertInstanceOf, assertThrows } from '@std/assert';
 import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
+import { PLDict } from '../dict.ts';
 import { FORMAT_XML_V1_0 } from '../format.ts';
 import { fixturePlist } from '../spec/fixture.ts';
 import { decodeXml } from './xml.ts';
@@ -337,4 +338,19 @@ Deno.test('spec: xml-edge plist-none-true', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLBoolean);
 	assertEquals(plist.value, true);
+});
+
+Deno.test('spec: xml-edge plist-tags-array', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'plist-tags-array'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 2);
+	const a = plist.get(0);
+	assertInstanceOf(a, PLBoolean);
+	assertEquals(a.value, true);
+	const b = plist.get(1);
+	assertInstanceOf(b, PLBoolean);
+	assertEquals(b.value, false);
 });
