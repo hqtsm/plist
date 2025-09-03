@@ -384,6 +384,37 @@ Deno.test('Format version', () => {
 	}
 });
 
+Deno.test('Dict bad key', () => {
+	for (
+		const tag of [
+			'<string></string>',
+			'<plist><key></key></plist>',
+			'<array></array>',
+			'<dict></dict>',
+		]
+	) {
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<dict>',
+				tag,
+				'<true/>',
+				'</dict>',
+				'</plist>',
+				'',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 5',
+			tag,
+		);
+	}
+});
+
 Deno.test('spec: xml-edge doctype-internal-subset', async () => {
 	const data = await fixturePlist('xml-edge', 'doctype-internal-subset');
 	assertThrows(
