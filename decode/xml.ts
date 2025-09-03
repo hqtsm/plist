@@ -5,7 +5,13 @@ import { PLDate } from '../date.ts';
 import { PLDict } from '../dict.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
-import { utf8Encoded, utf8ErrorEnd, utf8ErrorXML } from '../pri/utf8.ts';
+import {
+	utf8Decode,
+	utf8Encoded,
+	utf8ErrorEnd,
+	utf8ErrorXML,
+	utf8Length,
+} from '../pri/utf8.ts';
 import { PLReal } from '../real.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
@@ -236,6 +242,36 @@ function doctype(
 }
 
 /**
+ * Read string.
+ *
+ * @param d Data.
+ * @param p Offset pointer.
+ * @param l Length.
+ * @returns String.
+ */
+function string(d: Uint8Array, p: [number], l: number): string {
+	let r = '', [i] = p, j = i, c;
+	for (; i < l; i++) {
+		c = d[i];
+		if (c === 60) {
+			c = d[i + 1];
+			if (c === 47) {
+				r += utf8Decode(d, j, i);
+				p[0] = i;
+				return r;
+			}
+			// TODO
+		} else if (c === 38) {
+			r += utf8Decode(d, j, i);
+			// TODO
+			j = i;
+		}
+	}
+	utf8Length(d, j, l);
+	throw new SyntaxError(utf8ErrorEnd(d));
+}
+
+/**
  * Decode OpenStep encoded plist.
  *
  * @param encoded OpenStep plist encoded data.
@@ -258,6 +294,7 @@ export function decodeXml(
 	}
 	d ||= encoded;
 	const l = d.length;
+	const j: [number] = [0];
 	let a;
 	let b;
 	let c;
@@ -398,7 +435,7 @@ export function decodeXml(
 						d[t + 3] === 115 &&
 						d[t + 4] === 101
 					) {
-						q = new PLBoolean();
+						q = new PLBoolean(false);
 					}
 					break;
 				}
@@ -416,7 +453,14 @@ export function decodeXml(
 				}
 				case 107: {
 					if (d[t + 1] === 101 && d[t + 2] === 121) {
-						q = new PLString();
+						if (f) {
+							q = '';
+						} else {
+							j[0] = i;
+							q = string(d, j, l);
+							i = j[0];
+						}
+						q = new PLString(q);
 					}
 					break;
 				}
@@ -485,7 +529,14 @@ export function decodeXml(
 						d[t + 4] === 110 &&
 						d[t + 5] === 103
 					) {
-						q = new PLString();
+						if (f) {
+							q = '';
+						} else {
+							j[0] = i;
+							q = string(d, j, l);
+							i = j[0];
+						}
+						q = new PLString(q);
 					}
 					break;
 				}
