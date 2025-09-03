@@ -807,7 +807,93 @@ Deno.test('spec: dict-repeat', async () => {
 	}
 });
 
-// TODO: string
+Deno.test('spec: string-empty', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('string-empty', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '');
+});
+
+Deno.test('spec: string-ascii', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('string-ascii', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, 'ASCII');
+});
+
+Deno.test('spec: string-chars', async () => {
+	// TODO
+});
+
+Deno.test('spec: string-unicode', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('string-unicode', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, 'UTF\u20138');
+});
+
+Deno.test('spec: string-long-unicode', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('string-long-unicode', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(
+		plist.value,
+		new Array(8).fill('UTF\u20138').join(' '),
+	);
+});
+
+Deno.test('spec: string-utf8-mb2-divide', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('string-utf8-mb2-divide', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '\u00f7');
+});
+
+Deno.test('spec: string-utf8-mb2-ohm', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('string-utf8-mb2-ohm', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '\u03a9');
+});
+
+Deno.test('spec: string-utf8-mb3-check', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('string-utf8-mb3-check', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '\u2705');
+});
+
+Deno.test('spec: string-utf8-mb3-plus', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('string-utf8-mb3-plus', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '\uff0b');
+});
+
+Deno.test('spec: string-utf8-mb4-robot', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('string-utf8-mb4-robot', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '\ud83e\udd16');
+});
 
 // TODO: integer
 
