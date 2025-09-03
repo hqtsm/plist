@@ -289,8 +289,60 @@ function string(d: Uint8Array, p: [number], l: number): string {
 			throw new SyntaxError(utf8ErrorXML(d, i));
 		} else if (c === 38) {
 			r += utf8Decode(d, j, i);
-			// TODO
-			j = i;
+			b = -1;
+			switch (d[++i]) {
+				case 35: {
+					throw new Error('TODO');
+				}
+				case 97: {
+					switch (d[++i]) {
+						case 109: {
+							if (d[++i] === 112 && d[++i] === 59) {
+								b = 38;
+							}
+							break;
+						}
+						case 112: {
+							if (
+								d[++i] === 111 &&
+								d[++i] === 115 &&
+								d[++i] === 59
+							) {
+								b = 39;
+							}
+							break;
+						}
+					}
+					break;
+				}
+				case 103: {
+					if (d[++i] === 116 && d[++i] === 59) {
+						b = 62;
+					}
+					break;
+				}
+				case 108: {
+					if (d[++i] === 116 && d[++i] === 59) {
+						b = 60;
+					}
+					break;
+				}
+				case 113: {
+					if (
+						d[++i] === 117 &&
+						d[++i] === 111 &&
+						d[++i] === 116 &&
+						d[++i] === 59
+					) {
+						b = 34;
+					}
+				}
+			}
+			if (b < 0) {
+				throw new SyntaxError(utf8ErrorXML(d, i));
+			}
+			r += String.fromCharCode(b);
+			j = i + 1;
 		}
 	}
 	utf8Length(d, j, l);

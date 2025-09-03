@@ -421,6 +421,33 @@ Deno.test('Dict bad key', () => {
 	}
 });
 
+Deno.test('Entities', () => {
+	for (
+		const [e, c] of [
+			['&amp;', '&'],
+			['&apos;', "'"],
+			['&gt;', '>'],
+			['&lt;', '<'],
+			['&quot;', '"'],
+		]
+	) {
+		const tag = `${e} -> ${c}`;
+		const { format, plist } = decodeXml(TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				`<string>${e}</string>`,
+				'</plist>',
+				'',
+			].join('\n'),
+		));
+		assertEquals(format, FORMAT_XML_V1_0, tag);
+		assertInstanceOf(plist, PLString, tag);
+		assertEquals(plist.value, c, tag);
+	}
+});
+
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('true', 'xml'),
