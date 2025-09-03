@@ -254,9 +254,9 @@ function string(d: Uint8Array, p: [number], l: number): string {
 	for (; i < l; i++) {
 		c = d[i];
 		if (c === 60) {
-			r += utf8Decode(d, j, i);
 			c = d[i + 1];
 			if (c === 47) {
+				r += utf8Decode(d, j, i);
 				p[0] = i;
 				return r;
 			}
@@ -270,6 +270,7 @@ function string(d: Uint8Array, p: [number], l: number): string {
 				d[i + 7] === 65 &&
 				d[i + 8] === 91
 			) {
+				r += utf8Decode(d, j, i);
 				j = i += 9;
 				// TODO
 			}
