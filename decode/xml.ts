@@ -260,7 +260,11 @@ function string(d: Uint8Array, p: [number], l: number): string {
 				p[0] = i;
 				return r;
 			}
-			// TODO
+			if (c === 33) {
+				// TODO
+			}
+			utf8Length(d, j, i);
+			throw new SyntaxError(utf8ErrorXML(d, i));
 		} else if (c === 38) {
 			r += utf8Decode(d, j, i);
 			// TODO
