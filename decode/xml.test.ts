@@ -421,6 +421,24 @@ Deno.test('Dict bad key', () => {
 	}
 });
 
+Deno.test('spec: true', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('true', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLBoolean);
+	assertEquals(plist.value, true);
+});
+
+Deno.test('spec: false', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('false', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLBoolean);
+	assertEquals(plist.value, false);
+});
+
 Deno.test('spec: array-0', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('array-0', 'xml'),
