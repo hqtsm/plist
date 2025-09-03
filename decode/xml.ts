@@ -250,7 +250,7 @@ function doctype(
  * @returns String.
  */
 function string(d: Uint8Array, p: [number], l: number): string {
-	let r = '', [i] = p, j = i, c;
+	let r = '', [i] = p, j = i, a, b, c;
 	for (; i < l; i++) {
 		c = d[i];
 		if (c === 60) {
@@ -271,8 +271,19 @@ function string(d: Uint8Array, p: [number], l: number): string {
 				d[i + 8] === 91
 			) {
 				r += utf8Decode(d, j, i);
-				j = i += 9;
-				// TODO
+				for (j = i += 9; i < l; i++) {
+					a = b;
+					b = c;
+					c = d[i];
+					if (c === 62 && b === 93 && a === 93) {
+						r += utf8Decode(d, j, i - 2);
+						j = i + 1;
+						break;
+					}
+				}
+				if (i < l) {
+					continue;
+				}
 			}
 			utf8Length(d, j, i);
 			throw new SyntaxError(utf8ErrorXML(d, i));

@@ -815,6 +815,20 @@ Deno.test('spec: dict-repeat', async () => {
 
 // TODO: uid
 
+Deno.test('spec: xml-edge cdata', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'cdata'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 1);
+	for (const [k, v] of plist) {
+		assertEquals(k.value, `For "<keys>" & '<strings>' only!`);
+		assertInstanceOf(v, PLString);
+		assertEquals(v.value, `_<!--[[]]-->_`);
+	}
+});
+
 Deno.test('spec: xml-edge doctype-internal-subset', async () => {
 	const data = await fixturePlist('xml-edge', 'doctype-internal-subset');
 	assertThrows(
