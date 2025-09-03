@@ -853,7 +853,25 @@ Deno.test('spec: string-ascii', async () => {
 });
 
 Deno.test('spec: string-chars', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('string-chars', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	for (let i = 0; i < plist.length;) {
+		const k: PLType = plist.get(i)!;
+		assertInstanceOf(k, PLString, `[${i}]`);
+		const code = +k.value;
+		i++;
+		const v: PLType = plist.get(i)!;
+		assertInstanceOf(v, PLString, k.value);
+		i++;
+		if (code < 0xD800 || code >= 0xE000) {
+			assertEquals(v.value, String.fromCharCode(code), k.value);
+		} else {
+			assertEquals(v.value, '', k.value);
+		}
+	}
 });
 
 Deno.test('spec: string-unicode', async () => {
