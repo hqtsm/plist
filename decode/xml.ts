@@ -289,49 +289,41 @@ function string(d: Uint8Array, p: [number], l: number): string {
 			throw new SyntaxError(utf8ErrorXML(d, i));
 		} else if (c === 38) {
 			r += utf8Decode(d, j, i);
+			c = d[++i];
 			b = -1;
-			switch (d[++i]) {
-				case 35: {
-					throw new Error('TODO');
-				}
-				case 97: {
-					c = d[++i];
-					if (c === 109) {
-						if (d[++i] === 112 && d[++i] === 59) {
-							b = 38;
-						}
-					} else if (
-						c === 112 &&
-						d[++i] === 111 &&
-						d[++i] === 115 &&
-						d[++i] === 59
-					) {
-						b = 39;
+			if (c === 97) {
+				c = d[++i];
+				if (c === 109) {
+					if (d[++i] === 112 && d[++i] === 59) {
+						b = 38;
 					}
-					break;
+				} else if (
+					c === 112 &&
+					d[++i] === 111 &&
+					d[++i] === 115 &&
+					d[++i] === 59
+				) {
+					b = 39;
 				}
-				case 103: {
-					if (d[++i] === 116 && d[++i] === 59) {
-						b = 62;
-					}
-					break;
+			} else if (c === 103) {
+				if (d[++i] === 116 && d[++i] === 59) {
+					b = 62;
 				}
-				case 108: {
-					if (d[++i] === 116 && d[++i] === 59) {
-						b = 60;
-					}
-					break;
+			} else if (c === 108) {
+				if (d[++i] === 116 && d[++i] === 59) {
+					b = 60;
 				}
-				case 113: {
-					if (
-						d[++i] === 117 &&
-						d[++i] === 111 &&
-						d[++i] === 116 &&
-						d[++i] === 59
-					) {
-						b = 34;
-					}
+			} else if (c === 113) {
+				if (
+					d[++i] === 117 &&
+					d[++i] === 111 &&
+					d[++i] === 116 &&
+					d[++i] === 59
+				) {
+					b = 34;
 				}
+			} else if (c === 35) {
+				throw new Error('TODO');
 			}
 			if (b < 0) {
 				throw new SyntaxError(utf8ErrorXML(d, i));
