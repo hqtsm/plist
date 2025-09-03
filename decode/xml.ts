@@ -295,23 +295,18 @@ function string(d: Uint8Array, p: [number], l: number): string {
 					throw new Error('TODO');
 				}
 				case 97: {
-					switch (d[++i]) {
-						case 109: {
-							if (d[++i] === 112 && d[++i] === 59) {
-								b = 38;
-							}
-							break;
+					c = d[++i];
+					if (c === 109) {
+						if (d[++i] === 112 && d[++i] === 59) {
+							b = 38;
 						}
-						case 112: {
-							if (
-								d[++i] === 111 &&
-								d[++i] === 115 &&
-								d[++i] === 59
-							) {
-								b = 39;
-							}
-							break;
-						}
+					} else if (
+						c === 112 &&
+						d[++i] === 111 &&
+						d[++i] === 115 &&
+						d[++i] === 59
+					) {
+						b = 39;
 					}
 					break;
 				}
