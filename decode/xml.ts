@@ -414,29 +414,25 @@ export function decodeXml(
 				if (!q) {
 					throw new SyntaxError(utf8ErrorXML(d, t));
 				}
-				switch (n.a) {
-					case 97: {
-						(n.p as PLArray).push(q);
-						break;
-					}
-					case 100: {
-						x = x.k;
-						if (x) {
-							(n.p as PLDict).set(x, q);
-							break;
-						}
+				a = n.a;
+				p = n.p;
+				if (a === 100) {
+					if ((x = x.k)) {
+						(p as PLDict).set(x, q);
+					} else {
 						throw new SyntaxError(utf8ErrorXML(d, t));
 					}
-					case 112: {
-						(n.p as Plist).v = q;
-						break;
-					}
+				} else if (a === 97) {
+					(p as PLArray).push(q);
+				} else if (a === 112) {
+					(p as Plist).v = q;
 				}
-			} else if (!n) {
+			} else if (n) {
+				a = n.a;
+				p = n.p;
+			} else {
 				return { format, plist: x.p as PLType };
 			}
-			a = n.a;
-			p = n.p;
 		} else {
 			for (f = s = -1, t = i; i < l && (b = d[i]) !== 62; f = b, i++) {
 				if (s < 0 && (b === 32 || b === 9 || b === 10 || b === 13)) {
