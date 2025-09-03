@@ -260,7 +260,16 @@ function string(d: Uint8Array, p: [number], l: number): string {
 				p[0] = i;
 				return r;
 			}
-			if (c === 33) {
+			if (
+				c === 33 &&
+				d[i + 2] === 91 &&
+				d[i + 3] === 67 &&
+				d[i + 4] === 68 &&
+				d[i + 5] === 65 &&
+				d[i + 6] === 84 &&
+				d[i + 7] === 65 &&
+				d[i + 8] === 91
+			) {
 				// TODO
 			}
 			utf8Length(d, j, i);
