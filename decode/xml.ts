@@ -630,40 +630,30 @@ export function decodeXml(
 				}
 				++i;
 			}
-			switch (z) {
-				case 97: {
+			if (z === 100) {
+				if (k) {
 					if (c !== 112) {
-						(o as PLArray).push(q as PLType);
+						(o as PLDict).set(k, q as PLType);
 					}
-					break;
+					k = null;
+				} else if (c === 107) {
+					k = q as PLString;
+				} else {
+					throw new SyntaxError(utf8ErrorXML(d, t));
 				}
-				case 100: {
-					if (k) {
-						if (c !== 112) {
-							(o as PLDict).set(k, q as PLType);
-						}
-						k = null;
-					} else if (c === 107) {
-						k = q as PLString;
-					} else {
+			} else if (z === 97) {
+				if (c !== 112) {
+					(o as PLArray).push(q as PLType);
+				}
+			} else if (z === 112) {
+				if (c !== 112) {
+					if ((o as Plist).v) {
 						throw new SyntaxError(utf8ErrorXML(d, t));
 					}
-					break;
+					(o as Plist).v = q as PLType;
 				}
-				case 112: {
-					if (c !== 112) {
-						if ((o as Plist).v) {
-							throw new SyntaxError(utf8ErrorXML(d, t));
-						}
-						(o as Plist).v = q as PLType;
-					}
-					break;
-				}
-				default: {
-					if (!n) {
-						return { format, plist: q as PLType };
-					}
-				}
+			} else if (!n) {
+				return { format, plist: q as PLType };
 			}
 		}
 		for (;;) {
