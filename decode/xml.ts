@@ -341,8 +341,6 @@ function string(d: Uint8Array, p: [number], l: number): string {
 									a = (a << 4) + c - 87 & 65535;
 									continue;
 								}
-							} else if (c === 59) {
-								b = a;
 							}
 						}
 						break;
@@ -353,18 +351,15 @@ function string(d: Uint8Array, p: [number], l: number): string {
 							if (c < 58) {
 								a = a * 10 + c - 48 & 65535;
 								continue;
-							} else if (c === 59) {
-								b = a;
 							}
 						}
 						break;
 					}
 				}
-				if (i >= l) {
+				if (c === 59 && !(a > 55295 && a < 57344)) {
+					b = a;
+				} else if (i >= l) {
 					throw new SyntaxError(utf8ErrorEnd(d));
-				}
-				if (b > 55295 && b < 57344) {
-					throw new SyntaxError(utf8ErrorXML(d, i));
 				}
 			}
 			if (b < 0) {
