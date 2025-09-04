@@ -448,6 +448,32 @@ Deno.test('Entities', () => {
 	}
 });
 
+Deno.test('CDATA', () => {
+	for (
+		const [e, s] of [
+			['<![CDATA[]]>', ''],
+			['<![CDATA[ABC]]>', 'ABC'],
+			['<![CDATA[]]><![CDATA[]]>', ''],
+			['<![CDATA[ABC]]><![CDATA[XYZ]]>', 'ABCXYZ'],
+		]
+	) {
+		const tag = `${e} -> ${s}`;
+		const { format, plist } = decodeXml(TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				`<string>${e}</string>`,
+				'</plist>',
+				'',
+			].join('\n'),
+		));
+		assertEquals(format, FORMAT_XML_V1_0, tag);
+		assertInstanceOf(plist, PLString, tag);
+		assertEquals(plist.value, s, tag);
+	}
+});
+
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('true', 'xml'),
