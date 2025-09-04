@@ -323,7 +323,39 @@ function string(d: Uint8Array, p: [number], l: number): string {
 					b = 34;
 				}
 			} else if (c === 35) {
-				throw new Error('TODO');
+				c = d[++i];
+				a = 0;
+				if (c === 120) {
+					for (c = d[++i]; i < l; c = d[++i]) {
+						if (c === 59) {
+							b = a;
+							break;
+						}
+						if (c > 47 && c < 58) {
+							a = (a << 4) + c - 48 & 65535;
+						} else if (c > 64 && c < 71) {
+							a = (a << 4) + c - 55 & 65535;
+						} else if (c > 96 && c < 103) {
+							a = (a << 4) + c - 87 & 65535;
+						} else {
+							break;
+						}
+					}
+				} else {
+					for (; i < l; c = d[++i]) {
+						if (c === 59) {
+							b = a;
+							break;
+						}
+						if (c < 48 || c > 57) {
+							break;
+						}
+						a = a * 10 + c - 48 & 65535;
+					}
+				}
+				if (i >= l) {
+					throw new SyntaxError(utf8ErrorXML(d, i));
+				}
 			}
 			if (b < 0) {
 				throw new SyntaxError(utf8ErrorXML(d, i));
