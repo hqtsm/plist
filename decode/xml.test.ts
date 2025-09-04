@@ -424,18 +424,17 @@ Deno.test('Dict bad key', () => {
 });
 
 Deno.test('Entities: Good', () => {
-	for (
-		const [e, c] of [
-			['&amp;', '&'],
-			['&apos;', "'"],
-			['&gt;', '>'],
-			['&lt;', '<'],
-			['&quot;', '"'],
-			['&#x4A;', 'J'],
-			['&#x6f;', 'o'],
-			['&#42;', '*'],
-		]
-	) {
+	const entities = [
+		['&amp;', '&'],
+		['&apos;', "'"],
+		['&gt;', '>'],
+		['&lt;', '<'],
+		['&quot;', '"'],
+		['&#x4A;', 'J'],
+		['&#x6f;', 'o'],
+		['&#42;', '*'],
+	];
+	for (const [e, c] of entities) {
 		const tag = `${e} -> ${c}`;
 		const { format, plist } = decodeXml(TE.encode(
 			[
@@ -450,6 +449,29 @@ Deno.test('Entities: Good', () => {
 		assertEquals(format, FORMAT_XML_V1_0, tag);
 		assertInstanceOf(plist, PLString, tag);
 		assertEquals(plist.value, c, tag);
+	}
+
+	for (const [e1, c1] of entities) {
+		for (const [e2, c2] of entities) {
+			for (const s of ['', ' ', 'x', ';', '00', ';;']) {
+				const e = `${s}${e1}${s}${e2}${s}`;
+				const c = `${s}${c1}${s}${c2}${s}`;
+				const tag = `${e} -> ${c}`;
+				const { format, plist } = decodeXml(TE.encode(
+					[
+						'<?xml version="1.0" encoding="UTF-8"?>',
+						DOCTYPE,
+						'<plist version="1.0">',
+						`<string>${e}</string>`,
+						'</plist>',
+						'',
+					].join('\n'),
+				));
+				assertEquals(format, FORMAT_XML_V1_0, tag);
+				assertInstanceOf(plist, PLString, tag);
+				assertEquals(plist.value, c, tag);
+			}
+		}
 	}
 
 	for (const c of [0, 0xD800 - 1, 0xDFFF + 1, 0xFFFF]) {
