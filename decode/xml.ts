@@ -327,30 +327,36 @@ function string(d: Uint8Array, p: [number], l: number): string {
 				a = 0;
 				if (c === 120) {
 					for (c = d[++i]; i < l; c = d[++i]) {
-						if (c === 59) {
-							b = a;
-							break;
+						if (c > 47) {
+							if (c < 58) {
+								a = (a << 4) + c - 48 & 65535;
+								continue;
+							}
+							if (c > 64) {
+								if (c < 71) {
+									a = (a << 4) + c - 55 & 65535;
+									continue;
+								}
+								if (c > 96 && c < 103) {
+									a = (a << 4) + c - 87 & 65535;
+									continue;
+								}
+							} else if (c === 59) {
+								b = a;
+							}
 						}
-						if (c > 47 && c < 58) {
-							a = (a << 4) + c - 48 & 65535;
-						} else if (c > 64 && c < 71) {
-							a = (a << 4) + c - 55 & 65535;
-						} else if (c > 96 && c < 103) {
-							a = (a << 4) + c - 87 & 65535;
-						} else {
-							break;
-						}
+						break;
 					}
 				} else {
 					for (; i < l; c = d[++i]) {
+						if (c > 47 && c < 58) {
+							a = a * 10 + c - 48 & 65535;
+							continue;
+						}
 						if (c === 59) {
 							b = a;
-							break;
 						}
-						if (c < 48 || c > 57) {
-							break;
-						}
-						a = a * 10 + c - 48 & 65535;
+						break;
 					}
 				}
 				if (i >= l) {
