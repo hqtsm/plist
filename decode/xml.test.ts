@@ -433,6 +433,9 @@ Deno.test('Entities: Good', () => {
 		['&#x4A;', 'J'],
 		['&#x6f;', 'o'],
 		['&#42;', '*'],
+		['&#;', '\0'],
+		['&#x;', '\0'],
+		['&#xffffff;', String.fromCharCode(0xffff)],
 	];
 	for (const [e, c] of entities) {
 		const tag = `${e} -> ${c}`;
