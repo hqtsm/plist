@@ -349,12 +349,13 @@ function string(d: Uint8Array, p: [number], l: number): string {
 					}
 				} else {
 					for (; i < l; c = d[++i]) {
-						if (c > 47 && c < 58) {
-							a = a * 10 + c - 48 & 65535;
-							continue;
-						}
-						if (c === 59) {
-							b = a;
+						if (c > 47) {
+							if (c < 58) {
+								a = a * 10 + c - 48 & 65535;
+								continue;
+							} else if (c === 59) {
+								b = a;
+							}
 						}
 						break;
 					}
