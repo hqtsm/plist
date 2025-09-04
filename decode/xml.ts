@@ -323,8 +323,8 @@ function string(d: Uint8Array, p: [number], l: number): string {
 					b = 34;
 				}
 			} else if (c === 35) {
-				c = d[++i];
 				a = 0;
+				c = d[++i];
 				if (c === 120) {
 					for (c = d[++i]; i < l; c = d[++i]) {
 						if (c > 47) {
