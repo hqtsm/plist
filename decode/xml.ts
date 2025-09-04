@@ -361,6 +361,9 @@ function string(d: Uint8Array, p: [number], l: number): string {
 					}
 				}
 				if (i >= l) {
+					throw new SyntaxError(utf8ErrorEnd(d));
+				}
+				if (b > 55295 && b < 57344) {
 					throw new SyntaxError(utf8ErrorXML(d, i));
 				}
 			}

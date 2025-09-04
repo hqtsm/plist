@@ -20,6 +20,8 @@ const DOCTYPE =
 const TE = new TextEncoder();
 const TDASCII = new TextDecoder('ascii', { fatal: true });
 const ascii2utf8 = (data: Uint8Array) => TE.encode(TDASCII.decode(data));
+const entityHex = (code: number) => `&#x${code.toString(16)};`;
+const entityDec = (code: number) => `&#${code.toString(10)};`;
 
 Deno.test('XML encoding: default', () => {
 	const options = {
@@ -421,7 +423,7 @@ Deno.test('Dict bad key', () => {
 	}
 });
 
-Deno.test('Entities', () => {
+Deno.test('Entities: Good', () => {
 	for (
 		const [e, c] of [
 			['&amp;', '&'],
@@ -448,6 +450,48 @@ Deno.test('Entities', () => {
 		assertEquals(format, FORMAT_XML_V1_0, tag);
 		assertInstanceOf(plist, PLString, tag);
 		assertEquals(plist.value, c, tag);
+	}
+
+	for (const c of [0, 0xD800 - 1, 0xDFFF + 1, 0xFFFF]) {
+		for (const e of [entityDec(c), entityHex(c)]) {
+			const tag = `${e} -> ${c}`;
+			const { format, plist } = decodeXml(TE.encode(
+				[
+					'<?xml version="1.0" encoding="UTF-8"?>',
+					DOCTYPE,
+					'<plist version="1.0">',
+					`<string>${e}</string>`,
+					'</plist>',
+					'',
+				].join('\n'),
+			));
+			assertEquals(format, FORMAT_XML_V1_0, tag);
+			assertInstanceOf(plist, PLString, tag);
+			assertEquals(plist.value, String.fromCharCode(c), tag);
+		}
+	}
+});
+
+Deno.test('Entities: Bad', () => {
+	for (const c of [0xDC00, 0xDBFF, 0xDC00, 0xDFFF]) {
+		for (const e of [entityDec(c), entityHex(c)]) {
+			const data = TE.encode(
+				[
+					'<?xml version="1.0" encoding="UTF-8"?>',
+					DOCTYPE,
+					'<plist version="1.0">',
+					`<string>${e}</string>`,
+					'</plist>',
+					'',
+				].join('\n'),
+			);
+			assertThrows(
+				() => decodeXml(data),
+				SyntaxError,
+				'Invalid XML on line 4',
+				e,
+			);
+		}
 	}
 });
 
