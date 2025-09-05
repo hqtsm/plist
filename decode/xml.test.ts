@@ -550,6 +550,68 @@ Deno.test('CDATA', () => {
 	}
 });
 
+Deno.test('Strings: Bad', () => {
+	for (
+		const s of [
+			'<',
+			'<_',
+			'<!---->',
+			'&',
+			'&;',
+			'& ;',
+			'&# ;',
+			'&#x ;',
+			'&quote',
+			'&quote;',
+		]
+	) {
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				`<string>${s}</string>`,
+				'</plist>',
+				'',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 4',
+			s,
+		);
+	}
+});
+
+Deno.test('Strings: EOF', () => {
+	for (
+		const s of [
+			'EOF',
+			'&',
+			'&#',
+			'&#x',
+			'&#1',
+			'&#x1',
+		]
+	) {
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				`<string>${s}`,
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid end on line 4',
+			s,
+		);
+	}
+});
+
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('true', 'xml'),

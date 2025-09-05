@@ -358,12 +358,12 @@ function string(d: Uint8Array, p: [number], l: number): string {
 				}
 				if (c === 59 && !(a > 55295 && a < 57344)) {
 					b = a;
-				} else if (i >= l) {
-					throw new SyntaxError(utf8ErrorEnd(d));
 				}
 			}
 			if (b < 0) {
-				throw new SyntaxError(utf8ErrorXML(d, i));
+				throw new SyntaxError(
+					i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
+				);
 			}
 			r += String.fromCharCode(b);
 			j = i + 1;
