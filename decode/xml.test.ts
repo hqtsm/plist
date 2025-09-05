@@ -1180,6 +1180,15 @@ Deno.test('spec: xml-edge empty', async () => {
 	assertEquals(data.byteLength, 0);
 });
 
+Deno.test('spec: xml-edge nothing', async () => {
+	const data = await fixturePlist('xml-edge', 'nothing');
+	assertThrows(
+		() => decodeXml(data),
+		SyntaxError,
+		'Invalid XML on line 4',
+	);
+});
+
 Deno.test('spec: xml-edge plist-none-array', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'plist-none-array'),

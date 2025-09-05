@@ -445,11 +445,11 @@ export function decodeXml(
 			if (x.a === 112) {
 				x = x.p as Plist;
 				q = x.v;
-				if (!n) {
-					return { format, plist: q! };
-				}
 				if (!q) {
 					throw new SyntaxError(utf8ErrorXML(d, t));
+				}
+				if (!n) {
+					return { format, plist: q };
 				}
 				a = n.a;
 				p = n.p;
