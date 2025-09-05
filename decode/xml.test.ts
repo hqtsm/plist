@@ -1180,6 +1180,22 @@ Deno.test('spec: xml-edge empty', async () => {
 	assertEquals(data.byteLength, 0);
 });
 
+Deno.test('spec: xml-edge legacy-10.0-0.9-1-null', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'legacy-10.0-0.9-1-null'),
+	);
+	assertEquals(format, FORMAT_XML_V0_9);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 1);
+	const str = plist.find('Name');
+	assertInstanceOf(str, PLString);
+	assertEquals(str.value, 'John Smith');
+});
+
+Deno.test('spec: xml-edge legacy-10.0-0.9-2', async () => {
+	// TODO
+});
+
 Deno.test('spec: xml-edge nothing', async () => {
 	const data = await fixturePlist('xml-edge', 'nothing');
 	assertThrows(
