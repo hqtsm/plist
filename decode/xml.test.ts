@@ -1300,3 +1300,77 @@ Deno.test('spec: xml-edge string-raw-gt', async () => {
 	assertInstanceOf(plist, PLString);
 	assertEquals(plist.value, '>');
 });
+
+Deno.test('spec: xml-edge trailer-close', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'trailer-close'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLBoolean);
+	assertEquals(plist.value, true);
+});
+
+Deno.test('spec: xml-edge trailer-plist', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'trailer-plist'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLBoolean);
+	assertEquals(plist.value, true);
+});
+
+Deno.test('spec: xml-edge true-attrs-close', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'true-attrs-close'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLBoolean);
+	assertEquals(plist.value, true);
+});
+
+// TODO: uid
+
+Deno.test('spec: xml-edge version-0.0', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'version-0.0'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, 'Version 0.0');
+});
+
+Deno.test('spec: xml-edge version-1.9', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'version-1.9'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, 'Version 1.9');
+});
+
+Deno.test('spec: xml-edge version-9', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'version-9'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, 'Version 9');
+});
+
+Deno.test('spec: xml-edge version-empty', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'version-empty'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, 'Version empty');
+});
+
+Deno.test('spec: xml-edge version-none', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'version-none'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, 'Version none');
+});
