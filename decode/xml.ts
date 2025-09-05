@@ -517,7 +517,7 @@ export function decodeXml(
 								f = n = { a, t, s, p, n };
 							}
 						}
-					} else if (x === 97 && d[t + 2] === 116) {
+					} else if (!f && x === 97 && d[t + 2] === 116) {
 						if (d[t + 3] === 97) {
 							q = new PLData();
 						} else if (d[t + 3] === 101) {

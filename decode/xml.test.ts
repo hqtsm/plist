@@ -1156,7 +1156,12 @@ Deno.test('spec: xml-edge data-chunks', async () => {
 });
 
 Deno.test('spec: xml-edge data-close', async () => {
-	// TODO
+	const data = await fixturePlist('xml-edge', 'data-close');
+	assertThrows(
+		() => decodeXml(data),
+		SyntaxError,
+		'Invalid XML on line 4',
+	);
 });
 
 Deno.test('spec: xml-edge data-edge', async () => {
