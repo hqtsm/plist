@@ -1218,6 +1218,35 @@ Deno.test('spec: xml-edge plist-tags-array', async () => {
 	assertEquals(b.value, false);
 });
 
+Deno.test('spec: xml-edge plist-tags-dict', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'plist-tags-dict'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 2);
+
+	const t = plist.find('true');
+	assertInstanceOf(t, PLBoolean);
+	assertEquals(t.value, true);
+
+	const f = plist.find('false');
+	assertInstanceOf(f, PLBoolean);
+	assertEquals(f.value, false);
+});
+
+Deno.test('spec: xml-edge processing-instructions', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge real-attrs', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge real-edge', async () => {
+	// TODO
+});
+
 Deno.test('spec: xml-edge self-closed', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'self-closed'),
@@ -1328,7 +1357,29 @@ Deno.test('spec: xml-edge true-attrs-close', async () => {
 	assertEquals(plist.value, true);
 });
 
-// TODO: uid
+Deno.test('spec: xml-edge uid-attrs', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge uid-negative', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge uid-not', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge uid-over', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge uid-real', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge uid-string', async () => {
+	// TODO
+});
 
 Deno.test('spec: xml-edge version-0.0', async () => {
 	const { format, plist } = decodeXml(
