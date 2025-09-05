@@ -539,6 +539,7 @@ export function decodeXml(
 				}
 				case 105: {
 					if (
+						!f &&
 						d[t + 1] === 110 &&
 						d[t + 2] === 116 &&
 						d[t + 3] === 101 &&
@@ -564,11 +565,11 @@ export function decodeXml(
 				}
 				case 112: {
 					if (
+						!f &&
 						d[t + 1] === 108 &&
 						d[t + 2] === 105 &&
 						d[t + 3] === 115 &&
-						d[t + 4] === 116 &&
-						!f
+						d[t + 4] === 116
 					) {
 						if (!n) {
 							for (f = t + s; f < x;) {
@@ -611,6 +612,7 @@ export function decodeXml(
 				}
 				case 114: {
 					if (
+						!f &&
 						d[t + 1] === 101 &&
 						d[t + 2] === 97 &&
 						d[t + 3] === 108
