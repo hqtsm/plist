@@ -1,4 +1,5 @@
 import {
+	assert,
 	assertEquals,
 	assertInstanceOf,
 	assertNotStrictEquals,
@@ -1248,4 +1249,54 @@ Deno.test('spec: xml-edge self-closed', async () => {
 	const key = plist.get(5);
 	assertInstanceOf(key, PLString);
 	assertEquals(key.value, '');
+});
+
+Deno.test('spec: string-attrs-close', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'string-attrs-close'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '');
+});
+
+Deno.test('spec: string-entity-dec', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'string-entity-dec'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	for (let i = 0; i < plist.length; i++) {
+		const str = plist.get(i);
+		assertInstanceOf(str, PLString, `${i}`);
+		const tag = JSON.stringify(str.value);
+		assertEquals(str.length, 1, tag);
+		const c = str.value.charCodeAt(0);
+		assert((c >= 0 && c < 0xD800) || (c > 0xDFFF && c <= 0xFFFF), tag);
+	}
+});
+
+Deno.test('spec: string-entity-hex', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'string-entity-hex'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	for (let i = 0; i < plist.length; i++) {
+		const str = plist.get(i);
+		assertInstanceOf(str, PLString, `${i}`);
+		const tag = JSON.stringify(str.value);
+		assertEquals(str.length, 1, tag);
+		const c = str.value.charCodeAt(0);
+		assert((c >= 0 && c < 0xD800) || (c > 0xDFFF && c <= 0xFFFF), tag);
+	}
+});
+
+Deno.test('spec: xml-edge string-raw-gt', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'string-raw-gt'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '>');
 });
