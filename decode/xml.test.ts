@@ -1180,6 +1180,53 @@ Deno.test('spec: xml-edge empty', async () => {
 	assertEquals(data.byteLength, 0);
 });
 
+Deno.test('spec: xml-edge false-attrs-close', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'false-attrs-close'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLBoolean);
+	assertEquals(plist.value, false);
+});
+
+Deno.test('spec: xml-edge integer-attrs', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge integer-edge', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge key-array', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge key-dict', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'key-dict'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 2);
+
+	const A = plist.find('A');
+	assertInstanceOf(A, PLString);
+	assertEquals(A.value, 'Apple');
+
+	const B = plist.find('B');
+	assertInstanceOf(B, PLString);
+	assertEquals(B.value, 'Banana');
+});
+
+Deno.test('spec: xml-edge key-root', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'key-root'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, 'string-like');
+});
+
 Deno.test('spec: xml-edge legacy-10.0-0.9-1-null', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'legacy-10.0-0.9-1-null'),
