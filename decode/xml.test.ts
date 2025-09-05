@@ -1111,6 +1111,24 @@ Deno.test('spec: string-utf8-mb4-robot', async () => {
 
 // TODO: uid
 
+Deno.test('spec: xml-edge array-attrs-close', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'array-attrs-close'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 0);
+});
+
+Deno.test('spec: xml-edge bad-attr', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'bad-attr'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLBoolean);
+	assertEquals(plist.value, true);
+});
+
 Deno.test('spec: xml-edge cdata', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'cdata'),
