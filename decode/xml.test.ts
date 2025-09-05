@@ -1125,6 +1125,63 @@ Deno.test('spec: xml-edge cdata', async () => {
 	}
 });
 
+Deno.test('spec: xml-edge comments', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge data-attrs', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge data-chunks', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge data-close', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge data-edge', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge data-junk', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge data-long', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge data-padding', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge data-whitespace', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge date-attrs', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge date-edge', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge date-over-under', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge dict-attrs-close', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'dict-attrs-close'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 0);
+});
+
 Deno.test('spec: xml-edge doctype-internal-subset', async () => {
 	const data = await fixturePlist('xml-edge', 'doctype-internal-subset');
 	assertThrows(
