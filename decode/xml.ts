@@ -209,11 +209,10 @@ function doctype(
 function integer(d: Uint8Array, p: [number], l: number): bigint {
 	let i = whitespace(d, p[0]);
 	let c = d[i];
-	let m = 1n;
+	let n;
 	let r = 0n;
 	let z;
-	if (c === 45) {
-		m = -1n;
+	if ((n = c === 45)) {
 		c = d[i = whitespace(d, i + 1)];
 	} else if (c === 43) {
 		c = d[i = whitespace(d, i + 1)];
@@ -261,7 +260,7 @@ function integer(d: Uint8Array, p: [number], l: number): bigint {
 		} while ((c = d[++i]) !== 60);
 	}
 	p[0] = i;
-	return r * m;
+	return n ? -r : r;
 }
 
 /**
