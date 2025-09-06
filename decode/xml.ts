@@ -518,7 +518,7 @@ export function decodeXml(
 					if (PLInteger.is(x = q.find('CF$UID'))) {
 						q = new PLUID(x.value);
 					} else if (PLReal.is(x)) {
-						a = x.value;
+						a = x.value || 0;
 						q = new PLUID(BigInt(a - a % 1));
 					}
 				}

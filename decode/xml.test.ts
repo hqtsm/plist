@@ -1856,7 +1856,23 @@ Deno.test('spec: xml-edge uid-over', async () => {
 	// TODO
 });
 
-Deno.test('spec: xml-edge uid-real', async () => {
+Deno.test('spec: xml-edge uid-real-nan', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge uid-real-negative', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge uid-real-ninf', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge uid-real-pinf', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge uid-real-positive', async () => {
 	// TODO
 });
 
