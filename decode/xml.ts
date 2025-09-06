@@ -204,52 +204,57 @@ function doctype(
  * @param d Data.
  * @param p Offset pointer.
  * @param l Length.
- * @param i64 Limit to 64-bit signed or unsigned.
+ * @param z Truthy to limit to 64-bit signed or unsigned.
  * @returns Integer.
  */
-function integer(d: Uint8Array, p: [number], l: number, i64: boolean): bigint {
-	let i = whitespace(d, p[0]);
-	let c = d[i];
+function integer(
+	d: Uint8Array,
+	p: [number],
+	l: number,
+	m: boolean | number | bigint,
+): bigint {
+	let x;
 	let n;
 	let r = 0n;
-	let z;
-	if ((n = c === 45)) {
-		c = d[i = whitespace(d, i + 1)];
-	} else if (c === 43) {
-		c = d[i = whitespace(d, i + 1)];
-	}
-	const m = (1n << (i64 ? n ? 63n : 64n : 127n)) - (n ? r : 1n);
-	if ((z = c === 48) && ((c = d[++i]) === 120 || c === 88)) {
+	let i = whitespace(d, p[0]);
+	let c = d[i];
+	c = c === 45
+		? d[n = i = whitespace(d, i + 1)]
+		: c === 43
+		? d[i = whitespace(d, i + 1)]
+		: c;
+	m = (1n << (m ? n ? 63n : 64n : 127n)) - (n ? r : 1n);
+	if ((x = c === 48) && ((c = d[++i]) === 120 || c === 88)) {
 		c = d[++i];
 		if (c === 60) {
 			throw new SyntaxError(utf8ErrorXML(d, i));
 		}
 		do {
-			z = -1;
+			x = -1;
 			if (c > 47) {
 				if (c < 58) {
-					z = c - 48;
+					x = c - 48;
 				} else if (c > 64) {
 					if (c < 71) {
-						z = c - 55;
+						x = c - 55;
 					} else if (c > 96 && c < 103) {
-						z = c - 87;
+						x = c - 87;
 					}
 				}
 			}
-			if (z < 0) {
+			if (x < 0) {
 				throw new SyntaxError(
 					i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
 				);
 			}
-			r = r << 4n | BigInt(z);
+			r = r << 4n | BigInt(x);
 			if (r > m) {
 				throw new SyntaxError(utf8ErrorXML(d, i));
 			}
 		} while ((c = d[++i]) !== 60);
 	} else {
 		if (c === 60) {
-			if (z) {
+			if (x) {
 				p[0] = i;
 				return 0n;
 			}
