@@ -519,7 +519,13 @@ export function decodeXml(
 						q = new PLUID(x.value);
 					} else if (PLReal.is(x)) {
 						a = x.value || 0;
-						q = new PLUID(BigInt(a - a % 1));
+						q = new PLUID(
+							a === Infinity
+								? 2147483647n
+								: a === -Infinity
+								? 2147483648n
+								: BigInt(a - a % 1),
+						);
 					}
 				}
 				if (!n) {
