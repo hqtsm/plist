@@ -314,6 +314,47 @@ Deno.test('XML bad content: not a tag', () => {
 	);
 });
 
+Deno.test('Multiple values', () => {
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<true/>',
+				'<false/>',
+				'</plist>',
+				'',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 5',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<plist>',
+				'<true/>',
+				'<false/>',
+				'</plist>',
+				'</plist>',
+				'',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 6',
+		);
+	}
+});
+
 Deno.test('Format version', () => {
 	for (
 		const tag of [
