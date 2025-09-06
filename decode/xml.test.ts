@@ -1788,6 +1788,15 @@ Deno.test('spec: xml-edge plist-none-true', async () => {
 	assertEquals(plist.value, true);
 });
 
+Deno.test('spec: xml-edge plist-none-uid', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'plist-none-uid'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLUID);
+	assertEquals(plist.value, 42n);
+});
+
 Deno.test('spec: xml-edge plist-tags-array', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'plist-tags-array'),
@@ -1820,6 +1829,15 @@ Deno.test('spec: xml-edge plist-tags-dict', async () => {
 	const f = plist.find('false');
 	assertInstanceOf(f, PLBoolean);
 	assertEquals(f.value, false);
+});
+
+Deno.test('spec: plist-tags-uid', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'plist-tags-uid'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLUID);
+	assertEquals(plist.value, 42n);
 });
 
 Deno.test('spec: xml-edge processing-instructions', async () => {
