@@ -1285,6 +1285,10 @@ Deno.test('spec: xml-edge integer-edge', async () => {
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
+	for (const [k, v] of plist) {
+		const key = k.value;
+		assertInstanceOf(v, PLInteger, key);
+	}
 });
 
 Deno.test('spec: xml-edge key-array', async () => {

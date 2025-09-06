@@ -269,17 +269,17 @@ function integer(d: Uint8Array, p: [number], l: number): bigint {
 		do {
 			if (c > 47) {
 				if (c < 58) {
-					r += BigInt(c - 48);
+					r = r << 4n | BigInt(c - 48);
 					continue;
 				}
 				if (c > 64) {
 					if (c < 71) {
-						r += BigInt(c - 55);
+						r = r << 4n | BigInt(c - 55);
 						continue;
 					}
 					if (c > 96) {
 						if (c < 103) {
-							r += BigInt(c - 87);
+							r = r << 4n | BigInt(c - 87);
 							continue;
 						}
 					}
@@ -303,7 +303,7 @@ function integer(d: Uint8Array, p: [number], l: number): bigint {
 					i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
 				);
 			}
-			r += BigInt(c - 48);
+			r = r * 10n + BigInt(c - 48);
 		} while ((c = d[++i]) !== 60);
 	}
 	p[0] = i;
