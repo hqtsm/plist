@@ -521,9 +521,9 @@ export function decodeXml(
 						a = x.value || 0;
 						q = new PLUID(
 							a === Infinity
-								? 2147483647n
+								? 0x7FFFFFFFn
 								: a === -Infinity
-								? 2147483648n
+								? 0x80000000n
 								: BigInt(a - a % 1),
 						);
 					}
