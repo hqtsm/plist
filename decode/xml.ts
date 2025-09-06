@@ -261,14 +261,15 @@ function integer(
 			throw new SyntaxError(utf8ErrorXML(d, i));
 		}
 		do {
-			if (c < 48 || c > 57) {
+			if (c > 47 && c < 58) {
+				r = r * 10n + BigInt(c - 48);
+				if (r > m) {
+					throw new SyntaxError(utf8ErrorXML(d, i));
+				}
+			} else {
 				throw new SyntaxError(
 					i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
 				);
-			}
-			r = r * 10n + BigInt(c - 48);
-			if (r > m) {
-				throw new SyntaxError(utf8ErrorXML(d, i));
 			}
 		} while ((c = d[++i]) !== 60);
 	}
