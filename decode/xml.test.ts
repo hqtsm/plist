@@ -632,6 +632,16 @@ Deno.test('Integers: Good', () => {
 			['-0x8000000000000000', -0x8000000000000000n, true],
 			['0x10000000000000000', 0x10000000000000000n, false],
 			['-0x8000000000000001', -0x8000000000000001n, false],
+			[
+				'0x7fffffffffffffffffffffffffffffff',
+				0x7fffffffffffffffffffffffffffffffn,
+				false,
+			],
+			[
+				'-0x80000000000000000000000000000000',
+				-0x80000000000000000000000000000000n,
+				false,
+			],
 		] as const
 	) {
 		const tag = `${s} -> ${e} (int64:${int64})`;
@@ -684,6 +694,47 @@ Deno.test('Integers: Good', () => {
 				}
 			}
 		}
+	}
+});
+
+Deno.test('Integers: Bad', () => {
+	for (
+		const [s, int64] of [
+			['', true],
+			['A', true],
+			['0x', true],
+			['0xG', true],
+			['0X', true],
+			['0Xg', true],
+			['0x10000000000000000', true],
+			['-0x8000000000000001', true],
+			[
+				'0x80000000000000000000000000000000',
+				false,
+			],
+			[
+				'-0x80000000000000000000000000000001',
+				false,
+			],
+		] as const
+	) {
+		const tag = `${s} (int64:${int64})`;
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				`<integer>${s}</integer>`,
+				'</plist>',
+				'',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data, { int64 }),
+			SyntaxError,
+			'Invalid XML on line 4',
+			tag,
+		);
 	}
 });
 
