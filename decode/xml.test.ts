@@ -14,6 +14,7 @@ import { fixturePlist } from '../spec/fixture.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { decodeXml } from './xml.ts';
+import { PLInteger } from '../integer.ts';
 
 const DOCTYPE =
 	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
@@ -1270,11 +1271,20 @@ Deno.test('spec: xml-edge false-attrs-close', async () => {
 });
 
 Deno.test('spec: xml-edge integer-attrs', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'integer-attrs'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLInteger);
+	assertEquals(plist.value, 0n);
 });
 
 Deno.test('spec: xml-edge integer-edge', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'integer-edge'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLDict);
 });
 
 Deno.test('spec: xml-edge key-array', async () => {

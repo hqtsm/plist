@@ -242,6 +242,75 @@ function doctype(
 }
 
 /**
+ * Read integer.
+ *
+ * @param d Data.
+ * @param p Offset pointer.
+ * @param l Length.
+ * @returns Integer.
+ */
+function integer(d: Uint8Array, p: [number], l: number): bigint {
+	let i = whitespace(d, p[0]);
+	let c = d[i];
+	let m = 1n;
+	let r = 0n;
+	let z;
+	if (c === 45) {
+		m = -1n;
+		c = d[i = whitespace(d, i + 1)];
+	} else if (c === 43) {
+		c = d[i = whitespace(d, i + 1)];
+	}
+	if ((z = c === 48) && ((c = d[++i]) === 120 || c === 88)) {
+		c = d[++i];
+		if (c === 60) {
+			throw new SyntaxError(utf8ErrorXML(d, i));
+		}
+		do {
+			if (c > 47) {
+				if (c < 58) {
+					r += BigInt(c - 48);
+					continue;
+				}
+				if (c > 64) {
+					if (c < 71) {
+						r += BigInt(c - 55);
+						continue;
+					}
+					if (c > 96) {
+						if (c < 103) {
+							r += BigInt(c - 87);
+							continue;
+						}
+					}
+				}
+			}
+			throw new SyntaxError(
+				i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
+			);
+		} while ((c = d[++i]) !== 60);
+	} else {
+		if (c === 60) {
+			if (z) {
+				p[0] = i;
+				return 0n;
+			}
+			throw new SyntaxError(utf8ErrorXML(d, i));
+		}
+		do {
+			if (c < 48 || c > 57) {
+				throw new SyntaxError(
+					i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
+				);
+			}
+			r += BigInt(c - 48);
+		} while ((c = d[++i]) !== 60);
+	}
+	p[0] = i;
+	return r * m;
+}
+
+/**
  * Read string.
  *
  * @param d Data.
@@ -546,7 +615,10 @@ export function decodeXml(
 						d[t + 4] === 103 &&
 						d[t + 5] === 101
 					) {
-						q = new PLInteger();
+						j[0] = i;
+						q = integer(d, j, l);
+						q = new PLInteger(q);
+						i = j[0];
 					}
 					break;
 				}
