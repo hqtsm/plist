@@ -553,6 +553,115 @@ Deno.test('CDATA', () => {
 	}
 });
 
+Deno.test('XML: Bad Close', () => {
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid end on line 3',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<true/>',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid end on line 4',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<true/>',
+				'<',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid end on line 5',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<true/>',
+				'</',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid end on line 5',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<string><',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid end on line 4',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<string></',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid end on line 4',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<string></x',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 4',
+		);
+	}
+});
+
 Deno.test('Strings: Bad', () => {
 	for (
 		const s of [

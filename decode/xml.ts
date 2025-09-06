@@ -303,8 +303,8 @@ function string(d: Uint8Array, p: [number], l: number): string {
 					continue;
 				}
 			}
-			utf8Length(d, j, i);
-			throw new SyntaxError(utf8ErrorXML(d, i));
+			utf8Length(d, j, i++);
+			throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
 		} else if (c === 38) {
 			r += utf8Decode(d, j, i);
 			c = d[++i];
