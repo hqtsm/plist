@@ -654,6 +654,37 @@ Deno.test('Integers: Good', () => {
 		assertInstanceOf(plist, PLInteger, tag);
 		assertEquals(plist.value, e, tag);
 	}
+	const spaces = ['', ' ', '\r', '\n', '\r\n', '\t'];
+	for (const s1 of spaces) {
+		for (const s2 of spaces) {
+			const sp = `${s1}${s2}`;
+			for (const si of ['', '-', '+']) {
+				for (const n of ['12', '0x12', '0X12']) {
+					const s = `${sp}${si}${sp}${n}`;
+					const e = si === '-' ? -BigInt(+n) : BigInt(+n);
+					const tag = JSON.stringify(s);
+					const { format, plist } = decodeXml(
+						TE.encode(
+							[
+								'<?xml version="1.0" encoding="UTF-8"?>',
+								DOCTYPE,
+								'<plist version="1.0">',
+								`<integer>${s}</integer>`,
+								'</plist>',
+								'',
+							].join('\n'),
+						),
+						{
+							int64: true,
+						},
+					);
+					assertEquals(format, FORMAT_XML_V1_0, tag);
+					assertInstanceOf(plist, PLInteger, tag);
+					assertEquals(plist.value, e, tag);
+				}
+			}
+		}
+	}
 });
 
 Deno.test('spec: true', async () => {
