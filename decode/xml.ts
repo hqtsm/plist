@@ -226,9 +226,6 @@ function integer(
 	m = (1n << (m ? n ? 63n : 64n : 127n)) - (n ? r : 1n);
 	if ((x = c === 48) && ((c = d[++i]) === 120 || c === 88)) {
 		c = d[++i];
-		if (c === 60) {
-			throw new SyntaxError(utf8ErrorXML(d, i));
-		}
 		do {
 			x = -1;
 			if (c > 47) {
@@ -242,31 +239,15 @@ function integer(
 					}
 				}
 			}
-			if (x < 0) {
+			if (x < 0 || (r = r << 4n | BigInt(x)) > m) {
 				throw new SyntaxError(
 					i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
 				);
 			}
-			r = r << 4n | BigInt(x);
-			if (r > m) {
-				throw new SyntaxError(utf8ErrorXML(d, i));
-			}
 		} while ((c = d[++i]) !== 60);
-	} else {
-		if (c === 60) {
-			if (x) {
-				p[0] = i;
-				return r;
-			}
-			throw new SyntaxError(utf8ErrorXML(d, i));
-		}
+	} else if (c !== 60 || !x) {
 		do {
-			if (c > 47 && c < 58) {
-				r = r * 10n + BigInt(c - 48);
-				if (r > m) {
-					throw new SyntaxError(utf8ErrorXML(d, i));
-				}
-			} else {
+			if (!(c > 47 && c < 58) || (r = r * 10n + BigInt(c - 48)) > m) {
 				throw new SyntaxError(
 					i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
 				);
