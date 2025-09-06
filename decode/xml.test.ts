@@ -589,6 +589,21 @@ Deno.test('XML: Bad Close', () => {
 				'<?xml version="1.0" encoding="UTF-8"?>',
 				DOCTYPE,
 				'<plist version="1.0">',
+				'<true/>X',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 4',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
 				'<true/>',
 				'<',
 			].join('\n'),
