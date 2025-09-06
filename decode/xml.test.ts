@@ -615,6 +615,47 @@ Deno.test('Strings: EOF', () => {
 	}
 });
 
+Deno.test('Integers: Good', () => {
+	for (
+		const [s, e, int64] of [
+			['0', 0n, true],
+			['00', 0n, true],
+			['1', 1n, true],
+			['01', 1n, true],
+			['0x0', 0n, true],
+			['0X00', 0n, true],
+			['0x0', 0n, true],
+			['0X00', 0n, true],
+			['0x1', 1n, true],
+			['0X01', 1n, true],
+			['0xffffffffffffffff', 0xffffffffffffffffn, true],
+			['-0x8000000000000000', -0x8000000000000000n, true],
+			['0x10000000000000000', 0x10000000000000000n, false],
+			['-0x8000000000000001', -0x8000000000000001n, false],
+		] as const
+	) {
+		const tag = `${s} -> ${e} (int64:${int64})`;
+		const { format, plist } = decodeXml(
+			TE.encode(
+				[
+					'<?xml version="1.0" encoding="UTF-8"?>',
+					DOCTYPE,
+					'<plist version="1.0">',
+					`<integer>${s}</integer>`,
+					'</plist>',
+					'',
+				].join('\n'),
+			),
+			{
+				int64,
+			},
+		);
+		assertEquals(format, FORMAT_XML_V1_0, tag);
+		assertInstanceOf(plist, PLInteger, tag);
+		assertEquals(plist.value, e, tag);
+	}
+});
+
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('true', 'xml'),
