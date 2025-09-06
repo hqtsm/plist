@@ -10,11 +10,11 @@ import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDict } from '../dict.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
+import { PLInteger } from '../integer.ts';
 import { fixturePlist } from '../spec/fixture.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { decodeXml } from './xml.ts';
-import { PLInteger } from '../integer.ts';
 
 const DOCTYPE =
 	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
@@ -1303,6 +1303,9 @@ Deno.test('spec: xml-edge cdata', async () => {
 Deno.test('spec: xml-edge comments', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'comments'),
+		{
+			int64: true,
+		},
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -1479,7 +1482,27 @@ Deno.test('spec: xml-edge integer-edge', async () => {
 });
 
 Deno.test('spec: xml-edge key-array', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'key-array'),
+		{
+			int64: true,
+		},
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 3);
+
+	const A = plist.get(0);
+	assertInstanceOf(A, PLString);
+	assertEquals(A.value, 'A');
+
+	const B = plist.get(1);
+	assertInstanceOf(B, PLString);
+	assertEquals(B.value, 'B');
+
+	const C = plist.get(2);
+	assertInstanceOf(C, PLInteger);
+	assertEquals(C.value, 1n);
 });
 
 Deno.test('spec: xml-edge key-dict', async () => {
