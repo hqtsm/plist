@@ -1301,7 +1301,28 @@ Deno.test('spec: xml-edge cdata', async () => {
 });
 
 Deno.test('spec: xml-edge comments', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'comments'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 2);
+
+	const dict = plist.find('dict')!;
+	assertInstanceOf(dict, PLDict);
+	assertEquals(dict.size, 0);
+
+	const array = plist.find('array')!;
+	assertInstanceOf(array, PLArray);
+	assertEquals(array.length, 2);
+
+	const a = array.get(0)!;
+	assertInstanceOf(a, PLInteger);
+	assertEquals(a.value, 1n);
+
+	const b = array.get(1)!;
+	assertInstanceOf(b, PLInteger);
+	assertEquals(b.value, 2n);
 });
 
 Deno.test('spec: xml-edge data-attrs', async () => {
