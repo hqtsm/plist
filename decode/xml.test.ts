@@ -1106,7 +1106,150 @@ Deno.test('spec: string-utf8-mb4-robot', async () => {
 	assertEquals(plist.value, '\ud83e\udd16');
 });
 
-// TODO: integer
+Deno.test('spec: integer-0', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('integer-0', 'xml'),
+		{
+			int64: true,
+		},
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLInteger);
+	assertEquals(plist.value, 0n);
+	assertEquals(plist.bits, 64);
+});
+
+Deno.test('spec: integer-big', async () => {
+	const MIN_128 = -0x8000000000000000_0000000000000000n;
+
+	const data = await fixturePlist('integer-big', 'xml');
+
+	// Not very compatible, created with a private API.
+	assertThrows(
+		() =>
+			decodeXml(data, {
+				int64: true,
+			}),
+		SyntaxError,
+		'Invalid XML on line 6',
+	);
+
+	const { format, plist } = decodeXml(data);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 12);
+	const all = new Map<string, PLInteger>();
+	for (let i = 0; i < 12;) {
+		const name: PLType = plist.get(i)!;
+		assertInstanceOf(name, PLString, `${i}`);
+		i++;
+		const value: PLType = plist.get(i)!;
+		assertInstanceOf(value, PLInteger, `${i}`);
+		i++;
+		all.set(name.value, value);
+	}
+
+	const BIG = all.get('BIG')!;
+	assertEquals(BIG.value, 0x1112131415161718_0102030405060708n);
+	assertEquals(BIG.bits, 128);
+
+	const SMALL = all.get('SMALL')!;
+	assertEquals(SMALL.value, 42n);
+	assertEquals(SMALL.bits, 64);
+
+	const MAX = all.get('MAX')!;
+	assertEquals(MAX.value, 0x7FFFFFFFFFFFFFFF_FFFFFFFFFFFFFFFFn);
+	assertEquals(MAX.bits, 128);
+
+	// Weird bug encodes -0, not MIN128?
+	const MIN = all.get('MIN')!;
+	assertEquals(MIN.value, 0n);
+	assertEquals(MIN.bits, 64);
+
+	const MIN_PLUS_1 = all.get('MIN+1')!;
+	assertEquals(MIN_PLUS_1.value, MIN_128 + 1n);
+	assertEquals(MIN_PLUS_1.bits, 128);
+
+	const MIN_PLUS_2 = all.get('MIN+2')!;
+	assertEquals(MIN_PLUS_2.value, MIN_128 + 2n);
+	assertEquals(MIN_PLUS_2.bits, 128);
+});
+
+Deno.test('spec: integer-min', async () => {
+	const MIN64 = -0x8000000000000000n;
+
+	const { format, plist } = decodeXml(
+		await fixturePlist('integer-min', 'xml'),
+		{
+			int64: true,
+		},
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLInteger);
+	assertEquals(plist.value, MIN64);
+	assertEquals(plist.bits, 64);
+});
+
+Deno.test('spec: integer-negative', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('integer-negative', 'xml'),
+		{
+			int64: true,
+		},
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLInteger);
+	assertEquals(plist.value, -42n);
+	assertEquals(plist.bits, 64);
+});
+
+Deno.test('spec: integer-reuse', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('integer-reuse', 'xml'),
+		{
+			int64: true,
+		},
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 2);
+
+	const a = plist.get(0)!;
+	assertInstanceOf(a, PLInteger);
+	assertEquals(a.value, 42n);
+	assertEquals(a.bits, 64);
+
+	const b = plist.get(1)!;
+	assertInstanceOf(b, PLInteger);
+	assertEquals(b.value, 42n);
+	assertEquals(b.bits, 64);
+
+	assertNotStrictEquals(a, b);
+});
+
+Deno.test('spec: integer-sizes', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('integer-sizes', 'xml'),
+		{
+			int64: true,
+		},
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 38);
+
+	for (let i = 0; i < 38;) {
+		const k: PLType = plist.get(i)!;
+		assertInstanceOf(k, PLString, `${i}`);
+		i++;
+
+		const v: PLType = plist.get(i)!;
+		assertInstanceOf(v, PLInteger, `${i}`);
+		const expected = BigInt.asIntN(64, BigInt(k.value));
+		assertEquals(v.value, expected, k.value);
+		i++;
+	}
+});
 
 // TODO: real
 
@@ -1273,10 +1416,14 @@ Deno.test('spec: xml-edge false-attrs-close', async () => {
 Deno.test('spec: xml-edge integer-attrs', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'integer-attrs'),
+		{
+			int64: true,
+		},
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLInteger);
 	assertEquals(plist.value, 0n);
+	assertEquals(plist.bits, 64);
 });
 
 Deno.test('spec: xml-edge integer-edge', async () => {
@@ -1293,6 +1440,7 @@ Deno.test('spec: xml-edge integer-edge', async () => {
 		assertInstanceOf(v, PLInteger, key);
 		const expected = BigInt(key.split('|')[1]);
 		assertEquals(v.value, expected, key);
+		assertEquals(v.bits, expected > 0x7fffffffffffffffn ? 128 : 64, key);
 	}
 });
 
