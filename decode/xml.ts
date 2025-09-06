@@ -525,13 +525,13 @@ export function decodeXml(
 				if (f !== q) {
 					if (a === 100) {
 						(p as PLDict).set(u.get(f)!, q);
-						u.delete(f);
 					} else if (a === 97) {
 						(p as PLArray).set((p as PLArray).length - 1, q);
 					} else if (a === 112) {
 						(p as Plist).v = q;
 					}
 				}
+				u.delete(f);
 			} else if (f === 112) {
 				x = x.p as Plist;
 				q = x.v;
