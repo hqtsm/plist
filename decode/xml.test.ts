@@ -600,6 +600,20 @@ Deno.test('XML: Bad Close', () => {
 			[
 				'<?xml version="1.0" encoding="UTF-8"?>',
 				DOCTYPE,
+				'</plist>',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 3',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
 				'<plist version="1.0">',
 			].join('\n'),
 		);
@@ -714,6 +728,134 @@ Deno.test('XML: Bad Close', () => {
 			() => decodeXml(data),
 			SyntaxError,
 			'Invalid XML on line 4',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<string></string',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid end on line 4',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<string></string ',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid end on line 4',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<array></array _',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 4',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<array></array _',
+				'</plist>',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 4',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<string></string _',
+				'</plist>',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 4',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<string></string _',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 4',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<dict>',
+				'<key>extra</key>',
+				'</dict>',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 6',
+		);
+	}
+	{
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				'<dict>',
+				'<key>A</key>',
+				'<string>Apple</string>',
+				'<key>extra</key>',
+				'</dict>',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 8',
 		);
 	}
 });
