@@ -1265,6 +1265,8 @@ Deno.test('spec: integer-sizes', async () => {
 	}
 });
 
+// TODO: real
+
 Deno.test('spec: uid-42', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('uid-42', 'xml'),
@@ -1312,10 +1314,6 @@ Deno.test('spec: uid-sizes', async () => {
 		i++;
 	}
 });
-
-// TODO: real
-
-// TODO: uid
 
 Deno.test('spec: xml-edge array-attrs-close', async () => {
 	const { format, plist } = decodeXml(
