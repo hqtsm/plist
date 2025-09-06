@@ -617,34 +617,35 @@ Deno.test('Strings: EOF', () => {
 
 Deno.test('Integers: Good', () => {
 	for (
-		const [s, e, int64] of [
-			['0', 0n, true],
-			['00', 0n, true],
-			['1', 1n, true],
-			['01', 1n, true],
-			['0x0', 0n, true],
-			['0X00', 0n, true],
-			['0x0', 0n, true],
-			['0X00', 0n, true],
-			['0x1', 1n, true],
-			['0X01', 1n, true],
-			['0xffffffffffffffff', 0xffffffffffffffffn, true],
-			['-0x8000000000000000', -0x8000000000000000n, true],
-			['0x10000000000000000', 0x10000000000000000n, false],
-			['-0x8000000000000001', -0x8000000000000001n, false],
+		const [s, int64] of [
+			['0', true],
+			['00', true],
+			['1', true],
+			['01', true],
+			['0x0', true],
+			['0X00', true],
+			['0x0', true],
+			['0X00', true],
+			['0x1', true],
+			['0X01', true],
+			['0xffffffffffffffff', true],
+			['-0x8000000000000000', true],
+			['0x10000000000000000', false],
+			['-0x8000000000000001', false],
 			[
 				'0x7fffffffffffffffffffffffffffffff',
-				0x7fffffffffffffffffffffffffffffffn,
 				false,
 			],
 			[
 				'-0x80000000000000000000000000000000',
-				-0x80000000000000000000000000000000n,
 				false,
 			],
 		] as const
 	) {
-		const tag = `${s} -> ${e} (int64:${int64})`;
+		const tag = `${s} (int64:${int64})`;
+		const e = s.startsWith('-')
+			? -BigInt(s.slice(1))
+			: BigInt(s.startsWith('+') ? s.slice(1) : s);
 		const { format, plist } = decodeXml(
 			TE.encode(
 				[
@@ -700,6 +701,8 @@ Deno.test('Integers: Good', () => {
 Deno.test('Integers: Bad', () => {
 	for (
 		const [s, int64] of [
+			['42 ', true],
+			['0x42 ', true],
 			['', true],
 			['A', true],
 			['0x', true],
@@ -708,14 +711,8 @@ Deno.test('Integers: Bad', () => {
 			['0Xg', true],
 			['0x10000000000000000', true],
 			['-0x8000000000000001', true],
-			[
-				'0x80000000000000000000000000000000',
-				false,
-			],
-			[
-				'-0x80000000000000000000000000000001',
-				false,
-			],
+			['0x80000000000000000000000000000000', false],
+			['-0x80000000000000000000000000000001', false],
 		] as const
 	) {
 		const tag = `${s} (int64:${int64})`;
@@ -733,6 +730,34 @@ Deno.test('Integers: Bad', () => {
 			() => decodeXml(data, { int64 }),
 			SyntaxError,
 			'Invalid XML on line 4',
+			tag,
+		);
+	}
+});
+
+Deno.test('Integers: EOF', () => {
+	for (
+		const s of [
+			'',
+			'0x',
+			'0X',
+			'-',
+			'+',
+		] as const
+	) {
+		const tag = JSON.stringify(s);
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				`<integer>${s}`,
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data, { int64: true }),
+			SyntaxError,
+			'Invalid end on line 4',
 			tag,
 		);
 	}
