@@ -1282,6 +1282,9 @@ Deno.test('spec: xml-edge integer-attrs', async () => {
 Deno.test('spec: xml-edge integer-edge', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'integer-edge'),
+		{
+			int64: true,
+		},
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);

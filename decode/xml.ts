@@ -204,9 +204,10 @@ function doctype(
  * @param d Data.
  * @param p Offset pointer.
  * @param l Length.
+ * @param i64 Limit to 64-bit signed or unsigned.
  * @returns Integer.
  */
-function integer(d: Uint8Array, p: [number], l: number): bigint {
+function integer(d: Uint8Array, p: [number], l: number, i64: boolean): bigint {
 	let i = whitespace(d, p[0]);
 	let c = d[i];
 	let n;
@@ -217,6 +218,7 @@ function integer(d: Uint8Array, p: [number], l: number): bigint {
 	} else if (c === 43) {
 		c = d[i = whitespace(d, i + 1)];
 	}
+	const m = (1n << (i64 ? n ? 63n : 64n : 127n)) - (n ? r : 1n);
 	if ((z = c === 48) && ((c = d[++i]) === 120 || c === 88)) {
 		c = d[++i];
 		if (c === 60) {
@@ -241,6 +243,9 @@ function integer(d: Uint8Array, p: [number], l: number): bigint {
 				);
 			}
 			r = r << 4n | BigInt(z);
+			if (r > m) {
+				throw new SyntaxError(utf8ErrorXML(d, i));
+			}
 		} while ((c = d[++i]) !== 60);
 	} else {
 		if (c === 60) {
@@ -257,6 +262,9 @@ function integer(d: Uint8Array, p: [number], l: number): bigint {
 				);
 			}
 			r = r * 10n + BigInt(c - 48);
+			if (r > m) {
+				throw new SyntaxError(utf8ErrorXML(d, i));
+			}
 		} while ((c = d[++i]) !== 60);
 	}
 	p[0] = i;
@@ -421,6 +429,13 @@ export interface DecodeXmlOptions {
 	 * Defaults to auto detect.
 	 */
 	utf16le?: boolean;
+
+	/**
+	 * Optionally limit integers to 64-bit signed or unsigned values.
+	 *
+	 * @default false
+	 */
+	int64?: boolean;
 }
 
 /**
@@ -447,7 +462,7 @@ export interface DecodeXmlResult {
  */
 export function decodeXml(
 	encoded: Uint8Array,
-	{ decoder, utf16le }: DecodeXmlOptions = {},
+	{ decoder, utf16le, int64 = false }: DecodeXmlOptions = {},
 ): DecodeXmlResult {
 	let x;
 	let d: Uint8Array | null | undefined = utf8Encoded(encoded, utf16le);
@@ -613,8 +628,8 @@ export function decodeXml(
 					) {
 						j[0] = i;
 						q = new PLInteger(
-							q = integer(d, j, l),
-							q < 0 || q <= 0x7fffffffffffffffn ? 64 : 128,
+							q = integer(d, j, l, int64),
+							(q < 0 ? ~q : q) >> 63n ? 128 : 64,
 						);
 						i = j[0];
 					}
