@@ -267,27 +267,24 @@ function integer(d: Uint8Array, p: [number], l: number): bigint {
 			throw new SyntaxError(utf8ErrorXML(d, i));
 		}
 		do {
+			z = -1;
 			if (c > 47) {
 				if (c < 58) {
-					r = r << 4n | BigInt(c - 48);
-					continue;
-				}
-				if (c > 64) {
+					z = c - 48;
+				} else if (c > 64) {
 					if (c < 71) {
-						r = r << 4n | BigInt(c - 55);
-						continue;
-					}
-					if (c > 96) {
-						if (c < 103) {
-							r = r << 4n | BigInt(c - 87);
-							continue;
-						}
+						z = c - 55;
+					} else if (c > 96 && c < 103) {
+						z = c - 87;
 					}
 				}
 			}
-			throw new SyntaxError(
-				i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
-			);
+			if (z < 0) {
+				throw new SyntaxError(
+					i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
+				);
+			}
+			r = r << 4n | BigInt(z);
 		} while ((c = d[++i]) !== 60);
 	} else {
 		if (c === 60) {
