@@ -708,7 +708,20 @@ Deno.test('spec: array-128', async () => {
 });
 
 Deno.test('spec: array-255', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('array-255', 'xml'),
+		{
+			int64: true,
+		},
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 255);
+	for (let i = 0; i < 255; i++) {
+		const entry: PLType = plist.get(i)!;
+		assertInstanceOf(entry, PLInteger, `${i}`);
+		assertEquals(entry.value, i % 2 ? 1n : 0n, `${i}`);
+	}
 });
 
 Deno.test('spec: array-256', async () => {
