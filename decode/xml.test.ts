@@ -1288,6 +1288,8 @@ Deno.test('spec: xml-edge integer-edge', async () => {
 	for (const [k, v] of plist) {
 		const key = k.value;
 		assertInstanceOf(v, PLInteger, key);
+		const expected = BigInt(key.split('|')[1]);
+		assertEquals(v.value, expected, key);
 	}
 });
 

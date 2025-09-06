@@ -616,8 +616,10 @@ export function decodeXml(
 						d[t + 5] === 101
 					) {
 						j[0] = i;
-						q = integer(d, j, l);
-						q = new PLInteger(q);
+						q = new PLInteger(
+							q = integer(d, j, l),
+							q < 0 || q <= 0x7fffffffffffffffn ? 64 : 128,
+						);
 						i = j[0];
 					}
 					break;
