@@ -256,7 +256,7 @@ function integer(
 		if (c === 60) {
 			if (x) {
 				p[0] = i;
-				return 0n;
+				return r;
 			}
 			throw new SyntaxError(utf8ErrorXML(d, i));
 		}
