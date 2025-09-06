@@ -14,6 +14,7 @@ import { PLInteger } from '../integer.ts';
 import { fixturePlist } from '../spec/fixture.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
+import { PLUID } from '../uid.ts';
 import { decodeXml } from './xml.ts';
 
 const DOCTYPE =
@@ -1259,6 +1260,54 @@ Deno.test('spec: integer-sizes', async () => {
 		const v: PLType = plist.get(i)!;
 		assertInstanceOf(v, PLInteger, `${i}`);
 		const expected = BigInt.asIntN(64, BigInt(k.value));
+		assertEquals(v.value, expected, k.value);
+		i++;
+	}
+});
+
+Deno.test('spec: uid-42', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('uid-42', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLUID);
+	assertEquals(plist.value, 42n);
+});
+
+Deno.test('spec: uid-reuse', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('uid-reuse', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+
+	const a = plist.get(0)!;
+	assertInstanceOf(a, PLUID);
+	assertEquals(a.value, 42n);
+
+	const b = plist.get(1)!;
+	assertInstanceOf(b, PLUID);
+	assertEquals(b.value, 42n);
+
+	assertNotStrictEquals(a, b);
+});
+
+Deno.test('spec: uid-sizes', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('uid-sizes', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 22);
+
+	for (let i = 0; i < 22;) {
+		const k: PLType = plist.get(i)!;
+		assertInstanceOf(k, PLString, `${i}`);
+		i++;
+
+		const v: PLType = plist.get(i)!;
+		assertInstanceOf(v, PLUID, `${i}`);
+		const expected = BigInt(k.value);
 		assertEquals(v.value, expected, k.value);
 		i++;
 	}

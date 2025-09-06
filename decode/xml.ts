@@ -15,6 +15,7 @@ import {
 import { PLReal } from '../real.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
+import { PLUID } from '../uid.ts';
 
 const rUTF8 = /^(x-mac-)?utf-8$/i;
 
@@ -464,6 +465,7 @@ export function decodeXml(
 	d ||= encoded;
 	const l = d.length;
 	const j: [number] = [0];
+	const u = new Map<PLDict, PLString>();
 	let a;
 	let b;
 	let c;
@@ -509,7 +511,28 @@ export function decodeXml(
 			}
 			++i;
 			n = x.n;
-			if (x.a === 112) {
+			f = x.a;
+			if (f === 100) {
+				f = q = x.p as PLDict;
+				if (q.size === 1 && PLInteger.is(x = q.find('CF$UID'))) {
+					q = new PLUID(x.value);
+				}
+				if (!n) {
+					return { format, plist: q };
+				}
+				a = n.a;
+				p = n.p;
+				if (f !== q) {
+					if (a === 100) {
+						(p as PLDict).set(u.get(f)!, q);
+						u.delete(f);
+					} else if (a === 97) {
+						(p as PLArray).set((p as PLArray).length - 1, q);
+					} else if (a === 112) {
+						(p as Plist).v = q;
+					}
+				}
+			} else if (f === 112) {
 				x = x.p as Plist;
 				q = x.v;
 				if (!q) {
@@ -582,6 +605,9 @@ export function decodeXml(
 								a = c;
 								p = q;
 								f = n = { a, t, s, p, n };
+								if (k) {
+									u.set(q, k);
+								}
 							}
 						}
 					} else if (!f && x === 97 && d[t + 2] === 116) {
