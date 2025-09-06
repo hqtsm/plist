@@ -64,49 +64,6 @@ interface Node {
 }
 
 /**
- * XML decoder.
- *
- * @param encoding Encoding.
- * @param data Data.
- * @returns Data converted to UTF-8 or null if unsupported.
- */
-export type DecodeXmlDecoder = (
-	encoding: string,
-	data: Uint8Array,
-) => Uint8Array | null;
-
-/**
- * Decode XML plist options.
- */
-export interface DecodeXmlOptions {
-	/**
-	 * Optonal decoder for converting to UTF-8.
-	 */
-	decoder?: DecodeXmlDecoder;
-
-	/**
-	 * Optional UTF-16 endian flag.
-	 * Defaults to auto detect.
-	 */
-	utf16le?: boolean;
-}
-
-/**
- * Decode XML plist result.
- */
-export interface DecodeXmlResult {
-	/**
-	 * Encoded format.
-	 */
-	format: typeof FORMAT_XML_V1_0 | typeof FORMAT_XML_V0_9;
-
-	/**
-	 * Decoded plist.
-	 */
-	plist: PLType;
-}
-
-/**
  * Get XML encoding from XML header.
  *
  * @param d Data.
@@ -437,6 +394,49 @@ function string(d: Uint8Array, p: [number], l: number): string {
 	}
 	utf8Length(d, j, l);
 	throw new SyntaxError(utf8ErrorEnd(d));
+}
+
+/**
+ * XML decoder.
+ *
+ * @param encoding Encoding.
+ * @param data Data.
+ * @returns Data converted to UTF-8 or null if unsupported.
+ */
+export type DecodeXmlDecoder = (
+	encoding: string,
+	data: Uint8Array,
+) => Uint8Array | null;
+
+/**
+ * Decode XML plist options.
+ */
+export interface DecodeXmlOptions {
+	/**
+	 * Optonal decoder for converting to UTF-8.
+	 */
+	decoder?: DecodeXmlDecoder;
+
+	/**
+	 * Optional UTF-16 endian flag.
+	 * Defaults to auto detect.
+	 */
+	utf16le?: boolean;
+}
+
+/**
+ * Decode XML plist result.
+ */
+export interface DecodeXmlResult {
+	/**
+	 * Encoded format.
+	 */
+	format: typeof FORMAT_XML_V1_0 | typeof FORMAT_XML_V0_9;
+
+	/**
+	 * Decoded plist.
+	 */
+	plist: PLType;
 }
 
 /**
