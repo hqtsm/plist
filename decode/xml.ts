@@ -19,7 +19,7 @@ import { PLUID } from '../uid.ts';
 
 const rUTF8 = /^(x-mac-)?utf-8$/i;
 const rREAL = /^[0-9e.+-]+$/i;
-const rLWS = /^[\0-\x20\x7F-\xA0\u2000-\u200B\u3000]+/;
+const rRLWS = /^[\0-\x20\x7F-\xA0\u2000-\u200B\u3000]+/;
 const ws = (c: number): boolean => c === 9 || c === 10 || c === 13 || c === 32;
 
 /**
@@ -287,7 +287,7 @@ function real(d: Uint8Array, p: [number], l: number): number {
 			return -Infinity;
 		}
 	}
-	if (!rREAL.test(s = s.replace(rLWS, '')) || (l = +s) !== l) {
+	if (!rREAL.test(s = s.replace(rRLWS, '')) || (l = +s) !== l) {
 		throw new SyntaxError(utf8ErrorXML(d, p[0]));
 	}
 	return l;
