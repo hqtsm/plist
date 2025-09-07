@@ -588,11 +588,7 @@ export function decodeXml(
 				a = n.a;
 				p = n.p;
 				if (a === 100) {
-					if ((x = x.k)) {
-						(p as PLDict).set(x, q);
-					} else {
-						throw new SyntaxError(utf8ErrorXML(d, t));
-					}
+					(p as PLDict).set(x.k!, q);
 				} else if (a === 97) {
 					(p as PLArray).push(q);
 				} else if (a === 112) {
