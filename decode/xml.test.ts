@@ -27,7 +27,7 @@ const ascii2utf8 = (data: Uint8Array) => TE.encode(TDASCII.decode(data));
 const entityHex = (code: number) => `&#x${code.toString(16)};`;
 const entityDec = (code: number) => `&#${code.toString(10)};`;
 
-function realWS() {
+function realWS(): string[] {
 	const ws: string[] = [];
 	for (let i = 0; i <= 0x20; i++) {
 		ws.push(String.fromCharCode(i));
