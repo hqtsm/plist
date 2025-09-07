@@ -5,6 +5,7 @@ import { PLDate } from '../date.ts';
 import { PLDict } from '../dict.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
+import { b16d } from '../pri/base.ts';
 import {
 	utf8Decode,
 	utf8Encoded,
@@ -238,18 +239,7 @@ function integer(
 	if ((x = c === 48) && ((c = d[++i]) === 120 || c === 88)) {
 		c = d[++i];
 		do {
-			x = -1;
-			if (c > 47) {
-				if (c < 58) {
-					x = c - 48;
-				} else if (c > 64) {
-					if (c < 71) {
-						x = c - 55;
-					} else if (c > 96 && c < 103) {
-						x = c - 87;
-					}
-				}
-			}
+			x = b16d(c);
 			if (x < 0 || (r = r << 4n | BigInt(x)) > m) {
 				throw new SyntaxError(
 					i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),

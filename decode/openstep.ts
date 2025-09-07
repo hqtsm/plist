@@ -8,6 +8,7 @@ import { PLArray } from '../array.ts';
 import { PLData } from '../data.ts';
 import { PLDict } from '../dict.ts';
 import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
+import { b16d } from '../pri/base.ts';
 import { latin, unesc, unquoted } from '../pri/openstep.ts';
 import {
 	utf8Decode,
@@ -37,21 +38,6 @@ interface Node {
 	 */
 	n: Node | null;
 }
-
-/**
- * Get hex character value.
- *
- * @param c Character.
- * @returns Value, or -1 for invalid.
- */
-const hexc = (c: number) =>
-	c < 58
-		? c < 48 ? -1 : c - 48
-		: c > 96
-		? c < 103 ? c - 87 : -1
-		: c < 71 && c > 64
-		? c - 55
-		: -1;
 
 /**
  * Advance to next non-whitespace, non-comment, character.
@@ -114,14 +100,14 @@ function next(d: Uint8Array, p: [number]): number {
  */
 function decodeData(d: Uint8Array, p: [number]): PLData {
 	for (let i = p[0] + 1, b = i, c, s = 0, r, l = d.length; i < l;) {
-		if (hexc(c = d[i]) < 0) {
+		if (b16d(c = d[i]) < 0) {
 			if (c === 62) {
 				r = new PLData(s);
 				c = new Uint8Array(r.buffer);
 				for (s = 0; b < i;) {
-					l = hexc(d[b++]);
+					l = b16d(d[b++]);
 					if (~l) {
-						c[s++] = l << 4 | hexc(d[b++]);
+						c[s++] = l << 4 | b16d(d[b++]);
 					}
 				}
 				p[0] = i + 1;
@@ -138,7 +124,7 @@ function decodeData(d: Uint8Array, p: [number]): PLData {
 			throw new SyntaxError(utf8ErrorToken(d, i));
 		}
 		if (++i < l) {
-			if (hexc(d[i]) < 0) {
+			if (b16d(d[i]) < 0) {
 				throw new SyntaxError(utf8ErrorToken(d, i));
 			}
 			i++;
@@ -186,7 +172,7 @@ function decodeStrQ(d: Uint8Array, p: [number], q: number): PLString {
 			}
 			if (c === 85) {
 				for (c = 0, n = 4; n--; i++) {
-					if ((b = hexc(d[i + 1])) < 0) {
+					if ((b = b16d(d[i + 1])) < 0) {
 						break;
 					}
 					c = c << 4 | b;
