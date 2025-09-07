@@ -96,9 +96,9 @@ Deno.test('b64d', () => {
 		const e = expected[i];
 		const d = i > 42 && i < 123 ? b64d[i - 43] + i - 80 : -1;
 		if (e < 0) {
-			assertLess(d, 0);
+			assertLess(d, 0, `${i}`);
 		} else {
-			assertEquals(d, e);
+			assertEquals(d, e, `${i}`);
 		}
 	}
 });
