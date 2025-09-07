@@ -1135,6 +1135,25 @@ Deno.test('Real: Bad', () => {
 			tag,
 		);
 	}
+	for (const s of ['', 'e', 'E', '.', '-', '+', 'a', 'A', '0x0', ',']) {
+		const tag = JSON.stringify(s);
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				`<real>${s}</real>`,
+				'</plist>',
+				'',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			'Invalid XML on line 4',
+			tag,
+		);
+	}
 });
 
 Deno.test('spec: true', async () => {
