@@ -19,30 +19,6 @@ const ents = { '&': '&amp;', '<': '&lt;', '>': '&gt;' } as const;
 const ent = (s: string) => ents[s as keyof typeof ents];
 
 /**
- * System doctype.
- * Known to pair with version '0.9'.
- */
-const XML_DOCTYPE_SYSTEM =
-	'<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">';
-
-/**
- * Public doctype 1.0.
- */
-const XML_DOCTYPE_PUBLIC_V1_0 =
-	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
-
-/**
- * XML version 0.9.
- * Known to pair with system doctype.
- */
-const XML_VERSION_V0_9 = '0.9';
-
-/**
- * XML version 1.0.
- */
-const XML_VERSION_V1_0 = '1.0';
-
-/**
  * Encode integer to string.
  *
  * @param i Integer value.
@@ -126,14 +102,16 @@ export function encodeXml(
 
 	switch (format) {
 		case FORMAT_XML_V1_0: {
-			doctype = XML_DOCTYPE_PUBLIC_V1_0;
-			version = XML_VERSION_V1_0;
+			doctype =
+				'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
+			version = '1.0';
 			i = 174;
 			break;
 		}
 		case FORMAT_XML_V0_9: {
-			doctype = XML_DOCTYPE_SYSTEM;
-			version = XML_VERSION_V0_9;
+			doctype =
+				'<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">';
+			version = '0.9';
 			i = 151;
 			break;
 		}
