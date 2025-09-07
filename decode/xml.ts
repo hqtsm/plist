@@ -603,7 +603,7 @@ export function decodeXml(
 			}
 		} else {
 			for (f = s = -1, t = i; i < l && (b = d[i]) !== 62; f = b, i++) {
-				if (s < 0 && (b === 32 || b === 9 || b === 10 || b === 13)) {
+				if (s < 0 && ws(b)) {
 					s = i - t;
 				}
 			}
@@ -712,10 +712,7 @@ export function decodeXml(
 					) {
 						if (!n) {
 							for (f = t + s; f < x;) {
-								a = d[f++];
-								if (
-									a === 9 || a === 10 || a === 13 || a === 32
-								) {
+								if (ws(a = d[f++])) {
 									if (
 										d[f] === 118 &&
 										d[++f] === 101 &&
