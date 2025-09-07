@@ -545,8 +545,8 @@ export function decodeXml(
 			f = x.a;
 			if (f === 100) {
 				f = q = x.p as PLDict;
-				if (q.size === 1) {
-					if (PLInteger.is(x = q.find('CF$UID'))) {
+				if (q.size === 1 && (x = q.find('CF$UID'))) {
+					if (PLInteger.is(x)) {
 						q = new PLUID(x.value);
 					} else if (PLReal.is(x)) {
 						a = x.value || 0;
