@@ -260,6 +260,37 @@ function integer(
 }
 
 /**
+ * Read real.
+ *
+ * @param d Data.
+ * @param p Offset pointer.
+ * @param l Length.
+ * @returns Real.
+ */
+function real(d: Uint8Array, p: [number], l: number): number {
+	const s = string(d, p, l);
+	if (!s) {
+		throw new SyntaxError(utf8ErrorXML(d, p[0]));
+	}
+	switch (s.toLowerCase()) {
+		case 'nan': {
+			return NaN;
+		}
+		case 'inf':
+		case '+inf':
+		case 'infinity':
+		case '+infinity': {
+			return Infinity;
+		}
+		case '-inf':
+		case '-infinity': {
+			return -Infinity;
+		}
+	}
+	return +s;
+}
+
+/**
  * Read string.
  *
  * @param d Data.
@@ -726,7 +757,9 @@ export function decodeXml(
 						d[t + 2] === 97 &&
 						d[t + 3] === 108
 					) {
-						q = new PLReal();
+						j[0] = i;
+						q = new PLReal(real(d, j, l));
+						i = j[0];
 					}
 					break;
 				}

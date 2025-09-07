@@ -16,6 +16,7 @@ import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 import { decodeXml } from './xml.ts';
+import { PLReal } from '../real.ts';
 
 const DOCTYPE =
 	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
@@ -1720,7 +1721,100 @@ Deno.test('spec: integer-sizes', async () => {
 	}
 });
 
-// TODO: real
+Deno.test('spec: real-double-p0.0', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('real-double-p0.0', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLReal);
+	assertEquals(plist.value, 0);
+	assertEquals(plist.bits, 64);
+});
+
+Deno.test('spec: real-float-p0.0', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('real-float-p0.0', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLReal);
+	assertEquals(plist.value, 0);
+	assertEquals(plist.bits, 64);
+});
+
+Deno.test('spec: real-reuse', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('real-reuse', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+
+	const a = plist.get(0)!;
+	assertInstanceOf(a, PLReal);
+	assertEquals(a.value, 3.14);
+	assertEquals(a.bits, 64);
+
+	const b = plist.get(1)!;
+	assertInstanceOf(b, PLReal);
+	assertEquals(b.value, 3.14);
+	assertEquals(b.bits, 64);
+
+	assertNotStrictEquals(a, b);
+});
+
+Deno.test('spec: real-sizes', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('real-sizes', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 84);
+
+	const d64 = new Uint8Array(8);
+	const d32 = new Uint8Array(d64.buffer, 0, 4);
+	const dv = new DataView(d64.buffer);
+	for (let i = 0; i < 84;) {
+		const k: PLType = plist.get(i)!;
+		assertInstanceOf(k, PLString, `${i}`);
+		const tag: string = k.value;
+		i++;
+
+		const v: PLType = plist.get(i)!;
+		assertInstanceOf(v, PLReal, tag);
+		let [type, hex] = k.value.split(' ');
+
+		// Official encoder encodes -0.0 as 0.0.
+		switch (hex) {
+			case '80000000': {
+				hex = '00000000';
+				break;
+			}
+			case '8000000000000000': {
+				hex = '0000000000000000';
+				break;
+			}
+		}
+
+		let d;
+		switch (type) {
+			case 'f32': {
+				dv.setFloat32(0, v.value);
+				d = d32;
+				break;
+			}
+			case 'f64': {
+				dv.setFloat64(0, v.value);
+				d = d64;
+				break;
+			}
+			default: {
+				throw new Error(`Unknown type: ${type}`);
+			}
+		}
+		const dh = [...d].map((b) => b.toString(16).padStart(2, '0')).join('');
+		assertEquals(dh, hex, tag);
+		i++;
+	}
+});
 
 Deno.test('spec: uid-42', async () => {
 	const { format, plist } = decodeXml(
@@ -2176,11 +2270,34 @@ Deno.test('spec: xml-edge processing-instructions', async () => {
 });
 
 Deno.test('spec: xml-edge real-attrs', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'real-attrs'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLReal);
+	assertEquals(plist.value, 0);
 });
 
 Deno.test('spec: xml-edge real-edge', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'real-edge'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 12);
+
+	for (let i = 0; i < 12;) {
+		const k: PLType = plist.get(i)!;
+		assertInstanceOf(k, PLString, `${i}`);
+		const tag: string = k.value;
+		i++;
+
+		const v: PLType = plist.get(i)!;
+		assertInstanceOf(v, PLReal, tag);
+		const e = +k.value.split('|')[1];
+		assertEquals(v.value, e, tag);
+		i++;
+	}
 });
 
 Deno.test('spec: xml-edge self-closed', async () => {
