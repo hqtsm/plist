@@ -1,14 +1,14 @@
 import { assertEquals, assertLess } from '@std/assert';
 import { b16d, b64d, b64e } from './base.ts';
 
-const hex = '0123456789abcdef';
+const b16 = '0123456789abcdef';
 const b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 Deno.test('b16d', () => {
 	for (let c = 0; c < 256; c++) {
 		const s = String.fromCharCode(c);
 		const tag = `${c}: ${JSON.stringify(s)}`;
-		const e = hex.indexOf(s.toLowerCase());
+		const e = b16.indexOf(s.toLowerCase());
 		assertEquals(b16d(c), e, tag);
 	}
 });
