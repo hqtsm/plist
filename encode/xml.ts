@@ -13,7 +13,6 @@ import { walk } from '../walk.ts';
 const rIndent = /^[\t ]*$/;
 const rDateY4 = /^(-)0*(\d{3}-)|\+?0*(\d{4,}-)/;
 const rRealTrim = /\.?0+$/;
-const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>';
 const b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 const rEnt = /[&<>]/g;
 const ents = { '&': '&amp;', '<': '&lt;', '>': '&gt;' } as const;
@@ -222,7 +221,7 @@ export function encodeXml(
 	});
 
 	const r = new Uint8Array(i);
-	i = utf8Encode(xmlHeader, r, 0);
+	i = utf8Encode('<?xml version="1.0" encoding="UTF-8"?>', r, 0);
 	r[i++] = 10;
 	i = utf8Encode(doctype, r, i);
 	r[i++] = 10;
