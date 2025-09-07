@@ -25,8 +25,7 @@ const ent = (s: string) => ents[s as keyof typeof ents];
  * @returns Integer string.
  */
 function integerString(i: bigint): string {
-	// Smallest 128-bit encodes as negative zero.
-	// Weird bug?
+	// Weird bug encodes smallest 128-bit as negative zero.
 	return i === -0x80000000000000000000000000000000n ? '-0' : i.toString();
 }
 
