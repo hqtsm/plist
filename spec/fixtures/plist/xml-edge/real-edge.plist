@@ -2,17 +2,17 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
-	<key>+0|0.0</key>
+	<string>+0|0.0</string>
 	<real>+0</real>
-	<key>+1.|1</key>
+	<string>+1.|1</string>
 	<real>+1.</real>
-	<key>+2.0|2</key>
+	<string>+2.0|2</string>
 	<real>+2.0</real>
-	<key>-0|0.0</key>
+	<string>-0|0.0</string>
 	<real>-0</real>
-	<key>-1.|-1</key>
+	<string>-1.|-1</string>
 	<real>-1.</real>
-	<key>-2.0|-2</key>
+	<string>-2.0|-2</string>
 	<real>-2.0</real>
 </array>
 </plist>
