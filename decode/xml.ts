@@ -18,6 +18,8 @@ import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 
 const rUTF8 = /^(x-mac-)?utf-8$/i;
+const rREAL = /^[0-9e.+-]+$/i;
+const rLWS = /^[\0-\x20\x7f-\xa0\u2000-\u200B\u3000]+/;
 
 /**
  * Plist wrapper.
@@ -268,10 +270,7 @@ function integer(
  * @returns Real.
  */
 function real(d: Uint8Array, p: [number], l: number): number {
-	const s = string(d, p, l);
-	if (!s) {
-		throw new SyntaxError(utf8ErrorXML(d, p[0]));
-	}
+	let s = string(d, p, l);
 	switch (s.toLowerCase()) {
 		case 'nan': {
 			return NaN;
@@ -287,7 +286,10 @@ function real(d: Uint8Array, p: [number], l: number): number {
 			return -Infinity;
 		}
 	}
-	return +s;
+	if (!rREAL.test(s = s.replace(rLWS, '')) || (l = +s) !== l) {
+		throw new SyntaxError(utf8ErrorXML(d, p[0]));
+	}
+	return l;
 }
 
 /**
