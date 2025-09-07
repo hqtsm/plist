@@ -2469,23 +2469,48 @@ Deno.test('spec: xml-edge uid-over', async () => {
 });
 
 Deno.test('spec: xml-edge uid-real-nan', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'uid-real-nan'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLUID);
+	assertEquals(plist.value, 0n);
 });
 
 Deno.test('spec: xml-edge uid-real-negative', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'uid-real-negative'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLUID);
+	assertEquals(plist.value, 0xfffffffdn);
 });
 
 Deno.test('spec: xml-edge uid-real-ninf', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'uid-real-ninf'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLUID);
+	assertEquals(plist.value, 0x80000000n);
 });
 
 Deno.test('spec: xml-edge uid-real-pinf', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'uid-real-pinf'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLUID);
+	assertEquals(plist.value, 0x7fffffffn);
 });
 
 Deno.test('spec: xml-edge uid-real-positive', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'uid-real-positive'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLUID);
+	assertEquals(plist.value, 3n);
 });
 
 Deno.test('spec: xml-edge uid-string', async () => {
