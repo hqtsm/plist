@@ -1107,6 +1107,7 @@ Deno.test('Real: Good', () => {
 			assertEquals(format, FORMAT_XML_V1_0, tag);
 			assertInstanceOf(plist, PLReal, tag);
 			assertEquals(plist.value, 3.14, tag);
+			assertEquals(plist.bits, 64, tag);
 		}
 	}
 });
@@ -1885,6 +1886,7 @@ Deno.test('spec: real-sizes', async () => {
 
 		const v: PLType = plist.get(i)!;
 		assertInstanceOf(v, PLReal, tag);
+		assertEquals(v.bits, 64);
 		let [type, hex] = k.value.split(' ');
 
 		// Official encoder encodes -0.0 as 0.0.
@@ -2381,6 +2383,7 @@ Deno.test('spec: xml-edge real-attrs', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLReal);
 	assertEquals(plist.value, 0);
+	assertEquals(plist.bits, 64);
 });
 
 Deno.test('spec: xml-edge real-edge', async () => {
@@ -2399,6 +2402,7 @@ Deno.test('spec: xml-edge real-edge', async () => {
 
 		const v: PLType = plist.get(i)!;
 		assertInstanceOf(v, PLReal, tag);
+		assertEquals(v.bits, 64);
 		const e = +k.value.split('|')[1];
 		assertEquals(v.value, e, tag);
 		i++;
