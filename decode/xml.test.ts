@@ -1135,7 +1135,27 @@ Deno.test('Real: Bad', () => {
 			tag,
 		);
 	}
-	for (const s of ['', 'e', 'E', '.', '-', '+', 'a', 'A', '0x0', ',']) {
+	for (
+		const s of [
+			'',
+			'e',
+			'E',
+			'.',
+			'-',
+			'+',
+			'a',
+			'A',
+			'0x0',
+			',',
+			' nan',
+			' inf',
+			' +inf',
+			' -inf',
+			' infinity',
+			' +infinity',
+			' -infinity',
+		]
+	) {
 		const tag = JSON.stringify(s);
 		const data = TE.encode(
 			[
