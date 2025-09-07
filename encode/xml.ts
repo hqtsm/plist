@@ -7,13 +7,13 @@
 import type { PLDate } from '../date.ts';
 import { utf8Encode, utf8Size } from '../pri/utf8.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
+import { b64e } from '../pri/base.ts';
 import type { PLType } from '../type.ts';
 import { walk } from '../walk.ts';
 
 const rIndent = /^[\t ]*$/;
 const rDateY4 = /^(-)0*(\d{3}-)|\+?0*(\d{4,}-)/;
 const rRealTrim = /\.?0+$/;
-const b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 const rEnt = /[&<>]/g;
 const ents = { '&': '&amp;', '<': '&lt;', '>': '&gt;' } as const;
 const ent = (s: string) => ents[s as keyof typeof ents];
@@ -264,7 +264,8 @@ export function encodeXml(
 					let u = new Uint8Array(v.buffer),
 						l = u.length,
 						l3 = l - (l % 3),
-						b = 0;
+						b = 0,
+						c;
 					b < l;
 				) {
 					for (x = d; x--; i += il) {
@@ -272,22 +273,22 @@ export function encodeXml(
 					}
 					for (x = 20; b < l3 && --x;) {
 						e = u[b++];
-						r[i++] = b64.charCodeAt(e >> 2);
+						r[i++] = b64e[c = e >> 2] + c - 19;
 						e = e << 8 | u[b++];
-						r[i++] = b64.charCodeAt(e >> 4 & 63);
+						r[i++] = b64e[c = e >> 4 & 63] + c - 19;
 						e = e << 8 | u[b++];
-						r[i++] = b64.charCodeAt(e >> 6 & 63);
-						r[i++] = b64.charCodeAt(e & 63);
+						r[i++] = b64e[c = e >> 6 & 63] + c - 19;
+						r[i++] = b64e[c = e & 63] + c - 19;
 					}
 					if (x && b < l) {
 						e = u[b++];
-						r[i++] = b64.charCodeAt(e >> 2);
+						r[i++] = b64e[c = e >> 2] + c - 19;
 						if (b < l) {
 							e = e << 8 | u[b++];
-							r[i++] = b64.charCodeAt(e >> 4 & 63);
-							r[i++] = b64.charCodeAt(e << 2 & 63);
+							r[i++] = b64e[c = e >> 4 & 63] + c - 19;
+							r[i++] = b64e[c = e << 2 & 63] + c - 19;
 						} else {
-							r[i++] = b64.charCodeAt(e << 4 & 63);
+							r[i++] = b64e[c = e << 4 & 63] + c - 19;
 							r[i++] = 61;
 						}
 						r[i++] = 61;
