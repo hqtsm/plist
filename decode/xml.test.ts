@@ -27,6 +27,21 @@ const ascii2utf8 = (data: Uint8Array) => TE.encode(TDASCII.decode(data));
 const entityHex = (code: number) => `&#x${code.toString(16)};`;
 const entityDec = (code: number) => `&#${code.toString(10)};`;
 
+function realWS() {
+	const ws: string[] = [];
+	for (let i = 0; i <= 0x20; i++) {
+		ws.push(String.fromCharCode(i));
+	}
+	for (let i = 0x7F; i <= 0xA0; i++) {
+		ws.push(String.fromCharCode(i));
+	}
+	for (let i = 0x2000; i <= 0x200B; i++) {
+		ws.push(String.fromCharCode(i));
+	}
+	ws.push(String.fromCharCode(0x3000));
+	return ws;
+}
+
 Deno.test('XML encoding: default', () => {
 	const options = {
 		decoder(encoding: string): Uint8Array | null {
@@ -1066,6 +1081,57 @@ Deno.test('Integers: EOF', () => {
 			() => decodeXml(data, { int64: true }),
 			SyntaxError,
 			'Invalid end on line 4',
+			tag,
+		);
+	}
+});
+
+Deno.test('Real: Good', () => {
+	const ws = realWS();
+	for (const c1 of ws) {
+		for (const c2 of ws) {
+			const s = `${c1}${c2}3.14`;
+			const tag = JSON.stringify(s);
+			const { format, plist } = decodeXml(
+				TE.encode(
+					[
+						'<?xml version="1.0" encoding="UTF-8"?>',
+						DOCTYPE,
+						'<plist version="1.0">',
+						`<real>${s}</real>`,
+						'</plist>',
+						'',
+					].join('\n'),
+				),
+			);
+			assertEquals(format, FORMAT_XML_V1_0, tag);
+			assertInstanceOf(plist, PLReal, tag);
+			assertEquals(plist.value, 3.14, tag);
+		}
+	}
+});
+
+Deno.test('Real: Bad', () => {
+	const ws = realWS();
+	for (const c of ws) {
+		const s = `3.14${c}`;
+		// Line number is the closing tag in the official parser.
+		const line = /[\r\n]/.test(s) ? 5 : 4;
+		const tag = JSON.stringify(s);
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				`<real>${s}</real>`,
+				'</plist>',
+				'',
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data),
+			SyntaxError,
+			`Invalid XML on line ${line}`,
 			tag,
 		);
 	}

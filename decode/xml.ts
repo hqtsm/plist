@@ -19,7 +19,7 @@ import { PLUID } from '../uid.ts';
 
 const rUTF8 = /^(x-mac-)?utf-8$/i;
 const rREAL = /^[0-9e.+-]+$/i;
-const rLWS = /^[\0-\x20\x7f-\xa0\u2000-\u200B\u3000]+/;
+const rLWS = /^[\0-\x20\x7F-\xA0\u2000-\u200B\u3000]+/;
 
 /**
  * Plist wrapper.
