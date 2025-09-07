@@ -13,8 +13,10 @@ import type { PLType } from '../type.ts';
 import { PLTYPE_UID, PLUID } from '../uid.ts';
 import { encodeBinary } from './binary.ts';
 
-// Apple duplicates encoding reused references to certain types.
-const duplicates = [PLTYPE_ARRAY, PLTYPE_BOOLEAN, PLTYPE_DICT, PLTYPE_UID];
+const CF_STYLE = {
+	// CF duplicates encoding reused references to certain types.
+	duplicates: [PLTYPE_ARRAY, PLTYPE_BOOLEAN, PLTYPE_DICT, PLTYPE_UID],
+};
 
 function diff(a: Uint8Array, b: Uint8Array): number {
 	for (let i = 0; i < a.length; i++) {
@@ -81,9 +83,7 @@ Deno.test('Invalid type', () => {
 });
 
 Deno.test('spec: array-0', async () => {
-	const encode = encodeBinary(new PLArray(), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLArray(), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-0', 'binary'),
@@ -91,9 +91,7 @@ Deno.test('spec: array-0', async () => {
 });
 
 Deno.test('spec: array-1', async () => {
-	const encode = encodeBinary(new PLArray([new PLString('A')]), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLArray([new PLString('A')]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-1', 'binary'),
@@ -109,9 +107,7 @@ Deno.test('spec: array-4', async () => {
 	for (let i = 0; i < 4; i++) {
 		array.push(i % 2 ? data1 : data0);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-4', 'binary'),
@@ -125,9 +121,7 @@ Deno.test('spec: array-8', async () => {
 	for (let i = 0; i < 8; i++) {
 		array.push(i % 2 ? B : A);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-8', 'binary'),
@@ -141,9 +135,7 @@ Deno.test('spec: array-14', async () => {
 	for (let i = 0; i < 14; i++) {
 		array.push(i % 2 ? TRUE : FALSE);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-14', 'binary'),
@@ -157,9 +149,7 @@ Deno.test('spec: array-15', async () => {
 	for (let i = 0; i < 15; i++) {
 		array.push(i % 2 ? date1 : date0);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-15', 'binary'),
@@ -171,9 +161,7 @@ Deno.test('spec: array-26', async () => {
 	for (let i = 0; i < 26; i++) {
 		array.push(new PLString(String.fromCharCode(65 + i)));
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-26', 'binary'),
@@ -187,9 +175,7 @@ Deno.test('spec: array-128', async () => {
 	for (let i = 0; i < 128; i++) {
 		array.push(i % 2 ? real1 : real0);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-128', 'binary'),
@@ -203,9 +189,7 @@ Deno.test('spec: array-255', async () => {
 	for (let i = 0; i < 255; i++) {
 		array.push(i % 2 ? int1 : int0);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-255', 'binary'),
@@ -219,9 +203,7 @@ Deno.test('spec: array-256', async () => {
 	for (let i = 0; i < 256; i++) {
 		array.push(i % 2 ? TRUE : FALSE);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-256', 'binary'),
@@ -235,9 +217,7 @@ Deno.test('spec: array-65534', async () => {
 	for (let i = 0; i < 65534; i++) {
 		array.push(i % 2 ? TRUE : FALSE);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-65534', 'binary'),
@@ -251,9 +231,7 @@ Deno.test('spec: array-65535', async () => {
 	for (let i = 0; i < 65535; i++) {
 		array.push(i % 2 ? TRUE : FALSE);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-65535', 'binary'),
@@ -267,9 +245,7 @@ Deno.test('spec: array-65536', async () => {
 	for (let i = 0; i < 65536; i++) {
 		array.push(i % 2 ? TRUE : FALSE);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-65536', 'binary'),
@@ -278,9 +254,7 @@ Deno.test('spec: array-65536', async () => {
 
 Deno.test('spec: array-reuse', async () => {
 	const reuse = new PLArray([new PLString('AAAA'), new PLString('BBBB')]);
-	const encode = encodeBinary(new PLArray([reuse, reuse]), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLArray([reuse, reuse]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-reuse', 'binary'),
@@ -288,9 +262,7 @@ Deno.test('spec: array-reuse', async () => {
 });
 
 Deno.test('spec: data-0', async () => {
-	const encode = encodeBinary(new PLData(), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLData(), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-0', 'binary'),
@@ -300,9 +272,7 @@ Deno.test('spec: data-0', async () => {
 Deno.test('spec: data-1', async () => {
 	const data = new PLData(1);
 	new Uint8Array(data.buffer)[0] = 0x61;
-	const encode = encodeBinary(data, {
-		duplicates,
-	});
+	const encode = encodeBinary(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-1', 'binary'),
@@ -312,9 +282,7 @@ Deno.test('spec: data-1', async () => {
 Deno.test('spec: data-2', async () => {
 	const data = new PLData(2);
 	new Uint8Array(data.buffer).set(new Uint8Array([0x61, 0x62]));
-	const encode = encodeBinary(data, {
-		duplicates,
-	});
+	const encode = encodeBinary(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-2', 'binary'),
@@ -323,9 +291,7 @@ Deno.test('spec: data-2', async () => {
 Deno.test('spec: data-3', async () => {
 	const data = new PLData(3);
 	new Uint8Array(data.buffer).set(new Uint8Array([0x61, 0x62, 0x63]));
-	const encode = encodeBinary(data, {
-		duplicates,
-	});
+	const encode = encodeBinary(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-3', 'binary'),
@@ -335,9 +301,7 @@ Deno.test('spec: data-3', async () => {
 Deno.test('spec: data-4', async () => {
 	const data = new PLData(4);
 	new Uint8Array(data.buffer).set(new Uint8Array([0x61, 0x62, 0x63, 0x64]));
-	const encode = encodeBinary(data, {
-		duplicates,
-	});
+	const encode = encodeBinary(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-4', 'binary'),
@@ -348,9 +312,7 @@ Deno.test('spec: data-14', async () => {
 	const chars = [...'abcdefghijklmn'].map((c) => c.charCodeAt(0));
 	const data = new PLData(chars.length);
 	new Uint8Array(data.buffer).set(chars);
-	const encode = encodeBinary(data, {
-		duplicates,
-	});
+	const encode = encodeBinary(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-14', 'binary'),
@@ -361,9 +323,7 @@ Deno.test('spec: data-15', async () => {
 	const chars = [...'abcdefghijklmno'].map((c) => c.charCodeAt(0));
 	const data = new PLData(chars.length);
 	new Uint8Array(data.buffer).set(chars);
-	const encode = encodeBinary(data, {
-		duplicates,
-	});
+	const encode = encodeBinary(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-15', 'binary'),
@@ -377,9 +337,7 @@ Deno.test('spec: data-255', async () => {
 	}
 	const data = new PLData(255);
 	new Uint8Array(data.buffer).set(bytes);
-	const encode = encodeBinary(data, {
-		duplicates,
-	});
+	const encode = encodeBinary(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-255', 'binary'),
@@ -393,9 +351,7 @@ Deno.test('spec: data-256', async () => {
 	}
 	const data = new PLData(256);
 	new Uint8Array(data.buffer).set(bytes);
-	const encode = encodeBinary(data, {
-		duplicates,
-	});
+	const encode = encodeBinary(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-256', 'binary'),
@@ -406,9 +362,7 @@ Deno.test('spec: data-reuse', async () => {
 	const bytes = 'reused'.split('').map((c) => c.charCodeAt(0));
 	const reuse = new PLData(bytes.length);
 	new Uint8Array(reuse.buffer).set(bytes);
-	const encode = encodeBinary(new PLArray([reuse, reuse]), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLArray([reuse, reuse]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-reuse', 'binary'),
@@ -417,9 +371,7 @@ Deno.test('spec: data-reuse', async () => {
 
 Deno.test('spec: dict-empty', async () => {
 	const dict = new PLDict();
-	const encode = encodeBinary(dict, {
-		duplicates,
-	});
+	const encode = encodeBinary(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-empty', 'binary'),
@@ -430,9 +382,7 @@ Deno.test('spec: dict-empties', async () => {
 	const dict = new PLDict();
 	dict.set(new PLString('dict'), new PLDict());
 	dict.set(new PLString('array'), new PLArray());
-	const encode = encodeBinary(dict, {
-		duplicates,
-	});
+	const encode = encodeBinary(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-empties', 'binary'),
@@ -444,9 +394,7 @@ Deno.test('spec: dict-26', async () => {
 	for (const C of 'RBKTDMVFOXHQAZJSCLUENWGPYI') {
 		dict.set(new PLString(C), new PLString(C.toLowerCase()));
 	}
-	const encode = encodeBinary(dict, {
-		duplicates,
-	});
+	const encode = encodeBinary(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-26', 'binary'),
@@ -461,9 +409,7 @@ Deno.test('spec: dict-long-key', async () => {
 		),
 		new PLString('64'),
 	);
-	const encode = encodeBinary(dict, {
-		duplicates,
-	});
+	const encode = encodeBinary(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-long-key', 'binary'),
@@ -476,9 +422,7 @@ Deno.test('spec: dict-unicode-key', async () => {
 		new PLString('UTF\u20138'),
 		new PLString('utf-8'),
 	);
-	const encode = encodeBinary(dict, {
-		duplicates,
-	});
+	const encode = encodeBinary(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-unicode-key', 'binary'),
@@ -527,9 +471,7 @@ Deno.test('spec: dict-nesting', async () => {
 				]),
 			],
 		]),
-		{
-			duplicates,
-		},
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -548,9 +490,7 @@ Deno.test('spec: dict-order', async () => {
 			[new PLString('a'), new PLString('1')],
 			[new PLString(), new PLString('0')],
 		]),
-		{
-			duplicates,
-		},
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -568,9 +508,7 @@ Deno.test('spec: dict-reuse', async () => {
 			[new PLString('AA'), reuse],
 			[new PLString('BB'), reuse],
 		]),
-		{
-			duplicates,
-		},
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -588,9 +526,7 @@ Deno.test('spec: dict-repeat', async () => {
 			[new PLString('C'), new PLString('33')],
 			[new PLString('B'), new PLString('22')],
 		]),
-		{
-			duplicates,
-		},
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -599,9 +535,7 @@ Deno.test('spec: dict-repeat', async () => {
 });
 
 Deno.test('spec: string-empty', async () => {
-	const encode = encodeBinary(new PLString(), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLString(), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-empty', 'binary'),
@@ -610,9 +544,7 @@ Deno.test('spec: string-empty', async () => {
 
 Deno.test('spec: string-reuse', async () => {
 	const reuse = new PLString('reused');
-	const encode = encodeBinary(new PLArray([reuse, reuse]), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLArray([reuse, reuse]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-reuse', 'binary'),
@@ -620,9 +552,7 @@ Deno.test('spec: string-reuse', async () => {
 });
 
 Deno.test('spec: string-ascii', async () => {
-	const encode = encodeBinary(new PLString('ASCII'), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLString('ASCII'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-ascii', 'binary'),
@@ -637,9 +567,7 @@ Deno.test('spec: string-chars', async () => {
 			new PLString(String.fromCharCode(i)),
 		);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		diff(
 			encode,
@@ -650,9 +578,7 @@ Deno.test('spec: string-chars', async () => {
 });
 
 Deno.test('spec: string-unicode', async () => {
-	const encode = encodeBinary(new PLString('UTF\u20138'), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLString('UTF\u20138'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-unicode', 'binary'),
@@ -662,9 +588,7 @@ Deno.test('spec: string-unicode', async () => {
 Deno.test('spec: string-long-unicode', async () => {
 	const encode = encodeBinary(
 		new PLString(new Array(8).fill('UTF\u20138').join(' ')),
-		{
-			duplicates,
-		},
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -673,9 +597,7 @@ Deno.test('spec: string-long-unicode', async () => {
 });
 
 Deno.test('spec: string-utf8-mb2-divide', async () => {
-	const encode = encodeBinary(new PLString('\u00f7'), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLString('\u00f7'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb2-divide', 'binary'),
@@ -683,9 +605,7 @@ Deno.test('spec: string-utf8-mb2-divide', async () => {
 });
 
 Deno.test('spec: string-utf8-mb2-ohm', async () => {
-	const encode = encodeBinary(new PLString('\u03a9'), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLString('\u03a9'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb2-ohm', 'binary'),
@@ -693,9 +613,7 @@ Deno.test('spec: string-utf8-mb2-ohm', async () => {
 });
 
 Deno.test('spec: string-utf8-mb3-check', async () => {
-	const encode = encodeBinary(new PLString('\u2705'), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLString('\u2705'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb3-check', 'binary'),
@@ -703,9 +621,7 @@ Deno.test('spec: string-utf8-mb3-check', async () => {
 });
 
 Deno.test('spec: string-utf8-mb3-plus', async () => {
-	const encode = encodeBinary(new PLString('\uff0b'), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLString('\uff0b'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb3-plus', 'binary'),
@@ -713,9 +629,7 @@ Deno.test('spec: string-utf8-mb3-plus', async () => {
 });
 
 Deno.test('spec: string-utf8-mb4-robot', async () => {
-	const encode = encodeBinary(new PLString('\ud83e\udd16'), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLString('\ud83e\udd16'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb4-robot', 'binary'),
@@ -723,9 +637,7 @@ Deno.test('spec: string-utf8-mb4-robot', async () => {
 });
 
 Deno.test('spec: true', async () => {
-	const encode = encodeBinary(new PLBoolean(true), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLBoolean(true), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('true', 'binary'),
@@ -733,9 +645,7 @@ Deno.test('spec: true', async () => {
 });
 
 Deno.test('spec: false', async () => {
-	const encode = encodeBinary(new PLBoolean(false), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLBoolean(false), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('false', 'binary'),
@@ -743,9 +653,7 @@ Deno.test('spec: false', async () => {
 });
 
 Deno.test('spec: integer-0', async () => {
-	const encode = encodeBinary(new PLInteger(0n), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLInteger(0n), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('integer-0', 'binary'),
@@ -753,9 +661,7 @@ Deno.test('spec: integer-0', async () => {
 });
 
 Deno.test('spec: integer-negative', async () => {
-	const encode = encodeBinary(new PLInteger(-42n), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLInteger(-42n), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('integer-negative', 'binary'),
@@ -764,9 +670,7 @@ Deno.test('spec: integer-negative', async () => {
 
 Deno.test('spec: integer-reuse', async () => {
 	const reuse = new PLInteger(42n);
-	const encode = encodeBinary(new PLArray([reuse, reuse]), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLArray([reuse, reuse]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('integer-reuse', 'binary'),
@@ -774,9 +678,7 @@ Deno.test('spec: integer-reuse', async () => {
 });
 
 Deno.test('spec: integer-min', async () => {
-	const encode = encodeBinary(new PLInteger(-0x8000000000000000n), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLInteger(-0x8000000000000000n), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('integer-min', 'binary'),
@@ -813,9 +715,7 @@ Deno.test('spec: integer-sizes', async () => {
 			new PLInteger(i === 0xffffffffffffffffn ? -1n : i),
 		);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('integer-sizes', 'binary'),
@@ -838,9 +738,7 @@ Deno.test('spec: integer-big', async () => {
 		new PLString('MIN+2'),
 		new PLInteger(MIN + 2n, 128),
 	]);
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('integer-big', 'binary'),
@@ -949,9 +847,7 @@ Deno.test('spec: real-sizes', async () => {
 		}
 		array.push(new PLString(key), real);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('real-sizes', 'binary'),
@@ -959,9 +855,7 @@ Deno.test('spec: real-sizes', async () => {
 });
 
 Deno.test('spec: date-0.0', async () => {
-	const encode = encodeBinary(new PLDate(0), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLDate(0), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('date-0.0', 'binary'),
@@ -976,9 +870,7 @@ Deno.test('spec: date-every-day-2001', async () => {
 		date.day = day;
 		array.push(new PLString(String(day).padStart(3, '0')), date);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('date-every-day-2001', 'binary'),
@@ -993,9 +885,7 @@ Deno.test('spec: date-every-day-2004', async () => {
 		date.day = day;
 		array.push(new PLString(String(day).padStart(3, '0')), date);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('date-every-day-2004', 'binary'),
@@ -1004,9 +894,7 @@ Deno.test('spec: date-every-day-2004', async () => {
 
 Deno.test('spec: date-reuse', async () => {
 	const date = new PLDate(42);
-	const encode = encodeBinary(new PLArray([date, date]), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLArray([date, date]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('date-reuse', 'binary'),
@@ -1093,9 +981,7 @@ Deno.test('spec: date-edge', async () => {
 });
 
 Deno.test('spec: uid-42', async () => {
-	const encode = encodeBinary(new PLUID(42n), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLUID(42n), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('uid-42', 'binary'),
@@ -1104,9 +990,7 @@ Deno.test('spec: uid-42', async () => {
 
 Deno.test('spec: uid-reuse', async () => {
 	const uid = new PLUID(42n);
-	const encode = encodeBinary(new PLArray([uid, uid]), {
-		duplicates,
-	});
+	const encode = encodeBinary(new PLArray([uid, uid]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('uid-reuse', 'binary'),
@@ -1135,9 +1019,7 @@ Deno.test('spec: uid-sizes', async () => {
 			new PLUID(BigInt(value)),
 		);
 	}
-	const encode = encodeBinary(array, {
-		duplicates,
-	});
+	const encode = encodeBinary(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('uid-sizes', 'binary'),
