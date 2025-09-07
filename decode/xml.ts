@@ -20,6 +20,7 @@ import { PLUID } from '../uid.ts';
 const rUTF8 = /^(x-mac-)?utf-8$/i;
 const rREAL = /^[0-9e.+-]+$/i;
 const rLWS = /^[\0-\x20\x7F-\xA0\u2000-\u200B\u3000]+/;
+const ws = (c: number): boolean => c === 9 || c === 10 || c === 13 || c === 32;
 
 /**
  * Plist wrapper.
@@ -121,7 +122,7 @@ function encoding(d: Uint8Array): string | null {
  * @returns After offset.
  */
 function whitespace(d: Uint8Array, i: number): number {
-	for (let c; (c = d[i]) === 9 || c === 10 || c === 13 || c === 32; i++);
+	for (; ws(d[i]); i++);
 	return i;
 }
 
