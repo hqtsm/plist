@@ -4,7 +4,7 @@ import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
 import { PLDict } from '../dict.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
-import { PLInteger } from '../integer.ts';
+import { PLInteger, PLTYPE_INTEGER } from '../integer.ts';
 import { b16d } from '../pri/base.ts';
 import {
 	utf8Decode,
@@ -13,7 +13,7 @@ import {
 	utf8ErrorXML,
 	utf8Length,
 } from '../pri/utf8.ts';
-import { PLReal } from '../real.ts';
+import { PLReal, PLTYPE_REAL } from '../real.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
@@ -546,10 +546,11 @@ export function decodeXml(
 			if (f === 100) {
 				f = q = x.p as PLDict;
 				if (q.size === 1 && (x = q.find('CF$UID'))) {
-					if (PLInteger.is(x)) {
-						q = new PLUID(x.value);
-					} else if (PLReal.is(x)) {
-						a = x.value || 0;
+					a = x[Symbol.toStringTag];
+					if (a === PLTYPE_INTEGER) {
+						q = new PLUID((x as PLInteger).value);
+					} else if (a === PLTYPE_REAL) {
+						a = (x as PLReal).value || 0;
 						q = new PLUID(
 							a === Infinity
 								? 0x7FFFFFFFn
