@@ -232,9 +232,7 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 	for (; i < l; i++) {
 		c = d[i];
 		if (c < 43) {
-			if (!ws(c)) {
-				e = 0;
-			}
+			e = ws(c) ? e : 0;
 		} else if (c < 123) {
 			b = b64d[c - 43] + c - 80;
 			if (b < 0) {
@@ -267,9 +265,7 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 	for (a = s = t = 0, i = h;; i++) {
 		c = d[i];
 		if (c < 43) {
-			if (!ws(c)) {
-				e = 0;
-			}
+			e = ws(c) ? e : 0;
 		} else if (c < 123) {
 			b = b64d[c - 43] + c - 80;
 			if (b < 0) {
