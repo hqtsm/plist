@@ -257,6 +257,8 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 				s += e < 2 ? 3 - e : 1;
 				t = 0;
 			}
+		} else {
+			e = 0;
 		}
 	}
 	if (!o) {
@@ -294,6 +296,8 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 				}
 				t = 0;
 			}
+		} else {
+			e = 0;
 		}
 	}
 	p[0] = i;
