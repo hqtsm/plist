@@ -285,9 +285,9 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 			}
 			a = a << 6 | b;
 			if (++t & 4) {
-				o[s++] = (a >> 16) & 255;
+				o[s++] = a >> 16 & 255;
 				if (e < 2) {
-					o[s++] = (a >> 8) & 255;
+					o[s++] = a >> 8 & 255;
 					if (!e) {
 						o[s++] = a & 255;
 					}
