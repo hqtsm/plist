@@ -5,7 +5,7 @@ import { PLDate } from '../date.ts';
 import { PLDict } from '../dict.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { PLInteger, PLTYPE_INTEGER } from '../integer.ts';
-import { b16d } from '../pri/base.ts';
+import { b16d, b64d } from '../pri/base.ts';
 import {
 	utf8Decode,
 	utf8Encoded,
@@ -208,6 +208,100 @@ function doctype(
 		throw new SyntaxError(utf8ErrorEnd(d));
 	}
 	throw new SyntaxError(utf8ErrorXML(d, i));
+}
+
+/**
+ * Read data.
+ *
+ * @param d Data.
+ * @param p Offset pointer.
+ * @param l Length.
+ * @returns Data.
+ */
+function data(d: Uint8Array, p: [number], l: number): PLData {
+	let [i] = p;
+	let a = 0;
+	let b;
+	let c;
+	let e = 0;
+	let o;
+	let r;
+	let s = 0;
+	let t = 0;
+	const h = i;
+	for (; i < l; i++) {
+		c = d[i];
+		if (c < 43) {
+			if (!ws(c)) {
+				e = 0;
+			}
+		} else if (c < 123) {
+			b = b64d[c - 43] + c - 80;
+			if (b < 0) {
+				if (c !== 61) {
+					e = 0;
+					if (c === 60) {
+						r = new PLData(s);
+						o = new Uint8Array(r.buffer);
+						break;
+					}
+					continue;
+				}
+				e++;
+				b = 0;
+			} else {
+				e = 0;
+			}
+			a = a << 6 | b;
+			if (!(++t & 3)) {
+				s++;
+				if (e < 2) {
+					s++;
+					if (!e) {
+						s++;
+					}
+				}
+			}
+		}
+	}
+	if (!o) {
+		throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
+	}
+	for (a = s = t = 0, i = h;; i++) {
+		c = d[i];
+		if (c < 43) {
+			if (!ws(c)) {
+				e = 0;
+			}
+		} else if (c < 123) {
+			b = b64d[c - 43] + c - 80;
+			if (b < 0) {
+				if (c !== 61) {
+					if (c === 60) {
+						break;
+					}
+					e = 0;
+					continue;
+				}
+				e++;
+				b = 0;
+			} else {
+				e = 0;
+			}
+			a = a << 6 | b;
+			if (!(++t & 3)) {
+				o[s++] = (a >> 16) & 255;
+				if (e < 2) {
+					o[s++] = (a >> 8) & 255;
+					if (!e) {
+						o[s++] = a & 255;
+					}
+				}
+			}
+		}
+	}
+	p[0] = i;
+	return r!;
 }
 
 /**
@@ -651,7 +745,9 @@ export function decodeXml(
 						}
 					} else if (!f && x === 97 && d[t + 2] === 116) {
 						if (d[t + 3] === 97) {
-							q = new PLData();
+							j[0] = i;
+							q = data(d, j, l);
+							i = j[0];
 						} else if (d[t + 3] === 101) {
 							q = new PLDate();
 						}

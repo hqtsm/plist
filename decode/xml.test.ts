@@ -1276,7 +1276,19 @@ Deno.test('spec: array-1', async () => {
 });
 
 Deno.test('spec: array-4', async () => {
-	// TODO
+	const aa = new Uint8Array([0x61, 0x61]);
+	const bb = new Uint8Array([0x62, 0x62]);
+	const { format, plist } = decodeXml(
+		await fixturePlist('array-4', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 4);
+	for (let i = 0; i < plist.length; i++) {
+		const str = plist.get(i);
+		assertInstanceOf(str, PLData);
+		assertEquals(new Uint8Array(str.buffer), i % 2 ? bb : aa);
+	}
 });
 
 Deno.test('spec: array-8', async () => {
@@ -1422,7 +1434,128 @@ Deno.test('spec: array-reuse', async () => {
 	}
 });
 
-// TODO: data
+Deno.test('spec: data-0', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('data-0', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLData);
+	assertEquals(plist.byteLength, 0);
+});
+
+Deno.test('spec: data-1', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('data-1', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLData);
+	assertEquals(plist.byteLength, 1);
+	assertEquals(
+		new Uint8Array(plist.buffer),
+		new Uint8Array([0x61]),
+	);
+});
+
+Deno.test('spec: data-2', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('data-2', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLData);
+	assertEquals(plist.byteLength, 2);
+	assertEquals(
+		new Uint8Array(plist.buffer),
+		new Uint8Array([0x61, 0x62]),
+	);
+});
+
+Deno.test('spec: data-3', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('data-3', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLData);
+	assertEquals(plist.byteLength, 3);
+	assertEquals(
+		new Uint8Array(plist.buffer),
+		new Uint8Array([0x61, 0x62, 0x63]),
+	);
+});
+
+Deno.test('spec: data-4', async () => {
+	const { format, plist } = decodeXml(
+		await fixturePlist('data-4', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLData);
+	assertEquals(plist.byteLength, 4);
+	assertEquals(
+		new Uint8Array(plist.buffer),
+		new Uint8Array([0x61, 0x62, 0x63, 0x64]),
+	);
+});
+
+Deno.test('spec: data-14', async () => {
+	const chars = [...'abcdefghijklmn'].map((c) => c.charCodeAt(0));
+	const { format, plist } = decodeXml(
+		await fixturePlist('data-14', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLData);
+	assertEquals(plist.byteLength, 14);
+	assertEquals(
+		new Uint8Array(plist.buffer),
+		new Uint8Array(chars),
+	);
+});
+
+Deno.test('spec: data-15', async () => {
+	const chars = [...'abcdefghijklmno'].map((c) => c.charCodeAt(0));
+	const { format, plist } = decodeXml(
+		await fixturePlist('data-15', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLData);
+	assertEquals(plist.byteLength, 15);
+	assertEquals(
+		new Uint8Array(plist.buffer),
+		new Uint8Array(chars),
+	);
+});
+
+Deno.test('spec: data-255', async () => {
+	const bytes = new Uint8Array(255);
+	for (let i = 0; i < 255; i++) {
+		bytes[i] = i;
+	}
+	const { format, plist } = decodeXml(
+		await fixturePlist('data-255', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLData);
+	assertEquals(plist.byteLength, 255);
+	assertEquals(
+		new Uint8Array(plist.buffer),
+		bytes,
+	);
+});
+
+Deno.test('spec: data-256', async () => {
+	const bytes = new Uint8Array(256);
+	for (let i = 0; i < 256; i++) {
+		bytes[i] = i;
+	}
+	const { format, plist } = decodeXml(
+		await fixturePlist('data-256', 'xml'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLData);
+	assertEquals(plist.byteLength, 256);
+	assertEquals(
+		new Uint8Array(plist.buffer),
+		bytes,
+	);
+});
 
 // TODO: date
 
@@ -2091,11 +2224,23 @@ Deno.test('spec: xml-edge comments', async () => {
 });
 
 Deno.test('spec: xml-edge data-attrs', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'data-attrs'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLData);
+	assertEquals(plist.byteLength, 0);
 });
 
 Deno.test('spec: xml-edge data-chunks', async () => {
-	// TODO
+	const expected = new Uint8Array(21).fill(0x41);
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'data-chunks'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLData);
+	assertEquals(plist.byteLength, expected.length);
+	assertEquals(new Uint8Array(plist.buffer), expected);
 });
 
 Deno.test('spec: xml-edge data-close', async () => {
@@ -2108,23 +2253,86 @@ Deno.test('spec: xml-edge data-close', async () => {
 });
 
 Deno.test('spec: xml-edge data-edge', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'data-edge'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 32);
+
+	for (let i = 0; i < plist.length;) {
+		const k: PLType = plist.get(i)!;
+		assertInstanceOf(k, PLString, `${i}`);
+		const tag = k.value;
+		i++;
+
+		const v: PLType = plist.get(i)!;
+		assertInstanceOf(v, PLData, `${i}`);
+		const hex = k.value.split('|')[1];
+		const expected = new Uint8Array(hex.length / 2);
+		for (let j = 0; j < hex.length / 2; j++) {
+			expected[j] = parseInt(hex.slice(j * 2, j * 2 + 2), 16);
+		}
+		assertEquals(new Uint8Array(v.buffer), expected, tag);
+		i++;
+	}
 });
 
 Deno.test('spec: xml-edge data-junk', async () => {
-	// TODO
+	const expected = new Uint8Array(3).fill(0x41);
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'data-junk'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 32);
+
+	for (let i = 0; i < plist.length; i++) {
+		const k: PLType = plist.get(i)!;
+		assertInstanceOf(k, PLData, `${i}`);
+		assertEquals(new Uint8Array(k.buffer), expected, `${i}`);
+	}
 });
 
 Deno.test('spec: xml-edge data-long', async () => {
-	// TODO
+	const expected = new Uint8Array(100).fill(0x41);
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'data-long'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLData);
+	assertEquals(plist.byteLength, expected.length);
+	assertEquals(new Uint8Array(plist.buffer), expected);
 });
 
 Deno.test('spec: xml-edge data-padding', async () => {
-	// TODO
+	const e0 = new Uint8Array(0);
+	const e3 = new Uint8Array(3).fill(0x41);
+	const e6 = new Uint8Array(6).fill(0x41);
+	const expected = [e0, e0, e3, e3, e3, e6];
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'data-padding'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, expected.length);
+
+	for (let i = 0; i < plist.length; i++) {
+		const k: PLType = plist.get(i)!;
+		assertInstanceOf(k, PLData, `${i}`);
+		assertEquals(new Uint8Array(k.buffer), expected[i], `${i}`);
+	}
 });
 
 Deno.test('spec: xml-edge data-whitespace', async () => {
-	// TODO
+	const expected = new Uint8Array(100).fill(0x41);
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'data-whitespace'),
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLData);
+	assertEquals(plist.byteLength, expected.length);
+	assertEquals(new Uint8Array(plist.buffer), expected);
 });
 
 Deno.test('spec: xml-edge date-attrs', async () => {
