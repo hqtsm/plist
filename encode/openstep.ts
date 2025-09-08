@@ -200,7 +200,7 @@ export function encodeOpenStep(
 		quote = '"',
 		quoted = false,
 		shortcut = false,
-	}: EncodeOpenStepOptions = {},
+	}: Readonly<EncodeOpenStepOptions> = {},
 ): Uint8Array {
 	let b = 0;
 	let i = 1;

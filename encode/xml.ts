@@ -111,7 +111,7 @@ export function encodeXml(
 		indent = '\t',
 		unsignZero = false,
 		min128Zero = false,
-	}: EncodeXmlOptions = {},
+	}: Readonly<EncodeXmlOptions> = {},
 ): Uint8Array {
 	let doctype: string;
 	let version: string;

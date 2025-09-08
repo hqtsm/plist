@@ -250,7 +250,10 @@ export interface DecodeOpenStepResult {
  */
 export function decodeOpenStep(
 	encoded: Uint8Array,
-	{ allowMissingSemi = false, utf16le }: DecodeOpenStepOptions = {},
+	{
+		allowMissingSemi = false,
+		utf16le,
+	}: Readonly<DecodeOpenStepOptions> = {},
 ): DecodeOpenStepResult {
 	utf8Length(encoded = utf8Encoded(encoded, utf16le) || encoded);
 	const p: [number] = [0];

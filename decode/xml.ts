@@ -558,7 +558,11 @@ export interface DecodeXmlResult {
  */
 export function decodeXml(
 	encoded: Uint8Array,
-	{ decoder, utf16le, int64 = false }: DecodeXmlOptions = {},
+	{
+		decoder,
+		utf16le,
+		int64 = false,
+	}: Readonly<DecodeXmlOptions> = {},
 ): DecodeXmlResult {
 	let x;
 	let d: Uint8Array | null | undefined = utf8Encoded(encoded, utf16le);

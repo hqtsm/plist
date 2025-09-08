@@ -98,7 +98,10 @@ export interface EncodeBinaryOptions {
  */
 export function encodeBinary(
 	plist: PLType,
-	{ format = FORMAT_BINARY_V1_0, duplicates }: EncodeBinaryOptions = {},
+	{
+		format = FORMAT_BINARY_V1_0,
+		duplicates,
+	}: Readonly<EncodeBinaryOptions> = {},
 ): Uint8Array {
 	let e;
 	let x;

@@ -37,7 +37,10 @@ export type EncodeOptions =
  * @param options Encoding options.
  * @returns Encoded plist.
  */
-export function encode(plist: PLType, options: EncodeOptions): Uint8Array {
+export function encode(
+	plist: PLType,
+	options: Readonly<EncodeOptions>,
+): Uint8Array {
 	switch (options.format) {
 		case FORMAT_BINARY_V1_0: {
 			return encodeBinary(plist, options);
