@@ -1236,6 +1236,39 @@ Deno.test('Real: Bad', () => {
 	}
 });
 
+Deno.test('Data: EOF', () => {
+	for (
+		const s of [
+			'',
+			'A',
+			'AB',
+			'ABC',
+			'ABCD',
+			'====',
+			'A===',
+			'AB==',
+			'ABC=',
+			'ABCD',
+		] as const
+	) {
+		const tag = JSON.stringify(s);
+		const data = TE.encode(
+			[
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				DOCTYPE,
+				'<plist version="1.0">',
+				`<data>${s}`,
+			].join('\n'),
+		);
+		assertThrows(
+			() => decodeXml(data, { int64: true }),
+			SyntaxError,
+			'Invalid end on line 4',
+			tag,
+		);
+	}
+});
+
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('true', 'xml'),
