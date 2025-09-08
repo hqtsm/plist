@@ -6,7 +6,10 @@ import { PLData } from '../data.ts';
 import { PLDict } from '../dict.ts';
 import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
 import type { PLType } from '../type.ts';
-import { encodeOpenStep } from './openstep.ts';
+import { encodeOpenStep, type EncodeOpenStepOptions } from './openstep.ts';
+
+// No offical encoder so no known encode quirks.
+const CF_STYLE = {} as const as EncodeOpenStepOptions;
 
 function diff(a: Uint8Array, b: Uint8Array): number {
 	for (let i = 0, l = Math.max(a.length, b.length); i < l; i++) {
@@ -186,7 +189,7 @@ Deno.test('Always quoted', () => {
 });
 
 Deno.test('spec: array-0', async () => {
-	const encode = encodeOpenStep(new PLArray());
+	const encode = encodeOpenStep(new PLArray(), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-0', 'openstep'),
@@ -194,7 +197,7 @@ Deno.test('spec: array-0', async () => {
 });
 
 Deno.test('spec: array-1', async () => {
-	const encode = encodeOpenStep(new PLArray([new PLString('A')]));
+	const encode = encodeOpenStep(new PLArray([new PLString('A')]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-1', 'openstep'),
@@ -206,7 +209,7 @@ Deno.test('spec: array-4', async () => {
 	new Uint8Array(aa.buffer).set(new Uint8Array([0x61, 0x61]));
 	const bb = new PLData(2);
 	new Uint8Array(bb.buffer).set(new Uint8Array([0x62, 0x62]));
-	const encode = encodeOpenStep(new PLArray([aa, bb, aa, bb]));
+	const encode = encodeOpenStep(new PLArray([aa, bb, aa, bb]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-4', 'openstep'),
@@ -218,6 +221,7 @@ Deno.test('spec: array-8', async () => {
 	const B = new PLString('B');
 	const encode = encodeOpenStep(
 		new PLArray([A, B, A, B, A, B, A, B]),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -230,6 +234,7 @@ Deno.test('spec: array-26', async () => {
 		new PLArray(
 			[...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].map((s) => new PLString(s)),
 		),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -239,7 +244,7 @@ Deno.test('spec: array-26', async () => {
 
 Deno.test('spec: array-reuse', async () => {
 	const reuse = new PLArray([new PLString('AAAA'), new PLString('BBBB')]);
-	const encode = encodeOpenStep(new PLArray([reuse, reuse]));
+	const encode = encodeOpenStep(new PLArray([reuse, reuse]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-reuse', 'openstep'),
@@ -247,7 +252,7 @@ Deno.test('spec: array-reuse', async () => {
 });
 
 Deno.test('spec: data-0', async () => {
-	const encode = encodeOpenStep(new PLData());
+	const encode = encodeOpenStep(new PLData(), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-0', 'openstep'),
@@ -257,7 +262,7 @@ Deno.test('spec: data-0', async () => {
 Deno.test('spec: data-1', async () => {
 	const data = new PLData(1);
 	new Uint8Array(data.buffer)[0] = 0x61;
-	const encode = encodeOpenStep(data);
+	const encode = encodeOpenStep(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-1', 'openstep'),
@@ -267,7 +272,7 @@ Deno.test('spec: data-1', async () => {
 Deno.test('spec: data-2', async () => {
 	const data = new PLData(2);
 	new Uint8Array(data.buffer).set(new Uint8Array([0x61, 0x62]));
-	const encode = encodeOpenStep(data);
+	const encode = encodeOpenStep(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-2', 'openstep'),
@@ -276,7 +281,7 @@ Deno.test('spec: data-2', async () => {
 Deno.test('spec: data-3', async () => {
 	const data = new PLData(3);
 	new Uint8Array(data.buffer).set(new Uint8Array([0x61, 0x62, 0x63]));
-	const encode = encodeOpenStep(data);
+	const encode = encodeOpenStep(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-3', 'openstep'),
@@ -286,7 +291,7 @@ Deno.test('spec: data-3', async () => {
 Deno.test('spec: data-4', async () => {
 	const data = new PLData(4);
 	new Uint8Array(data.buffer).set(new Uint8Array([0x61, 0x62, 0x63, 0x64]));
-	const encode = encodeOpenStep(data);
+	const encode = encodeOpenStep(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-4', 'openstep'),
@@ -297,7 +302,7 @@ Deno.test('spec: data-14', async () => {
 	const chars = [...'abcdefghijklmn'].map((c) => c.charCodeAt(0));
 	const data = new PLData(chars.length);
 	new Uint8Array(data.buffer).set(chars);
-	const encode = encodeOpenStep(data);
+	const encode = encodeOpenStep(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-14', 'openstep'),
@@ -308,7 +313,7 @@ Deno.test('spec: data-15', async () => {
 	const chars = [...'abcdefghijklmno'].map((c) => c.charCodeAt(0));
 	const data = new PLData(chars.length);
 	new Uint8Array(data.buffer).set(chars);
-	const encode = encodeOpenStep(data);
+	const encode = encodeOpenStep(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-15', 'openstep'),
@@ -322,7 +327,7 @@ Deno.test('spec: data-255', async () => {
 	}
 	const data = new PLData(255);
 	new Uint8Array(data.buffer).set(bytes);
-	const encode = encodeOpenStep(data);
+	const encode = encodeOpenStep(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-255', 'openstep'),
@@ -336,7 +341,7 @@ Deno.test('spec: data-256', async () => {
 	}
 	const data = new PLData(256);
 	new Uint8Array(data.buffer).set(bytes);
-	const encode = encodeOpenStep(data);
+	const encode = encodeOpenStep(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-256', 'openstep'),
@@ -346,7 +351,7 @@ Deno.test('spec: data-256', async () => {
 Deno.test('spec: dict-empty', async () => {
 	const dict = new PLDict();
 	{
-		const encode = encodeOpenStep(dict);
+		const encode = encodeOpenStep(dict, CF_STYLE);
 		assertEquals(
 			encode,
 			await fixturePlist('dict-empty', 'openstep'),
@@ -354,6 +359,7 @@ Deno.test('spec: dict-empty', async () => {
 	}
 	{
 		const encode = encodeOpenStep(dict, {
+			...CF_STYLE,
 			format: FORMAT_STRINGS,
 		});
 		assertEquals(
@@ -367,7 +373,7 @@ Deno.test('spec: dict-empties', async () => {
 	const dict = new PLDict();
 	dict.set(new PLString('array'), new PLArray());
 	dict.set(new PLString('dict'), new PLDict());
-	const encode = encodeOpenStep(dict);
+	const encode = encodeOpenStep(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-empties', 'openstep'),
@@ -379,7 +385,7 @@ Deno.test('spec: dict-26', async () => {
 	for (const C of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
 		dict.set(new PLString(C), new PLString(C.toLowerCase()));
 	}
-	const encode = encodeOpenStep(dict);
+	const encode = encodeOpenStep(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-26', 'openstep'),
@@ -394,7 +400,7 @@ Deno.test('spec: dict-long-key', async () => {
 		),
 		new PLString('64'),
 	);
-	const encode = encodeOpenStep(dict);
+	const encode = encodeOpenStep(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-long-key', 'openstep'),
@@ -407,7 +413,7 @@ Deno.test('spec: dict-unicode-key', async () => {
 		new PLString('UTF\u20138'),
 		new PLString('utf-8'),
 	);
-	const encode = encodeOpenStep(dict);
+	const encode = encodeOpenStep(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-unicode-key', 'openstep'),
@@ -456,6 +462,7 @@ Deno.test('spec: dict-nesting', async () => {
 				]),
 			],
 		]),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -474,6 +481,7 @@ Deno.test('spec: dict-order', async () => {
 			[new PLString('abb'), new PLString('5')],
 			[new PLString('ac'), new PLString('6')],
 		]),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -492,6 +500,7 @@ Deno.test('spec: dict-reuse', async () => {
 				[new PLString('AA'), reuse],
 				[new PLString('BB'), reuse],
 			]),
+			CF_STYLE,
 		);
 		assertEquals(
 			encode,
@@ -505,6 +514,7 @@ Deno.test('spec: dict-reuse', async () => {
 				[new PLString('BB'), reuse],
 			]),
 			{
+				...CF_STYLE,
 				format: FORMAT_STRINGS,
 			},
 		);
@@ -525,6 +535,7 @@ Deno.test('spec: dict-repeat', async () => {
 			[new PLString('C'), new PLString('31')],
 			[new PLString('C'), new PLString('33')],
 		]),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -533,7 +544,7 @@ Deno.test('spec: dict-repeat', async () => {
 });
 
 Deno.test('spec: string-empty', async () => {
-	const encode = encodeOpenStep(new PLString());
+	const encode = encodeOpenStep(new PLString(), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-empty', 'openstep'),
@@ -541,7 +552,7 @@ Deno.test('spec: string-empty', async () => {
 });
 
 Deno.test('spec: string-ascii', async () => {
-	const encode = encodeOpenStep(new PLString('ASCII'));
+	const encode = encodeOpenStep(new PLString('ASCII'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-ascii', 'openstep'),
@@ -557,7 +568,7 @@ Deno.test('spec: string-chars', async () => {
 		);
 	}
 	{
-		const encode = encodeOpenStep(dict);
+		const encode = encodeOpenStep(dict, CF_STYLE);
 		assertEquals(
 			diff(encode, await fixturePlist('string-chars', 'openstep')),
 			-1,
@@ -565,6 +576,7 @@ Deno.test('spec: string-chars', async () => {
 	}
 	{
 		const encode = encodeOpenStep(dict, {
+			...CF_STYLE,
 			format: FORMAT_STRINGS,
 		});
 		assertEquals(
@@ -575,7 +587,7 @@ Deno.test('spec: string-chars', async () => {
 });
 
 Deno.test('spec: string-unicode', async () => {
-	const encode = encodeOpenStep(new PLString('UTF\u20138'));
+	const encode = encodeOpenStep(new PLString('UTF\u20138'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-unicode', 'openstep'),
@@ -585,6 +597,7 @@ Deno.test('spec: string-unicode', async () => {
 Deno.test('spec: string-long-unicode', async () => {
 	const encode = encodeOpenStep(
 		new PLString(new Array(8).fill('UTF\u20138').join(' ')),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -593,7 +606,7 @@ Deno.test('spec: string-long-unicode', async () => {
 });
 
 Deno.test('spec: string-utf8-mb2-divide', async () => {
-	const encode = encodeOpenStep(new PLString('\u00f7'));
+	const encode = encodeOpenStep(new PLString('\u00f7'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb2-divide', 'openstep'),
@@ -601,7 +614,7 @@ Deno.test('spec: string-utf8-mb2-divide', async () => {
 });
 
 Deno.test('spec: string-utf8-mb2-ohm', async () => {
-	const encode = encodeOpenStep(new PLString('\u03a9'));
+	const encode = encodeOpenStep(new PLString('\u03a9'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb2-ohm', 'openstep'),
@@ -609,7 +622,7 @@ Deno.test('spec: string-utf8-mb2-ohm', async () => {
 });
 
 Deno.test('spec: string-utf8-mb3-check', async () => {
-	const encode = encodeOpenStep(new PLString('\u2705'));
+	const encode = encodeOpenStep(new PLString('\u2705'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb3-check', 'openstep'),
@@ -617,7 +630,7 @@ Deno.test('spec: string-utf8-mb3-check', async () => {
 });
 
 Deno.test('spec: string-utf8-mb3-plus', async () => {
-	const encode = encodeOpenStep(new PLString('\uff0b'));
+	const encode = encodeOpenStep(new PLString('\uff0b'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb3-plus', 'openstep'),
@@ -625,7 +638,7 @@ Deno.test('spec: string-utf8-mb3-plus', async () => {
 });
 
 Deno.test('spec: string-utf8-mb4-robot', async () => {
-	const encode = encodeOpenStep(new PLString('\ud83e\udd16'));
+	const encode = encodeOpenStep(new PLString('\ud83e\udd16'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb4-robot', 'openstep'),
@@ -640,6 +653,7 @@ Deno.test('spec: openstep-edge escapes-octal', async () => {
 			[new PLString('oct16'), new PLString('\x0E')],
 			[new PLString('oct16-7'), new PLString('\x0E7')],
 		]),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -676,6 +690,7 @@ Deno.test('spec: openstep-edge all-types', async () => {
 				data,
 			],
 		]),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -713,6 +728,7 @@ Deno.test('spec: strings-edge all-types', async () => {
 			],
 		]),
 		{
+			...CF_STYLE,
 			format: FORMAT_STRINGS,
 		},
 	);
@@ -735,6 +751,7 @@ Deno.test('spec: openstep-edge shortcut', async () => {
 		[E, E],
 	]);
 	const encode = encodeOpenStep(plist, {
+		...CF_STYLE,
 		shortcut: true,
 	});
 	assertEquals(
@@ -755,6 +772,7 @@ Deno.test('spec: strings-edge shortcut', async () => {
 		[E, E],
 	]);
 	const encode = encodeOpenStep(plist, {
+		...CF_STYLE,
 		format: FORMAT_STRINGS,
 		shortcut: true,
 	});
