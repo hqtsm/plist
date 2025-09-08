@@ -234,8 +234,7 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 		if (c < 43) {
 			e = ws(c) ? e : 0;
 		} else if (c < 123) {
-			b = b64d[c - 43] + c - 80;
-			if (b < 0) {
+			if ((b64d[c - 43] + c - 80) < 0) {
 				if (c !== 61) {
 					e = 0;
 					if (c !== 60) {
@@ -246,11 +245,9 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 					break;
 				}
 				e++;
-				b = 0;
 			} else {
 				e = 0;
 			}
-			a = a << 6 | b;
 			if (++t & 4) {
 				s += e < 2 ? 3 - e : 1;
 				t = 0;
