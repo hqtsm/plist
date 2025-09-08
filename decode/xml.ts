@@ -253,8 +253,9 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 				e = 0;
 			}
 			a = a << 6 | b;
-			if (!(++t & 3)) {
+			if (t++ === 3) {
 				s += e < 2 ? 3 - e : 1;
+				t = 0;
 			}
 		}
 	}
@@ -283,7 +284,7 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 				e = 0;
 			}
 			a = a << 6 | b;
-			if (!(++t & 3)) {
+			if (t++ === 3) {
 				o[s++] = (a >> 16) & 255;
 				if (e < 2) {
 					o[s++] = (a >> 8) & 255;
@@ -291,6 +292,7 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 						o[s++] = a & 255;
 					}
 				}
+				t = 0;
 			}
 		}
 	}
