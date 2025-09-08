@@ -15,6 +15,7 @@ import { encodeXml } from './xml.ts';
 
 const CF_STYLE = {
 	unsignZero: true,
+	min128Zero: true,
 };
 
 function diff(a: Uint8Array, b: Uint8Array): number {

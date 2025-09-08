@@ -22,11 +22,14 @@ const ent = (s: string) => ents[s as keyof typeof ents];
  * Encode integer to string.
  *
  * @param i Integer value.
+ * @param mz Encode smallest 128-bit integer as -0.
  * @returns Integer string.
  */
-function integerString(i: bigint): string {
+function integerString(i: bigint, mz: boolean): string {
 	// Weird bug encodes smallest 128-bit as negative zero.
-	return i === -0x80000000000000000000000000000000n ? '-0' : i.toString();
+	return mz && i === -0x80000000000000000000000000000000n
+		? '-0'
+		: i.toString();
 }
 
 /**
@@ -37,7 +40,7 @@ function integerString(i: bigint): string {
  * @returns Real string.
  */
 function realString(real: number, uz: boolean): string {
-	// No trailing zeros except on 0, negative 0 drops sign.
+	// No trailing zeros except on 0.
 	switch (real) {
 		case 0:
 			return uz || 1 / real === Infinity ? '0.0' : '-0.0';
@@ -85,6 +88,13 @@ export interface EncodeXmlOptions {
 	 * @default false
 	 */
 	unsignZero?: boolean;
+
+	/**
+	 * Encode smallest 128-bit integer as -0.
+	 *
+	 * @default false
+	 */
+	min128Zero?: boolean;
 }
 
 /**
@@ -100,6 +110,7 @@ export function encodeXml(
 		format = FORMAT_XML_V1_0,
 		indent = '\t',
 		unsignZero = false,
+		min128Zero = false,
 	}: EncodeXmlOptions = {},
 ): Uint8Array {
 	let doctype: string;
@@ -184,7 +195,7 @@ export function encodeXml(
 				i += 13 + dateString(v).length;
 			},
 			PLInteger(v): void {
-				i += 19 + integerString(v.value).length;
+				i += 19 + integerString(v.value, min128Zero).length;
 			},
 			PLReal(v): void {
 				i += 13 + realString(v.value, unsignZero).length;
@@ -323,7 +334,7 @@ export function encodeXml(
 					r.set(id, i);
 				}
 				i = utf8Encode('<integer>', r, i);
-				i = utf8Encode(integerString(v.value), r, i);
+				i = utf8Encode(integerString(v.value, min128Zero), r, i);
 				i = utf8Encode('</integer>', r, i);
 				r[i++] = 10;
 			},
