@@ -92,6 +92,33 @@ Deno.test('Invalid type', () => {
 	);
 });
 
+Deno.test('Surrogate Pairs', () => {
+	const points = [];
+	for (let i = 0x10000; i <= 0x10FFFF; i += 23 + (i % 73)) {
+		points.push(i);
+	}
+	points.push(0x10FFFF);
+
+	let start = 0;
+	let end = 0;
+	const str = new PLString('_');
+	{
+		const e = encodeXml(str, CF_STYLE);
+		start = e.indexOf(str.value.charCodeAt(0));
+		end = start + 1 - e.length;
+	}
+	const te = new TextEncoder();
+	const sd = new Uint8Array(4);
+
+	for (const point of points) {
+		const s = String.fromCodePoint(point);
+		str.value = s;
+		assertEquals(te.encodeInto(s, sd).written, 4);
+		const encode = encodeXml(str, CF_STYLE).slice(start, end);
+		assertEquals(encode, sd);
+	}
+});
+
 Deno.test('Option: unsignZero', () => {
 	const td = new TextDecoder();
 	assertStringIncludes(
@@ -1037,31 +1064,4 @@ Deno.test('spec: uid-sizes', async () => {
 		encode,
 		await fixturePlist('uid-sizes', 'xml'),
 	);
-});
-
-Deno.test('Surrogate Pairs', () => {
-	const points = [];
-	for (let i = 0x10000; i <= 0x10FFFF; i += 23 + (i % 73)) {
-		points.push(i);
-	}
-	points.push(0x10FFFF);
-
-	let start = 0;
-	let end = 0;
-	const str = new PLString('_');
-	{
-		const e = encodeXml(str, CF_STYLE);
-		start = e.indexOf(str.value.charCodeAt(0));
-		end = start + 1 - e.length;
-	}
-	const te = new TextEncoder();
-	const sd = new Uint8Array(4);
-
-	for (const point of points) {
-		const s = String.fromCodePoint(point);
-		str.value = s;
-		assertEquals(te.encodeInto(s, sd).written, 4);
-		const encode = encodeXml(str, CF_STYLE).slice(start, end);
-		assertEquals(encode, sd);
-	}
 });
