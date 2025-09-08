@@ -254,13 +254,7 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 			}
 			a = a << 6 | b;
 			if (!(++t & 3)) {
-				s++;
-				if (e < 2) {
-					s++;
-					if (!e) {
-						s++;
-					}
-				}
+				s += e < 2 ? 3 - e : 1;
 			}
 		}
 	}
