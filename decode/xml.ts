@@ -257,7 +257,7 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 		}
 	}
 	if (!o) {
-		throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
+		throw new SyntaxError(utf8ErrorEnd(d));
 	}
 	for (a = s = t = 0, i = h;; i++) {
 		c = d[i];
