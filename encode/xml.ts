@@ -33,13 +33,14 @@ function integerString(i: bigint): string {
  * Encode real to string.
  *
  * @param real Real value.
+ * @param uz Unsign zero.
  * @returns Real string.
  */
-function realString(real: number): string {
+function realString(real: number, uz: boolean): string {
 	// No trailing zeros except on 0, negative 0 drops sign.
 	switch (real) {
 		case 0:
-			return '0.0';
+			return uz || 1 / real === Infinity ? '0.0' : '-0.0';
 		case Infinity:
 			return '+infinity';
 		case -Infinity:
@@ -77,6 +78,13 @@ export interface EncodeXmlOptions {
 	 * @default '\t'
 	 */
 	indent?: string;
+
+	/**
+	 * Unsign zero real values.
+	 *
+	 * @default false
+	 */
+	unsignZero?: boolean;
 }
 
 /**
@@ -91,6 +99,7 @@ export function encodeXml(
 	{
 		format = FORMAT_XML_V1_0,
 		indent = '\t',
+		unsignZero = false,
 	}: EncodeXmlOptions = {},
 ): Uint8Array {
 	let doctype: string;
@@ -178,7 +187,7 @@ export function encodeXml(
 				i += 19 + integerString(v.value).length;
 			},
 			PLReal(v): void {
-				i += 13 + realString(v.value).length;
+				i += 13 + realString(v.value, unsignZero).length;
 			},
 			PLString(v): void {
 				i += 17 + utf8Size(v.value.replace(rEnt, ent));
@@ -323,7 +332,7 @@ export function encodeXml(
 					r.set(id, i);
 				}
 				i = utf8Encode('<real>', r, i);
-				i = utf8Encode(realString(v.value), r, i);
+				i = utf8Encode(realString(v.value, unsignZero), r, i);
 				i = utf8Encode('</real>', r, i);
 				r[i++] = 10;
 			},

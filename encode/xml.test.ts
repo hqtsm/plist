@@ -1,4 +1,4 @@
-import { assertEquals, assertThrows } from '@std/assert';
+import { assertEquals, assertStringIncludes, assertThrows } from '@std/assert';
 import { fixturePlist } from '../spec/fixture.ts';
 import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
@@ -12,6 +12,10 @@ import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 import { encodeXml } from './xml.ts';
+
+const CF_STYLE = {
+	unsignZero: true,
+};
 
 function diff(a: Uint8Array, b: Uint8Array): number {
 	for (let i = 0; i < a.length; i++) {
@@ -87,8 +91,28 @@ Deno.test('Invalid type', () => {
 	);
 });
 
+Deno.test('Option: unsignZero', () => {
+	const td = new TextDecoder();
+	assertStringIncludes(
+		td.decode(encodeXml(new PLReal(-0))),
+		'<real>-0.0</real>',
+	);
+	assertStringIncludes(
+		td.decode(encodeXml(new PLReal(-0), {
+			unsignZero: false,
+		})),
+		'<real>-0.0</real>',
+	);
+	assertStringIncludes(
+		td.decode(encodeXml(new PLReal(-0), {
+			unsignZero: true,
+		})),
+		'<real>0.0</real>',
+	);
+});
+
 Deno.test('spec: array-0', async () => {
-	const encode = encodeXml(new PLArray());
+	const encode = encodeXml(new PLArray(), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-0', 'xml'),
@@ -100,6 +124,7 @@ Deno.test('spec: array-1', async () => {
 		new PLArray([
 			new PLString('A'),
 		]),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -116,7 +141,7 @@ Deno.test('spec: array-4', async () => {
 	for (let i = 0; i < 4; i++) {
 		array.push(i % 2 ? data1 : data0);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-4', 'xml'),
@@ -130,7 +155,7 @@ Deno.test('spec: array-8', async () => {
 	for (let i = 0; i < 8; i++) {
 		array.push(i % 2 ? B : A);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-8', 'xml'),
@@ -144,7 +169,7 @@ Deno.test('spec: array-14', async () => {
 	for (let i = 0; i < 14; i++) {
 		array.push(i % 2 ? TRUE : FALSE);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-14', 'xml'),
@@ -158,7 +183,7 @@ Deno.test('spec: array-15', async () => {
 	for (let i = 0; i < 15; i++) {
 		array.push(i % 2 ? date1 : date0);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-15', 'xml'),
@@ -170,7 +195,7 @@ Deno.test('spec: array-26', async () => {
 	for (let i = 0; i < 26; i++) {
 		array.push(new PLString(String.fromCharCode(65 + i)));
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-26', 'xml'),
@@ -184,7 +209,7 @@ Deno.test('spec: array-128', async () => {
 	for (let i = 0; i < 128; i++) {
 		array.push(i % 2 ? real1 : real0);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-128', 'xml'),
@@ -198,7 +223,7 @@ Deno.test('spec: array-255', async () => {
 	for (let i = 0; i < 255; i++) {
 		array.push(i % 2 ? int1 : int0);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-255', 'xml'),
@@ -212,7 +237,7 @@ Deno.test('spec: array-256', async () => {
 	for (let i = 0; i < 256; i++) {
 		array.push(i % 2 ? TRUE : FALSE);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-256', 'xml'),
@@ -226,7 +251,7 @@ Deno.test('spec: array-65534', async () => {
 	for (let i = 0; i < 65534; i++) {
 		array.push(i % 2 ? TRUE : FALSE);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-65534', 'xml'),
@@ -240,7 +265,7 @@ Deno.test('spec: array-65535', async () => {
 	for (let i = 0; i < 65535; i++) {
 		array.push(i % 2 ? TRUE : FALSE);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-65535', 'xml'),
@@ -254,7 +279,7 @@ Deno.test('spec: array-65536', async () => {
 	for (let i = 0; i < 65536; i++) {
 		array.push(i % 2 ? TRUE : FALSE);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-65536', 'xml'),
@@ -263,7 +288,7 @@ Deno.test('spec: array-65536', async () => {
 
 Deno.test('spec: array-reuse', async () => {
 	const reuse = new PLArray([new PLString('AAAA'), new PLString('BBBB')]);
-	const encode = encodeXml(new PLArray([reuse, reuse]));
+	const encode = encodeXml(new PLArray([reuse, reuse]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('array-reuse', 'xml'),
@@ -271,7 +296,7 @@ Deno.test('spec: array-reuse', async () => {
 });
 
 Deno.test('spec: data-0', async () => {
-	const encode = encodeXml(new PLData());
+	const encode = encodeXml(new PLData(), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-0', 'xml'),
@@ -281,7 +306,7 @@ Deno.test('spec: data-0', async () => {
 Deno.test('spec: data-1', async () => {
 	const data = new PLData(1);
 	new Uint8Array(data.buffer)[0] = 0x61;
-	const encode = encodeXml(data);
+	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-1', 'xml'),
@@ -291,7 +316,7 @@ Deno.test('spec: data-1', async () => {
 Deno.test('spec: data-2', async () => {
 	const data = new PLData(2);
 	new Uint8Array(data.buffer).set(new Uint8Array([0x61, 0x62]));
-	const encode = encodeXml(data);
+	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-2', 'xml'),
@@ -300,7 +325,7 @@ Deno.test('spec: data-2', async () => {
 Deno.test('spec: data-3', async () => {
 	const data = new PLData(3);
 	new Uint8Array(data.buffer).set(new Uint8Array([0x61, 0x62, 0x63]));
-	const encode = encodeXml(data);
+	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-3', 'xml'),
@@ -310,7 +335,7 @@ Deno.test('spec: data-3', async () => {
 Deno.test('spec: data-4', async () => {
 	const data = new PLData(4);
 	new Uint8Array(data.buffer).set(new Uint8Array([0x61, 0x62, 0x63, 0x64]));
-	const encode = encodeXml(data);
+	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-4', 'xml'),
@@ -321,7 +346,7 @@ Deno.test('spec: data-14', async () => {
 	const chars = [...'abcdefghijklmn'].map((c) => c.charCodeAt(0));
 	const data = new PLData(chars.length);
 	new Uint8Array(data.buffer).set(chars);
-	const encode = encodeXml(data);
+	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-14', 'xml'),
@@ -332,7 +357,7 @@ Deno.test('spec: data-15', async () => {
 	const chars = [...'abcdefghijklmno'].map((c) => c.charCodeAt(0));
 	const data = new PLData(chars.length);
 	new Uint8Array(data.buffer).set(chars);
-	const encode = encodeXml(data);
+	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-15', 'xml'),
@@ -346,7 +371,7 @@ Deno.test('spec: data-255', async () => {
 	}
 	const data = new PLData(255);
 	new Uint8Array(data.buffer).set(bytes);
-	const encode = encodeXml(data);
+	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-255', 'xml'),
@@ -360,7 +385,7 @@ Deno.test('spec: data-256', async () => {
 	}
 	const data = new PLData(256);
 	new Uint8Array(data.buffer).set(bytes);
-	const encode = encodeXml(data);
+	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-256', 'xml'),
@@ -371,7 +396,7 @@ Deno.test('spec: data-reuse', async () => {
 	const bytes = 'reused'.split('').map((c) => c.charCodeAt(0));
 	const reuse = new PLData(bytes.length);
 	new Uint8Array(reuse.buffer).set(bytes);
-	const encode = encodeXml(new PLArray([reuse, reuse]));
+	const encode = encodeXml(new PLArray([reuse, reuse]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-reuse', 'xml'),
@@ -380,7 +405,7 @@ Deno.test('spec: data-reuse', async () => {
 
 Deno.test('spec: dict-empty', async () => {
 	const dict = new PLDict();
-	const encode = encodeXml(dict);
+	const encode = encodeXml(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-empty', 'xml'),
@@ -391,7 +416,7 @@ Deno.test('spec: dict-empties', async () => {
 	const dict = new PLDict();
 	dict.set(new PLString('array'), new PLArray());
 	dict.set(new PLString('dict'), new PLDict());
-	const encode = encodeXml(dict);
+	const encode = encodeXml(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-empties', 'xml'),
@@ -403,7 +428,7 @@ Deno.test('spec: dict-26', async () => {
 	for (const C of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
 		dict.set(new PLString(C), new PLString(C.toLowerCase()));
 	}
-	const encode = encodeXml(dict);
+	const encode = encodeXml(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-26', 'xml'),
@@ -418,7 +443,7 @@ Deno.test('spec: dict-long-key', async () => {
 		),
 		new PLString('64'),
 	);
-	const encode = encodeXml(dict);
+	const encode = encodeXml(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-long-key', 'xml'),
@@ -431,7 +456,7 @@ Deno.test('spec: dict-unicode-key', async () => {
 		new PLString('UTF\u20138'),
 		new PLString('utf-8'),
 	);
-	const encode = encodeXml(dict);
+	const encode = encodeXml(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('dict-unicode-key', 'xml'),
@@ -480,6 +505,7 @@ Deno.test('spec: dict-nesting', async () => {
 				]),
 			],
 		]),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -498,6 +524,7 @@ Deno.test('spec: dict-order', async () => {
 			[new PLString('abb'), new PLString('5')],
 			[new PLString('ac'), new PLString('6')],
 		]),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -515,6 +542,7 @@ Deno.test('spec: dict-reuse', async () => {
 			[new PLString('AA'), reuse],
 			[new PLString('BB'), reuse],
 		]),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -532,6 +560,7 @@ Deno.test('spec: dict-repeat', async () => {
 			[new PLString('C'), new PLString('31')],
 			[new PLString('C'), new PLString('33')],
 		]),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -540,7 +569,7 @@ Deno.test('spec: dict-repeat', async () => {
 });
 
 Deno.test('spec: string-empty', async () => {
-	const encode = encodeXml(new PLString());
+	const encode = encodeXml(new PLString(), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-empty', 'xml'),
@@ -549,7 +578,7 @@ Deno.test('spec: string-empty', async () => {
 
 Deno.test('spec: string-reuse', async () => {
 	const reuse = new PLString('reused');
-	const encode = encodeXml(new PLArray([reuse, reuse]));
+	const encode = encodeXml(new PLArray([reuse, reuse]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-reuse', 'xml'),
@@ -557,7 +586,7 @@ Deno.test('spec: string-reuse', async () => {
 });
 
 Deno.test('spec: string-ascii', async () => {
-	const encode = encodeXml(new PLString('ASCII'));
+	const encode = encodeXml(new PLString('ASCII'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-ascii', 'xml'),
@@ -572,7 +601,7 @@ Deno.test('spec: string-chars', async () => {
 			new PLString(String.fromCharCode(i)),
 		);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		diff(encode, await fixturePlist('string-chars', 'xml')),
 		-1,
@@ -580,7 +609,7 @@ Deno.test('spec: string-chars', async () => {
 });
 
 Deno.test('spec: string-unicode', async () => {
-	const encode = encodeXml(new PLString('UTF\u20138'));
+	const encode = encodeXml(new PLString('UTF\u20138'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-unicode', 'xml'),
@@ -590,6 +619,7 @@ Deno.test('spec: string-unicode', async () => {
 Deno.test('spec: string-long-unicode', async () => {
 	const encode = encodeXml(
 		new PLString(new Array(8).fill('UTF\u20138').join(' ')),
+		CF_STYLE,
 	);
 	assertEquals(
 		encode,
@@ -598,7 +628,7 @@ Deno.test('spec: string-long-unicode', async () => {
 });
 
 Deno.test('spec: string-utf8-mb2-divide', async () => {
-	const encode = encodeXml(new PLString('\u00f7'));
+	const encode = encodeXml(new PLString('\u00f7'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb2-divide', 'xml'),
@@ -606,7 +636,7 @@ Deno.test('spec: string-utf8-mb2-divide', async () => {
 });
 
 Deno.test('spec: string-utf8-mb2-ohm', async () => {
-	const encode = encodeXml(new PLString('\u03a9'));
+	const encode = encodeXml(new PLString('\u03a9'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb2-ohm', 'xml'),
@@ -614,7 +644,7 @@ Deno.test('spec: string-utf8-mb2-ohm', async () => {
 });
 
 Deno.test('spec: string-utf8-mb3-check', async () => {
-	const encode = encodeXml(new PLString('\u2705'));
+	const encode = encodeXml(new PLString('\u2705'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb3-check', 'xml'),
@@ -622,7 +652,7 @@ Deno.test('spec: string-utf8-mb3-check', async () => {
 });
 
 Deno.test('spec: string-utf8-mb3-plus', async () => {
-	const encode = encodeXml(new PLString('\uff0b'));
+	const encode = encodeXml(new PLString('\uff0b'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb3-plus', 'xml'),
@@ -630,7 +660,7 @@ Deno.test('spec: string-utf8-mb3-plus', async () => {
 });
 
 Deno.test('spec: string-utf8-mb4-robot', async () => {
-	const encode = encodeXml(new PLString('\ud83e\udd16'));
+	const encode = encodeXml(new PLString('\ud83e\udd16'), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('string-utf8-mb4-robot', 'xml'),
@@ -638,7 +668,7 @@ Deno.test('spec: string-utf8-mb4-robot', async () => {
 });
 
 Deno.test('spec: true', async () => {
-	const encode = encodeXml(new PLBoolean(true));
+	const encode = encodeXml(new PLBoolean(true), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('true', 'xml'),
@@ -646,7 +676,7 @@ Deno.test('spec: true', async () => {
 });
 
 Deno.test('spec: false', async () => {
-	const encode = encodeXml(new PLBoolean(false));
+	const encode = encodeXml(new PLBoolean(false), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('false', 'xml'),
@@ -654,7 +684,7 @@ Deno.test('spec: false', async () => {
 });
 
 Deno.test('spec: integer-0', async () => {
-	const encode = encodeXml(new PLInteger(0n));
+	const encode = encodeXml(new PLInteger(0n), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('integer-0', 'xml'),
@@ -662,7 +692,7 @@ Deno.test('spec: integer-0', async () => {
 });
 
 Deno.test('spec: integer-negative', async () => {
-	const encode = encodeXml(new PLInteger(-42n));
+	const encode = encodeXml(new PLInteger(-42n), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('integer-negative', 'xml'),
@@ -671,7 +701,7 @@ Deno.test('spec: integer-negative', async () => {
 
 Deno.test('spec: integer-reuse', async () => {
 	const reuse = new PLInteger(42n);
-	const encode = encodeXml(new PLArray([reuse, reuse]));
+	const encode = encodeXml(new PLArray([reuse, reuse]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('integer-reuse', 'xml'),
@@ -679,7 +709,7 @@ Deno.test('spec: integer-reuse', async () => {
 });
 
 Deno.test('spec: integer-min', async () => {
-	const encode = encodeXml(new PLInteger(-0x8000000000000000n));
+	const encode = encodeXml(new PLInteger(-0x8000000000000000n), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('integer-min', 'xml'),
@@ -716,7 +746,7 @@ Deno.test('spec: integer-sizes', async () => {
 			new PLInteger(i === 0xffffffffffffffffn ? -1n : i),
 		);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('integer-sizes', 'xml'),
@@ -739,7 +769,7 @@ Deno.test('spec: integer-big', async () => {
 		new PLString('MIN+2'),
 		new PLInteger(MIN + 2n, 128),
 	]);
-	const encode = encodeXml(dict);
+	const encode = encodeXml(dict, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('integer-big', 'xml'),
@@ -747,7 +777,7 @@ Deno.test('spec: integer-big', async () => {
 });
 
 Deno.test('spec: real-float-p0.0', async () => {
-	const encode = encodeXml(new PLReal(0, 32));
+	const encode = encodeXml(new PLReal(0, 32), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('real-float-p0.0', 'xml'),
@@ -755,7 +785,7 @@ Deno.test('spec: real-float-p0.0', async () => {
 });
 
 Deno.test('spec: real-double-p0.0', async () => {
-	const encode = encodeXml(new PLReal(0, 64));
+	const encode = encodeXml(new PLReal(0, 64), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('real-double-p0.0', 'xml'),
@@ -764,7 +794,7 @@ Deno.test('spec: real-double-p0.0', async () => {
 
 Deno.test('spec: real-reuse', async () => {
 	const reuse = new PLReal(3.14);
-	const encode = encodeXml(new PLArray([reuse, reuse]));
+	const encode = encodeXml(new PLArray([reuse, reuse]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('real-reuse', 'xml'),
@@ -829,7 +859,7 @@ Deno.test('spec: real-sizes', async () => {
 		const value = f32 ? view.getFloat32(0) : view.getFloat64(0);
 		array.push(new PLString(key), new PLReal(value, f32 ? 32 : 64));
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('real-sizes', 'xml'),
@@ -837,7 +867,7 @@ Deno.test('spec: real-sizes', async () => {
 });
 
 Deno.test('spec: date-0.0', async () => {
-	const encode = encodeXml(new PLDate(0));
+	const encode = encodeXml(new PLDate(0), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('date-0.0', 'xml'),
@@ -852,7 +882,7 @@ Deno.test('spec: date-every-day-2001', async () => {
 		date.day = day;
 		array.push(new PLString(String(day).padStart(3, '0')), date);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('date-every-day-2001', 'xml'),
@@ -867,7 +897,7 @@ Deno.test('spec: date-every-day-2004', async () => {
 		date.day = day;
 		array.push(new PLString(String(day).padStart(3, '0')), date);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('date-every-day-2004', 'xml'),
@@ -876,7 +906,7 @@ Deno.test('spec: date-every-day-2004', async () => {
 
 Deno.test('spec: date-reuse', async () => {
 	const date = new PLDate(42);
-	const encode = encodeXml(new PLArray([date, date]));
+	const encode = encodeXml(new PLArray([date, date]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('date-reuse', 'xml'),
@@ -955,7 +985,7 @@ Deno.test('spec: date-edge', async () => {
 		}
 		array.push(new PLString(key), new PLDate(value));
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('date-edge', 'xml'),
@@ -963,7 +993,7 @@ Deno.test('spec: date-edge', async () => {
 });
 
 Deno.test('spec: uid-42', async () => {
-	const encode = encodeXml(new PLUID(42n));
+	const encode = encodeXml(new PLUID(42n), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('uid-42', 'xml'),
@@ -972,7 +1002,7 @@ Deno.test('spec: uid-42', async () => {
 
 Deno.test('spec: uid-reuse', async () => {
 	const uid = new PLUID(42n);
-	const encode = encodeXml(new PLArray([uid, uid]));
+	const encode = encodeXml(new PLArray([uid, uid]), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('uid-reuse', 'xml'),
@@ -1001,7 +1031,7 @@ Deno.test('spec: uid-sizes', async () => {
 			new PLUID(BigInt(value)),
 		);
 	}
-	const encode = encodeXml(array);
+	const encode = encodeXml(array, CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('uid-sizes', 'xml'),
@@ -1019,7 +1049,7 @@ Deno.test('Surrogate Pairs', () => {
 	let end = 0;
 	const str = new PLString('_');
 	{
-		const e = encodeXml(str);
+		const e = encodeXml(str, CF_STYLE);
 		start = e.indexOf(str.value.charCodeAt(0));
 		end = start + 1 - e.length;
 	}
@@ -1030,7 +1060,7 @@ Deno.test('Surrogate Pairs', () => {
 		const s = String.fromCodePoint(point);
 		str.value = s;
 		assertEquals(te.encodeInto(s, sd).written, 4);
-		const encode = encodeXml(str).slice(start, end);
+		const encode = encodeXml(str, CF_STYLE).slice(start, end);
 		assertEquals(encode, sd);
 	}
 });
