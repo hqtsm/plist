@@ -18,6 +18,10 @@ import { PLUID } from '../uid.ts';
 import { decodeXml } from './xml.ts';
 import { PLReal } from '../real.ts';
 
+const CF_STYLE = {
+	int64: true,
+};
+
 const DOCTYPE =
 	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';
 
@@ -1272,6 +1276,7 @@ Deno.test('Data: EOF', () => {
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('true', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLBoolean);
@@ -1281,6 +1286,7 @@ Deno.test('spec: true', async () => {
 Deno.test('spec: false', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('false', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLBoolean);
@@ -1290,6 +1296,7 @@ Deno.test('spec: false', async () => {
 Deno.test('spec: array-0', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('array-0', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -1299,6 +1306,7 @@ Deno.test('spec: array-0', async () => {
 Deno.test('spec: array-1', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('array-1', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -1313,6 +1321,7 @@ Deno.test('spec: array-4', async () => {
 	const bb = new Uint8Array([0x62, 0x62]);
 	const { format, plist } = decodeXml(
 		await fixturePlist('array-4', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -1327,6 +1336,7 @@ Deno.test('spec: array-4', async () => {
 Deno.test('spec: array-8', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('array-8', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -1341,6 +1351,7 @@ Deno.test('spec: array-8', async () => {
 Deno.test('spec: array-14', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('array-14', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -1359,6 +1370,7 @@ Deno.test('spec: array-15', async () => {
 Deno.test('spec: array-26', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('array-26', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -1377,9 +1389,7 @@ Deno.test('spec: array-128', async () => {
 Deno.test('spec: array-255', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('array-255', 'xml'),
-		{
-			int64: true,
-		},
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -1394,6 +1404,7 @@ Deno.test('spec: array-255', async () => {
 Deno.test('spec: array-256', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('array-256', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -1408,6 +1419,7 @@ Deno.test('spec: array-256', async () => {
 Deno.test('spec: array-65534', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('array-65534', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -1422,6 +1434,7 @@ Deno.test('spec: array-65534', async () => {
 Deno.test('spec: array-65535', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('array-65535', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -1436,6 +1449,7 @@ Deno.test('spec: array-65535', async () => {
 Deno.test('spec: array-65536', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('array-65536', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -1450,6 +1464,7 @@ Deno.test('spec: array-65536', async () => {
 Deno.test('spec: array-reuse', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('array-reuse', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -1470,6 +1485,7 @@ Deno.test('spec: array-reuse', async () => {
 Deno.test('spec: data-0', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('data-0', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLData);
@@ -1479,6 +1495,7 @@ Deno.test('spec: data-0', async () => {
 Deno.test('spec: data-1', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('data-1', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLData);
@@ -1492,6 +1509,7 @@ Deno.test('spec: data-1', async () => {
 Deno.test('spec: data-2', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('data-2', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLData);
@@ -1505,6 +1523,7 @@ Deno.test('spec: data-2', async () => {
 Deno.test('spec: data-3', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('data-3', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLData);
@@ -1518,6 +1537,7 @@ Deno.test('spec: data-3', async () => {
 Deno.test('spec: data-4', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('data-4', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLData);
@@ -1532,6 +1552,7 @@ Deno.test('spec: data-14', async () => {
 	const chars = [...'abcdefghijklmn'].map((c) => c.charCodeAt(0));
 	const { format, plist } = decodeXml(
 		await fixturePlist('data-14', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLData);
@@ -1546,6 +1567,7 @@ Deno.test('spec: data-15', async () => {
 	const chars = [...'abcdefghijklmno'].map((c) => c.charCodeAt(0));
 	const { format, plist } = decodeXml(
 		await fixturePlist('data-15', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLData);
@@ -1563,6 +1585,7 @@ Deno.test('spec: data-255', async () => {
 	}
 	const { format, plist } = decodeXml(
 		await fixturePlist('data-255', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLData);
@@ -1580,6 +1603,7 @@ Deno.test('spec: data-256', async () => {
 	}
 	const { format, plist } = decodeXml(
 		await fixturePlist('data-256', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLData);
@@ -1595,6 +1619,7 @@ Deno.test('spec: data-256', async () => {
 Deno.test('spec: dict-empties', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('dict-empties', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -1611,6 +1636,7 @@ Deno.test('spec: dict-26', async () => {
 	const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 	const { format, plist } = decodeXml(
 		await fixturePlist('dict-26', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -1625,6 +1651,7 @@ Deno.test('spec: dict-26', async () => {
 Deno.test('spec: dict-long-key', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('dict-long-key', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -1639,6 +1666,7 @@ Deno.test('spec: dict-long-key', async () => {
 Deno.test('spec: dict-unicode-key', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('dict-unicode-key', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -1651,6 +1679,7 @@ Deno.test('spec: dict-unicode-key', async () => {
 Deno.test('spec: dict-nesting', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('dict-nesting', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -1716,6 +1745,7 @@ Deno.test('spec: dict-nesting', async () => {
 Deno.test('spec: dict-order', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('dict-order', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -1753,6 +1783,7 @@ Deno.test('spec: dict-order', async () => {
 Deno.test('spec: dict-reuse', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('dict-reuse', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -1782,6 +1813,7 @@ Deno.test('spec: dict-reuse', async () => {
 Deno.test('spec: dict-repeat', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('dict-repeat', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -1804,6 +1836,7 @@ Deno.test('spec: dict-repeat', async () => {
 Deno.test('spec: string-empty', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('string-empty', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -1813,6 +1846,7 @@ Deno.test('spec: string-empty', async () => {
 Deno.test('spec: string-ascii', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('string-ascii', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -1822,6 +1856,7 @@ Deno.test('spec: string-ascii', async () => {
 Deno.test('spec: string-chars', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('string-chars', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -1844,6 +1879,7 @@ Deno.test('spec: string-chars', async () => {
 Deno.test('spec: string-unicode', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('string-unicode', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -1853,6 +1889,7 @@ Deno.test('spec: string-unicode', async () => {
 Deno.test('spec: string-long-unicode', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('string-long-unicode', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -1865,6 +1902,7 @@ Deno.test('spec: string-long-unicode', async () => {
 Deno.test('spec: string-utf8-mb2-divide', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('string-utf8-mb2-divide', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -1874,6 +1912,7 @@ Deno.test('spec: string-utf8-mb2-divide', async () => {
 Deno.test('spec: string-utf8-mb2-ohm', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('string-utf8-mb2-ohm', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -1883,6 +1922,7 @@ Deno.test('spec: string-utf8-mb2-ohm', async () => {
 Deno.test('spec: string-utf8-mb3-check', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('string-utf8-mb3-check', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -1892,6 +1932,7 @@ Deno.test('spec: string-utf8-mb3-check', async () => {
 Deno.test('spec: string-utf8-mb3-plus', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('string-utf8-mb3-plus', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -1901,6 +1942,7 @@ Deno.test('spec: string-utf8-mb3-plus', async () => {
 Deno.test('spec: string-utf8-mb4-robot', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('string-utf8-mb4-robot', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -1910,9 +1952,7 @@ Deno.test('spec: string-utf8-mb4-robot', async () => {
 Deno.test('spec: integer-0', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('integer-0', 'xml'),
-		{
-			int64: true,
-		},
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLInteger);
@@ -1927,10 +1967,7 @@ Deno.test('spec: integer-big', async () => {
 
 	// Not very compatible, created with a private API.
 	assertThrows(
-		() =>
-			decodeXml(data, {
-				int64: true,
-			}),
+		() => decodeXml(data, CF_STYLE),
 		SyntaxError,
 		'Invalid XML on line 6',
 	);
@@ -1981,9 +2018,7 @@ Deno.test('spec: integer-min', async () => {
 
 	const { format, plist } = decodeXml(
 		await fixturePlist('integer-min', 'xml'),
-		{
-			int64: true,
-		},
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLInteger);
@@ -1994,9 +2029,7 @@ Deno.test('spec: integer-min', async () => {
 Deno.test('spec: integer-negative', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('integer-negative', 'xml'),
-		{
-			int64: true,
-		},
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLInteger);
@@ -2007,9 +2040,7 @@ Deno.test('spec: integer-negative', async () => {
 Deno.test('spec: integer-reuse', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('integer-reuse', 'xml'),
-		{
-			int64: true,
-		},
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2031,9 +2062,7 @@ Deno.test('spec: integer-reuse', async () => {
 Deno.test('spec: integer-sizes', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('integer-sizes', 'xml'),
-		{
-			int64: true,
-		},
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2055,6 +2084,7 @@ Deno.test('spec: integer-sizes', async () => {
 Deno.test('spec: real-double-p0.0', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('real-double-p0.0', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLReal);
@@ -2065,6 +2095,7 @@ Deno.test('spec: real-double-p0.0', async () => {
 Deno.test('spec: real-float-p0.0', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('real-float-p0.0', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLReal);
@@ -2075,6 +2106,7 @@ Deno.test('spec: real-float-p0.0', async () => {
 Deno.test('spec: real-reuse', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('real-reuse', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2095,6 +2127,7 @@ Deno.test('spec: real-reuse', async () => {
 Deno.test('spec: real-sizes', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('real-sizes', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2151,6 +2184,7 @@ Deno.test('spec: real-sizes', async () => {
 Deno.test('spec: uid-42', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('uid-42', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLUID);
@@ -2160,6 +2194,7 @@ Deno.test('spec: uid-42', async () => {
 Deno.test('spec: uid-reuse', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('uid-reuse', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2178,6 +2213,7 @@ Deno.test('spec: uid-reuse', async () => {
 Deno.test('spec: uid-sizes', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('uid-sizes', 'xml'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2199,6 +2235,7 @@ Deno.test('spec: uid-sizes', async () => {
 Deno.test('spec: xml-edge array-attrs-close', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'array-attrs-close'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2208,6 +2245,7 @@ Deno.test('spec: xml-edge array-attrs-close', async () => {
 Deno.test('spec: xml-edge bad-attr', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'bad-attr'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLBoolean);
@@ -2217,6 +2255,7 @@ Deno.test('spec: xml-edge bad-attr', async () => {
 Deno.test('spec: xml-edge cdata', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'cdata'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -2231,9 +2270,7 @@ Deno.test('spec: xml-edge cdata', async () => {
 Deno.test('spec: xml-edge comments', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'comments'),
-		{
-			int64: true,
-		},
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -2259,6 +2296,7 @@ Deno.test('spec: xml-edge comments', async () => {
 Deno.test('spec: xml-edge data-attrs', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'data-attrs'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLData);
@@ -2269,6 +2307,7 @@ Deno.test('spec: xml-edge data-chunks', async () => {
 	const expected = new Uint8Array(21).fill(0x41);
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'data-chunks'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLData);
@@ -2279,7 +2318,7 @@ Deno.test('spec: xml-edge data-chunks', async () => {
 Deno.test('spec: xml-edge data-close', async () => {
 	const data = await fixturePlist('xml-edge', 'data-close');
 	assertThrows(
-		() => decodeXml(data),
+		() => decodeXml(data, CF_STYLE),
 		SyntaxError,
 		'Invalid XML on line 4',
 	);
@@ -2288,6 +2327,7 @@ Deno.test('spec: xml-edge data-close', async () => {
 Deno.test('spec: xml-edge data-edge', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'data-edge'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2315,6 +2355,7 @@ Deno.test('spec: xml-edge data-junk', async () => {
 	const expected = new Uint8Array(3).fill(0x41);
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'data-junk'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2331,6 +2372,7 @@ Deno.test('spec: xml-edge data-long', async () => {
 	const expected = new Uint8Array(100).fill(0x41);
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'data-long'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLData);
@@ -2345,6 +2387,7 @@ Deno.test('spec: xml-edge data-padding', async () => {
 	const expected = [e0, e0, e3, e3, e3, e6];
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'data-padding'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2361,6 +2404,7 @@ Deno.test('spec: xml-edge data-whitespace', async () => {
 	const expected = new Uint8Array(100).fill(0x41);
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'data-whitespace'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLData);
@@ -2383,6 +2427,7 @@ Deno.test('spec: xml-edge date-over-under', async () => {
 Deno.test('spec: xml-edge dict-attrs-close', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'dict-attrs-close'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -2392,7 +2437,7 @@ Deno.test('spec: xml-edge dict-attrs-close', async () => {
 Deno.test('spec: xml-edge doctype-internal-subset', async () => {
 	const data = await fixturePlist('xml-edge', 'doctype-internal-subset');
 	assertThrows(
-		() => decodeXml(data),
+		() => decodeXml(data, CF_STYLE),
 		SyntaxError,
 		'Invalid XML on line 2',
 	);
@@ -2401,7 +2446,7 @@ Deno.test('spec: xml-edge doctype-internal-subset', async () => {
 Deno.test('spec: xml-edge doctype-lowercase', async () => {
 	const data = await fixturePlist('xml-edge', 'doctype-lowercase');
 	assertThrows(
-		() => decodeXml(data),
+		() => decodeXml(data, CF_STYLE),
 		SyntaxError,
 		'Invalid XML on line 2',
 	);
@@ -2410,6 +2455,7 @@ Deno.test('spec: xml-edge doctype-lowercase', async () => {
 Deno.test('spec: xml-edge empty', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'empty'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2447,6 +2493,7 @@ Deno.test('spec: xml-edge empty', async () => {
 Deno.test('spec: xml-edge false-attrs-close', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'false-attrs-close'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLBoolean);
@@ -2456,9 +2503,7 @@ Deno.test('spec: xml-edge false-attrs-close', async () => {
 Deno.test('spec: xml-edge integer-attrs', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'integer-attrs'),
-		{
-			int64: true,
-		},
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLInteger);
@@ -2469,9 +2514,7 @@ Deno.test('spec: xml-edge integer-attrs', async () => {
 Deno.test('spec: xml-edge integer-edge', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'integer-edge'),
-		{
-			int64: true,
-		},
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -2487,9 +2530,7 @@ Deno.test('spec: xml-edge integer-edge', async () => {
 Deno.test('spec: xml-edge key-array', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'key-array'),
-		{
-			int64: true,
-		},
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2511,6 +2552,7 @@ Deno.test('spec: xml-edge key-array', async () => {
 Deno.test('spec: xml-edge key-dict', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'key-dict'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -2528,6 +2570,7 @@ Deno.test('spec: xml-edge key-dict', async () => {
 Deno.test('spec: xml-edge key-root', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'key-root'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -2537,6 +2580,7 @@ Deno.test('spec: xml-edge key-root', async () => {
 Deno.test('spec: xml-edge legacy-10.0-0.9-1-null', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'legacy-10.0-0.9-1-null'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V0_9);
 	assertInstanceOf(plist, PLDict);
@@ -2550,6 +2594,7 @@ Deno.test('spec: xml-edge legacy-10.0-0.9-1-null', async () => {
 Deno.test('spec: xml-edge legacy-10.0-0.9-2', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'legacy-10.0-0.9-2'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V0_9);
 	assertInstanceOf(plist, PLDict);
@@ -2569,7 +2614,7 @@ Deno.test('spec: xml-edge legacy-10.0-0.9-2', async () => {
 Deno.test('spec: xml-edge nothing', async () => {
 	const data = await fixturePlist('xml-edge', 'nothing');
 	assertThrows(
-		() => decodeXml(data),
+		() => decodeXml(data, CF_STYLE),
 		SyntaxError,
 		'Invalid XML on line 4',
 	);
@@ -2578,6 +2623,7 @@ Deno.test('spec: xml-edge nothing', async () => {
 Deno.test('spec: xml-edge plist-none-array', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'plist-none-array'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2590,6 +2636,7 @@ Deno.test('spec: xml-edge plist-none-array', async () => {
 Deno.test('spec: xml-edge plist-none-true', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'plist-none-true'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLBoolean);
@@ -2599,6 +2646,7 @@ Deno.test('spec: xml-edge plist-none-true', async () => {
 Deno.test('spec: xml-edge plist-none-uid', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'plist-none-uid'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLUID);
@@ -2608,6 +2656,7 @@ Deno.test('spec: xml-edge plist-none-uid', async () => {
 Deno.test('spec: xml-edge plist-tags-array', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'plist-tags-array'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2625,6 +2674,7 @@ Deno.test('spec: xml-edge plist-tags-array', async () => {
 Deno.test('spec: xml-edge plist-tags-dict', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'plist-tags-dict'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -2642,6 +2692,7 @@ Deno.test('spec: xml-edge plist-tags-dict', async () => {
 Deno.test('spec: plist-tags-uid', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'plist-tags-uid'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLUID);
@@ -2651,9 +2702,7 @@ Deno.test('spec: plist-tags-uid', async () => {
 Deno.test('spec: xml-edge processing-instructions', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'processing-instructions'),
-		{
-			int64: true,
-		},
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -2679,6 +2728,7 @@ Deno.test('spec: xml-edge processing-instructions', async () => {
 Deno.test('spec: xml-edge real-attrs', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'real-attrs'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLReal);
@@ -2689,6 +2739,7 @@ Deno.test('spec: xml-edge real-attrs', async () => {
 Deno.test('spec: xml-edge real-edge', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'real-edge'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2712,6 +2763,7 @@ Deno.test('spec: xml-edge real-edge', async () => {
 Deno.test('spec: xml-edge self-closed', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'self-closed'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2745,6 +2797,7 @@ Deno.test('spec: xml-edge self-closed', async () => {
 Deno.test('spec: string-attrs-close', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'string-attrs-close'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -2754,6 +2807,7 @@ Deno.test('spec: string-attrs-close', async () => {
 Deno.test('spec: string-entity-dec', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'string-entity-dec'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2770,6 +2824,7 @@ Deno.test('spec: string-entity-dec', async () => {
 Deno.test('spec: string-entity-hex', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'string-entity-hex'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
@@ -2786,6 +2841,7 @@ Deno.test('spec: string-entity-hex', async () => {
 Deno.test('spec: xml-edge string-raw-gt', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'string-raw-gt'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -2795,6 +2851,7 @@ Deno.test('spec: xml-edge string-raw-gt', async () => {
 Deno.test('spec: xml-edge trailer-close', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'trailer-close'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLBoolean);
@@ -2804,6 +2861,7 @@ Deno.test('spec: xml-edge trailer-close', async () => {
 Deno.test('spec: xml-edge trailer-plist', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'trailer-plist'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLBoolean);
@@ -2813,6 +2871,7 @@ Deno.test('spec: xml-edge trailer-plist', async () => {
 Deno.test('spec: xml-edge true-attrs-close', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'true-attrs-close'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLBoolean);
@@ -2822,6 +2881,7 @@ Deno.test('spec: xml-edge true-attrs-close', async () => {
 Deno.test('spec: xml-edge uid-attrs', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'uid-attrs'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLUID);
@@ -2831,6 +2891,7 @@ Deno.test('spec: xml-edge uid-attrs', async () => {
 Deno.test('spec: xml-edge uid-negative', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'uid-negative'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -2847,6 +2908,7 @@ Deno.test('spec: xml-edge uid-negative', async () => {
 Deno.test('spec: xml-edge uid-not', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'uid-not'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -2864,6 +2926,7 @@ Deno.test('spec: xml-edge uid-not', async () => {
 Deno.test('spec: xml-edge uid-over', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'uid-over'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -2880,6 +2943,7 @@ Deno.test('spec: xml-edge uid-over', async () => {
 Deno.test('spec: xml-edge uid-real-nan', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'uid-real-nan'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLUID);
@@ -2889,6 +2953,7 @@ Deno.test('spec: xml-edge uid-real-nan', async () => {
 Deno.test('spec: xml-edge uid-real-negative', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'uid-real-negative'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLUID);
@@ -2898,6 +2963,7 @@ Deno.test('spec: xml-edge uid-real-negative', async () => {
 Deno.test('spec: xml-edge uid-real-ninf', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'uid-real-ninf'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLUID);
@@ -2907,6 +2973,7 @@ Deno.test('spec: xml-edge uid-real-ninf', async () => {
 Deno.test('spec: xml-edge uid-real-pinf', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'uid-real-pinf'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLUID);
@@ -2916,6 +2983,7 @@ Deno.test('spec: xml-edge uid-real-pinf', async () => {
 Deno.test('spec: xml-edge uid-real-positive', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'uid-real-positive'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLUID);
@@ -2925,6 +2993,7 @@ Deno.test('spec: xml-edge uid-real-positive', async () => {
 Deno.test('spec: xml-edge uid-string', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'uid-string'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
@@ -2938,6 +3007,7 @@ Deno.test('spec: xml-edge uid-string', async () => {
 Deno.test('spec: xml-edge version-0.0', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'version-0.0'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -2947,6 +3017,7 @@ Deno.test('spec: xml-edge version-0.0', async () => {
 Deno.test('spec: xml-edge version-1.9', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'version-1.9'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -2956,6 +3027,7 @@ Deno.test('spec: xml-edge version-1.9', async () => {
 Deno.test('spec: xml-edge version-9', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'version-9'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -2965,6 +3037,7 @@ Deno.test('spec: xml-edge version-9', async () => {
 Deno.test('spec: xml-edge version-empty', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'version-empty'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
@@ -2974,6 +3047,7 @@ Deno.test('spec: xml-edge version-empty', async () => {
 Deno.test('spec: xml-edge version-none', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('xml-edge', 'version-none'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLString);
