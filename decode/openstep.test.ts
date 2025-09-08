@@ -13,8 +13,13 @@ import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
 import { unquoted } from '../pri/openstep.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
-import { decodeOpenStep } from './openstep.ts';
+import { decodeOpenStep, type DecodeOpenStepOptions } from './openstep.ts';
 import { PLData } from '../data.ts';
+
+const CF_STYLE = {
+	// Intel and ARM are little endian, PPC was big endian.
+	utf16le: true,
+} as const satisfies DecodeOpenStepOptions;
 
 const TE = new TextEncoder();
 const LS = String.fromCharCode(0x2028);
@@ -258,6 +263,7 @@ Deno.test('Option: utf16le: UTF-16LE NO-BOM', () => {
 Deno.test('spec: array-0', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('array-0', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLArray);
@@ -267,10 +273,12 @@ Deno.test('spec: array-0', async () => {
 Deno.test('spec: array-1', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('array-1', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 1);
+
 	const str = plist.get(0);
 	assertInstanceOf(str, PLString);
 	assertEquals(str.value, 'A');
@@ -281,10 +289,12 @@ Deno.test('spec: array-4', async () => {
 	const bb = new Uint8Array([0x62, 0x62]);
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('array-4', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 4);
+
 	for (let i = 0; i < plist.length; i++) {
 		const str = plist.get(i);
 		assertInstanceOf(str, PLData);
@@ -295,10 +305,12 @@ Deno.test('spec: array-4', async () => {
 Deno.test('spec: array-8', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('array-8', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 8);
+
 	const all = new Set<PLString>();
 	for (let i = 0; i < plist.length; i++) {
 		const str = plist.get(i);
@@ -306,6 +318,7 @@ Deno.test('spec: array-8', async () => {
 		assertEquals(str.value, i % 2 ? 'B' : 'A');
 		all.add(str);
 	}
+
 	assertEquals(all.size, 8);
 });
 
@@ -313,10 +326,12 @@ Deno.test('spec: array-26', async () => {
 	const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('array-26', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 26);
+
 	for (let i = 0; i < plist.length; i++) {
 		const str = plist.get(i);
 		assertInstanceOf(str, PLString);
@@ -327,15 +342,18 @@ Deno.test('spec: array-26', async () => {
 Deno.test('spec: array-reuse', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('array-reuse', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 2);
 	assertNotStrictEquals(plist.get(0), plist.get(1));
+
 	for (let i = 0; i < plist.length; i++) {
 		const a = plist.get(i);
 		assertInstanceOf(a, PLArray);
 		assertEquals(a.length, 2);
+
 		for (let j = 0; j < a.length; j++) {
 			const b: PLType = a.get(j)!;
 			assertInstanceOf(b, PLString);
@@ -347,6 +365,7 @@ Deno.test('spec: array-reuse', async () => {
 Deno.test('spec: data-0', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('data-0', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLData);
@@ -356,6 +375,7 @@ Deno.test('spec: data-0', async () => {
 Deno.test('spec: data-1', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('data-1', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLData);
@@ -369,6 +389,7 @@ Deno.test('spec: data-1', async () => {
 Deno.test('spec: data-2', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('data-2', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLData);
@@ -382,6 +403,7 @@ Deno.test('spec: data-2', async () => {
 Deno.test('spec: data-3', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('data-3', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLData);
@@ -395,6 +417,7 @@ Deno.test('spec: data-3', async () => {
 Deno.test('spec: data-4', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('data-4', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLData);
@@ -409,6 +432,7 @@ Deno.test('spec: data-14', async () => {
 	const chars = [...'abcdefghijklmn'].map((c) => c.charCodeAt(0));
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('data-14', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLData);
@@ -423,6 +447,7 @@ Deno.test('spec: data-15', async () => {
 	const chars = [...'abcdefghijklmno'].map((c) => c.charCodeAt(0));
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('data-15', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLData);
@@ -440,6 +465,7 @@ Deno.test('spec: data-255', async () => {
 	}
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('data-255', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLData);
@@ -457,6 +483,7 @@ Deno.test('spec: data-256', async () => {
 	}
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('data-256', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLData);
@@ -471,6 +498,7 @@ Deno.test('spec: dict-empty', async () => {
 	{
 		const { format, plist } = decodeOpenStep(
 			await fixturePlist('dict-empty', 'openstep'),
+			CF_STYLE,
 		);
 		assertEquals(format, FORMAT_OPENSTEP);
 		assertInstanceOf(plist, PLDict);
@@ -479,6 +507,7 @@ Deno.test('spec: dict-empty', async () => {
 	{
 		const { format, plist } = decodeOpenStep(
 			await fixturePlist('dict-empty', 'strings'),
+			CF_STYLE,
 		);
 		assertEquals(format, FORMAT_STRINGS);
 		assertInstanceOf(plist, PLDict);
@@ -489,26 +518,31 @@ Deno.test('spec: dict-empty', async () => {
 Deno.test('spec: dict-empties', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('dict-empties', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
-	const a = plist.find('array');
-	assertInstanceOf(a, PLArray);
-	assertEquals(a.length, 0);
-	const d = plist.find('dict');
-	assertInstanceOf(d, PLDict);
-	assertEquals(d.size, 0);
+
+	const array = plist.find('array');
+	assertInstanceOf(array, PLArray);
+	assertEquals(array.length, 0);
+
+	const dict = plist.find('dict');
+	assertInstanceOf(dict, PLDict);
+	assertEquals(dict.size, 0);
 });
 
 Deno.test('spec: dict-26', async () => {
 	const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('dict-26', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 26);
+
 	for (let i = 0; i < plist.size; i++) {
 		const str = plist.find(alphabet[i]);
 		assertInstanceOf(str, PLString);
@@ -519,10 +553,12 @@ Deno.test('spec: dict-26', async () => {
 Deno.test('spec: dict-long-key', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('dict-long-key', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 1);
+
 	const str = plist.find(
 		'ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789',
 	);
@@ -533,10 +569,12 @@ Deno.test('spec: dict-long-key', async () => {
 Deno.test('spec: dict-unicode-key', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('dict-unicode-key', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 1);
+
 	const str = plist.find('UTF\u20138');
 	assertInstanceOf(str, PLString);
 	assertEquals(str.value, 'utf-8');
@@ -545,6 +583,7 @@ Deno.test('spec: dict-unicode-key', async () => {
 Deno.test('spec: dict-nesting', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('dict-nesting', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
@@ -610,6 +649,7 @@ Deno.test('spec: dict-nesting', async () => {
 Deno.test('spec: dict-order', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('dict-order', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
@@ -648,10 +688,12 @@ Deno.test('spec: dict-reuse', async () => {
 	{
 		const { format, plist } = decodeOpenStep(
 			await fixturePlist('dict-reuse', 'openstep'),
+			CF_STYLE,
 		);
 		assertEquals(format, FORMAT_OPENSTEP);
 		assertInstanceOf(plist, PLDict);
 		assertEquals(plist.size, 2);
+
 		const AA = plist.find('AA');
 		assertInstanceOf(AA, PLDict);
 		{
@@ -662,6 +704,7 @@ Deno.test('spec: dict-reuse', async () => {
 			assertInstanceOf(BBBB, PLString);
 			assertEquals(BBBB.value, '2222');
 		}
+
 		const BB = plist.find('BB');
 		assertInstanceOf(BB, PLDict);
 		{
@@ -672,14 +715,17 @@ Deno.test('spec: dict-reuse', async () => {
 			assertInstanceOf(BBBB, PLString);
 			assertEquals(BBBB.value, '2222');
 		}
+
 		assertNotStrictEquals(AA, BB);
 	}
 	{
 		const { format, plist } = decodeOpenStep(
 			await fixturePlist('dict-reuse', 'strings'),
+			CF_STYLE,
 		);
 		assertEquals(format, FORMAT_STRINGS);
 		assertInstanceOf(plist, PLDict);
+
 		const AA = plist.find('AA');
 		assertInstanceOf(AA, PLDict);
 		{
@@ -690,6 +736,7 @@ Deno.test('spec: dict-reuse', async () => {
 			assertInstanceOf(BBBB, PLString);
 			assertEquals(BBBB.value, '2222');
 		}
+
 		const BB = plist.find('BB');
 		assertInstanceOf(BB, PLDict);
 		{
@@ -700,17 +747,12 @@ Deno.test('spec: dict-reuse', async () => {
 			assertInstanceOf(BBBB, PLString);
 			assertEquals(BBBB.value, '2222');
 		}
+
 		assertNotStrictEquals(AA, BB);
 	}
 });
 
 Deno.test('spec: dict-repeat', async () => {
-	const { format, plist } = decodeOpenStep(
-		await fixturePlist('dict-repeat', 'openstep'),
-	);
-	assertEquals(format, FORMAT_OPENSTEP);
-	assertInstanceOf(plist, PLDict);
-	assertEquals(plist.size, 6);
 	const expected = [
 		['A', '11'],
 		['B', '21'],
@@ -719,6 +761,14 @@ Deno.test('spec: dict-repeat', async () => {
 		['C', '31'],
 		['C', '33'],
 	];
+	const { format, plist } = decodeOpenStep(
+		await fixturePlist('dict-repeat', 'openstep'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_OPENSTEP);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 6);
+
 	for (const [i, [k, v]] of [...plist].entries()) {
 		assertInstanceOf(v, PLString);
 		assertEquals(k.value, expected[i][0]);
@@ -729,6 +779,7 @@ Deno.test('spec: dict-repeat', async () => {
 Deno.test('spec: string-empty', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('string-empty', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -738,6 +789,7 @@ Deno.test('spec: string-empty', async () => {
 Deno.test('spec: string-ascii', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('string-ascii', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -747,6 +799,7 @@ Deno.test('spec: string-ascii', async () => {
 Deno.test('spec: string-chars', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('string-chars', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
@@ -761,6 +814,7 @@ Deno.test('spec: string-chars', async () => {
 Deno.test('spec: string-unicode', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('string-unicode', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -770,6 +824,7 @@ Deno.test('spec: string-unicode', async () => {
 Deno.test('spec: string-long-unicode', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('string-long-unicode', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -782,6 +837,7 @@ Deno.test('spec: string-long-unicode', async () => {
 Deno.test('spec: string-utf8-mb2-divide', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('string-utf8-mb2-divide', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -791,6 +847,7 @@ Deno.test('spec: string-utf8-mb2-divide', async () => {
 Deno.test('spec: string-utf8-mb2-ohm', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('string-utf8-mb2-ohm', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -800,6 +857,7 @@ Deno.test('spec: string-utf8-mb2-ohm', async () => {
 Deno.test('spec: string-utf8-mb3-check', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('string-utf8-mb3-check', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -809,6 +867,7 @@ Deno.test('spec: string-utf8-mb3-check', async () => {
 Deno.test('spec: string-utf8-mb3-plus', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('string-utf8-mb3-plus', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -818,6 +877,7 @@ Deno.test('spec: string-utf8-mb3-plus', async () => {
 Deno.test('spec: string-utf8-mb4-robot', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('string-utf8-mb4-robot', 'openstep'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -827,22 +887,28 @@ Deno.test('spec: string-utf8-mb4-robot', async () => {
 Deno.test('spec: openstep-edge all-types', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'all-types'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 4);
+
 	const STRING = plist.find('STRING');
 	assertInstanceOf(STRING, PLString);
 	assertEquals(STRING.value, 'Example');
+
 	const DICT = plist.find('DICT');
 	assertInstanceOf(DICT, PLDict);
 	assertEquals(DICT.size, 2);
+
 	const A = DICT.find('A');
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, 'a');
+
 	const B = DICT.find('B');
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, 'b');
+
 	const ARRAY = plist.find('ARRAY');
 	assertInstanceOf(ARRAY, PLArray);
 	assertEquals(ARRAY.length, 3);
@@ -851,6 +917,7 @@ Deno.test('spec: openstep-edge all-types', async () => {
 		assertInstanceOf(str, PLString);
 		assertEquals(str.value, `${i + 1}`, `ARRAY[${i}]`);
 	}
+
 	const DATA = plist.find('DATA');
 	assertInstanceOf(DATA, PLData);
 	assertEquals(
@@ -862,13 +929,16 @@ Deno.test('spec: openstep-edge all-types', async () => {
 Deno.test('spec: openstep-edge array-comments-block', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'array-comments-block'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 2);
+
 	const A = plist.get(0);
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, 'A');
+
 	const B = plist.get(1);
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, 'B');
@@ -877,13 +947,16 @@ Deno.test('spec: openstep-edge array-comments-block', async () => {
 Deno.test('spec: openstep-edge array-comments-line', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'array-comments-line'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 2);
+
 	const A = plist.get(0);
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, 'A');
+
 	const B = plist.get(1);
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, 'B');
@@ -892,7 +965,7 @@ Deno.test('spec: openstep-edge array-comments-line', async () => {
 Deno.test('spec: openstep-edge array-junk-error', async () => {
 	const data = await fixturePlist('openstep-edge', 'array-junk-error');
 	assertThrows(
-		() => decodeOpenStep(data),
+		() => decodeOpenStep(data, CF_STYLE),
 		SyntaxError,
 		'Invalid token on line 2',
 	);
@@ -901,13 +974,16 @@ Deno.test('spec: openstep-edge array-junk-error', async () => {
 Deno.test('spec: openstep-edge array-trailing-comma', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'array-trailing-comma'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 2);
+
 	const A = plist.get(0);
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, 'A');
+
 	const B = plist.get(1);
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, 'B');
@@ -916,9 +992,11 @@ Deno.test('spec: openstep-edge array-trailing-comma', async () => {
 Deno.test('spec: openstep-edge data-caps', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'data-caps'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
+
 	const ALL = plist.find('ALL');
 	assertInstanceOf(ALL, PLData);
 	assertEquals(
@@ -942,6 +1020,7 @@ Deno.test('spec: openstep-edge data-caps', async () => {
 Deno.test('spec: openstep-edge data-comments-block', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'data-comments-block'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLData);
@@ -951,6 +1030,7 @@ Deno.test('spec: openstep-edge data-comments-block', async () => {
 Deno.test('spec: openstep-edge data-comments-line', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'data-comments-line'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLData);
@@ -960,9 +1040,11 @@ Deno.test('spec: openstep-edge data-comments-line', async () => {
 Deno.test('spec: openstep-edge data-spacing', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'data-spacing'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
+
 	for (let i = 0; i++ < 4;) {
 		const d = plist.find(`${i}`);
 		assertInstanceOf(d, PLData);
@@ -973,13 +1055,16 @@ Deno.test('spec: openstep-edge data-spacing', async () => {
 Deno.test('spec: openstep-edge dict-comments-block', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'dict-comments-block'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
+
 	const A = plist.find('A');
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, 'A');
+
 	const B = plist.find('B');
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, 'B');
@@ -988,13 +1073,16 @@ Deno.test('spec: openstep-edge dict-comments-block', async () => {
 Deno.test('spec: openstep-edge dict-comments-line', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'dict-comments-line'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
+
 	const A = plist.find('A');
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, 'A');
+
 	const B = plist.find('B');
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, 'B');
@@ -1004,10 +1092,12 @@ Deno.test('spec: openstep-edge dict-spacing', async () => {
 	const chars = 'ABCDEFG';
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'dict-spacing'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, chars.length);
+
 	for (const char of chars) {
 		const tag = `char: ${char}`;
 		const s = plist.find(char);
@@ -1019,19 +1109,24 @@ Deno.test('spec: openstep-edge dict-spacing', async () => {
 Deno.test('spec: openstep-edge escapes-octal', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'escapes-octal'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 4);
+
 	const null0 = plist.find('null-0');
 	assertInstanceOf(null0, PLString);
 	assertEquals(null0.value, '\x000');
+
 	const null8 = plist.find('null-8');
 	assertInstanceOf(null8, PLString);
 	assertEquals(null8.value, '\x008');
+
 	const oct16 = plist.find('oct16');
 	assertInstanceOf(oct16, PLString);
 	assertEquals(oct16.value, '\x0E');
+
 	const oct167 = plist.find('oct16-7');
 	assertInstanceOf(oct167, PLString);
 	assertEquals(oct167.value, '\x0E7');
@@ -1040,12 +1135,15 @@ Deno.test('spec: openstep-edge escapes-octal', async () => {
 Deno.test('spec: openstep-edge escapes-repeat', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'escapes-repeat'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
+
 	for (const [k, v] of [...plist]) {
 		const tag = k.value;
 		assertInstanceOf(v, PLString, tag);
+
 		const hex = k.value.split(' ')[1];
 		const chr = JSON.parse(`"\\u${hex.padStart(4, '0')}"`);
 		assertEquals(v.value, chr, tag);
@@ -1055,13 +1153,16 @@ Deno.test('spec: openstep-edge escapes-repeat', async () => {
 Deno.test('spec: openstep-edge escapes-all-octal', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'escapes-all-octal'),
+		CF_STYLE,
 	);
 	const nsl = await fixtureNextStepLatin();
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
+
 	for (const [k, v] of [...plist]) {
 		const key = k.value;
 		assertInstanceOf(v, PLString, key);
+
 		const index = (+key[0] << 6 | +key[1] << 3 | +key[2]) & 0xFF;
 		const str = String.fromCharCode(...(nsl.get(index) || []));
 		assertEquals([v.value], [str], `${key} ${index}`);
@@ -1071,12 +1172,15 @@ Deno.test('spec: openstep-edge escapes-all-octal', async () => {
 Deno.test('spec: openstep-edge escapes-single', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'escapes-single'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
+
 	for (const [k, v] of plist) {
 		const key = k.value;
 		assertInstanceOf(v, PLString, key);
+
 		let [value, hex] = key.split(' ');
 		if (hex) {
 			value = String.fromCharCode(parseInt(hex, 16));
@@ -1088,12 +1192,15 @@ Deno.test('spec: openstep-edge escapes-single', async () => {
 Deno.test('spec: openstep-edge escapes-double', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'escapes-double'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
+
 	for (const [k, v] of plist) {
 		const key = k.value;
 		assertInstanceOf(v, PLString, key);
+
 		let [value, hex] = key.split(' ');
 		if (hex) {
 			value = String.fromCharCode(parseInt(hex, 16));
@@ -1105,12 +1212,15 @@ Deno.test('spec: openstep-edge escapes-double', async () => {
 Deno.test('spec: openstep-edge escapes-unicode-partial', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'escapes-unicode-partial'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
+
 	for (const [k, v] of plist) {
 		const key = k.value;
 		assertInstanceOf(v, PLString, key);
+
 		let str = '';
 		for (let [, hex] = key.split(' '); hex.length; hex = hex.slice(2)) {
 			str += String.fromCharCode(parseInt(hex.slice(0, 2), 16));
@@ -1123,15 +1233,18 @@ Deno.test('spec: openstep-edge legacy-dict-opt-sc', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'legacy-dict-opt-sc'),
 		{
+			...CF_STYLE,
 			allowMissingSemi: true,
 		},
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
+
 	const A = plist.find('A');
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, 'Alpha');
+
 	const B = plist.find('B');
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, 'Beta');
@@ -1151,10 +1264,12 @@ Deno.test('spec: openstep-edge not-comment', async () => {
 	];
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'not-comment'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, values.length);
+
 	for (let i = 0; i < plist.length; i++) {
 		const tag = `index: ${i}, value: ${values[i]}`;
 		const str = plist.get(i);
@@ -1166,13 +1281,16 @@ Deno.test('spec: openstep-edge not-comment', async () => {
 Deno.test('spec: openstep-edge quotes', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'quotes'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 2);
+
 	const A = plist.get(0);
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, `_"_'_`);
+
 	const B = plist.get(1);
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, `_"_'_`);
@@ -1181,18 +1299,24 @@ Deno.test('spec: openstep-edge quotes', async () => {
 Deno.test('spec: openstep-edge shortcut', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'shortcut'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 5);
+
 	const A = plist.findKey('A')!;
 	assertNotStrictEquals(A, plist.get(A));
+
 	const B = plist.findKey('B')!;
 	assertStrictEquals(B, plist.get(B));
+
 	const C = plist.findKey('C')!;
 	assertNotStrictEquals(C, plist.get(C));
+
 	const D = plist.findKey('D')!;
 	assertNotStrictEquals(D, plist.get(D));
+
 	const E = plist.findKey('E')!;
 	assertStrictEquals(E, plist.get(E));
 });
@@ -1200,7 +1324,7 @@ Deno.test('spec: openstep-edge shortcut', async () => {
 Deno.test('spec: openstep-edge string-junk-error', async () => {
 	const data = await fixturePlist('openstep-edge', 'string-junk-error');
 	assertThrows(
-		() => decodeOpenStep(data),
+		() => decodeOpenStep(data, CF_STYLE),
 		SyntaxError,
 		'Invalid token on line 2',
 	);
@@ -1209,6 +1333,7 @@ Deno.test('spec: openstep-edge string-junk-error', async () => {
 Deno.test('spec: openstep-edge string-multiline', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'string-multiline'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -1218,6 +1343,7 @@ Deno.test('spec: openstep-edge string-multiline', async () => {
 Deno.test('spec: openstep-edge string-quoted-comments-block', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'string-quoted-comments-block'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -1227,6 +1353,7 @@ Deno.test('spec: openstep-edge string-quoted-comments-block', async () => {
 Deno.test('spec: openstep-edge string-quoted-comments-line', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'string-quoted-comments-line'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -1236,6 +1363,7 @@ Deno.test('spec: openstep-edge string-quoted-comments-line', async () => {
 Deno.test('spec: openstep-edge string-unquoted-comments-block', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'string-unquoted-comments-block'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -1245,6 +1373,7 @@ Deno.test('spec: openstep-edge string-unquoted-comments-block', async () => {
 Deno.test('spec: openstep-edge string-unquoted-comments-line', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'string-unquoted-comments-line'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -1254,9 +1383,11 @@ Deno.test('spec: openstep-edge string-unquoted-comments-line', async () => {
 Deno.test('spec: openstep-edge unescaped-ascii', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'unescaped-ascii'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
+
 	for (let i = 0; i < 128; i++) {
 		if (i === 92) {
 			continue;
@@ -1272,21 +1403,27 @@ Deno.test('spec: openstep-edge unescaped-ascii', async () => {
 Deno.test('spec: openstep-edge unescaped-utf8', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'unescaped-utf8'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
+
 	const divide = plist.find('divide');
 	assertInstanceOf(divide, PLString);
 	assertEquals(divide.value, '\u00f7');
+
 	const ohm = plist.find('ohm');
 	assertInstanceOf(ohm, PLString);
 	assertEquals(ohm.value, '\u03a9');
+
 	const check = plist.find('check');
 	assertInstanceOf(check, PLString);
 	assertEquals(check.value, '\u2705');
+
 	const plus = plist.find('plus');
 	assertInstanceOf(plus, PLString);
 	assertEquals(plus.value, '\uff0b');
+
 	const robot = plist.find('robot');
 	assertInstanceOf(robot, PLString);
 	assertEquals(robot.value, '\ud83e\udd16');
@@ -1295,9 +1432,11 @@ Deno.test('spec: openstep-edge unescaped-utf8', async () => {
 Deno.test('spec: openstep-edge unquotables', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'unquotables'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
+
 	for (let i = 0; i < 256; i++) {
 		const char = String.fromCharCode(i);
 		const tag = `char: ${i} (${JSON.stringify(char)})`;
@@ -1314,6 +1453,7 @@ Deno.test('spec: openstep-edge unquotables', async () => {
 Deno.test('spec: openstep-edge utf-8-bom', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('openstep-edge', 'utf-8-bom'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
@@ -1323,13 +1463,16 @@ Deno.test('spec: openstep-edge utf-8-bom', async () => {
 Deno.test('spec: strings-edge comments', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('strings-edge', 'comments'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_STRINGS);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
+
 	const A = plist.find('A');
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, '1');
+
 	const B = plist.find('B');
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, '2');
@@ -1338,18 +1481,24 @@ Deno.test('spec: strings-edge comments', async () => {
 Deno.test('spec: strings-edge shortcut', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('strings-edge', 'shortcut'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_STRINGS);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 5);
+
 	const A = plist.findKey('A')!;
 	assertNotStrictEquals(A, plist.get(A));
+
 	const B = plist.findKey('B')!;
 	assertStrictEquals(B, plist.get(B));
+
 	const C = plist.findKey('C')!;
 	assertNotStrictEquals(C, plist.get(C));
+
 	const D = plist.findKey('D')!;
 	assertNotStrictEquals(D, plist.get(D));
+
 	const E = plist.findKey('E')!;
 	assertStrictEquals(E, plist.get(E));
 });
@@ -1357,13 +1506,16 @@ Deno.test('spec: strings-edge shortcut', async () => {
 Deno.test('spec: strings-edge junk-data', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('strings-edge', 'junk-null'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_STRINGS);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
+
 	const A = plist.find('A');
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, 'Alpha');
+
 	const B = plist.find('B');
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, 'Beta');
@@ -1372,13 +1524,16 @@ Deno.test('spec: strings-edge junk-data', async () => {
 Deno.test('spec: strings-edge junk-em', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('strings-edge', 'junk-em'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_STRINGS);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
+
 	const A = plist.find('A');
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, 'Alpha');
+
 	const B = plist.find('B');
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, 'Beta');
@@ -1387,13 +1542,16 @@ Deno.test('spec: strings-edge junk-em', async () => {
 Deno.test('spec: strings-edge junk-null', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('strings-edge', 'junk-null'),
+		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_STRINGS);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
+
 	const A = plist.find('A');
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, 'Alpha');
+
 	const B = plist.find('B');
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, 'Beta');
@@ -1403,15 +1561,18 @@ Deno.test('spec: strings-edge legacy-dict-opt-sc', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('strings-edge', 'legacy-dict-opt-sc'),
 		{
+			...CF_STYLE,
 			allowMissingSemi: true,
 		},
 	);
 	assertEquals(format, FORMAT_STRINGS);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
+
 	const A = plist.find('A');
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, 'Alpha');
+
 	const B = plist.find('B');
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, 'Beta');
@@ -1421,15 +1582,18 @@ Deno.test('spec: strings-edge legacy-junk', async () => {
 	const { format, plist } = decodeOpenStep(
 		await fixturePlist('strings-edge', 'legacy-junk'),
 		{
+			...CF_STYLE,
 			allowMissingSemi: true,
 		},
 	);
 	assertEquals(format, FORMAT_STRINGS);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
+
 	const A = plist.find('A');
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, 'Alpha');
+
 	const B = plist.find('B');
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, 'Beta');

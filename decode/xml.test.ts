@@ -1312,6 +1312,7 @@ Deno.test('spec: array-1', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 1);
+
 	const entry = plist.get(0);
 	assertInstanceOf(entry, PLString);
 	assertEquals(entry.value, 'A');
@@ -1327,6 +1328,7 @@ Deno.test('spec: array-4', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 4);
+
 	for (let i = 0; i < plist.length; i++) {
 		const str = plist.get(i);
 		assertInstanceOf(str, PLData);
@@ -1342,6 +1344,7 @@ Deno.test('spec: array-8', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 8);
+
 	for (let i = 0; i < 8; i++) {
 		const entry: PLType = plist.get(i)!;
 		assertInstanceOf(entry, PLString, `${i}`);
@@ -1357,6 +1360,7 @@ Deno.test('spec: array-14', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 14);
+
 	for (let i = 0; i < 14; i++) {
 		const entry: PLType = plist.get(i)!;
 		assertInstanceOf(entry, PLBoolean, `${i}`);
@@ -1376,6 +1380,7 @@ Deno.test('spec: array-26', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 26);
+
 	for (let i = 0; i < 26; i++) {
 		const entry: PLType = plist.get(i)!;
 		assertInstanceOf(entry, PLString, `${i}`);
@@ -1395,6 +1400,7 @@ Deno.test('spec: array-255', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 255);
+
 	for (let i = 0; i < 255; i++) {
 		const entry: PLType = plist.get(i)!;
 		assertInstanceOf(entry, PLInteger, `${i}`);
@@ -1410,6 +1416,7 @@ Deno.test('spec: array-256', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 256);
+
 	for (let i = 0; i < 256; i++) {
 		const entry: PLType = plist.get(i)!;
 		assertInstanceOf(entry, PLBoolean, `${i}`);
@@ -1425,6 +1432,7 @@ Deno.test('spec: array-65534', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 65534);
+
 	for (let i = 0; i < 65534; i++) {
 		const entry: PLType = plist.get(i)!;
 		assertInstanceOf(entry, PLBoolean, `${i}`);
@@ -1440,6 +1448,7 @@ Deno.test('spec: array-65535', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 65535);
+
 	for (let i = 0; i < 65535; i++) {
 		const entry: PLType = plist.get(i)!;
 		assertInstanceOf(entry, PLBoolean, `${i}`);
@@ -1455,6 +1464,7 @@ Deno.test('spec: array-65536', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 65536);
+
 	for (let i = 0; i < 65536; i++) {
 		const entry: PLType = plist.get(i)!;
 		assertInstanceOf(entry, PLBoolean, `${i}`);
@@ -1471,6 +1481,7 @@ Deno.test('spec: array-reuse', async () => {
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 2);
 	assertNotStrictEquals(plist.get(0), plist.get(1));
+
 	for (let i = 0; i < plist.length; i++) {
 		const a = plist.get(i);
 		assertInstanceOf(a, PLArray);
@@ -1625,12 +1636,14 @@ Deno.test('spec: dict-empties', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
-	const a = plist.find('array');
-	assertInstanceOf(a, PLArray);
-	assertEquals(a.length, 0);
-	const d = plist.find('dict');
-	assertInstanceOf(d, PLDict);
-	assertEquals(d.size, 0);
+
+	const array = plist.find('array');
+	assertInstanceOf(array, PLArray);
+	assertEquals(array.length, 0);
+
+	const dict = plist.find('dict');
+	assertInstanceOf(dict, PLDict);
+	assertEquals(dict.size, 0);
 });
 
 Deno.test('spec: dict-26', async () => {
@@ -1642,6 +1655,7 @@ Deno.test('spec: dict-26', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 26);
+
 	for (let i = 0; i < plist.size; i++) {
 		const str = plist.find(alphabet[i]);
 		assertInstanceOf(str, PLString);
@@ -1657,6 +1671,7 @@ Deno.test('spec: dict-long-key', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 1);
+
 	const str = plist.find(
 		'ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789',
 	);
@@ -1672,6 +1687,7 @@ Deno.test('spec: dict-unicode-key', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 1);
+
 	const str = plist.find('UTF\u20138');
 	assertInstanceOf(str, PLString);
 	assertEquals(str.value, 'utf-8');
@@ -1788,6 +1804,7 @@ Deno.test('spec: dict-reuse', async () => {
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
+
 	const AA = plist.find('AA');
 	assertInstanceOf(AA, PLDict);
 	{
@@ -1798,6 +1815,7 @@ Deno.test('spec: dict-reuse', async () => {
 		assertInstanceOf(BBBB, PLString);
 		assertEquals(BBBB.value, '2222');
 	}
+
 	const BB = plist.find('BB');
 	assertInstanceOf(BB, PLDict);
 	{
@@ -1808,17 +1826,11 @@ Deno.test('spec: dict-reuse', async () => {
 		assertInstanceOf(BBBB, PLString);
 		assertEquals(BBBB.value, '2222');
 	}
+
 	assertNotStrictEquals(AA, BB);
 });
 
 Deno.test('spec: dict-repeat', async () => {
-	const { format, plist } = decodeXml(
-		await fixturePlist('dict-repeat', 'xml'),
-		CF_STYLE,
-	);
-	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
-	assertEquals(plist.size, 6);
 	const expected = [
 		['A', '11'],
 		['B', '21'],
@@ -1827,6 +1839,14 @@ Deno.test('spec: dict-repeat', async () => {
 		['C', '31'],
 		['C', '33'],
 	];
+	const { format, plist } = decodeXml(
+		await fixturePlist('dict-repeat', 'xml'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 6);
+
 	for (const [i, [k, v]] of [...plist].entries()) {
 		assertInstanceOf(v, PLString);
 		assertEquals(k.value, expected[i][0]);
@@ -1861,19 +1881,21 @@ Deno.test('spec: string-chars', async () => {
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
+
 	for (let i = 0; i < plist.length;) {
 		const k: PLType = plist.get(i)!;
 		assertInstanceOf(k, PLString, `[${i}]`);
 		const code = +k.value;
 		i++;
+
 		const v: PLType = plist.get(i)!;
 		assertInstanceOf(v, PLString, k.value);
-		i++;
 		if (code < 0xD800 || code >= 0xE000) {
 			assertEquals(v.value, String.fromCharCode(code), k.value);
 		} else {
 			assertEquals(v.value, '', k.value);
 		}
+		i++;
 	}
 });
 
@@ -1982,10 +2004,11 @@ Deno.test('spec: integer-big', async () => {
 		const name: PLType = plist.get(i)!;
 		assertInstanceOf(name, PLString, `${i}`);
 		i++;
+
 		const value: PLType = plist.get(i)!;
 		assertInstanceOf(value, PLInteger, `${i}`);
-		i++;
 		all.set(name.value, value);
+		i++;
 	}
 
 	const BIG = all.get('BIG')!;
@@ -2261,6 +2284,7 @@ Deno.test('spec: xml-edge cdata', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 1);
+
 	for (const [k, v] of plist) {
 		assertEquals(k.value, `For "<keys>" & '<strings>' only!`);
 		assertInstanceOf(v, PLString);
@@ -2812,6 +2836,7 @@ Deno.test('spec: string-entity-dec', async () => {
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
+
 	for (let i = 0; i < plist.length; i++) {
 		const str = plist.get(i);
 		assertInstanceOf(str, PLString, `${i}`);
@@ -2829,6 +2854,7 @@ Deno.test('spec: string-entity-hex', async () => {
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
+
 	for (let i = 0; i < plist.length; i++) {
 		const str = plist.get(i);
 		assertInstanceOf(str, PLString, `${i}`);
