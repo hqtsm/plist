@@ -1389,7 +1389,19 @@ Deno.test('spec: array-26', async () => {
 });
 
 Deno.test('spec: array-128', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('array-128', 'xml'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 128);
+
+	for (let i = 0; i < 128; i++) {
+		const entry: PLType = plist.get(i)!;
+		assertInstanceOf(entry, PLReal, `${i}`);
+		assertEquals(entry.value, i % 2 ? 1 : 0, `${i}`);
+	}
 });
 
 Deno.test('spec: array-255', async () => {
