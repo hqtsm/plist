@@ -240,12 +240,12 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 			if (b < 0) {
 				if (c !== 61) {
 					e = 0;
-					if (c === 60) {
-						r = new PLData(s);
-						o = new Uint8Array(r.buffer);
-						break;
+					if (c !== 60) {
+						continue;
 					}
-					continue;
+					r = new PLData(s);
+					o = new Uint8Array(r.buffer);
+					break;
 				}
 				e++;
 				b = 0;
