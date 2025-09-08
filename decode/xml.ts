@@ -244,11 +244,12 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 							b = b64d[c - 43] + c - 80;
 							if (b < 0) {
 								if (c !== 61) {
-									if (c === 60) {
-										break;
-									}
 									e = 0;
-									continue;
+									if (c !== 60) {
+										continue;
+									}
+									p[0] = i;
+									return r!;
 								}
 								e++;
 								b = 0;
@@ -270,8 +271,6 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 							e = 0;
 						}
 					}
-					p[0] = i;
-					return r!;
 				}
 				e++;
 			} else {
