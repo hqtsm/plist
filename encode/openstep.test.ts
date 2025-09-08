@@ -9,7 +9,7 @@ import type { PLType } from '../type.ts';
 import { encodeOpenStep } from './openstep.ts';
 
 function diff(a: Uint8Array, b: Uint8Array): number {
-	for (let i = 0; i < a.length; i++) {
+	for (let i = 0, l = Math.max(a.length, b.length); i < l; i++) {
 		if (a[i] !== b[i]) {
 			return i;
 		}
