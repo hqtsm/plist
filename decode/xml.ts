@@ -219,17 +219,11 @@ function doctype(
  * @returns Data.
  */
 function data(d: Uint8Array, p: [number], l: number): PLData {
-	let [i] = p;
-	let a = 0;
-	let b;
-	let c;
-	let e = 0;
-	let o;
-	let r;
-	let s = 0;
-	let t = 0;
-	const h = i;
-	for (; i < l; i++) {
+	for (
+		let [i] = p, a = 0, e = 0, s = 0, t = 0, h = i, b, c, o, r;
+		i < l;
+		i++
+	) {
 		c = d[i];
 		if (c < 43) {
 			e = ws(c) ? e : 0;
@@ -242,7 +236,42 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 					}
 					r = new PLData(s);
 					o = new Uint8Array(r.buffer);
-					break;
+					for (a = s = t = 0, i = h;; i++) {
+						c = d[i];
+						if (c < 43) {
+							e = ws(c) ? e : 0;
+						} else if (c < 123) {
+							b = b64d[c - 43] + c - 80;
+							if (b < 0) {
+								if (c !== 61) {
+									if (c === 60) {
+										break;
+									}
+									e = 0;
+									continue;
+								}
+								e++;
+								b = 0;
+							} else {
+								e = 0;
+							}
+							a = a << 6 | b;
+							if (++t & 4) {
+								o[s++] = a >> 16 & 255;
+								if (e < 2) {
+									o[s++] = a >> 8 & 255;
+									if (!e) {
+										o[s++] = a & 255;
+									}
+								}
+								t = 0;
+							}
+						} else {
+							e = 0;
+						}
+					}
+					p[0] = i;
+					return r!;
 				}
 				e++;
 			} else {
@@ -256,45 +285,7 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 			e = 0;
 		}
 	}
-	if (!o) {
-		throw new SyntaxError(utf8ErrorEnd(d));
-	}
-	for (a = s = t = 0, i = h;; i++) {
-		c = d[i];
-		if (c < 43) {
-			e = ws(c) ? e : 0;
-		} else if (c < 123) {
-			b = b64d[c - 43] + c - 80;
-			if (b < 0) {
-				if (c !== 61) {
-					if (c === 60) {
-						break;
-					}
-					e = 0;
-					continue;
-				}
-				e++;
-				b = 0;
-			} else {
-				e = 0;
-			}
-			a = a << 6 | b;
-			if (++t & 4) {
-				o[s++] = a >> 16 & 255;
-				if (e < 2) {
-					o[s++] = a >> 8 & 255;
-					if (!e) {
-						o[s++] = a & 255;
-					}
-				}
-				t = 0;
-			}
-		} else {
-			e = 0;
-		}
-	}
-	p[0] = i;
-	return r!;
+	throw new SyntaxError(utf8ErrorEnd(d));
 }
 
 /**
