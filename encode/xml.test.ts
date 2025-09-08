@@ -11,12 +11,15 @@ import { PLReal } from '../real.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
-import { encodeXml } from './xml.ts';
+import { encodeXml, type EncodeXmlOptions } from './xml.ts';
 
 const CF_STYLE = {
+	// Negative zero drops sign.
 	unsignZero: true,
+
+	// Smaller 128-bit integer encodes as -0.
 	min128Zero: true,
-};
+} as const satisfies EncodeXmlOptions;
 
 function diff(a: Uint8Array, b: Uint8Array): number {
 	for (let i = 0, l = Math.max(a.length, b.length); i < l; i++) {

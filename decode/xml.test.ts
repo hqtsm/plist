@@ -15,12 +15,13 @@ import { fixturePlist } from '../spec/fixture.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
-import { decodeXml } from './xml.ts';
+import { decodeXml, type DecodeXmlOptions } from './xml.ts';
 import { PLReal } from '../real.ts';
 
 const CF_STYLE = {
+	// Integers are limited to 64-bit signed or unsigned values range.
 	int64: true,
-};
+} as const satisfies DecodeXmlOptions;
 
 const DOCTYPE =
 	'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">';

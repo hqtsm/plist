@@ -11,12 +11,17 @@ import { PLReal } from '../real.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLTYPE_UID, PLUID } from '../uid.ts';
-import { encodeBinary } from './binary.ts';
+import { encodeBinary, type EncodeBinaryOptions } from './binary.ts';
 
 const CF_STYLE = {
 	// CF duplicates encoding reused references to certain types.
-	duplicates: [PLTYPE_ARRAY, PLTYPE_BOOLEAN, PLTYPE_DICT, PLTYPE_UID],
-};
+	duplicates: [
+		PLTYPE_ARRAY,
+		PLTYPE_BOOLEAN,
+		PLTYPE_DICT,
+		PLTYPE_UID,
+	] as const,
+} as const satisfies EncodeBinaryOptions;
 
 function diff(a: Uint8Array, b: Uint8Array): number {
 	for (let i = 0, l = Math.max(a.length, b.length); i < l; i++) {
