@@ -263,8 +263,8 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 								}
 								t = 0;
 							}
-						} else {
-							e = ws(c) ? e : 0;
+						} else if (!ws(c)) {
+							e = 0;
 						}
 					}
 				}
@@ -276,8 +276,8 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 				s += e < 2 ? 3 - e : 1;
 				t = 0;
 			}
-		} else {
-			e = ws(c) ? e : 0;
+		} else if (!ws(c)) {
+			e = 0;
 		}
 	}
 	throw new SyntaxError(utf8ErrorEnd(d));
