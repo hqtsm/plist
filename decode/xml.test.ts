@@ -2457,7 +2457,15 @@ Deno.test('spec: xml-edge date-edge', async () => {
 	// TODO
 });
 
+Deno.test('spec: xml-edge date-empty-year', async () => {
+	// TODO
+});
+
 Deno.test('spec: xml-edge date-over-under', async () => {
+	// TODO
+});
+
+Deno.test('spec: xml-edge date-year-0000', async () => {
 	// TODO
 });
 
