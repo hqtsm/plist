@@ -309,7 +309,7 @@ function date(d: Uint8Array, p: [number], l: number): PLDate {
 		}
 		c = new PLDate();
 		c.year = n ? -Y : Y;
-		c.month = M;
+		c.month = M || 1;
 		c.day = D;
 		c.hour = h;
 		c.minute = m;
