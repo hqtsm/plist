@@ -6,7 +6,6 @@
 
 import type { PLType } from './type.ts';
 
-let t;
 const times: WeakMap<PLDate, number> = new WeakMap();
 const Y: [number] = [0];
 const M: [number] = [0];
@@ -36,9 +35,9 @@ function leap(year: number): 0 | 1 {
  */
 function getDate(
 	time: number,
-	year?: [number] | null,
-	month?: [number] | null,
-	day?: [number] | null,
+	year?: [number] | 0,
+	month?: [number] | 0,
+	day?: [number] | 0,
 ): void {
 	// Convert time to days.
 	let z: bigint | number = time < 0
@@ -116,6 +115,97 @@ function getDate(
 }
 
 /**
+ * Get year.
+ *
+ * @param time Date time.
+ * @returns Year.
+ */
+function getYear(time: number): number {
+	getDate(time, Y);
+	return Y[0];
+}
+
+/**
+ * Set year.
+ *
+ * @param time Date time.
+ * @param year Year.
+ * @returns Date time.
+ */
+function setYear(time: number, year: number): number {
+	getDate(time, 0, M, D);
+	return getTime(
+		year,
+		M[0],
+		D[0],
+		getHour(time),
+		getMinute(time),
+		getSecond(time),
+	);
+}
+
+/**
+ * Get month.
+ *
+ * @param time Date time.
+ * @returns Month.
+ */
+function getMonth(time: number): number {
+	getDate(time, 0, M);
+	return M[0];
+}
+
+/**
+ * Set month.
+ *
+ * @param time Date time.
+ * @param month Month.
+ * @returns Date time.
+ */
+function setMonth(time: number, month: number): number {
+	getDate(time, Y, M);
+	let [y] = Y;
+	const [m] = M;
+	const days = DBM[m] + (m > 2 ? leap(y) : 0);
+	let d = 0;
+	if (month > 0) {
+		for (; month > 12; month -= 12) {
+			d += 365 + leap(y++);
+		}
+		d += DBM[month] + (month > 2 ? leap(y) : 0);
+	} else {
+		for (; month <= -12; month += 12) {
+			d -= 365 + leap(--y);
+		}
+		d -= 365 - DBM[month += 12] + (month > 2 ? 0 : leap(y - 1));
+	}
+	return time + (d - days) * 86400;
+}
+
+/**
+ * Get day.
+ *
+ * @param time Date time.
+ * @returns Day.
+ */
+function getDay(time: number): number {
+	getDate(time, 0, 0, D);
+	return D[0];
+}
+
+/**
+ * Set day.
+ *
+ * @param time Date time.
+ * @param day Day.
+ * @returns Date time.
+ */
+function setDay(time: number, day: number): number {
+	getDate(time, 0, 0, D);
+	return time + (day - D[0]) * 86400;
+}
+
+/**
  * Get hour.
  *
  * @param time Date time.
@@ -124,6 +214,17 @@ function getDate(
 function getHour(time: number): number {
 	time = Math.floor(time / 3600);
 	return time - Math.floor(time / 24) * 24 | 0;
+}
+
+/**
+ * Set hour.
+ *
+ * @param time Date time.
+ * @param hour Hour.
+ * @returns Date time.
+ */
+function setHour(time: number, hour: number): number {
+	return time + (hour - getHour(time)) * 3600;
 }
 
 /**
@@ -138,6 +239,17 @@ function getMinute(time: number): number {
 }
 
 /**
+ * Set minute.
+ *
+ * @param time Date time.
+ * @param minute Minute.
+ * @returns Date time.
+ */
+function setMinute(time: number, minute: number): number {
+	return time + (minute - getMinute(time)) * 60;
+}
+
+/**
  * Get second.
  *
  * @param time Date time.
@@ -145,6 +257,17 @@ function getMinute(time: number): number {
  */
 function getSecond(time: number): number {
 	return time - Math.floor(time / 60) * 60 || 0;
+}
+
+/**
+ * Set second.
+ *
+ * @param time Date time.
+ * @param second Second.
+ * @returns Date time.
+ */
+function setSecond(time: number, second: number): number {
+	return time + second - getSecond(time);
 }
 
 /**
@@ -179,7 +302,7 @@ function iso(time: number): string {
  * @param second Second.
  * @returns Time.
  */
-function time(
+function getTime(
 	year: number,
 	month: number,
 	day: number,
@@ -276,8 +399,7 @@ export class PLDate {
 	 * @returns Year.
 	 */
 	public get year(): number {
-		getDate(times.get(this)!, Y);
-		return Y[0];
+		return getYear(times.get(this)!);
 	}
 
 	/**
@@ -287,11 +409,7 @@ export class PLDate {
 	 */
 	public set year(year: number) {
 		year = (+year || 0) - (year % 1 || 0);
-		getDate(t = times.get(this)!, null, M, D);
-		times.set(
-			this,
-			time(year, M[0], D[0], getHour(t), getMinute(t), getSecond(t)),
-		);
+		times.set(this, setYear(times.get(this)!, year));
 	}
 
 	/**
@@ -300,8 +418,7 @@ export class PLDate {
 	 * @returns Month.
 	 */
 	public get month(): number {
-		getDate(times.get(this)!, null, M);
-		return M[0];
+		return getMonth(times.get(this)!);
 	}
 
 	/**
@@ -311,23 +428,7 @@ export class PLDate {
 	 */
 	public set month(month: number) {
 		month = (+month || 0) - (month % 1 || 0);
-		getDate(t = times.get(this)!, Y, M);
-		let [y] = Y;
-		const [m] = M;
-		const days = DBM[m] + (m > 2 ? leap(y) : 0);
-		let d = 0;
-		if (month > 0) {
-			for (; month > 12; month -= 12) {
-				d += 365 + leap(y++);
-			}
-			d += DBM[month] + (month > 2 ? leap(y) : 0);
-		} else {
-			for (; month <= -12; month += 12) {
-				d -= 365 + leap(--y);
-			}
-			d -= 365 - DBM[month += 12] + (month > 2 ? 0 : leap(y - 1));
-		}
-		times.set(this, t + (d - days) * 86400);
+		times.set(this, setMonth(times.get(this)!, month));
 	}
 
 	/**
@@ -336,8 +437,7 @@ export class PLDate {
 	 * @returns Day.
 	 */
 	public get day(): number {
-		getDate(times.get(this)!, null, null, D);
-		return D[0];
+		return getDay(times.get(this)!);
 	}
 
 	/**
@@ -347,8 +447,7 @@ export class PLDate {
 	 */
 	public set day(day: number) {
 		day = (+day || 0) - (day % 1 || 0);
-		getDate(t = times.get(this)!, null, null, D);
-		times.set(this, t + (day - D[0]) * 86400);
+		times.set(this, setDay(times.get(this)!, day));
 	}
 
 	/**
@@ -367,7 +466,7 @@ export class PLDate {
 	 */
 	public set hour(hour: number) {
 		hour = (+hour || 0) - (hour % 1 || 0);
-		times.set(this, (t = times.get(this)!) + (hour - getHour(t)) * 3600);
+		times.set(this, setHour(times.get(this)!, hour));
 	}
 
 	/**
@@ -386,7 +485,7 @@ export class PLDate {
 	 */
 	public set minute(minute: number) {
 		minute = (+minute || 0) - (minute % 1 || 0);
-		times.set(this, (t = times.get(this)!) + (minute - getMinute(t)) * 60);
+		times.set(this, setMinute(times.get(this)!, minute));
 	}
 
 	/**
@@ -405,7 +504,7 @@ export class PLDate {
 	 */
 	public set second(second: number) {
 		second = +second || 0;
-		times.set(this, (t = times.get(this)!) + second - getSecond(t));
+		times.set(this, setSecond(times.get(this)!, second));
 	}
 
 	/**
@@ -473,7 +572,7 @@ export class PLDate {
 	 */
 	public static parse(date: string): number {
 		const m = date.match(rISO);
-		return m ? time(+m[1] | 0, +m[2], +m[3], +m[4], +m[5], +m[6]) : NaN;
+		return m ? getTime(+m[1] | 0, +m[2], +m[3], +m[4], +m[5], +m[6]) : NaN;
 	}
 
 	/**
