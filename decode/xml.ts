@@ -225,9 +225,7 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 		i++
 	) {
 		c = d[i];
-		if (c < 43) {
-			e = ws(c) ? e : 0;
-		} else if (c < 123) {
+		if (c > 42 && c < 123) {
 			if ((b64d[c - 43] + c - 80) < 0) {
 				if (c !== 61) {
 					e = 0;
@@ -238,9 +236,7 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 					o = new Uint8Array(r.buffer);
 					for (a = s = t = 0, i = h;; i++) {
 						c = d[i];
-						if (c < 43) {
-							e = ws(c) ? e : 0;
-						} else if (c < 123) {
+						if (c > 42 && c < 123) {
 							b = b64d[c - 43] + c - 80;
 							if (b < 0) {
 								if (c !== 61) {
@@ -268,7 +264,7 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 								t = 0;
 							}
 						} else {
-							e = 0;
+							e = ws(c) ? e : 0;
 						}
 					}
 				}
@@ -281,7 +277,7 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 				t = 0;
 			}
 		} else {
-			e = 0;
+			e = ws(c) ? e : 0;
 		}
 	}
 	throw new SyntaxError(utf8ErrorEnd(d));
