@@ -169,7 +169,7 @@ function iso(time: number): string {
 }
 
 /**
- * Create time ISO values, only the year can be negative.
+ * Create time from ISO values, only year can be negative.
  *
  * @param year Year.
  * @param month Month.
