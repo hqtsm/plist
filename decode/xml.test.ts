@@ -2702,7 +2702,19 @@ Deno.test('spec: xml-edge date-empty-year', async () => {
 });
 
 Deno.test('spec: xml-edge date-over-under', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'date-over-under'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLDict);
+
+	for (const [k, v] of plist) {
+		const [tag, date, time] = k.value.split(' ');
+		assertInstanceOf(v, PLDate, tag);
+		const expected = `${date}T${time}.000Z`;
+		assertEquals(v.toISOString(), expected);
+	}
 });
 
 Deno.test('spec: xml-edge date-year-0000', async () => {
