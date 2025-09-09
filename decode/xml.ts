@@ -6,6 +6,7 @@ import { PLDict } from '../dict.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { PLInteger, PLTYPE_INTEGER } from '../integer.ts';
 import { b16d, b64d } from '../pri/base.ts';
+import { getTime } from '../pri/date.ts';
 import {
 	utf8Decode,
 	utf8Encoded,
@@ -220,7 +221,7 @@ function doctype(
  */
 function date(d: Uint8Array, p: [number], l: number): PLDate {
 	let [i] = p;
-	let c;
+	let c = d[i];
 	let n;
 	let Y = 0;
 	let M;
@@ -228,7 +229,7 @@ function date(d: Uint8Array, p: [number], l: number): PLDate {
 	let h;
 	let m;
 	let s;
-	for (c = d[i];;) {
+	for (;;) {
 		if ((n = c === 45)) {
 			c = d[++i];
 		}
@@ -307,15 +308,8 @@ function date(d: Uint8Array, p: [number], l: number): PLDate {
 		if (d[++i] !== 90 || d[++i] !== 60) {
 			break;
 		}
-		c = new PLDate();
-		c.year = n ? (-Y) | 0 : Y;
-		c.month = M || 1;
-		c.day = D;
-		c.hour = h;
-		c.minute = m;
-		c.second = s;
 		p[0] = i;
-		return c;
+		return new PLDate(getTime(n ? (-Y) | 0 : Y, M || 1, D, h, m, s));
 	}
 	throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
 }
