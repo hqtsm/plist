@@ -2573,11 +2573,122 @@ Deno.test('spec: xml-edge data-whitespace', async () => {
 });
 
 Deno.test('spec: xml-edge date-attrs', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'date-attrs'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLDate);
+	assertEquals(plist.time, 0);
 });
 
 Deno.test('spec: xml-edge date-edge', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'date-edge'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLDict);
+
+	{
+		const d = plist.find('leapyear');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '2008-02-29T00:00:00.000Z');
+		assertEquals(
+			d.time - PLDate.UNIX_EPOCH,
+			Date.parse('2008-02-29T00:00:00.000Z') / 1000,
+		);
+	}
+	{
+		const d = plist.find('year 999');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '0999-01-01T00:00:00.000Z');
+	}
+	{
+		const d = plist.find('year 99');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '0099-01-01T00:00:00.000Z');
+	}
+	{
+		const d = plist.find('year 9');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '0009-01-01T00:00:00.000Z');
+	}
+	{
+		const d = plist.find('year 1');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '0001-01-01T00:00:00.000Z');
+	}
+	{
+		const d = plist.find('limit');
+		assertInstanceOf(d, PLDate);
+		// TODO
+	}
+	{
+		const d = plist.find('overflow');
+		assertInstanceOf(d, PLDate);
+		// TODO
+	}
+	{
+		const d = plist.find('underflow');
+		assertInstanceOf(d, PLDate);
+		// TODO
+	}
+	{
+		const d = plist.find('rollover s 60');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '2010-01-01T00:01:00.000Z');
+	}
+	{
+		const d = plist.find('rollover s 99');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '2010-01-01T00:01:39.000Z');
+	}
+	{
+		const d = plist.find('rollover m 60');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '2010-01-01T01:00:00.000Z');
+	}
+	{
+		const d = plist.find('rollover m 99');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '2010-01-01T01:39:00.000Z');
+	}
+	{
+		const d = plist.find('rollover h 24');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '2010-01-02T00:00:00.000Z');
+	}
+	{
+		const d = plist.find('rollover h 99');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '2010-01-05T03:00:00.000Z');
+	}
+	{
+		const d = plist.find('rollover d 00');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '2009-12-31T00:00:00.000Z');
+	}
+	{
+		const d = plist.find('rollover d 32');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '2010-02-01T00:00:00.000Z');
+	}
+	{
+		const d = plist.find('rollover m 00');
+		assertInstanceOf(d, PLDate);
+		// TODO
+	}
+	{
+		const d = plist.find('rollover m 13');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '2011-01-01T00:00:00.000Z');
+	}
+	{
+		const d = plist.find('rollover feb 29');
+		assertInstanceOf(d, PLDate);
+		assertEquals(d.toISOString(), '2010-03-01T00:00:00.000Z');
+	}
 });
 
 Deno.test('spec: xml-edge date-empty-year', async () => {
