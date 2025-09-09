@@ -34,7 +34,7 @@ function leap(year: number): 0 | 1 {
  * @param month Month pointer.
  * @param day Day pointer.
  */
-function YMD(
+function getDate(
 	time: number,
 	year?: [number] | null,
 	month?: [number] | null,
@@ -121,7 +121,7 @@ function YMD(
  * @param time Date time.
  * @returns Hour.
  */
-function h(time: number): number {
+function getHour(time: number): number {
 	time = Math.floor(time / 3600);
 	return time - Math.floor(time / 24) * 24 | 0;
 }
@@ -132,7 +132,7 @@ function h(time: number): number {
  * @param time Date time.
  * @returns Minute.
  */
-function m(time: number): number {
+function getMinute(time: number): number {
 	time = Math.floor(time / 60);
 	return time - Math.floor(time / 60) * 60 | 0;
 }
@@ -143,7 +143,7 @@ function m(time: number): number {
  * @param time Date time.
  * @returns Second.
  */
-function s(time: number): number {
+function getSecond(time: number): number {
 	return time - Math.floor(time / 60) * 60 || 0;
 }
 
@@ -154,16 +154,16 @@ function s(time: number): number {
  * @returns ISO string.
  */
 function iso(time: number): string {
-	YMD(time, Y, M, D);
+	getDate(time, Y, M, D);
 	let [x] = Y as [bigint | number];
 	const YY = x < 0
 		? '-' + `${-x}`.padStart(6, '0')
 		: (x > 9999 ? '+' + `${x}`.padStart(6, '0') : `${x}`.padStart(4, '0'));
 	const MM = `${M[0]}`.padStart(2, '0');
 	const DD = `${D[0]}`.padStart(2, '0');
-	const hh = `${h(time)}`.padStart(2, '0');
-	const mm = `${m(time)}`.padStart(2, '0');
-	const ss = `${time = (x = s(time)) | 0}`.padStart(2, '0');
+	const hh = `${getHour(time)}`.padStart(2, '0');
+	const mm = `${getMinute(time)}`.padStart(2, '0');
+	const ss = `${time = (x = getSecond(time)) | 0}`.padStart(2, '0');
 	const f = `${(x * 1000 | 0) - time * 1000}`.padStart(3, '0');
 	return `${YY}-${MM}-${DD}T${hh}:${mm}:${ss}.${f}Z`;
 }
@@ -276,7 +276,7 @@ export class PLDate {
 	 * @returns Year.
 	 */
 	public get year(): number {
-		YMD(times.get(this)!, Y);
+		getDate(times.get(this)!, Y);
 		return Y[0];
 	}
 
@@ -287,8 +287,11 @@ export class PLDate {
 	 */
 	public set year(year: number) {
 		year = (+year || 0) - (year % 1 || 0);
-		YMD(t = times.get(this)!, null, M, D);
-		times.set(this, time(year, M[0], D[0], h(t), m(t), s(t)));
+		getDate(t = times.get(this)!, null, M, D);
+		times.set(
+			this,
+			time(year, M[0], D[0], getHour(t), getMinute(t), getSecond(t)),
+		);
 	}
 
 	/**
@@ -297,7 +300,7 @@ export class PLDate {
 	 * @returns Month.
 	 */
 	public get month(): number {
-		YMD(times.get(this)!, null, M);
+		getDate(times.get(this)!, null, M);
 		return M[0];
 	}
 
@@ -308,7 +311,7 @@ export class PLDate {
 	 */
 	public set month(month: number) {
 		month = (+month || 0) - (month % 1 || 0);
-		YMD(t = times.get(this)!, Y, M);
+		getDate(t = times.get(this)!, Y, M);
 		let [y] = Y;
 		const [m] = M;
 		const days = DBM[m] + (m > 2 ? leap(y) : 0);
@@ -333,7 +336,7 @@ export class PLDate {
 	 * @returns Day.
 	 */
 	public get day(): number {
-		YMD(times.get(this)!, null, null, D);
+		getDate(times.get(this)!, null, null, D);
 		return D[0];
 	}
 
@@ -344,7 +347,7 @@ export class PLDate {
 	 */
 	public set day(day: number) {
 		day = (+day || 0) - (day % 1 || 0);
-		YMD(t = times.get(this)!, null, null, D);
+		getDate(t = times.get(this)!, null, null, D);
 		times.set(this, t + (day - D[0]) * 86400);
 	}
 
@@ -354,7 +357,7 @@ export class PLDate {
 	 * @returns Hour.
 	 */
 	public get hour(): number {
-		return h(times.get(this)!);
+		return getHour(times.get(this)!);
 	}
 
 	/**
@@ -364,7 +367,7 @@ export class PLDate {
 	 */
 	public set hour(hour: number) {
 		hour = (+hour || 0) - (hour % 1 || 0);
-		times.set(this, (t = times.get(this)!) + (hour - h(t)) * 3600);
+		times.set(this, (t = times.get(this)!) + (hour - getHour(t)) * 3600);
 	}
 
 	/**
@@ -373,7 +376,7 @@ export class PLDate {
 	 * @returns Minute.
 	 */
 	public get minute(): number {
-		return m(times.get(this)!);
+		return getMinute(times.get(this)!);
 	}
 
 	/**
@@ -383,7 +386,7 @@ export class PLDate {
 	 */
 	public set minute(minute: number) {
 		minute = (+minute || 0) - (minute % 1 || 0);
-		times.set(this, (t = times.get(this)!) + (minute - m(t)) * 60);
+		times.set(this, (t = times.get(this)!) + (minute - getMinute(t)) * 60);
 	}
 
 	/**
@@ -392,7 +395,7 @@ export class PLDate {
 	 * @returns Second.
 	 */
 	public get second(): number {
-		return s(times.get(this)!);
+		return getSecond(times.get(this)!);
 	}
 
 	/**
@@ -402,7 +405,7 @@ export class PLDate {
 	 */
 	public set second(second: number) {
 		second = +second || 0;
-		times.set(this, (t = times.get(this)!) + second - s(t));
+		times.set(this, (t = times.get(this)!) + second - getSecond(t));
 	}
 
 	/**
