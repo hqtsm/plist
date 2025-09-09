@@ -2692,7 +2692,13 @@ Deno.test('spec: xml-edge date-edge', async () => {
 });
 
 Deno.test('spec: xml-edge date-empty-year', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'date-empty-year'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLDate);
+	assertEquals(plist.toISOString(), '0000-01-01T00:00:00.000Z');
 });
 
 Deno.test('spec: xml-edge date-over-under', async () => {
@@ -2700,7 +2706,13 @@ Deno.test('spec: xml-edge date-over-under', async () => {
 });
 
 Deno.test('spec: xml-edge date-year-0000', async () => {
-	// TODO
+	const { format, plist } = decodeXml(
+		await fixturePlist('xml-edge', 'date-year-0000'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_XML_V1_0);
+	assertInstanceOf(plist, PLDate);
+	assertEquals(plist.toISOString(), '0000-01-01T00:00:00.000Z');
 });
 
 Deno.test('spec: xml-edge dict-attrs-close', async () => {
