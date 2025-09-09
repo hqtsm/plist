@@ -211,6 +211,116 @@ function doctype(
 }
 
 /**
+ * Read date.
+ *
+ * @param d Data.
+ * @param p Offset pointer.
+ * @param l Length.
+ * @returns Date.
+ */
+function date(d: Uint8Array, p: [number], l: number): PLDate {
+	let [i] = p;
+	let c;
+	let n;
+	let Y = 0;
+	let M;
+	let D;
+	let h;
+	let m;
+	let s;
+	for (c = d[i];;) {
+		if ((n = c === 45)) {
+			c = d[++i];
+		}
+		for (; c > 47 && c < 58; c = d[++i]) {
+			Y = Y * 10 + c - 48 | 0;
+		}
+		if (c !== 45) {
+			break;
+		}
+		c = d[++i];
+		if (c < 48 || c > 57) {
+			break;
+		}
+		M = c - 48;
+		c = d[++i];
+		if (c < 48 || c > 57) {
+			break;
+		}
+		M = M * 10 + c - 48;
+		c = d[++i];
+		if (c !== 45) {
+			break;
+		}
+		c = d[++i];
+		if (c < 48 || c > 57) {
+			break;
+		}
+		D = c - 48;
+		c = d[++i];
+		if (c < 48 || c > 57) {
+			break;
+		}
+		D = D * 10 + c - 48;
+		c = d[++i];
+		if (c !== 84) {
+			break;
+		}
+		c = d[++i];
+		if (c < 48 || c > 57) {
+			break;
+		}
+		h = c - 48;
+		c = d[++i];
+		if (c < 48 || c > 57) {
+			break;
+		}
+		h = h * 10 + c - 48;
+		c = d[++i];
+		if (c !== 58) {
+			break;
+		}
+		c = d[++i];
+		if (c < 48 || c > 57) {
+			break;
+		}
+		m = c - 48;
+		c = d[++i];
+		if (c < 48 || c > 57) {
+			break;
+		}
+		m = m * 10 + c - 48;
+		c = d[++i];
+		if (c !== 58) {
+			break;
+		}
+		c = d[++i];
+		if (c < 48 || c > 57) {
+			break;
+		}
+		s = c - 48;
+		c = d[++i];
+		if (c < 48 || c > 57) {
+			break;
+		}
+		s = s * 10 + c - 48;
+		if (d[++i] !== 90 || d[++i] !== 60) {
+			break;
+		}
+		c = new PLDate();
+		c.year = n ? -Y : Y;
+		c.month = M;
+		c.day = D;
+		c.hour = h;
+		c.minute = m;
+		c.second = s;
+		p[0] = i;
+		return c;
+	}
+	throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
+}
+
+/**
  * Read data.
  *
  * @param d Data.
@@ -732,7 +842,9 @@ export function decodeXml(
 							q = data(d, j, l);
 							i = j[0];
 						} else if (d[t + 3] === 101) {
-							q = new PLDate();
+							j[0] = i;
+							q = date(d, j, l);
+							i = j[0];
 						}
 					}
 					break;
