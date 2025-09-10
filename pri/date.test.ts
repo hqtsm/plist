@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert/equals';
+import { assertEquals } from '@std/assert';
 import { getISO, getTime } from './date.ts';
 
 const UNIX_EPOCH = -978307200;
