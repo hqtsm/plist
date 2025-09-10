@@ -109,13 +109,8 @@ export function encodeBinary(
 	let t = 0;
 	let l = 0;
 
-	switch (format) {
-		case FORMAT_BINARY_V1_0: {
-			break;
-		}
-		default: {
-			throw new RangeError('Invalid format');
-		}
+	if (format !== FORMAT_BINARY_V1_0) {
+		throw new RangeError('Invalid format');
 	}
 
 	const a = new Set<PLType>();
