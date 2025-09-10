@@ -3411,3 +3411,50 @@ Deno.test('spec: xml-edge version-none', async () => {
 	assertInstanceOf(plist, PLString);
 	assertEquals(plist.value, 'Version none');
 });
+
+Deno.test('spec: xml-encoding-utf utf-8-bom', async () => {
+	for (
+		const file of [
+			'utf-8',
+			'utf-8-bom',
+			'utf-8-default',
+			'utf-8-headless',
+			'utf-16be-bom',
+			'utf-16be-space',
+			'utf-16le-bom',
+			'utf-16le-space',
+			'utf-32be-bom',
+			'utf-32le-bom',
+			'x-mac-utf-8',
+		]
+	) {
+		const { format, plist } = decodeXml(
+			// deno-lint-ignore no-await-in-loop
+			await fixturePlist('xml-encoding-utf', file),
+			CF_STYLE,
+		);
+		assertEquals(format, FORMAT_XML_V1_0, file);
+		assertInstanceOf(plist, PLDict, file);
+		assertEquals(plist.size, 5, file);
+
+		const divide = plist.find('divide');
+		assertInstanceOf(divide, PLString, file);
+		assertEquals(divide.value, '\u00f7', file);
+
+		const ohm = plist.find('ohm');
+		assertInstanceOf(ohm, PLString, file);
+		assertEquals(ohm.value, '\u03a9', file);
+
+		const check = plist.find('check');
+		assertInstanceOf(check, PLString, file);
+		assertEquals(check.value, '\u2705', file);
+
+		const plus = plist.find('plus');
+		assertInstanceOf(plus, PLString, file);
+		assertEquals(plus.value, '\uff0b', file);
+
+		const robot = plist.find('robot');
+		assertInstanceOf(robot, PLString, file);
+		assertEquals(robot.value, '\ud83e\udd16', file);
+	}
+});
