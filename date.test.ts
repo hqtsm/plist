@@ -3,7 +3,6 @@ import {
 	assertEquals,
 	assertGreaterOrEqual,
 	assertLessOrEqual,
-	assertNotEquals,
 	assertStrictEquals,
 } from '@std/assert';
 import { PLDate } from './date.ts';
