@@ -2984,9 +2984,10 @@ Deno.test('spec: xml-edge plist-none-array', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLArray);
 	assertEquals(plist.length, 1);
-	const a = plist.get(0);
-	assertInstanceOf(a, PLBoolean);
-	assertEquals(a.value, true);
+
+	const bool = plist.get(0);
+	assertInstanceOf(bool, PLBoolean);
+	assertEquals(bool.value, true);
 });
 
 Deno.test('spec: xml-edge plist-none-true', async () => {
@@ -3412,7 +3413,7 @@ Deno.test('spec: xml-edge version-none', async () => {
 	assertEquals(plist.value, 'Version none');
 });
 
-Deno.test('spec: xml-encoding-utf utf-8-bom', async () => {
+Deno.test('spec: xml-encoding-utf', async () => {
 	for (
 		const file of [
 			'utf-8',
