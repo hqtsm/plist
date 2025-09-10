@@ -2627,12 +2627,12 @@ Deno.test('spec: xml-edge date-edge', async () => {
 	{
 		const d = plist.find('overflow');
 		assertInstanceOf(d, PLDate);
-		// TODO
+		assertEquals(d.toISOString(), '-2147481647-01-01T00:00:00.000Z');
 	}
 	{
 		const d = plist.find('underflow');
 		assertInstanceOf(d, PLDate);
-		// TODO
+		assertEquals(d.toISOString(), '+2147483647-01-01T00:00:00.000Z');
 	}
 	{
 		const d = plist.find('rollover s 60');
