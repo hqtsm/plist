@@ -140,7 +140,10 @@ Deno.test('spec: array-14', async () => {
 	for (let i = 0; i < 14; i++) {
 		array.push(i % 2 ? TRUE : FALSE);
 	}
-	const encode = encodeBinary(array, CF_STYLE);
+	const encode = encodeBinary(array, {
+		...CF_STYLE,
+		duplicates: [TRUE, FALSE],
+	});
 	assertEquals(
 		encode,
 		await fixturePlist('array-14', 'binary'),

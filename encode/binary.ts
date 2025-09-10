@@ -86,7 +86,7 @@ export interface EncodeBinaryOptions {
 	 *
 	 * @default [] Empty list.
 	 */
-	duplicates?: Iterable<string>;
+	duplicates?: Iterable<string | PLType>;
 }
 
 /**
@@ -120,7 +120,7 @@ export function encodeBinary(
 	const u = new Map<PLType, boolean>();
 	const add = <T extends PLType>(v: T) => {
 		if (f.has(v)) {
-			if (!c.has(v[Symbol.toStringTag])) {
+			if (!c.has(v) && !c.has(v[Symbol.toStringTag])) {
 				return;
 			}
 		} else {
