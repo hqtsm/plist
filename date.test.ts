@@ -3,6 +3,7 @@ import {
 	assertEquals,
 	assertGreaterOrEqual,
 	assertLessOrEqual,
+	assertNotEquals,
 	assertStrictEquals,
 } from '@std/assert';
 import { PLDate } from './date.ts';
@@ -138,75 +139,41 @@ Deno.test('parse', () => {
 });
 
 Deno.test('parse second over', () => {
-	const date = new PLDate();
-
-	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
-	date.second = 60;
-	assertEquals(date.time, PLDate.parse('2004-01-01T00:00:60.000Z'));
-
-	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
-	date.second = 99;
-	assertEquals(date.time, PLDate.parse('2004-01-01T00:00:99.000Z'));
+	assertEquals(PLDate.parse('2004-01-01T00:00:60.000Z'), NaN);
 });
 
 Deno.test('parse minute over', () => {
-	const date = new PLDate();
-
-	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
-	date.minute = 60;
-	assertEquals(date.time, PLDate.parse('2004-01-01T00:60:00.000Z'));
-
-	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
-	date.minute = 99;
-	assertEquals(date.time, PLDate.parse('2004-01-01T00:99:00.000Z'));
+	assertEquals(PLDate.parse('2004-01-01T00:60:00.000Z'), NaN);
 });
 
 Deno.test('parse hour over', () => {
-	const date = new PLDate();
+	assertEquals(
+		PLDate.parse('2004-01-01T24:00:00.000Z'),
+		PLDate.parse('2004-01-02T00:00:00.000Z'),
+	);
 
-	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
-	date.hour = 60;
-	assertEquals(date.time, PLDate.parse('2004-01-01T60:00:00.000Z'));
-
-	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
-	date.hour = 99;
-	assertEquals(date.time, PLDate.parse('2004-01-01T99:00:00.000Z'));
+	assertEquals(PLDate.parse('2004-01-01T24:00:00.001Z'), NaN);
+	assertEquals(PLDate.parse('2004-01-01T24:00:01.000Z'), NaN);
+	assertEquals(PLDate.parse('2004-01-01T24:01:00.000Z'), NaN);
+	assertEquals(PLDate.parse('2004-01-01T25:00:00.000Z'), NaN);
 });
 
 Deno.test('parse day under over', () => {
-	const date = new PLDate();
-
-	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
-	date.day = 0;
-	assertEquals(PLDate.parse('2004-01-00T00:00:00.000Z'), date.time);
-
-	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
-	date.day = 32;
-	assertEquals(PLDate.parse('2004-01-32T00:00:00.000Z'), date.time);
-
-	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
-	date.day = 99;
-	assertEquals(PLDate.parse('2004-01-99T00:00:00.000Z'), date.time);
+	assertEquals(PLDate.parse('2004-01-00T00:00:00.000Z'), NaN);
+	assertEquals(PLDate.parse('2004-01-32T00:00:00.000Z'), NaN);
+	assertEquals(
+		PLDate.parse('2003-02-29T00:00:00.000Z'),
+		PLDate.parse('2003-03-01T00:00:00.000Z'),
+	);
+	assertEquals(
+		PLDate.parse('2004-02-30T00:00:00.000Z'),
+		PLDate.parse('2004-03-01T00:00:00.000Z'),
+	);
 });
 
 Deno.test('parse month under over', () => {
-	const date = new PLDate();
-
-	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
-	date.month = 0;
-	assertEquals(PLDate.parse('2004-00-01T00:00:00.000Z'), date.time);
-
-	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
-	date.month = 13;
-	assertEquals(PLDate.parse('2004-13-01T00:00:00.000Z'), date.time);
-
-	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
-	date.month = 25;
-	assertEquals(PLDate.parse('2004-25-01T00:00:00.000Z'), date.time);
-
-	date.time = PLDate.parse('2004-01-01T00:00:00.000Z');
-	date.month = 99;
-	assertEquals(PLDate.parse('2004-99-01T00:00:00.000Z'), date.time);
+	assertEquals(PLDate.parse('2004-00-01T00:00:00.000Z'), NaN);
+	assertEquals(PLDate.parse('2004-13-01T00:00:00.000Z'), NaN);
 });
 
 Deno.test('is type', () => {

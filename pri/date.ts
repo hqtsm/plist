@@ -352,6 +352,17 @@ export function getISO(time: number): string {
  * @returns Date time.
  */
 export function parseISO(date: string): number {
-	const m = date.match(rISO);
-	return m ? getTime(+m[1] | 0, +m[2], +m[3], +m[4], +m[5], +m[6]) : NaN;
+	let r, M, D, h, m, s;
+	return (
+			(r = date.match(rISO)) &&
+			(M = +r[2]) && M < 13 &&
+			(D = +r[3]) && D < 32 &&
+			(
+				(h = +r[4]) < 24
+					? (m = +r[5]) < 60 && (s = +r[6]) < 60
+					: h === 24 && !(m = +r[5]) && !(s = +r[6])
+			)
+		)
+		? getTime(+r[1], M, D, h, m!, s!)
+		: NaN;
 }
