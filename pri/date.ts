@@ -305,10 +305,7 @@ export function getTime(
 	// Remaining months of days and add all together.
 	r += (month > 13 ? 0 : DBM[month]) + day + (
 		month > 2 &&
-			(
-				!((x = (++y < 0 ? -y : y) % 400n) & 3n ||
-					(x && !(x % 100n)))
-			)
+			(!((x = (++y < 0 ? -y : y) % 400n) & 3n || (x && !(x % 100n))))
 			? 0
 			: -1
 	);
