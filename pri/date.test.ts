@@ -1,5 +1,5 @@
 import { assertEquals } from '@std/assert';
-import { getISO, getTime } from './date.ts';
+import { getISO, getTime, parseISO } from './date.ts';
 
 const UNIX_EPOCH = -978307200;
 
@@ -148,4 +148,53 @@ Deno.test('getTime: second:0-99', () => {
 			jsd.toISOString(),
 		);
 	}
+});
+
+Deno.test('parseISO: normal', () => {
+	assertEquals(parseISO('2001-01-01T00:00:00.000Z'), 0);
+	assertEquals(parseISO(new Date(0).toISOString()), UNIX_EPOCH);
+	assertEquals(parseISO('+2004-11-29T21:33:09.000Z'), 123456789);
+});
+
+Deno.test('parseISO: bad', () => {
+	assertEquals(parseISO('BAD'), NaN);
+	assertEquals(parseISO('1'), NaN);
+	assertEquals(parseISO(''), NaN);
+});
+
+Deno.test('parseISO: second over', () => {
+	assertEquals(parseISO('2004-01-01T00:00:60.000Z'), NaN);
+});
+
+Deno.test('parseISO: minute over', () => {
+	assertEquals(parseISO('2004-01-01T00:60:00.000Z'), NaN);
+});
+
+Deno.test('parseISO: hour over', () => {
+	assertEquals(
+		parseISO('2004-01-01T24:00:00.000Z'),
+		parseISO('2004-01-02T00:00:00.000Z'),
+	);
+	assertEquals(parseISO('2004-01-01T24:00:00.001Z'), NaN);
+	assertEquals(parseISO('2004-01-01T24:00:01.000Z'), NaN);
+	assertEquals(parseISO('2004-01-01T24:01:00.000Z'), NaN);
+	assertEquals(parseISO('2004-01-01T25:00:00.000Z'), NaN);
+});
+
+Deno.test('parseISO: day under over', () => {
+	assertEquals(parseISO('2004-01-00T00:00:00.000Z'), NaN);
+	assertEquals(parseISO('2004-01-32T00:00:00.000Z'), NaN);
+	assertEquals(
+		parseISO('2003-02-29T00:00:00.000Z'),
+		parseISO('2003-03-01T00:00:00.000Z'),
+	);
+	assertEquals(
+		parseISO('2004-02-30T00:00:00.000Z'),
+		parseISO('2004-03-01T00:00:00.000Z'),
+	);
+});
+
+Deno.test('parseISO: month under over', () => {
+	assertEquals(parseISO('2004-00-01T00:00:00.000Z'), NaN);
+	assertEquals(parseISO('2004-13-01T00:00:00.000Z'), NaN);
 });
