@@ -1,7 +1,7 @@
 const Y: [number] = [0];
 const M: [number] = [0];
 const D: [number] = [0];
-const DBM = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+const DBM = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
 const rISO = /^([-+]?\d+)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d(\.\d+)?)Z$/;
 
 /**
@@ -281,10 +281,8 @@ export function getTime(
 ): number {
 	// Roll months into years.
 	let r;
-	let x: number | bigint = (month > 12)
-		? (r = month % 12, (month - (month = r)) / 12)
-		: (month ? 0 : (month = 12, -1));
-	let y = BigInt.asIntN(64, BigInt(year + x - 2001));
+	let x;
+	let y = BigInt.asIntN(64, BigInt(year - 2001 | 0));
 
 	// Years of full 400 year cycles, and the remaining days.
 	let z = y / 400n;
@@ -305,23 +303,18 @@ export function getTime(
 	}
 
 	// Remaining months of days and add all together.
-	return (
-		86400 * (
-				r +
-				DBM[month] + day + (
-					month > 2 &&
-						(
-							!((x = (++y < 0 ? -y : y) % 400n) & 3n ||
-								(x && !(x % 100n)))
-						)
-						? 0
-						: -1
-				)
-			) +
-		3600 * hour +
-		60 * minute +
-		second
+	r += (month > 13 ? 0 : DBM[month]) + day + (
+		month > 2 &&
+			(
+				!((x = (++y < 0 ? -y : y) % 400n) & 3n ||
+					(x && !(x % 100n)))
+			)
+			? 0
+			: -1
 	);
+	r *= 86400;
+	r += 3600 * hour + 60 * minute + second;
+	return r;
 }
 
 /**

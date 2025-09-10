@@ -2622,7 +2622,7 @@ Deno.test('spec: xml-edge date-edge', async () => {
 	{
 		const d = plist.find('limit');
 		assertInstanceOf(d, PLDate);
-		// TODO
+		assertEquals(d.toISOString(), '+2147483647-01-01T00:00:00.000Z');
 	}
 	{
 		const d = plist.find('overflow');
