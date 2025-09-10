@@ -1275,6 +1275,47 @@ Deno.test('Data: EOF', () => {
 	}
 });
 
+Deno.test('Date: Bad + EOF', () => {
+	const iso = '2001-12-31T11:12:13Z';
+	for (let i = 0; i < iso.length; i++) {
+		const s = iso.slice(0, i);
+		{
+			const data = TE.encode(
+				[
+					'<?xml version="1.0" encoding="UTF-8"?>',
+					DOCTYPE,
+					'<plist version="1.0">',
+					`<date>${s}A</date>`,
+					'</plist>',
+					'',
+				].join('\n'),
+			);
+			assertThrows(
+				() => decodeXml(data),
+				SyntaxError,
+				'Invalid XML on line 4',
+				s,
+			);
+		}
+		{
+			const data = TE.encode(
+				[
+					'<?xml version="1.0" encoding="UTF-8"?>',
+					DOCTYPE,
+					'<plist version="1.0">',
+					`<date>${s}`,
+				].join('\n'),
+			);
+			assertThrows(
+				() => decodeXml(data),
+				SyntaxError,
+				'Invalid end on line 4',
+				s,
+			);
+		}
+	}
+});
+
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeXml(
 		await fixturePlist('true', 'xml'),
