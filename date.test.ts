@@ -140,46 +140,52 @@ Deno.test('is type', () => {
 
 	for (const v of [new PLDate(), new PLReal(), {}, null]) {
 		if (PLDate.is(v)) {
-			assertEquals(v.time, 0);
+			assertEquals(v.time, 0, `${v}`);
 		}
 	}
 });
 
-Deno.test('set year', () => {
+Deno.test('property: year', () => {
 	const deltas = [
 		...(new Array(800)).fill(0).map((_, i) => i),
 		Math.PI,
 		NaN,
 	];
+	const allDeltas = new Set([...deltas, ...deltas.map((d) => -d)]);
 	for (const start of startTimes) {
-		for (const year of new Set([...deltas, ...deltas.map((d) => -d)])) {
+		for (const year of allDeltas) {
+			const tag = `${start}: ${year}`;
 			const pld = new PLDate(start);
 			pld.year = year;
 			const jsd = new Date((start - PLDate.UNIX_EPOCH) * 1000);
 			jsd.setUTCFullYear(year || 0);
-			assertEquals(pld.toISOString(), jsd.toISOString());
+			assertEquals(pld.toISOString(), jsd.toISOString(), tag);
+			assertEquals(pld.year, jsd.getUTCFullYear(), tag);
 		}
 	}
 });
 
-Deno.test('set month', () => {
+Deno.test('property: month', () => {
 	const deltas = [
 		...(new Array(5000)).fill(0).map((_, i) => i),
 		Math.PI,
 		NaN,
 	];
+	const allDeltas = new Set([...deltas, ...deltas.map((d) => -d)]);
 	for (const start of startTimes) {
-		for (const month of new Set([...deltas, ...deltas.map((d) => -d)])) {
+		for (const month of allDeltas) {
+			const tag = `${start}: ${month}`;
 			const pld = new PLDate(start);
 			pld.month = month;
 			const jsd = new Date((start - PLDate.UNIX_EPOCH) * 1000);
 			jsd.setUTCMonth((month || 0) - 1);
-			assertEquals(pld.toISOString(), jsd.toISOString());
+			assertEquals(pld.toISOString(), jsd.toISOString(), tag);
+			assertEquals(pld.month, jsd.getUTCMonth() + 1, tag);
 		}
 	}
 });
 
-Deno.test('set day', () => {
+Deno.test('property: day', () => {
 	const deltas = [
 		...new Array(1000).fill(0).map((_, i) => i),
 		10000,
@@ -195,11 +201,12 @@ Deno.test('set day', () => {
 			const jsd = new Date((start - PLDate.UNIX_EPOCH) * 1000);
 			jsd.setUTCDate(day || 0);
 			assertEquals(pld.toISOString(), jsd.toISOString(), tag);
+			assertEquals(pld.day, jsd.getUTCDate(), tag);
 		}
 	}
 });
 
-Deno.test('set hour', () => {
+Deno.test('property: hour', () => {
 	const deltas = [
 		0,
 		1,
@@ -221,11 +228,12 @@ Deno.test('set hour', () => {
 			const jsd = new Date((start - PLDate.UNIX_EPOCH) * 1000);
 			jsd.setUTCHours(hour || 0);
 			assertEquals(pld.toISOString(), jsd.toISOString(), tag);
+			assertEquals(pld.hour, jsd.getUTCHours(), tag);
 		}
 	}
 });
 
-Deno.test('set minute', () => {
+Deno.test('property: minute', () => {
 	const deltas = [
 		0,
 		1,
@@ -247,11 +255,12 @@ Deno.test('set minute', () => {
 			const jsd = new Date((start - PLDate.UNIX_EPOCH) * 1000);
 			jsd.setUTCMinutes(minute || 0);
 			assertEquals(pld.toISOString(), jsd.toISOString(), tag);
+			assertEquals(pld.minute, jsd.getUTCMinutes(), tag);
 		}
 	}
 });
 
-Deno.test('set second', () => {
+Deno.test('property: second', () => {
 	const deltas = [
 		0,
 		1,
@@ -276,51 +285,62 @@ Deno.test('set second', () => {
 			const jsd = new Date((start - PLDate.UNIX_EPOCH) * 1000);
 			jsd.setUTCMilliseconds(Math.floor(second * 1000) || 0);
 			assertEquals(pld.toISOString(), jsd.toISOString(), tag);
+			const seconds = pld.second;
+			const fullSeconds = Math.floor(seconds);
+			assertEquals(fullSeconds, jsd.getUTCSeconds(), tag);
+			assertEquals(
+				Math.floor((seconds - fullSeconds) * 1000),
+				jsd.getUTCMilliseconds(),
+				tag,
+			);
 		}
 	}
 });
 
 Deno.test('time to date', () => {
 	for (const [iso, time] of sampleISO) {
-		assertEquals(PLDate.ISO(time), iso);
+		const tag = `${iso}: ${time}`;
+		assertEquals(PLDate.ISO(time), iso, tag);
 
 		const date = new PLDate(time);
-		assertEquals(date.toISOString(), iso);
+		assertEquals(date.toISOString(), iso, tag);
 
 		const [_, Y, M, D, h, m, s] = iso.match(rISO)!;
-		assertStrictEquals(date.year, +Y);
-		assertStrictEquals(date.month, +M);
-		assertStrictEquals(date.day, +D);
-		assertStrictEquals(date.hour, +h);
-		assertStrictEquals(date.minute, +m);
-		assertAlmostEquals(date.second, +s, 0.001);
+		assertStrictEquals(date.year, +Y, tag);
+		assertStrictEquals(date.month, +M, tag);
+		assertStrictEquals(date.day, +D, tag);
+		assertStrictEquals(date.hour, +h, tag);
+		assertStrictEquals(date.minute, +m, tag);
+		assertAlmostEquals(date.second, +s, 0.001, tag);
 		assertStrictEquals(
 			`${date.second * 1000 | 0}`.padStart(5, '0'),
 			s.replace('.', ''),
+			tag,
 		);
 	}
 });
 
 Deno.test('date to time', () => {
 	for (const [iso, time] of sampleISO) {
+		const tag = `${iso}: ${time}`;
 		const parsed = PLDate.parse(iso);
 		if (Number.isNaN(time)) {
-			assertStrictEquals(parsed, 0);
+			assertStrictEquals(parsed, 0, tag);
 			continue;
 		}
 		if (time === Infinity) {
-			assertStrictEquals(parsed, timePosInf);
+			assertStrictEquals(parsed, timePosInf, tag);
 			continue;
 		}
 		if (time === -Infinity) {
-			assertStrictEquals(parsed, timeNegInf);
+			assertStrictEquals(parsed, timeNegInf, tag);
 			continue;
 		}
 		if (iso.endsWith('.000Z')) {
-			assertStrictEquals(parsed, Math.round(time));
+			assertStrictEquals(parsed, Math.round(time), tag);
 			continue;
 		}
-		assertAlmostEquals(parsed, time, 0.001);
+		assertAlmostEquals(parsed, time, 0.001, tag);
 	}
 });
 
@@ -330,21 +350,22 @@ Deno.test('every day 1990', () => {
 	for (const [month, days] of months.entries()) {
 		const mm = `${month + 1}`.padStart(2, '0');
 		for (let day = 0; day < days; day++) {
+			const tag = `${month}: ${day}`;
 			const dd = `${day + 1}`.padStart(2, '0');
 			const iso = `1990-${mm}-${dd}T00:00:00.000Z`;
 			const time = -347155200 + 86400 * i++;
-			assertEquals(PLDate.ISO(time), iso);
+			assertEquals(PLDate.ISO(time), iso, tag);
 
 			const date = new PLDate(time);
-			assertEquals(date.toISOString(), iso);
-			assertStrictEquals(date.year, 1990);
-			assertStrictEquals(date.month, month + 1);
-			assertStrictEquals(date.day, day + 1);
-			assertStrictEquals(date.hour, 0);
-			assertStrictEquals(date.minute, 0);
-			assertAlmostEquals(date.second, 0);
+			assertEquals(date.toISOString(), iso, tag);
+			assertStrictEquals(date.year, 1990, tag);
+			assertStrictEquals(date.month, month + 1, tag);
+			assertStrictEquals(date.day, day + 1, tag);
+			assertStrictEquals(date.hour, 0, tag);
+			assertStrictEquals(date.minute, 0, tag);
+			assertAlmostEquals(date.second, 0, 0.001, tag);
 
-			assertEquals(PLDate.parse(iso), time);
+			assertEquals(PLDate.parse(iso), time, tag);
 		}
 	}
 });
@@ -355,21 +376,22 @@ Deno.test('every day 2001', () => {
 	for (const [month, days] of months.entries()) {
 		const mm = `${month + 1}`.padStart(2, '0');
 		for (let day = 0; day < days; day++) {
+			const tag = `${month}: ${day}`;
 			const dd = `${day + 1}`.padStart(2, '0');
 			const iso = `2001-${mm}-${dd}T00:00:00.000Z`;
 			const time = 86400 * i++;
-			assertEquals(PLDate.ISO(time), iso);
+			assertEquals(PLDate.ISO(time), iso, tag);
 
 			const date = new PLDate(time);
-			assertEquals(date.toISOString(), iso);
-			assertStrictEquals(date.year, 2001);
-			assertStrictEquals(date.month, month + 1);
-			assertStrictEquals(date.day, day + 1);
-			assertStrictEquals(date.hour, 0);
-			assertStrictEquals(date.minute, 0);
-			assertAlmostEquals(date.second, 0);
+			assertEquals(date.toISOString(), iso, tag);
+			assertStrictEquals(date.year, 2001, tag);
+			assertStrictEquals(date.month, month + 1, tag);
+			assertStrictEquals(date.day, day + 1, tag);
+			assertStrictEquals(date.hour, 0, tag);
+			assertStrictEquals(date.minute, 0, tag);
+			assertAlmostEquals(date.second, 0, 0.001, tag);
 
-			assertEquals(PLDate.parse(iso), time);
+			assertEquals(PLDate.parse(iso), time, tag);
 		}
 	}
 });
@@ -380,21 +402,22 @@ Deno.test('every day 2004', () => {
 	for (const [month, days] of months.entries()) {
 		const mm = `${month + 1}`.padStart(2, '0');
 		for (let day = 0; day < days; day++) {
+			const tag = `${month}: ${day}`;
 			const dd = `${day + 1}`.padStart(2, '0');
 			const iso = `2004-${mm}-${dd}T00:00:00.000Z`;
 			const time = 94608000 + 86400 * i++;
-			assertEquals(PLDate.ISO(time), iso);
+			assertEquals(PLDate.ISO(time), iso, tag);
 
 			const date = new PLDate(time);
-			assertEquals(date.toISOString(), iso);
-			assertStrictEquals(date.year, 2004);
-			assertStrictEquals(date.month, month + 1);
-			assertStrictEquals(date.day, day + 1);
-			assertStrictEquals(date.hour, 0);
-			assertStrictEquals(date.minute, 0);
-			assertAlmostEquals(date.second, 0);
+			assertEquals(date.toISOString(), iso, tag);
+			assertStrictEquals(date.year, 2004, tag);
+			assertStrictEquals(date.month, month + 1, tag);
+			assertStrictEquals(date.day, day + 1, tag);
+			assertStrictEquals(date.hour, 0, tag);
+			assertStrictEquals(date.minute, 0, tag);
+			assertAlmostEquals(date.second, 0, 0.001, tag);
 
-			assertEquals(PLDate.parse(iso), time);
+			assertEquals(PLDate.parse(iso), time, tag);
 		}
 	}
 });

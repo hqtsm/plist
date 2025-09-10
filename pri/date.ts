@@ -23,7 +23,7 @@ function leap(year: number): 0 | 1 {
  * @param month Month pointer.
  * @param day Day pointer.
  */
-export function getDate(
+function getDate(
 	time: number,
 	year?: [number] | 0,
 	month?: [number] | 0,

@@ -1,7 +1,38 @@
 import { assertEquals } from '@std/assert';
-import { getISO, getTime, parseISO } from './date.ts';
+import {
+	getDay,
+	getHour,
+	getISO,
+	getMinute,
+	getMonth,
+	getSecond,
+	getTime,
+	getYear,
+	parseISO,
+	setDay,
+	setHour,
+	setMinute,
+	setMonth,
+	setSecond,
+	setYear,
+} from './date.ts';
 
 const UNIX_EPOCH = -978307200;
+
+const startTimes = [
+	// 2001-01-01T00:00:00.000Z
+	0,
+	// 2004-01-01T00:00:00.000Z
+	94608000,
+	// 2004-02-29T00:00:00.000Z
+	99705600,
+	// 2004-03-01T00:00:00.000Z
+	99792000,
+	// 2400-03-01T00:00:00.000Z
+	12596342400,
+	// -000005-02-08T02:40:00.000Z
+	-63300000000,
+];
 
 Deno.test('getISO', () => {
 	assertEquals(getISO(UNIX_EPOCH), '1970-01-01T00:00:00.000Z');
@@ -197,4 +228,132 @@ Deno.test('parseISO: day under over', () => {
 Deno.test('parseISO: month under over', () => {
 	assertEquals(parseISO('2004-00-01T00:00:00.000Z'), NaN);
 	assertEquals(parseISO('2004-13-01T00:00:00.000Z'), NaN);
+});
+
+Deno.test('setYear + getYear', () => {
+	const deltas = (new Array(800)).fill(0).map((_, i) => i);
+	const allDeltas = new Set([...deltas, ...deltas.map((d) => -d)]);
+	for (const start of startTimes) {
+		for (const year of allDeltas) {
+			const tag = `${start}: ${year}`;
+			const time = setYear(start, year);
+			const jsd = new Date((start - UNIX_EPOCH) * 1000);
+			jsd.setUTCFullYear(year);
+			assertEquals(getISO(time), jsd.toISOString(), tag);
+			assertEquals(getYear(time), year, tag);
+		}
+	}
+});
+
+Deno.test('setMonth + getMonth', () => {
+	const deltas = (new Array(5000)).fill(0).map((_, i) => i);
+	const allDeltas = new Set([...deltas, ...deltas.map((d) => -d)]);
+	for (const start of startTimes) {
+		for (const month of allDeltas) {
+			const tag = `${start}: ${month}`;
+			const time = setMonth(start, month);
+			const jsd = new Date((start - UNIX_EPOCH) * 1000);
+			jsd.setUTCMonth(month - 1);
+			assertEquals(getISO(time), jsd.toISOString(), tag);
+			assertEquals(getMonth(time), jsd.getUTCMonth() + 1, tag);
+		}
+	}
+});
+
+Deno.test('setDay + getDay', () => {
+	const deltas = [...new Array(1000).fill(0).map((_, i) => i), 10000];
+	const allDeltas = new Set([...deltas, ...deltas.map((d) => -d)]);
+	for (const start of startTimes) {
+		for (const day of allDeltas) {
+			const tag = `${start}: ${day}`;
+			const time = setDay(start, day);
+			const jsd = new Date((start - UNIX_EPOCH) * 1000);
+			jsd.setUTCDate(day);
+			assertEquals(getISO(time), jsd.toISOString(), tag);
+			assertEquals(getDay(time), jsd.getUTCDate(), tag);
+		}
+	}
+});
+
+Deno.test('setHour + getHour', () => {
+	const deltas = [
+		0,
+		1,
+		2,
+		12,
+		24,
+		25,
+		48,
+		1000000,
+	];
+	const allDeltas = new Set([...deltas, ...deltas.map((d) => -d)]);
+	for (const start of startTimes) {
+		for (const hour of allDeltas) {
+			const tag = `${start}: ${hour}`;
+			const time = setHour(start, hour);
+			const jsd = new Date((start - UNIX_EPOCH) * 1000);
+			jsd.setUTCHours(hour);
+			assertEquals(getISO(time), jsd.toISOString(), tag);
+			assertEquals(getHour(time), jsd.getUTCHours(), tag);
+		}
+	}
+});
+
+Deno.test('setMinute + getMinute', () => {
+	const deltas = [
+		0,
+		1,
+		2,
+		59,
+		60,
+		61,
+		120,
+		1000000,
+	];
+	const allDeltas = new Set([...deltas, ...deltas.map((d) => -d)]);
+	for (const start of startTimes) {
+		for (const minute of allDeltas) {
+			const tag = `${start}: ${minute}`;
+			const time = setMinute(start, minute);
+			const jsd = new Date((start - UNIX_EPOCH) * 1000);
+			jsd.setUTCMinutes(minute);
+			assertEquals(getISO(time), jsd.toISOString(), tag);
+			assertEquals(getMinute(time), jsd.getUTCMinutes(), tag);
+		}
+	}
+});
+
+Deno.test('setSecond + getSecond', () => {
+	const deltas = [
+		0,
+		1,
+		2,
+		10,
+		100,
+		1000,
+		10000,
+		100000,
+		1000000,
+		10000000,
+		100000000,
+		Math.PI,
+	];
+	const allDeltas = new Set([...deltas, ...deltas.map((d) => -d)]);
+	for (const start of startTimes) {
+		for (const second of allDeltas) {
+			const tag = `${start}: ${second}`;
+			const time = setSecond(start, second);
+			const jsd = new Date((start - UNIX_EPOCH) * 1000);
+			jsd.setUTCMilliseconds(Math.floor(second * 1000));
+			assertEquals(getISO(time), jsd.toISOString(), tag);
+			const seconds = getSecond(time);
+			const fullSeconds = Math.floor(seconds);
+			assertEquals(fullSeconds, jsd.getUTCSeconds(), tag);
+			assertEquals(
+				Math.floor((seconds - fullSeconds) * 1000),
+				jsd.getUTCMilliseconds(),
+				tag,
+			);
+		}
+	}
 });
