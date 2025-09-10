@@ -309,7 +309,7 @@ function date(d: Uint8Array, p: [number], l: number): PLDate {
 			break;
 		}
 		p[0] = i;
-		return new PLDate(getTime(n ? (-Y) | 0 : Y, M || 1, D, h, m, s));
+		return new PLDate(getTime(n ? (-Y) | 0 : Y, M, D, h, m, s));
 	}
 	throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
 }
