@@ -333,7 +333,7 @@ export function getISO(time: number): string {
 }
 
 /**
- * Paese ISO format to date time.
+ * Parse ISO format to date time.
  *
  * @param date ISO date.
  * @returns Date time.
