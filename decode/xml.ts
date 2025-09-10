@@ -1,3 +1,9 @@
+/**
+ * @module
+ *
+ * XML decoding.
+ */
+
 import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
