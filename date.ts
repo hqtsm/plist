@@ -78,8 +78,10 @@ export class PLDate {
 	 * @param year Year.
 	 */
 	public set year(year: number) {
-		year = (+year || 0) - (year % 1 || 0);
-		times.set(this, setYear(times.get(this)!, year));
+		times.set(
+			this,
+			setYear(times.get(this)!, (+year || 0) - (year % 1 || 0)),
+		);
 	}
 
 	/**
@@ -97,8 +99,10 @@ export class PLDate {
 	 * @param month Month.
 	 */
 	public set month(month: number) {
-		month = (+month || 0) - (month % 1 || 0);
-		times.set(this, setMonth(times.get(this)!, month));
+		times.set(
+			this,
+			setMonth(times.get(this)!, (+month || 0) - (month % 1 || 0)),
+		);
 	}
 
 	/**
@@ -116,8 +120,10 @@ export class PLDate {
 	 * @param day Day.
 	 */
 	public set day(day: number) {
-		day = (+day || 0) - (day % 1 || 0);
-		times.set(this, setDay(times.get(this)!, day));
+		times.set(
+			this,
+			setDay(times.get(this)!, (+day || 0) - (day % 1 || 0)),
+		);
 	}
 
 	/**
@@ -135,8 +141,10 @@ export class PLDate {
 	 * @param hour Hour.
 	 */
 	public set hour(hour: number) {
-		hour = (+hour || 0) - (hour % 1 || 0);
-		times.set(this, setHour(times.get(this)!, hour));
+		times.set(
+			this,
+			setHour(times.get(this)!, (+hour || 0) - (hour % 1 || 0)),
+		);
 	}
 
 	/**
@@ -154,8 +162,10 @@ export class PLDate {
 	 * @param minute Minute.
 	 */
 	public set minute(minute: number) {
-		minute = (+minute || 0) - (minute % 1 || 0);
-		times.set(this, setMinute(times.get(this)!, minute));
+		times.set(
+			this,
+			setMinute(times.get(this)!, (+minute || 0) - (minute % 1 || 0)),
+		);
 	}
 
 	/**
@@ -173,8 +183,10 @@ export class PLDate {
 	 * @param second Second.
 	 */
 	public set second(second: number) {
-		second = +second || 0;
-		times.set(this, setSecond(times.get(this)!, second));
+		times.set(
+			this,
+			setSecond(times.get(this)!, +second || 0),
+		);
 	}
 
 	/**
