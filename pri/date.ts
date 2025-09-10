@@ -304,10 +304,7 @@ export function getTime(
 
 	// Remaining months of days and add all together.
 	r += (month > 13 ? -1 : DBM[month]) + day + (
-		month > 2 &&
-			!((x = (++y < 0 ? -y : y) % 400n) & 3n || (x && !(x % 100n)))
-			? 0
-			: -1
+		month > 2 && leap(Number(++y)) ? 0 : -1
 	);
 	r *= 86400;
 	r += 3600 * hour + 60 * minute + second;
