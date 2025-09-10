@@ -1,3 +1,9 @@
+/**
+ * @module
+ *
+ * Date utils.
+ */
+
 const Y: [number] = [0];
 const M: [number] = [0];
 const D: [number] = [0];
@@ -336,7 +342,7 @@ export function getISO(time: number): string {
  * Parse ISO format to date time.
  *
  * @param date ISO date.
- * @returns Date time.
+ * @returns Date time or NaN if invalid.
  */
 export function parseISO(date: string): number {
 	let r, M, D, h, m, s;

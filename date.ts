@@ -87,7 +87,7 @@ export class PLDate {
 	/**
 	 * Get month.
 	 *
-	 * @returns Month.
+	 * @returns Month, 1 indexed.
 	 */
 	public get month(): number {
 		return getMonth(times.get(this)!);
@@ -192,7 +192,7 @@ export class PLDate {
 	/**
 	 * Convert to date.
 	 *
-	 * @returns Date.
+	 * @returns Date, potentially invalid.
 	 */
 	public toDate(): Date {
 		return new Date((times.get(this)! - UNIX_EPOCH) * 1000);

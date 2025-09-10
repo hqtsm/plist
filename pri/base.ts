@@ -1,4 +1,10 @@
 /**
+ * @module
+ *
+ * Base utils.
+ */
+
+/**
  * Get hex character value.
  *
  * @param c Character.
