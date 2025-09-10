@@ -151,7 +151,6 @@ Deno.test('parse hour over', () => {
 		PLDate.parse('2004-01-01T24:00:00.000Z'),
 		PLDate.parse('2004-01-02T00:00:00.000Z'),
 	);
-
 	assertEquals(PLDate.parse('2004-01-01T24:00:00.001Z'), NaN);
 	assertEquals(PLDate.parse('2004-01-01T24:00:01.000Z'), NaN);
 	assertEquals(PLDate.parse('2004-01-01T24:01:00.000Z'), NaN);
