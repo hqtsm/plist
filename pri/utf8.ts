@@ -23,6 +23,11 @@ export interface CharCodes {
 }
 
 /**
+ * Already know UTF-8 bytes.
+ */
+export const utf8 = new Set<Uint8Array>();
+
+/**
  * Get string encode size, from UTF-16.
  *
  * @param str String.

@@ -12,6 +12,7 @@ import { b16d } from '../pri/base.ts';
 import { bytes } from '../pri/data.ts';
 import { latin, unesc, unquoted } from '../pri/openstep.ts';
 import {
+	utf8,
 	utf8Decode,
 	utf8Encoded,
 	utf8ErrorEnd,
@@ -263,11 +264,13 @@ export function decodeOpenStep(
 	let s;
 	let e;
 	let plist;
-	let c;
-	d = bytes(encoded);
-	d = utf8Encoded(d, utf16le) || d;
-	utf8Length(d);
-	c = next(d, p = [0]);
+	let c = (
+		utf8Length(
+			d = utf8.has(encoded as Uint8Array)
+				? encoded as Uint8Array
+				: utf8Encoded(d = bytes(encoded), utf16le) || d,
+		), next(d, p = [0])
+	);
 	if (c < 0) {
 		return { format: FORMAT_STRINGS, plist: new PLDict() };
 	}
