@@ -15,6 +15,7 @@ import { b16d, b64d } from '../pri/base.ts';
 import { bytes } from '../pri/data.ts';
 import { getTime } from '../pri/date.ts';
 import {
+	utf8,
 	utf8Decode,
 	utf8Encoded,
 	utf8ErrorEnd,
@@ -674,16 +675,20 @@ export function decodeXml(
 	let x;
 	let d;
 	let u;
-	u = utf8Encoded(d = bytes(encoded), utf16le);
-	if (
-		!u &&
-		(x = encoding(d)) !== null &&
-		!rUTF8.test(x) &&
-		!(u = decoder?.(x, d))
-	) {
-		throw new RangeError(`Unsupported encoding: ${x}`);
+	if (utf8.has(encoded as Uint8Array)) {
+		d = encoded as Uint8Array;
+	} else {
+		u = utf8Encoded(d = bytes(encoded), utf16le);
+		if (
+			!u &&
+			(x = encoding(d)) !== null &&
+			!rUTF8.test(x) &&
+			!(u = decoder?.(x, d))
+		) {
+			throw new RangeError(`Unsupported encoding: ${x}`);
+		}
+		d = u ? bytes(u) : d;
 	}
-	d = u ? bytes(u) : d;
 	const l = d.length;
 	const j: [number] = [0];
 	let a;
