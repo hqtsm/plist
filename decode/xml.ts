@@ -12,6 +12,7 @@ import { PLDict } from '../dict.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { PLInteger, PLTYPE_INTEGER } from '../integer.ts';
 import { b16d, b64d } from '../pri/base.ts';
+import { bytes } from '../pri/data.ts';
 import { getTime } from '../pri/date.ts';
 import {
 	utf8Decode,
@@ -615,7 +616,7 @@ function string(d: Uint8Array, p: [number], l: number): string {
 export type DecodeXmlDecoder = (
 	encoding: string,
 	data: Uint8Array,
-) => Uint8Array | null;
+) => ArrayBufferView | ArrayBuffer | null | void;
 
 /**
  * Decode XML plist options.
@@ -663,7 +664,7 @@ export interface DecodeXmlResult {
  * @returns Decode result.
  */
 export function decodeXml(
-	encoded: Uint8Array,
+	encoded: ArrayBufferView | ArrayBuffer,
 	{
 		decoder,
 		utf16le,
@@ -671,19 +672,20 @@ export function decodeXml(
 	}: Readonly<DecodeXmlOptions> = {},
 ): DecodeXmlResult {
 	let x;
-	let d: Uint8Array | null | undefined = utf8Encoded(encoded, utf16le);
+	let d;
+	let u;
+	u = utf8Encoded(d = bytes(encoded), utf16le);
 	if (
-		!d &&
-		(x = encoding(encoded)) !== null &&
+		!u &&
+		(x = encoding(d)) !== null &&
 		!rUTF8.test(x) &&
-		!(d = decoder?.(x, encoded))
+		!(u = decoder?.(x, d))
 	) {
 		throw new RangeError(`Unsupported encoding: ${x}`);
 	}
-	d ||= encoded;
+	d = u ? bytes(u) : d;
 	const l = d.length;
 	const j: [number] = [0];
-	const u = new Map<PLDict, PLString>();
 	let a;
 	let b;
 	let c;
@@ -698,6 +700,7 @@ export function decodeXml(
 	let t;
 	let z;
 	let format: DecodeXmlResult['format'] = FORMAT_XML_V1_0;
+	u = new Map<PLDict, PLString>();
 	for (;;) {
 		c = d[i = whitespace(d, i)];
 		if (c !== 60) {

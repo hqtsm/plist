@@ -9,6 +9,7 @@ import { PLData } from '../data.ts';
 import { PLDict } from '../dict.ts';
 import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
 import { b16d } from '../pri/base.ts';
+import { bytes } from '../pri/data.ts';
 import { latin, unesc, unquoted } from '../pri/openstep.ts';
 import {
 	utf8Decode,
@@ -249,30 +250,31 @@ export interface DecodeOpenStepResult {
  * @returns Decode result.
  */
 export function decodeOpenStep(
-	encoded: Uint8Array,
+	encoded: ArrayBufferView | ArrayBuffer,
 	{
 		allowMissingSemi = false,
 		utf16le,
 	}: Readonly<DecodeOpenStepOptions> = {},
 ): DecodeOpenStepResult {
-	utf8Length(encoded = utf8Encoded(encoded, utf16le) || encoded);
-	const p: [number] = [0];
+	let d = bytes(encoded);
+	utf8Length(d = utf8Encoded(d, utf16le) || d);
+	let p: [number];
 	let format: DecodeOpenStepResult['format'] = FORMAT_OPENSTEP;
 	let n: Node | null = null;
-	let d;
+	let s;
 	let e;
 	let plist;
-	let c = next(encoded, p);
+	let c = next(d, p = [0]);
 	if (c < 0) {
 		return { format: FORMAT_STRINGS, plist: new PLDict() };
 	}
 	if (c === 34 || c === 39) {
-		plist = decodeStrQ(encoded, p, c);
+		plist = decodeStrQ(d, p, c);
 	} else if (unquoted(c)) {
-		plist = decodeStrU(encoded, p);
+		plist = decodeStrU(d, p);
 	}
 	if (plist) {
-		c = next(encoded, p);
+		c = next(d, p);
 		if (c < 0) {
 			return { format, plist };
 		}
@@ -282,7 +284,7 @@ export function decodeOpenStep(
 			format = FORMAT_STRINGS;
 		}
 	} else if (c === 60) {
-		plist = decodeData(encoded, p);
+		plist = decodeData(d, p);
 	} else if (c === 123) {
 		n = { o: plist = new PLDict(), e: e = 125, n };
 		p[0]++;
@@ -290,44 +292,44 @@ export function decodeOpenStep(
 		n = { o: plist = new PLArray(), e: e = 41, n };
 		p[0]++;
 	} else {
-		throw new SyntaxError(utf8ErrorToken(encoded, p[0]));
+		throw new SyntaxError(utf8ErrorToken(d, p[0]));
 	}
 	while (n) {
-		if (d) {
-			c = next(encoded, p);
+		if (s) {
+			c = next(d, p);
 			if (e === 41) {
 				if (c === 44) {
 					p[0]++;
 				} else {
-					d = c === 41;
+					s = c === 41;
 				}
 			} else {
 				if (c === 59) {
 					p[0]++;
 				} else if (c === 125) {
-					d = allowMissingSemi;
-				} else if ((d = allowMissingSemi && e! < 0)) {
+					s = allowMissingSemi;
+				} else if ((s = allowMissingSemi && e! < 0)) {
 					return { format, plist };
 				}
 			}
-			if (!d) {
+			if (!s) {
 				if (c < 0) {
-					throw new SyntaxError(utf8ErrorEnd(encoded));
+					throw new SyntaxError(utf8ErrorEnd(d));
 				}
-				throw new SyntaxError(utf8ErrorToken(encoded, p[0]));
+				throw new SyntaxError(utf8ErrorToken(d, p[0]));
 			}
 		}
-		c = next(encoded, p);
-		if ((d = c < 0)) {
+		c = next(d, p);
+		if ((s = c < 0)) {
 			if (e! < 0) {
 				return { format, plist };
 			}
-			throw new SyntaxError(utf8ErrorEnd(encoded));
+			throw new SyntaxError(utf8ErrorEnd(d));
 		}
 		if (c === e) {
 			p[0]++;
 			if ((n = n.n)) {
-				d = plist = n.o;
+				s = plist = n.o;
 				e = n.e;
 			}
 			continue;
@@ -336,38 +338,38 @@ export function decodeOpenStep(
 		let v;
 		if (e !== 41) {
 			if (c === 34 || c === 39) {
-				k = decodeStrQ(encoded, p, c);
+				k = decodeStrQ(d, p, c);
 			} else if (unquoted(c)) {
-				k = decodeStrU(encoded, p);
+				k = decodeStrU(d, p);
 			} else if (e! < 0) {
 				return { format, plist };
 			} else {
-				throw new SyntaxError(utf8ErrorToken(encoded, p[0]));
+				throw new SyntaxError(utf8ErrorToken(d, p[0]));
 			}
-			c = next(encoded, p);
+			c = next(d, p);
 			if (c !== 61) {
 				if (c < 0) {
-					throw new SyntaxError(utf8ErrorEnd(encoded));
+					throw new SyntaxError(utf8ErrorEnd(d));
 				}
 				if (c === 59) {
 					(plist as PLDict).set(k, k);
 					p[0]++;
 					continue;
 				}
-				throw new SyntaxError(utf8ErrorToken(encoded, p[0]));
+				throw new SyntaxError(utf8ErrorToken(d, p[0]));
 			}
 			p[0]++;
-			c = next(encoded, p);
+			c = next(d, p);
 			if (c < 0) {
-				throw new SyntaxError(utf8ErrorEnd(encoded));
+				throw new SyntaxError(utf8ErrorEnd(d));
 			}
 		}
 		if (c === 34 || c === 39) {
-			d = v = decodeStrQ(encoded, p, c);
+			s = v = decodeStrQ(d, p, c);
 		} else if (unquoted(c)) {
-			d = v = decodeStrU(encoded, p);
+			s = v = decodeStrU(d, p);
 		} else if (c === 60) {
-			d = v = decodeData(encoded, p);
+			s = v = decodeData(d, p);
 		} else if (c === 123) {
 			n = { o: v = new PLDict(), e: e = 125, n };
 			p[0]++;
@@ -375,20 +377,20 @@ export function decodeOpenStep(
 			n = { o: v = new PLArray(), e: e = 41, n };
 			p[0]++;
 		} else {
-			throw new SyntaxError(utf8ErrorToken(encoded, p[0]));
+			throw new SyntaxError(utf8ErrorToken(d, p[0]));
 		}
 		if (k) {
 			(plist as PLDict).set(k, v);
 		} else {
 			(plist as PLArray).push(v);
 		}
-		if (!d) {
+		if (!s) {
 			plist = v;
 		}
 	}
-	c = next(encoded, p);
+	c = next(d, p);
 	if (c < 0) {
 		return { format, plist };
 	}
-	throw new SyntaxError(utf8ErrorToken(encoded, p[0]));
+	throw new SyntaxError(utf8ErrorToken(d, p[0]));
 }
