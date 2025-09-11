@@ -581,13 +581,10 @@ function string(d: Uint8Array, p: [number], l: number): string {
 					}
 				} else {
 					for (; i < l; c = d[++i]) {
-						if (c > 47) {
-							if (c < 58) {
-								a = a * 10 + c - 48 & 65535;
-								continue;
-							}
+						if (c < 48 || c > 57) {
+							break;
 						}
-						break;
+						a = a * 10 + c - 48 & 65535;
 					}
 				}
 				if (c === 59 && !(a > 55295 && a < 57344)) {
