@@ -190,11 +190,7 @@ function instruction(d: Uint8Array, i: number, l: number): number {
  * @param l Length.
  * @returns After offset.
  */
-function doctype(
-	d: Uint8Array,
-	i: number,
-	l: number,
-): number {
+function doctype(d: Uint8Array, i: number, l: number): number {
 	if (
 		d[i] === 68 &&
 		d[i + 1] === 79 &&
@@ -519,8 +515,10 @@ function string(d: Uint8Array, p: [number], l: number): string {
 					continue;
 				}
 			}
-			utf8Length(d, j, i++);
-			throw new SyntaxError(i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d));
+			utf8Length(d, j, i);
+			throw new SyntaxError(
+				++i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
+			);
 		} else if (c === 38) {
 			r += utf8Decode(d, j, i);
 			c = d[++i];
