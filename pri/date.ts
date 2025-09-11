@@ -288,29 +288,29 @@ export function getTime(
 	// Roll months into years.
 	let r;
 	let x;
-	let y = BigInt.asIntN(64, BigInt(year - 2001 | 0));
+	let y = year - 2001 | 0;
 
 	// Years of full 400 year cycles, and the remaining days.
-	let z = y / 400n;
-	r = Number(BigInt.asIntN(64, z * 146097n));
-	y -= z * 400n;
+	let z = (y / 400) | 0;
+	r = z * 146097;
+	y -= z * 400;
 
 	// Remaining years of days.
 	if (y < 0) {
 		for (z = y; z;) {
-			x = -(++z) % 400n;
-			r -= (x & 3n || (x && !(x % 100n))) ? 365 : 366;
+			x = -(++z) % 400;
+			r -= (x & 3 || (x && !(x % 100))) ? 365 : 366;
 		}
 	} else {
-		for (z = 0n; z < y;) {
-			x = ++z % 400n;
-			r += (x & 3n || (x && !(x % 100n))) ? 365 : 366;
+		for (z = 0; z < y;) {
+			x = ++z % 400;
+			r += (x & 3 || (x && !(x % 100))) ? 365 : 366;
 		}
 	}
 
 	// Remaining months of days and add all together.
 	r += (month > 13 ? 0 : (DBM[month] +
-		((month > 2 && leap(Number(++y))) as unknown as number))) +
+		((month > 2 && leap(++y)) as unknown as number))) +
 		day - 1;
 	r *= 86400;
 	r += 3600 * hour + 60 * minute + second;
