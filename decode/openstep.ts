@@ -256,15 +256,18 @@ export function decodeOpenStep(
 		utf16le,
 	}: Readonly<DecodeOpenStepOptions> = {},
 ): DecodeOpenStepResult {
-	let d = bytes(encoded);
-	utf8Length(d = utf8Encoded(d, utf16le) || d);
+	let d;
 	let p: [number];
 	let format: DecodeOpenStepResult['format'] = FORMAT_OPENSTEP;
 	let n: Node | null = null;
 	let s;
 	let e;
 	let plist;
-	let c = next(d, p = [0]);
+	let c;
+	d = bytes(encoded);
+	d = utf8Encoded(d, utf16le) || d;
+	utf8Length(d);
+	c = next(d, p = [0]);
 	if (c < 0) {
 		return { format: FORMAT_STRINGS, plist: new PLDict() };
 	}
