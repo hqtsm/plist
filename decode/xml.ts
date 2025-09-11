@@ -28,7 +28,7 @@ import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 
 const rUTF8 = /^(x-mac-)?utf-8$/i;
-const rREAL = /^[0-9e.+-]+$/i;
+const rREAL = /^[\de.+-]+$/i;
 const rRLWS = /^[\0-\x20\x7F-\xA0\u2000-\u200B\u3000]+/;
 
 /**
