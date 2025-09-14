@@ -20,6 +20,7 @@ import {
 	utf8Length,
 } from '../pri/utf8.ts';
 import { PLString } from '../string.ts';
+import type { PLType } from '../type.ts';
 
 /**
  * Linked list node type.
@@ -240,7 +241,7 @@ export interface DecodeOpenStepResult {
 	/**
 	 * Decoded plist.
 	 */
-	plist: PLArray | PLData | PLDict | PLString;
+	plist: PLType;
 }
 
 /**
