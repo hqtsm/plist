@@ -743,7 +743,7 @@ export function decodeXml(
 						a = (x as PLReal).value || 0;
 						q = new PLUID(
 							a === Infinity
-								? 0x7FFFFFFFn
+								? 0x7fffffffn
 								: a === -Infinity
 								? 0x80000000n
 								: BigInt(a - a % 1),
