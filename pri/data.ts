@@ -9,3 +9,13 @@ export function bytes(buffer: ArrayBufferView | ArrayBuffer): Uint8Array {
 		? new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength)
 		: new Uint8Array(buffer);
 }
+
+/**
+ * Error message for invalid binary.
+ *
+ * @param offset Offset.
+ * @returns Error message.
+ */
+export function binaryError(offset: number): string {
+	return `Invalid binary data at 0x${offset.toString(16).toUpperCase()}`;
+}
