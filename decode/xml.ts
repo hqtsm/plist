@@ -669,38 +669,37 @@ export function decodeXml(
 ): DecodeXmlResult {
 	let x;
 	let d;
-	let u;
+	let keyed;
 	if (utf8.has(encoded as Uint8Array)) {
 		d = encoded as Uint8Array;
 	} else {
-		u = utf8Encoded(d = bytes(encoded), utf16le);
+		keyed = utf8Encoded(d = bytes(encoded), utf16le);
 		if (
-			!u &&
+			!keyed &&
 			(x = encoding(d)) !== null &&
 			!rUTF8.test(x) &&
-			!(u = decoder?.(x, d))
+			!(keyed = decoder?.(x, d))
 		) {
 			throw new RangeError(`Unsupported encoding: ${x}`);
 		}
-		d = u ? bytes(u) : d;
+		d = keyed ? bytes(keyed) : d;
 	}
 	const l = d.length;
-	const j: [number] = [0];
-	let a;
-	let b;
-	let c;
-	let f;
+	const p: [number] = [0];
 	let i = 0;
-	let k: PLString | null = null;
+	let key: PLString | null = null;
 	let n: Node | null = null;
-	let o: PLArray | PLDict | Plist;
-	let p: typeof o;
-	let q;
-	let s;
-	let t;
-	let z;
+	let c;
+	let sc;
+	let obj;
+	let tagI;
+	let tagL;
+	let cId;
+	let cObj: PLArray | PLDict | Plist;
+	let pId;
+	let pObj: typeof cObj;
 	let format: DecodeXmlResult['format'] = FORMAT_XML_V1_0;
-	u = new Map<PLDict, PLString>();
+	keyed = new Map<PLDict, PLString>();
 	for (;;) {
 		c = d[i = whitespace(d, i)];
 		if (c !== 60) {
@@ -719,306 +718,331 @@ export function decodeXml(
 	}
 	for (;;) {
 		if (c === 47) {
-			if (!n || k) {
+			if (!n || key) {
 				throw new SyntaxError(utf8ErrorXML(d, i));
 			}
 			x = n as Node;
-			t = ++i;
-			for (f = n.t, s = x.s; s && d[i] === d[f++]; ++i, s--);
-			if (s || d[i = whitespace(d, i)] !== 62) {
+			tagI = ++i;
+			for (sc = n.t, tagL = x.s; tagL && d[i] === d[sc++]; ++i, tagL--);
+			if (tagL || d[i = whitespace(d, i)] !== 62) {
 				throw new SyntaxError(
 					i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
 				);
 			}
 			++i;
 			n = x.n;
-			f = x.a;
-			if (f === 100) {
-				f = q = x.p as PLDict;
-				if (q.size === 1 && (x = q.find('CF$UID'))) {
-					a = x[Symbol.toStringTag];
-					if (a === PLTYPE_INTEGER) {
-						q = new PLUID((x as PLInteger).value);
-					} else if (a === PLTYPE_REAL) {
-						a = (x as PLReal).value || 0;
-						q = new PLUID(
-							a === Infinity
+			sc = x.a;
+			if (sc === 100) {
+				sc = obj = x.p as PLDict;
+				if (obj.size === 1 && (x = obj.find('CF$UID'))) {
+					cId = x[Symbol.toStringTag];
+					if (cId === PLTYPE_INTEGER) {
+						obj = new PLUID((x as PLInteger).value);
+					} else if (cId === PLTYPE_REAL) {
+						cId = (x as PLReal).value || 0;
+						obj = new PLUID(
+							cId === Infinity
 								? 0x7fffffffn
-								: a === -Infinity
+								: cId === -Infinity
 								? 0x80000000n
-								: BigInt(a - a % 1),
+								: BigInt(cId - cId % 1),
 						);
 					}
 				}
 				if (!n) {
-					return { format, plist: q };
+					return { format, plist: obj };
 				}
-				a = n.a;
-				p = n.p;
-				if (f !== q) {
-					if (a === 100) {
-						(p as PLDict).set(u.get(f)!, q);
-					} else if (a === 97) {
-						(p as PLArray).set((p as PLArray).length - 1, q);
-					} else if (a === 112) {
-						(p as Plist).v = q;
+				cId = n.a;
+				cObj = n.p;
+				if (sc !== obj) {
+					if (cId === 100) {
+						(cObj as PLDict).set(keyed.get(sc)!, obj);
+					} else if (cId === 97) {
+						(cObj as PLArray).set(
+							(cObj as PLArray).length - 1,
+							obj,
+						);
+					} else if (cId === 112) {
+						(cObj as Plist).v = obj;
 					}
 				}
-				u.delete(f);
-			} else if (f === 112) {
+				keyed.delete(sc);
+			} else if (sc === 112) {
 				x = x.p as Plist;
-				q = x.v;
-				if (!q) {
-					throw new SyntaxError(utf8ErrorXML(d, t));
+				obj = x.v;
+				if (!obj) {
+					throw new SyntaxError(utf8ErrorXML(d, tagI));
 				}
 				if (!n) {
-					return { format, plist: q };
+					return { format, plist: obj };
 				}
-				a = n.a;
-				p = n.p;
-				if (a === 100) {
-					(p as PLDict).set(x.k!, q);
-				} else if (a === 97) {
-					(p as PLArray).push(q);
-				} else if (a === 112) {
-					(p as Plist).v = q;
+				cId = n.a;
+				cObj = n.p;
+				if (cId === 100) {
+					(cObj as PLDict).set(x.k!, obj);
+				} else if (cId === 97) {
+					(cObj as PLArray).push(obj);
+				} else if (cId === 112) {
+					(cObj as Plist).v = obj;
 				}
 			} else if (n) {
-				a = n.a;
-				p = n.p;
+				cId = n.a;
+				cObj = n.p;
 			} else {
 				return { format, plist: x.p as PLType };
 			}
 		} else {
-			for (f = s = -1, t = i; i < l && (b = d[i]) !== 62; f = b, i++) {
-				if (s < 0 && ws(b)) {
-					s = i - t;
+			for (
+				sc = tagL = -1, tagI = i;
+				i < l && (x = d[i]) !== 62;
+				sc = x, i++
+			) {
+				if (tagL < 0 && ws(x)) {
+					tagL = i - tagI;
 				}
 			}
 			if (i >= l) {
 				throw new SyntaxError(utf8ErrorEnd(d));
 			}
-			f = f === 47;
-			if (s < 0) {
-				s = i - t - (f as unknown as number);
+			sc = sc === 47;
+			if (tagL < 0) {
+				tagL = i - tagI - (sc as unknown as number);
 			}
-			if ((q = !s)) {
-				throw new SyntaxError(utf8ErrorXML(d, t));
+			if ((obj = !tagL)) {
+				throw new SyntaxError(utf8ErrorXML(d, tagI));
 			}
 			x = i++;
-			z = a!;
-			o = p!;
+			pId = cId!;
+			pObj = cObj!;
 			switch (c) {
 				case 97: {
 					if (
-						d[t + 1] === 114 &&
-						d[t + 2] === 114 &&
-						d[t + 3] === 97 &&
-						d[t + 4] === 121
+						d[tagI + 1] === 114 &&
+						d[tagI + 2] === 114 &&
+						d[tagI + 3] === 97 &&
+						d[tagI + 4] === 121
 					) {
-						q = new PLArray();
-						if (!f) {
-							a = c;
-							p = q;
-							f = n = { a, t, s, p, n };
+						obj = new PLArray();
+						if (!sc) {
+							cId = c;
+							cObj = obj;
+							sc = n = {
+								a: cId,
+								t: tagI,
+								s: tagL,
+								p: cObj,
+								n,
+							};
 						}
 					}
 					break;
 				}
 				case 100: {
-					x = d[t + 1];
+					x = d[tagI + 1];
 					if (x === 105) {
-						if (d[t + 2] === 99 && d[t + 3] === 116) {
-							q = new PLDict();
-							if (!f) {
-								a = c;
-								p = q;
-								f = n = { a, t, s, p, n };
-								if (k) {
-									u.set(q, k);
+						if (d[tagI + 2] === 99 && d[tagI + 3] === 116) {
+							obj = new PLDict();
+							if (!sc) {
+								cId = c;
+								cObj = obj;
+								sc = n = {
+									a: cId,
+									t: tagI,
+									s: tagL,
+									p: cObj,
+									n,
+								};
+								if (key) {
+									keyed.set(obj, key);
 								}
 							}
 						}
-					} else if (!f && x === 97 && d[t + 2] === 116) {
-						if (d[t + 3] === 97) {
-							j[0] = i;
-							q = data(d, j, l);
-							i = j[0];
-						} else if (d[t + 3] === 101) {
-							j[0] = i;
-							q = date(d, j, l);
-							i = j[0];
+					} else if (!sc && x === 97 && d[tagI + 2] === 116) {
+						if (d[tagI + 3] === 97) {
+							p[0] = i;
+							obj = data(d, p, l);
+							i = p[0];
+						} else if (d[tagI + 3] === 101) {
+							p[0] = i;
+							obj = date(d, p, l);
+							i = p[0];
 						}
 					}
 					break;
 				}
 				case 102: {
 					if (
-						d[t + 1] === 97 &&
-						d[t + 2] === 108 &&
-						d[t + 3] === 115 &&
-						d[t + 4] === 101
+						d[tagI + 1] === 97 &&
+						d[tagI + 2] === 108 &&
+						d[tagI + 3] === 115 &&
+						d[tagI + 4] === 101
 					) {
-						q = new PLBoolean(false);
+						obj = new PLBoolean(false);
 					}
 					break;
 				}
 				case 105: {
 					if (
-						!f &&
-						d[t + 1] === 110 &&
-						d[t + 2] === 116 &&
-						d[t + 3] === 101 &&
-						d[t + 4] === 103 &&
-						d[t + 5] === 101
+						!sc &&
+						d[tagI + 1] === 110 &&
+						d[tagI + 2] === 116 &&
+						d[tagI + 3] === 101 &&
+						d[tagI + 4] === 103 &&
+						d[tagI + 5] === 101
 					) {
-						j[0] = i;
-						q = new PLInteger(
-							q = integer(d, j, l, int64),
-							(q < 0 ? ~q : q) >> 63n ? 128 : 64,
+						p[0] = i;
+						obj = new PLInteger(
+							obj = integer(d, p, l, int64),
+							(obj < 0 ? ~obj : obj) >> 63n ? 128 : 64,
 						);
-						i = j[0];
+						i = p[0];
 					}
 					break;
 				}
 				case 107: {
-					if (d[t + 1] === 101 && d[t + 2] === 121) {
-						if (f) {
-							q = '';
+					if (d[tagI + 1] === 101 && d[tagI + 2] === 121) {
+						if (sc) {
+							obj = '';
 						} else {
-							j[0] = i;
-							q = string(d, j, l);
-							i = j[0];
+							p[0] = i;
+							obj = string(d, p, l);
+							i = p[0];
 						}
-						q = new PLString(q);
+						obj = new PLString(obj);
 					}
 					break;
 				}
 				case 112: {
 					if (
-						!f &&
-						d[t + 1] === 108 &&
-						d[t + 2] === 105 &&
-						d[t + 3] === 115 &&
-						d[t + 4] === 116
+						!sc &&
+						d[tagI + 1] === 108 &&
+						d[tagI + 2] === 105 &&
+						d[tagI + 3] === 115 &&
+						d[tagI + 4] === 116
 					) {
 						if (!n) {
-							for (f = t + s; f < x;) {
-								if (ws(a = d[f++])) {
+							for (sc = tagI + tagL; sc < x;) {
+								if (ws(cId = d[sc++])) {
 									if (
-										d[f] === 118 &&
-										d[++f] === 101 &&
-										d[++f] === 114 &&
-										d[++f] === 115 &&
-										d[++f] === 105 &&
-										d[++f] === 111 &&
-										d[++f] === 110 &&
-										d[++f] === 61
+										d[sc] === 118 &&
+										d[++sc] === 101 &&
+										d[++sc] === 114 &&
+										d[++sc] === 115 &&
+										d[++sc] === 105 &&
+										d[++sc] === 111 &&
+										d[++sc] === 110 &&
+										d[++sc] === 61
 									) {
-										a = d[++f];
+										cId = d[++sc];
 										if (
-											(a === 34 || a === 39) &&
-											d[++f] === 48 &&
-											d[++f] === 46 &&
-											d[++f] === 57 &&
-											d[++f] === a
+											(cId === 34 || cId === 39) &&
+											d[++sc] === 48 &&
+											d[++sc] === 46 &&
+											d[++sc] === 57 &&
+											d[++sc] === cId
 										) {
 											format = FORMAT_XML_V0_9;
 										}
 										break;
 									}
-								} else if (a === 34 || a === 39) {
-									for (; f < x && d[f++] !== a;);
+								} else if (cId === 34 || cId === 39) {
+									for (; sc < x && d[sc++] !== cId;);
 								}
 							}
 						}
-						a = c;
-						p = q = { k, v: null } satisfies Plist;
-						f = n = { a, t, s, p, n };
+						cId = c;
+						cObj = obj = { k: key, v: null } satisfies Plist;
+						sc = n = {
+							a: cId,
+							t: tagI,
+							s: tagL,
+							p: cObj,
+							n,
+						};
 					}
 					break;
 				}
 				case 114: {
 					if (
-						!f &&
-						d[t + 1] === 101 &&
-						d[t + 2] === 97 &&
-						d[t + 3] === 108
+						!sc &&
+						d[tagI + 1] === 101 &&
+						d[tagI + 2] === 97 &&
+						d[tagI + 3] === 108
 					) {
-						j[0] = i;
-						q = new PLReal(real(d, j, l));
-						i = j[0];
+						p[0] = i;
+						obj = new PLReal(real(d, p, l));
+						i = p[0];
 					}
 					break;
 				}
 				case 115: {
 					if (
-						d[t + 1] === 116 &&
-						d[t + 2] === 114 &&
-						d[t + 3] === 105 &&
-						d[t + 4] === 110 &&
-						d[t + 5] === 103
+						d[tagI + 1] === 116 &&
+						d[tagI + 2] === 114 &&
+						d[tagI + 3] === 105 &&
+						d[tagI + 4] === 110 &&
+						d[tagI + 5] === 103
 					) {
-						if (f) {
-							q = '';
+						if (sc) {
+							obj = '';
 						} else {
-							j[0] = i;
-							q = string(d, j, l);
-							i = j[0];
+							p[0] = i;
+							obj = string(d, p, l);
+							i = p[0];
 						}
-						q = new PLString(q);
+						obj = new PLString(obj);
 					}
 					break;
 				}
 				case 116: {
 					if (
-						d[t + 1] === 114 &&
-						d[t + 2] === 117 &&
-						d[t + 3] === 101
+						d[tagI + 1] === 114 &&
+						d[tagI + 2] === 117 &&
+						d[tagI + 3] === 101
 					) {
-						q = new PLBoolean(true);
+						obj = new PLBoolean(true);
 					}
 					break;
 				}
 			}
-			if (!q) {
-				throw new SyntaxError(utf8ErrorXML(d, t));
+			if (!obj) {
+				throw new SyntaxError(utf8ErrorXML(d, tagI));
 			}
-			if (!f) {
+			if (!sc) {
 				if (d[i] === 60 && d[++i] === 47) {
-					for (f = t, ++i; s && d[i] === d[f++]; ++i, s--);
+					for (sc = tagI, ++i; tagL && d[i] === d[sc++]; ++i, tagL--);
 				}
-				if (s || d[i = whitespace(d, i)] !== 62) {
+				if (tagL || d[i = whitespace(d, i)] !== 62) {
 					throw new SyntaxError(
 						i < l ? utf8ErrorXML(d, i) : utf8ErrorEnd(d),
 					);
 				}
 				++i;
 			}
-			if (z === 100) {
-				if (k) {
+			if (pId === 100) {
+				if (key) {
 					if (c !== 112) {
-						(o as PLDict).set(k, q as PLType);
+						(pObj as PLDict).set(key, obj as PLType);
 					}
-					k = null;
+					key = null;
 				} else if (c === 107) {
-					k = q as PLString;
+					key = obj as PLString;
 				} else {
-					throw new SyntaxError(utf8ErrorXML(d, t));
+					throw new SyntaxError(utf8ErrorXML(d, tagI));
 				}
-			} else if (z === 97) {
+			} else if (pId === 97) {
 				if (c !== 112) {
-					(o as PLArray).push(q as PLType);
+					(pObj as PLArray).push(obj as PLType);
 				}
-			} else if (z === 112) {
+			} else if (pId === 112) {
 				if (c !== 112) {
-					if ((o as Plist).v) {
-						throw new SyntaxError(utf8ErrorXML(d, t));
+					if ((pObj as Plist).v) {
+						throw new SyntaxError(utf8ErrorXML(d, tagI));
 					}
-					(o as Plist).v = q as PLType;
+					(pObj as Plist).v = obj as PLType;
 				}
 			} else if (!n) {
-				return { format, plist: q as PLType };
+				return { format, plist: obj as PLType };
 			}
 		}
 		for (;;) {

@@ -106,34 +106,36 @@ export function encodeBinary(
 	let e;
 	let x;
 	let i = 8;
-	let t = 0;
+	let table = 0;
 	let l = 0;
 
 	if (format !== FORMAT_BINARY_V1_0) {
 		throw new RangeError('Invalid format');
 	}
 
-	const a = new Set<PLType>();
-	const c = new Set(duplicates ?? []);
-	const q = new Map<number, PLType>();
-	const f = new Map<PLType, number>();
-	const u = new Map<PLType, boolean>();
+	const ancestors = new Set<PLType>();
+	const dup = new Set(duplicates ?? []);
+	const list = new Map<number, PLType>();
+	const index = new Map<PLType, number>();
+	const unicode = new Map<PLType, boolean>();
 	const add = <T extends PLType>(v: T) => {
-		if (f.has(v)) {
-			if (!c.has(v) && !c.has(v[Symbol.toStringTag])) {
+		if (index.has(v)) {
+			if (!dup.has(v) && !dup.has(v[Symbol.toStringTag])) {
 				return;
 			}
 		} else {
-			f.set(v, l);
+			index.set(v, l);
 		}
-		q.set(l++, v);
+		list.set(l++, v);
 		return true;
 	};
 	const str = (v: PLString) => {
 		if (add(v)) {
 			x = v.length;
 			i += (x < 15 ? 1 : 2 + byteCount(x)) + (
-				u.get(v) ?? (u.set(v, e = rUni.test(v.value)), e) ? x + x : x
+				unicode.get(v) ?? (unicode.set(v, e = rUni.test(v.value)), e)
+					? x + x
+					: x
 			);
 		}
 	};
@@ -142,13 +144,13 @@ export function encodeBinary(
 		enter: {
 			PLArray(v): number {
 				if ((x = v.length)) {
-					if (a.has(v)) {
+					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
 					}
-					a.add(v);
+					ancestors.add(v);
 					if (add(v)) {
 						i += x < 15 ? 1 : 2 + byteCount(x);
-						t += x;
+						table += x;
 					}
 					return 0;
 				}
@@ -159,13 +161,13 @@ export function encodeBinary(
 			},
 			PLDict(v): number {
 				if ((x = v.size)) {
-					if (a.has(v)) {
+					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
 					}
-					a.add(v);
+					ancestors.add(v);
 					if (add(v)) {
 						i += x < 15 ? 1 : 2 + byteCount(x);
-						t += x + x;
+						table += x + x;
 					}
 					for (x of v.keys()) {
 						str(x);
@@ -221,14 +223,14 @@ export function encodeBinary(
 		},
 		leave: {
 			default(v): void {
-				a.delete(v);
+				ancestors.delete(v);
 			},
 		},
 	});
 
-	const rc = byteCount(l);
-	const ic = byteCount(t = i += rc * t);
-	const d = new DataView(x = new ArrayBuffer((i += ic * l) + 32));
+	const refC = byteCount(l);
+	const intC = byteCount(table = i += refC * table);
+	const d = new DataView(x = new ArrayBuffer((i += intC * l) + 32));
 	const r = new Uint8Array(x);
 	r[0] = 98;
 	r[1] = 112;
@@ -237,15 +239,15 @@ export function encodeBinary(
 	r[4] = 115;
 	r[5] = 116;
 	r[6] = r[7] = 48;
-	r[i + 6] = ic;
-	r[i + 7] = rc;
+	r[i + 6] = intC;
+	r[i + 7] = refC;
 	d.setBigInt64(i + 8, BigInt(l));
-	d.setBigInt64(i + 24, BigInt(t));
+	d.setBigInt64(i + 24, BigInt(table));
 	i = 8;
 
-	for (e of q.values()) {
-		setInt(d, t, ic, i);
-		t += ic;
+	for (e of list.values()) {
+		setInt(d, table, intC, i);
+		table += intC;
 		switch (e?.[Symbol.toStringTag]) {
 			case PLTYPE_ARRAY: {
 				l = (e as PLArray).length;
@@ -256,8 +258,8 @@ export function encodeBinary(
 					i = encodeInt(d, i, l);
 				}
 				for (x of (e as PLArray)) {
-					setInt(d, i, rc, f.get(x)!);
-					i += rc;
+					setInt(d, i, refC, index.get(x)!);
+					i += refC;
 				}
 				break;
 			}
@@ -270,12 +272,12 @@ export function encodeBinary(
 					i = encodeInt(d, i, l);
 				}
 				for (x of (e as PLDict).keys()) {
-					setInt(d, i, rc, f.get(x)!);
-					i += rc;
+					setInt(d, i, refC, index.get(x)!);
+					i += refC;
 				}
 				for (x of (e as PLDict).values()) {
-					setInt(d, i, rc, f.get(x)!);
-					i += rc;
+					setInt(d, i, refC, index.get(x)!);
+					i += refC;
 				}
 				break;
 			}
@@ -330,7 +332,7 @@ export function encodeBinary(
 				break;
 			}
 			case PLTYPE_STRING: {
-				x = u.get(e);
+				x = unicode.get(e);
 				e = (e as PLString).value;
 				l = e.length;
 				if (l < 15) {

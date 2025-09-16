@@ -25,7 +25,7 @@ const ent = (s: string) => ents[s as keyof typeof ents];
  * @param mz Encode smallest 128-bit integer as -0.
  * @returns Integer string.
  */
-function integerString(i: bigint, mz: boolean): string {
+function integer(i: bigint, mz: boolean): string {
 	// Weird bug encodes smallest 128-bit as negative zero.
 	return mz && i === -0x80000000000000000000000000000000n
 		? '-0'
@@ -39,7 +39,7 @@ function integerString(i: bigint, mz: boolean): string {
  * @param uz Unsign zero.
  * @returns Real string.
  */
-function realString(real: number, uz: boolean): string {
+function real(real: number, uz: boolean): string {
 	// No trailing zeros except on 0.
 	switch (real) {
 		case 0:
@@ -59,7 +59,7 @@ function realString(real: number, uz: boolean): string {
  * @param date Date.
  * @returns Date string.
  */
-function dateString(date: PLDate): string {
+function date(date: PLDate): string {
 	// No decimal seconds, 4+ characters for year, no leading plus.
 	return `${date.toISOString().slice(0, -5).replace(rDateY4, '$1$2$3')}Z`;
 }
@@ -116,7 +116,6 @@ export function encodeXml(
 	let doctype: string;
 	let version: string;
 	let i: number;
-	let e;
 	let x;
 
 	switch (format) {
@@ -143,22 +142,22 @@ export function encodeXml(
 		throw new RangeError('Invalid indent');
 	}
 
-	const a = new Set<PLType>();
-	const il = x = indent.length;
-	const id = new Uint8Array(il);
+	const ancestors = new Set<PLType>();
+	const indentL = x = indent.length;
+	const indentD = new Uint8Array(indentL);
 	while (x--) {
-		id[x] = indent.charCodeAt(x);
+		indentD[x] = indent.charCodeAt(x);
 	}
 
 	walk(plist, {
 		enter: {
 			PLArray(v, d): number {
 				if ((x = v.length)) {
-					if (a.has(v)) {
+					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
 					}
-					a.add(v);
-					i += 16 + d++ * il + (d * il + 1) * x;
+					ancestors.add(v);
+					i += 16 + d++ * indentL + (d * indentL + 1) * x;
 					return 0;
 				}
 				i += 8;
@@ -166,11 +165,11 @@ export function encodeXml(
 			},
 			PLDict(v, d): number {
 				if ((x = v.size)) {
-					if (a.has(v)) {
+					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
 					}
-					a.add(v);
-					i += 14 + d++ * il + (d * il + 1) * 2 * x;
+					ancestors.add(v);
+					i += 14 + d++ * indentL + (d * indentL + 1) * 2 * x;
 					return 0;
 				}
 				i += 7;
@@ -189,22 +188,24 @@ export function encodeXml(
 			PLData(v, d): void {
 				x = v.byteLength;
 				x = ((x - (x % 3 || 3)) / 3 + 1) * 4;
-				i += 13 + x + (d * il + 1) * ((x - (x % 76 || 76)) / 76 + 2);
+				i += 13 + x +
+					(d * indentL + 1) * ((x - (x % 76 || 76)) / 76 + 2);
 			},
 			PLDate(v): void {
-				i += 13 + dateString(v).length;
+				i += 13 + date(v).length;
 			},
 			PLInteger(v): void {
-				i += 19 + integerString(v.value, min128Zero).length;
+				i += 19 + integer(v.value, min128Zero).length;
 			},
 			PLReal(v): void {
-				i += 13 + realString(v.value, unsignZero).length;
+				i += 13 + real(v.value, unsignZero).length;
 			},
 			PLString(v): void {
 				i += 17 + utf8Size(v.value.replace(rEnt, ent));
 			},
 			PLUID(v, d): void {
-				i += 52 + v.value.toString().length + d++ * il + d * il * 2;
+				i += 52 + v.value.toString().length + d++ * indentL +
+					d * indentL * 2;
 			},
 			default(): void {
 				throw new TypeError('Invalid XML value type');
@@ -212,7 +213,7 @@ export function encodeXml(
 		},
 		leave: {
 			default(v): void {
-				a.delete(v);
+				ancestors.delete(v);
 			},
 		},
 	});
@@ -228,8 +229,8 @@ export function encodeXml(
 	walk(plist, {
 		enter: {
 			PLArray(v, d): number {
-				for (; d--; i += il) {
-					r.set(id, i);
+				for (; d--; i += indentL) {
+					r.set(indentD, i);
 				}
 				if (v.length) {
 					i = utf8Encode('<array>', r, i);
@@ -241,8 +242,8 @@ export function encodeXml(
 				return 1;
 			},
 			PLDict(v, d): number {
-				for (; d--; i += il) {
-					r.set(id, i);
+				for (; d--; i += indentL) {
+					r.set(indentD, i);
 				}
 				if (v.size) {
 					i = utf8Encode('<dict>', r, i);
@@ -256,8 +257,8 @@ export function encodeXml(
 		},
 		key: {
 			PLDict(v, d): void {
-				for (; d--; i += il) {
-					r.set(id, i);
+				for (; d--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode('<key>', r, i);
 				i = utf8Encode(v.value.replace(rEnt, ent), r, i);
@@ -267,15 +268,15 @@ export function encodeXml(
 		},
 		value: {
 			PLBoolean(v, d): void {
-				for (; d--; i += il) {
-					r.set(id, i);
+				for (; d--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode(v.value ? '<true/>' : '<false/>', r, i);
 				r[i++] = 10;
 			},
 			PLData(v, d): void {
-				for (x = d; x--; i += il) {
-					r.set(id, i);
+				for (x = d; x--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode('<data>', r, i);
 				r[i++] = 10;
@@ -284,11 +285,12 @@ export function encodeXml(
 						l = u.length,
 						l3 = l - (l % 3),
 						b = 0,
-						c;
+						c,
+						e;
 					b < l;
 				) {
-					for (x = d; x--; i += il) {
-						r.set(id, i);
+					for (x = d; x--; i += indentL) {
+						r.set(indentD, i);
 					}
 					for (x = 20; b < l3 && --x;) {
 						e = u[b++];
@@ -314,42 +316,42 @@ export function encodeXml(
 					}
 					r[i++] = 10;
 				}
-				for (; d--; i += il) {
-					r.set(id, i);
+				for (; d--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode('</data>', r, i);
 				r[i++] = 10;
 			},
 			PLDate(v, d): void {
-				for (; d--; i += il) {
-					r.set(id, i);
+				for (; d--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode('<date>', r, i);
-				i = utf8Encode(dateString(v), r, i);
+				i = utf8Encode(date(v), r, i);
 				i = utf8Encode('</date>', r, i);
 				r[i++] = 10;
 			},
 			PLInteger(v, d): void {
-				for (; d--; i += il) {
-					r.set(id, i);
+				for (; d--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode('<integer>', r, i);
-				i = utf8Encode(integerString(v.value, min128Zero), r, i);
+				i = utf8Encode(integer(v.value, min128Zero), r, i);
 				i = utf8Encode('</integer>', r, i);
 				r[i++] = 10;
 			},
 			PLReal(v, d): void {
-				for (; d--; i += il) {
-					r.set(id, i);
+				for (; d--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode('<real>', r, i);
-				i = utf8Encode(realString(v.value, unsignZero), r, i);
+				i = utf8Encode(real(v.value, unsignZero), r, i);
 				i = utf8Encode('</real>', r, i);
 				r[i++] = 10;
 			},
 			PLString(v, d): void {
-				for (; d--; i += il) {
-					r.set(id, i);
+				for (; d--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode('<string>', r, i);
 				i = utf8Encode(v.value.replace(rEnt, ent), r, i);
@@ -357,25 +359,25 @@ export function encodeXml(
 				r[i++] = 10;
 			},
 			PLUID(v, d): void {
-				for (x = d++; x--; i += il) {
-					r.set(id, i);
+				for (x = d++; x--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode('<dict>', r, i);
 				r[i++] = 10;
-				for (x = d; x--; i += il) {
-					r.set(id, i);
+				for (x = d; x--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode('<key>CF$UID</key>', r, i);
 				r[i++] = 10;
-				for (x = d--; x--; i += il) {
-					r.set(id, i);
+				for (x = d--; x--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode('<integer>', r, i);
 				i = utf8Encode(v.value.toString(), r, i);
 				i = utf8Encode('</integer>', r, i);
 				r[i++] = 10;
-				for (; d--; i += il) {
-					r.set(id, i);
+				for (; d--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode('</dict>', r, i);
 				r[i++] = 10;
@@ -383,15 +385,15 @@ export function encodeXml(
 		},
 		leave: {
 			PLArray(_, d): void {
-				for (; d--; i += il) {
-					r.set(id, i);
+				for (; d--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode('</array>', r, i);
 				r[i++] = 10;
 			},
 			PLDict(_, d): void {
-				for (; d--; i += il) {
-					r.set(id, i);
+				for (; d--; i += indentL) {
+					r.set(indentD, i);
 				}
 				i = utf8Encode('</dict>', r, i);
 				r[i++] = 10;

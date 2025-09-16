@@ -262,7 +262,7 @@ export function decodeOpenStep(
 	let p: [number];
 	let format: DecodeOpenStepResult['format'] = FORMAT_OPENSTEP;
 	let n: Node | null = null;
-	let s;
+	let semi;
 	let e;
 	let plist;
 	let c = (
@@ -302,24 +302,24 @@ export function decodeOpenStep(
 		throw new SyntaxError(utf8ErrorToken(d, p[0]));
 	}
 	while (n) {
-		if (s) {
+		if (semi) {
 			c = next(d, p);
 			if (e === 41) {
 				if (c === 44) {
 					p[0]++;
 				} else {
-					s = c === 41;
+					semi = c === 41;
 				}
 			} else {
 				if (c === 59) {
 					p[0]++;
 				} else if (c === 125) {
-					s = allowMissingSemi;
-				} else if ((s = allowMissingSemi && e! < 0)) {
+					semi = allowMissingSemi;
+				} else if ((semi = allowMissingSemi && e! < 0)) {
 					return { format, plist };
 				}
 			}
-			if (!s) {
+			if (!semi) {
 				if (c < 0) {
 					throw new SyntaxError(utf8ErrorEnd(d));
 				}
@@ -327,7 +327,7 @@ export function decodeOpenStep(
 			}
 		}
 		c = next(d, p);
-		if ((s = c < 0)) {
+		if ((semi = c < 0)) {
 			if (e! < 0) {
 				return { format, plist };
 			}
@@ -336,18 +336,18 @@ export function decodeOpenStep(
 		if (c === e) {
 			p[0]++;
 			if ((n = n.n)) {
-				s = plist = n.o;
+				semi = plist = n.o;
 				e = n.e;
 			}
 			continue;
 		}
-		let k;
-		let v;
+		let key;
+		let val;
 		if (e !== 41) {
 			if (c === 34 || c === 39) {
-				k = decodeStrQ(d, p, c);
+				key = decodeStrQ(d, p, c);
 			} else if (unquoted(c)) {
-				k = decodeStrU(d, p);
+				key = decodeStrU(d, p);
 			} else if (e! < 0) {
 				return { format, plist };
 			} else {
@@ -359,7 +359,7 @@ export function decodeOpenStep(
 					throw new SyntaxError(utf8ErrorEnd(d));
 				}
 				if (c === 59) {
-					(plist as PLDict).set(k, k);
+					(plist as PLDict).set(key, key);
 					p[0]++;
 					continue;
 				}
@@ -372,27 +372,27 @@ export function decodeOpenStep(
 			}
 		}
 		if (c === 34 || c === 39) {
-			s = v = decodeStrQ(d, p, c);
+			semi = val = decodeStrQ(d, p, c);
 		} else if (unquoted(c)) {
-			s = v = decodeStrU(d, p);
+			semi = val = decodeStrU(d, p);
 		} else if (c === 60) {
-			s = v = decodeData(d, p);
+			semi = val = decodeData(d, p);
 		} else if (c === 123) {
-			n = { o: v = new PLDict(), e: e = 125, n };
+			n = { o: val = new PLDict(), e: e = 125, n };
 			p[0]++;
 		} else if (c === 40) {
-			n = { o: v = new PLArray(), e: e = 41, n };
+			n = { o: val = new PLArray(), e: e = 41, n };
 			p[0]++;
 		} else {
 			throw new SyntaxError(utf8ErrorToken(d, p[0]));
 		}
-		if (k) {
-			(plist as PLDict).set(k, v);
+		if (key) {
+			(plist as PLDict).set(key, val);
 		} else {
-			(plist as PLArray).push(v);
+			(plist as PLArray).push(val);
 		}
-		if (!s) {
-			plist = v;
+		if (!semi) {
+			plist = val;
 		}
 	}
 	c = next(d, p);
