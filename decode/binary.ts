@@ -168,82 +168,87 @@ export function decodeBinary(
 		let marker;
 		for (ref of refs) {
 			i = Number(getU(d, x = tableI + ref * intC, intC));
-			if (i < 8) {
-				throw new SyntaxError(binaryError(x));
-			}
-			if ((p = objects.get(i))) {
-				push(p);
-				continue;
-			}
-			marker = d[x = i++];
-			switch (marker & 240) {
-				case 0: {
-					switch (marker) {
-						case 8: {
-							objects.set(x, p = new PLBoolean(false));
-							push(p);
-							continue;
-						}
-						case 9: {
-							objects.set(x, p = new PLBoolean(true));
-							push(p);
-							continue;
-						}
-					}
-					break;
-				}
-				case 16: {
-					c = 1 << (marker & 15);
-					if (tableI < i + c) {
-						break;
-					}
-					objects.set(
-						x,
-						p = new PLInteger(
-							int64 ? getU(d, i, c) : getUU(d, i, c),
-							c > 8 ? 128 : 64,
-						),
-					);
+			if (i > 7) {
+				if ((p = objects.get(i))) {
 					push(p);
 					continue;
 				}
-				case 32: {
-					switch (marker & 15) {
-						case 2: {
-							if (tableI < i + 4) {
-								break;
+				marker = d[x = i++];
+				switch (marker & 240) {
+					case 0: {
+						switch (marker) {
+							case 8: {
+								objects.set(x, p = new PLBoolean(false));
+								push(p);
+								continue;
 							}
-							objects.set(x, p = new PLReal(v.getFloat32(i), 32));
-							push(p);
-							continue;
-						}
-						case 3: {
-							if (tableI < i + 8) {
-								break;
+							case 9: {
+								objects.set(x, p = new PLBoolean(true));
+								push(p);
+								continue;
 							}
-							objects.set(x, p = new PLReal(v.getFloat64(i), 64));
-							push(p);
-							continue;
 						}
-					}
-					break;
-				}
-				case 48: {
-					if (marker !== 51 || tableI < i + 8) {
 						break;
 					}
-					objects.set(x, p = new PLDate(v.getFloat64(i)));
-					push(p);
-					continue;
-				}
-				case 128: {
-					c = (marker & 15) + 1;
-					if (tableI < i + c || (c = getU(d, i, c)) > U32_MAX) {
+					case 16: {
+						c = 1 << (marker & 15);
+						if (tableI < i + c) {
+							break;
+						}
+						objects.set(
+							x,
+							p = new PLInteger(
+								int64 ? getU(d, i, c) : getUU(d, i, c),
+								c > 8 ? 128 : 64,
+							),
+						);
+						push(p);
+						continue;
+					}
+					case 32: {
+						switch (marker & 15) {
+							case 2: {
+								if (tableI < i + 4) {
+									break;
+								}
+								objects.set(
+									x,
+									p = new PLReal(v.getFloat32(i), 32),
+								);
+								push(p);
+								continue;
+							}
+							case 3: {
+								if (tableI < i + 8) {
+									break;
+								}
+								objects.set(
+									x,
+									p = new PLReal(v.getFloat64(i), 64),
+								);
+								push(p);
+								continue;
+							}
+						}
 						break;
 					}
-					objects.set(x, p = new PLUID(c));
-					push(p);
-					continue;
+					case 48: {
+						if (marker !== 51 || tableI < i + 8) {
+							break;
+						}
+						objects.set(x, p = new PLDate(v.getFloat64(i)));
+						push(p);
+						continue;
+					}
+					case 128: {
+						c = (marker & 15) + 1;
+						if (tableI < i + c || (c = getU(d, i, c)) > U32_MAX) {
+							break;
+						}
+						objects.set(x, p = new PLUID(c));
+						push(p);
+						continue;
+					}
 				}
 			}
 			throw new SyntaxError(binaryError(x));
