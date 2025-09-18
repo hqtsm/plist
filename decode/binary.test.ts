@@ -1,5 +1,6 @@
 import { assertEquals, assertInstanceOf } from '@std/assert';
 import { PLBoolean } from '../boolean.ts';
+import { PLDate } from '../date.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLReal } from '../real.ts';
 import { fixturePlist } from '../spec/fixture.ts';
@@ -25,6 +26,16 @@ Deno.test('spec: false', async () => {
 	assertEquals(format, FORMAT_BINARY_V1_0);
 	assertInstanceOf(plist, PLBoolean);
 	assertEquals(plist.value, false);
+});
+
+Deno.test('spec: date-0.0', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('date-0.0', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLDate);
+	assertEquals(plist.time, 0);
 });
 
 Deno.test('spec: real-double-p0.0', async () => {

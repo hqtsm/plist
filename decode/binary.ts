@@ -5,6 +5,7 @@
  */
 
 import { PLBoolean } from '../boolean.ts';
+import { PLDate } from '../date.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { binaryError, bytes } from '../pri/data.ts';
 import { PLReal } from '../real.ts';
@@ -191,6 +192,14 @@ export function decodeBinary(
 						}
 					}
 					break;
+				}
+				case 48: {
+					if (marker !== 51 || table < i + 8) {
+						break;
+					}
+					tabled.set(ref, p = new PLDate(v.getFloat64(i)));
+					push(p);
+					continue;
 				}
 			}
 			throw new SyntaxError(binaryError(x));
