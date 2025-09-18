@@ -117,13 +117,13 @@ export function decodeBinary(
 	objectC = v.getBigUint64(l - 24);
 	top = v.getBigUint64(l - 16);
 	tableI = v.getBigUint64(l - 8);
-	if (I64_MAX < objectC) {
+	if (objectC > I64_MAX) {
 		throw new SyntaxError(binaryError(l - 24));
 	}
-	if (I64_MAX < tableI) {
+	if (tableI > I64_MAX) {
 		throw new SyntaxError(binaryError(l - 8));
 	}
-	if (!objectC || objectC <= top) {
+	if (!objectC || top >= objectC) {
 		throw new SyntaxError(binaryError(l - 24));
 	}
 	if (tableI < 9 || tableI > l - 32) {
@@ -150,7 +150,7 @@ export function decodeBinary(
 		l--;
 		x += intC
 	) {
-		if (tableI <= getU(d, x, intC)) {
+		if (getU(d, x, intC) >= tableI) {
 			throw new SyntaxError(binaryError(x));
 		}
 	}
@@ -192,7 +192,7 @@ export function decodeBinary(
 					}
 					case 16: {
 						c = 1 << (marker & 15);
-						if (tableI < i + c) {
+						if (i + c > tableI) {
 							break;
 						}
 						objects.set(
@@ -208,7 +208,7 @@ export function decodeBinary(
 					case 32: {
 						switch (marker & 15) {
 							case 2: {
-								if (tableI < i + 4) {
+								if (i + 4 > tableI) {
 									break;
 								}
 								objects.set(
@@ -219,7 +219,7 @@ export function decodeBinary(
 								continue;
 							}
 							case 3: {
-								if (tableI < i + 8) {
+								if (i + 8 > tableI) {
 									break;
 								}
 								objects.set(
@@ -233,7 +233,7 @@ export function decodeBinary(
 						break;
 					}
 					case 48: {
-						if (marker !== 51 || tableI < i + 8) {
+						if (marker !== 51 || i + 8 > tableI) {
 							break;
 						}
 						objects.set(x, p = new PLDate(v.getFloat64(i)));
@@ -242,7 +242,7 @@ export function decodeBinary(
 					}
 					case 128: {
 						c = (marker & 15) + 1;
-						if (tableI < i + c || (c = getU(d, i, c)) > U32_MAX) {
+						if (i + c > tableI || (c = getU(d, i, c)) > U32_MAX) {
 							break;
 						}
 						objects.set(x, p = new PLUID(c));
