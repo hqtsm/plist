@@ -970,7 +970,7 @@ export function decodeXml(
 						d[tagI + 3] === 108
 					) {
 						p[0] = i;
-						obj = new PLReal(real(d, p, l));
+						obj = new PLReal(real(d, p, l), 64);
 						i = p[0];
 					}
 					break;
