@@ -5,6 +5,7 @@ import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { PLReal } from '../real.ts';
 import { fixturePlist } from '../spec/fixture.ts';
+import { PLUID } from '../uid.ts';
 import { decodeBinary, type DecodeBinaryOptions } from './binary.ts';
 
 const CF_STYLE = {
@@ -72,4 +73,14 @@ Deno.test('spec: integer-0', async () => {
 	assertInstanceOf(plist, PLInteger);
 	assertEquals(plist.value, 0n);
 	assertEquals(plist.bits, 64);
+});
+
+Deno.test('spec: uid-42', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('uid-42', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLUID);
+	assertEquals(plist.value, 42n);
 });

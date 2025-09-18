@@ -11,9 +11,11 @@ import { PLInteger } from '../integer.ts';
 import { binaryError, bytes } from '../pri/data.ts';
 import { PLReal } from '../real.ts';
 import type { PLType } from '../type.ts';
+import { PLUID } from '../uid.ts';
 
 type Next = Generator<Next, Next | undefined>;
 
+const U32_MAX = 0xffffffff;
 const I64_MAX = 0x7fffffffffffffffn;
 const U64_MAX = 0xffffffffffffffffn;
 const U128_MAX = 0xffffffffffffffffffffffffffffffffn;
@@ -228,6 +230,15 @@ export function decodeBinary(
 						break;
 					}
 					objects.set(x, p = new PLDate(v.getFloat64(i)));
+					push(p);
+					continue;
+				}
+				case 128: {
+					c = (marker & 15) + 1;
+					if (tableI < i + c || (c = getU(d, i, c)) > U32_MAX) {
+						break;
+					}
+					objects.set(x, p = new PLUID(c));
 					push(p);
 					continue;
 				}
