@@ -7,6 +7,7 @@
 import { PLBoolean } from '../boolean.ts';
 import { PLDate } from '../date.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
+import { PLInteger } from '../integer.ts';
 import { binaryError, bytes } from '../pri/data.ts';
 import { PLReal } from '../real.ts';
 import type { PLType } from '../type.ts';
@@ -15,9 +16,10 @@ type Next = Generator<Next, Next | undefined>;
 
 const I64_MAX = 0x7fffffffffffffffn;
 const U64_MAX = 0xffffffffffffffffn;
+const U128_MAX = 0xffffffffffffffffffffffffffffffffn;
 
 /**
- * Get uint of size.
+ * Get 64-bit uint of size.
  *
  * @param d Data.
  * @param i Offset.
@@ -26,17 +28,35 @@ const U64_MAX = 0xffffffffffffffffn;
  */
 function getU(d: Uint8Array, i: number, c: number): bigint {
 	let r = 0n;
-	for (; c--;) {
-		r = (r << 8n | BigInt(d[i++])) & U64_MAX;
-	}
+	for (; c--; r = r << 8n & U64_MAX | BigInt(d[i++]));
+	return r;
+}
+
+/**
+ * Get 128-bit uint of size.
+ *
+ * @param d Data.
+ * @param i Offset.
+ * @param c Byte count.
+ * @returns Integer.
+ */
+function getUU(d: Uint8Array, i: number, c: number): bigint {
+	let r = 0n;
+	for (; c--; r = r << 8n & U128_MAX | BigInt(d[i++]));
 	return r;
 }
 
 /**
  * Decode binary plist options.
  */
-// deno-lint-ignore no-empty-interface
-export interface DecodeBinaryOptions {}
+export interface DecodeBinaryOptions {
+	/**
+	 * Optionally limit integers to 64-bit signed or unsigned values.
+	 *
+	 * @default false
+	 */
+	int64?: boolean;
+}
 
 /**
  * Decode binary plist result.
@@ -62,7 +82,7 @@ export interface DecodeBinaryResult {
  */
 export function decodeBinary(
 	encoded: ArrayBufferView | ArrayBuffer,
-	{}: Readonly<DecodeBinaryOptions> = {},
+	{ int64 = false }: Readonly<DecodeBinaryOptions> = {},
 ): DecodeBinaryResult {
 	const d = bytes(encoded);
 	let l = d.length;
@@ -136,6 +156,7 @@ export function decodeBinary(
 		push: (p: PLType) => unknown,
 		next?: Next,
 	): Next {
+		let c;
 		let i;
 		let p;
 		let ref;
@@ -165,6 +186,21 @@ export function decodeBinary(
 						}
 					}
 					break;
+				}
+				case 16: {
+					c = 1 << (marker & 15);
+					if (table < i + c) {
+						break;
+					}
+					tabled.set(
+						ref,
+						p = new PLInteger(
+							int64 ? getU(d, i, c) : getUU(d, i, c),
+							c > 8 ? 128 : 64,
+						),
+					);
+					push(p);
+					continue;
 				}
 				case 32: {
 					switch (marker & 15) {

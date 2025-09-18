@@ -2,11 +2,14 @@ import { assertEquals, assertInstanceOf } from '@std/assert';
 import { PLBoolean } from '../boolean.ts';
 import { PLDate } from '../date.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
+import { PLInteger } from '../integer.ts';
 import { PLReal } from '../real.ts';
 import { fixturePlist } from '../spec/fixture.ts';
 import { decodeBinary, type DecodeBinaryOptions } from './binary.ts';
 
-const CF_STYLE = {} as const satisfies DecodeBinaryOptions;
+const CF_STYLE = {
+	int64: true,
+} as const satisfies DecodeBinaryOptions;
 
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeBinary(
@@ -58,4 +61,15 @@ Deno.test('spec: real-float-p0.0', async () => {
 	assertInstanceOf(plist, PLReal);
 	assertEquals(plist.value, 0);
 	assertEquals(plist.bits, 32);
+});
+
+Deno.test('spec: integer-0', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('integer-0', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLInteger);
+	assertEquals(plist.value, 0n);
+	assertEquals(plist.bits, 64);
 });
