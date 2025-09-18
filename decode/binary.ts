@@ -87,8 +87,8 @@ export function decodeBinary(
 	const d = bytes(encoded);
 	let l = d.length;
 	let plist: PLType;
-	let objects;
-	let table;
+	let objectC;
+	let tableI;
 	let q: Next | undefined;
 	let x;
 	if (
@@ -110,18 +110,18 @@ export function decodeBinary(
 	const intC = d[l - 26];
 	const refC = d[l - 25];
 	const top = v.getBigUint64(l - 16);
-	objects = v.getBigUint64(l - 24);
-	table = v.getBigUint64(l - 8);
-	if (I64_MAX < objects) {
+	objectC = v.getBigUint64(l - 24);
+	tableI = v.getBigUint64(l - 8);
+	if (I64_MAX < objectC) {
 		throw new SyntaxError(binaryError(l - 24));
 	}
-	if (I64_MAX < table) {
+	if (I64_MAX < tableI) {
 		throw new SyntaxError(binaryError(l - 8));
 	}
-	if (!objects || objects <= top) {
+	if (!objectC || objectC <= top) {
 		throw new SyntaxError(binaryError(l - 24));
 	}
-	if (table < 9 || table > l - 32) {
+	if (tableI < 9 || tableI > l - 32) {
 		throw new SyntaxError(binaryError(l - 8));
 	}
 	if (!intC) {
@@ -130,26 +130,26 @@ export function decodeBinary(
 	if (!refC) {
 		throw new SyntaxError(binaryError(l - 25));
 	}
-	x = objects * BigInt(intC);
-	if (x > U64_MAX || Number(table + x) + 32 !== l) {
+	x = objectC * BigInt(intC);
+	if (x > U64_MAX || Number(tableI + x) + 32 !== l) {
 		throw new SyntaxError(binaryError(l - 24));
 	}
-	if (refC < 8 && (1n << BigInt(refC * 8)) <= objects) {
+	if (refC < 8 && (1n << BigInt(refC * 8)) <= objectC) {
 		throw new SyntaxError(binaryError(l - 25));
 	}
-	if (intC < 8 && (1n << BigInt(intC * 8)) <= table) {
+	if (intC < 8 && (1n << BigInt(intC * 8)) <= tableI) {
 		throw new SyntaxError(binaryError(l - 26));
 	}
 	for (
-		x = table = Number(table), l = objects = Number(objects);
+		x = tableI = Number(tableI), l = objectC = Number(objectC);
 		l--;
 		x += intC
 	) {
-		if (table <= getU(d, x, intC)) {
+		if (tableI <= getU(d, x, intC)) {
 			throw new SyntaxError(binaryError(x));
 		}
 	}
-	const tabled = new Map<number, PLType>();
+	const objects = new Map<number, PLType>();
 	// deno-lint-ignore require-yield
 	const walk = function* (
 		refs: Iterable<number>,
@@ -162,25 +162,25 @@ export function decodeBinary(
 		let ref;
 		let marker;
 		for (ref of refs) {
-			if ((p = tabled.get(ref))) {
-				push(p);
-				continue;
-			}
-			i = Number(getU(d, x = table + ref * intC, intC));
+			i = Number(getU(d, x = tableI + ref * intC, intC));
 			if (i < 8) {
 				throw new SyntaxError(binaryError(x));
+			}
+			if ((p = objects.get(i))) {
+				push(p);
+				continue;
 			}
 			marker = d[x = i++];
 			switch (marker & 240) {
 				case 0: {
 					switch (marker) {
 						case 8: {
-							tabled.set(ref, p = new PLBoolean(false));
+							objects.set(x, p = new PLBoolean(false));
 							push(p);
 							continue;
 						}
 						case 9: {
-							tabled.set(ref, p = new PLBoolean(true));
+							objects.set(x, p = new PLBoolean(true));
 							push(p);
 							continue;
 						}
@@ -189,11 +189,11 @@ export function decodeBinary(
 				}
 				case 16: {
 					c = 1 << (marker & 15);
-					if (table < i + c) {
+					if (tableI < i + c) {
 						break;
 					}
-					tabled.set(
-						ref,
+					objects.set(
+						x,
 						p = new PLInteger(
 							int64 ? getU(d, i, c) : getUU(d, i, c),
 							c > 8 ? 128 : 64,
@@ -205,24 +205,18 @@ export function decodeBinary(
 				case 32: {
 					switch (marker & 15) {
 						case 2: {
-							if (table < i + 4) {
+							if (tableI < i + 4) {
 								break;
 							}
-							tabled.set(
-								ref,
-								p = new PLReal(v.getFloat32(i), 32),
-							);
+							objects.set(x, p = new PLReal(v.getFloat32(i), 32));
 							push(p);
 							continue;
 						}
 						case 3: {
-							if (table < i + 8) {
+							if (tableI < i + 8) {
 								break;
 							}
-							tabled.set(
-								ref,
-								p = new PLReal(v.getFloat64(i), 64),
-							);
+							objects.set(x, p = new PLReal(v.getFloat64(i), 64));
 							push(p);
 							continue;
 						}
@@ -230,10 +224,10 @@ export function decodeBinary(
 					break;
 				}
 				case 48: {
-					if (marker !== 51 || table < i + 8) {
+					if (marker !== 51 || tableI < i + 8) {
 						break;
 					}
-					tabled.set(ref, p = new PLDate(v.getFloat64(i)));
+					objects.set(x, p = new PLDate(v.getFloat64(i)));
 					push(p);
 					continue;
 				}
