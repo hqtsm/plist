@@ -135,11 +135,12 @@ export function decodeBinary(
 		next?: Next,
 	): Next {
 		let i;
+		let p;
 		let ref;
 		let marker;
 		for (ref of refs) {
-			if ((x = tabled.get(ref))) {
-				push(x);
+			if ((p = tabled.get(ref))) {
+				push(p);
 				continue;
 			}
 			i = Number(getU(d, x = table + ref * intC, intC));
@@ -151,13 +152,13 @@ export function decodeBinary(
 				case 0: {
 					switch (marker) {
 						case 8: {
-							tabled.set(ref, x = new PLBoolean(false));
-							push(x);
+							tabled.set(ref, p = new PLBoolean(false));
+							push(p);
 							continue;
 						}
 						case 9: {
-							tabled.set(ref, x = new PLBoolean(true));
-							push(x);
+							tabled.set(ref, p = new PLBoolean(true));
+							push(p);
 							continue;
 						}
 					}
