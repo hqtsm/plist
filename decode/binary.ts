@@ -7,6 +7,7 @@
 import { PLBoolean } from '../boolean.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { binaryError, bytes } from '../pri/data.ts';
+import { PLReal } from '../real.ts';
 import type { PLType } from '../type.ts';
 
 type Next = Generator<Next, Next | undefined>;
@@ -147,7 +148,7 @@ export function decodeBinary(
 			if (i < 8) {
 				throw new SyntaxError(binaryError(x));
 			}
-			marker = d[i];
+			marker = d[x = i++];
 			switch (marker & 240) {
 				case 0: {
 					switch (marker) {
@@ -164,8 +165,35 @@ export function decodeBinary(
 					}
 					break;
 				}
+				case 32: {
+					switch (marker & 15) {
+						case 2: {
+							if (table < i + 4) {
+								break;
+							}
+							tabled.set(
+								ref,
+								p = new PLReal(v.getFloat32(i), 32),
+							);
+							push(p);
+							continue;
+						}
+						case 3: {
+							if (table < i + 8) {
+								break;
+							}
+							tabled.set(
+								ref,
+								p = new PLReal(v.getFloat64(i), 64),
+							);
+							push(p);
+							continue;
+						}
+					}
+					break;
+				}
 			}
-			throw new SyntaxError(binaryError(i));
+			throw new SyntaxError(binaryError(x));
 		}
 		return next;
 	};
