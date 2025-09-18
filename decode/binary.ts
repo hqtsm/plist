@@ -13,6 +13,9 @@ import { PLReal } from '../real.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 
+/**
+ * Queue next.
+ */
 type Next = Generator<Next, Next | undefined>;
 
 const U32_MAX = 0xffffffff;
