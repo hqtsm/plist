@@ -164,6 +164,7 @@ export function decodeBinary(
 					}
 				}
 			}
+			throw new SyntaxError(binaryError(i));
 		}
 		return next;
 	};
