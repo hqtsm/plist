@@ -91,7 +91,7 @@ export function decodeBinary(
 	let plist: PLType;
 	let objectC;
 	let tableI;
-	let q: Next | undefined;
+	let top: Next | bigint | undefined;
 	let x;
 	if (
 		l < 8 ||
@@ -111,8 +111,8 @@ export function decodeBinary(
 	const v = new DataView(d.buffer, d.byteOffset, d.byteLength);
 	const intC = d[l - 26];
 	const refC = d[l - 25];
-	const top = v.getBigUint64(l - 16);
 	objectC = v.getBigUint64(l - 24);
+	top = v.getBigUint64(l - 16);
 	tableI = v.getBigUint64(l - 8);
 	if (I64_MAX < objectC) {
 		throw new SyntaxError(binaryError(l - 24));
@@ -248,8 +248,8 @@ export function decodeBinary(
 		return next;
 	};
 	for (
-		q = walk([Number(top)], (p: PLType) => plist = p);
-		(q = q.next().value);
+		top = walk([Number(top)], (p: PLType) => plist = p);
+		(top = top.next().value);
 	);
 	return { plist: plist!, format: FORMAT_BINARY_V1_0 };
 }
