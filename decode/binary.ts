@@ -162,6 +162,7 @@ export function decodeBinary(
 							continue;
 						}
 					}
+					break;
 				}
 			}
 			throw new SyntaxError(binaryError(i));
