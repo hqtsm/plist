@@ -175,7 +175,7 @@ export function decodeBinary(
 					continue;
 				}
 				marker = d[x = i++];
-				switch (marker & 240) {
+				switch (marker >> 4) {
 					case 0: {
 						switch (marker) {
 							case 8: {
@@ -191,7 +191,7 @@ export function decodeBinary(
 						}
 						break;
 					}
-					case 16: {
+					case 1: {
 						c = 1 << (marker & 15);
 						if (i + c > tableI) {
 							break;
@@ -206,7 +206,7 @@ export function decodeBinary(
 						push(p);
 						continue;
 					}
-					case 32: {
+					case 2: {
 						switch (marker & 15) {
 							case 2: {
 								if (i + 4 > tableI) {
@@ -233,7 +233,7 @@ export function decodeBinary(
 						}
 						break;
 					}
-					case 48: {
+					case 3: {
 						if (marker !== 51 || i + 8 > tableI) {
 							break;
 						}
@@ -241,7 +241,7 @@ export function decodeBinary(
 						push(p);
 						continue;
 					}
-					case 64: {
+					case 4: {
 						c = marker & 15;
 						if (c === 15) {
 							if (
@@ -262,7 +262,7 @@ export function decodeBinary(
 						push(p);
 						continue;
 					}
-					case 128: {
+					case 8: {
 						c = (marker & 15) + 1;
 						if (i + c > tableI || (c = getU(d, i, c)) > U32_MAX) {
 							break;
