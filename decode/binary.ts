@@ -5,6 +5,7 @@
  */
 
 import { PLBoolean } from '../boolean.ts';
+import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
@@ -237,6 +238,27 @@ export function decodeBinary(
 							break;
 						}
 						objects.set(x, p = new PLDate(v.getFloat64(i)));
+						push(p);
+						continue;
+					}
+					case 64: {
+						c = marker & 15;
+						if (c === 15) {
+							if (
+								i > tableI ||
+								((p = d[i++]) & 0xf0) !== 16 ||
+								i + (p = 1 << (p & 15)) > tableI
+							) {
+								break;
+							}
+							c = Number(getU(d, i, p));
+							i += p;
+						}
+						if (i + c > tableI) {
+							break;
+						}
+						objects.set(x, p = new PLData(c));
+						new Uint8Array(p.buffer).set(d.subarray(i, i + c));
 						push(p);
 						continue;
 					}
