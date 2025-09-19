@@ -305,7 +305,7 @@ export function decodeBinary(
 						}
 						p = '';
 						for (; c--; i += 2) {
-							p += String.fromCharCode(v.getInt16(i));
+							p += String.fromCharCode(v.getUint16(i));
 						}
 						objects.set(x, p = new PLString(p));
 						push(p);
