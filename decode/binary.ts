@@ -11,6 +11,7 @@ import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { binaryError, bytes } from '../pri/data.ts';
 import { PLReal } from '../real.ts';
+import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 
@@ -259,6 +260,54 @@ export function decodeBinary(
 						}
 						objects.set(x, p = new PLData(c));
 						new Uint8Array(p.buffer).set(d.subarray(i, i + c));
+						push(p);
+						continue;
+					}
+					case 5: {
+						c = marker & 15;
+						if (c === 15) {
+							if (
+								i > tableI ||
+								((p = d[i++]) & 0xf0) !== 16 ||
+								i + (p = 1 << (p & 15)) > tableI
+							) {
+								break;
+							}
+							c = Number(getU(d, i, p));
+							i += p;
+						}
+						if (i + c > tableI) {
+							break;
+						}
+						p = '';
+						for (; c--;) {
+							p += String.fromCharCode(d[i++]);
+						}
+						objects.set(x, p = new PLString(p));
+						push(p);
+						continue;
+					}
+					case 6: {
+						c = marker & 15;
+						if (c === 15) {
+							if (
+								i > tableI ||
+								((p = d[i++]) & 0xf0) !== 16 ||
+								i + (p = 1 << (p & 15)) > tableI
+							) {
+								break;
+							}
+							c = Number(getU(d, i, p));
+							i += p;
+						}
+						if (i + c * 2 > tableI) {
+							break;
+						}
+						p = '';
+						for (; c--; i += 2) {
+							p += String.fromCharCode(v.getInt16(i));
+						}
+						objects.set(x, p = new PLString(p));
 						push(p);
 						continue;
 					}

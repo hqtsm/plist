@@ -6,6 +6,7 @@ import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { PLReal } from '../real.ts';
 import { fixturePlist } from '../spec/fixture.ts';
+import { PLString } from '../string.ts';
 import { PLUID } from '../uid.ts';
 import { decodeBinary, type DecodeBinaryOptions } from './binary.ts';
 
@@ -195,6 +196,99 @@ Deno.test('spec: real-float-p0.0', async () => {
 	assertInstanceOf(plist, PLReal);
 	assertEquals(plist.value, 0);
 	assertEquals(plist.bits, 32);
+});
+
+Deno.test('spec: string-empty', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('string-empty', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '');
+});
+
+Deno.test('spec: string-ascii', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('string-ascii', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, 'ASCII');
+});
+
+Deno.test('spec: string-unicode', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('string-unicode', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, 'UTF\u20138');
+});
+
+Deno.test('spec: string-long-unicode', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('string-long-unicode', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(
+		plist.value,
+		new Array(8).fill('UTF\u20138').join(' '),
+	);
+});
+
+Deno.test('spec: string-utf8-mb2-divide', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('string-utf8-mb2-divide', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '\u00f7');
+});
+
+Deno.test('spec: string-utf8-mb2-ohm', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('string-utf8-mb2-ohm', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '\u03a9');
+});
+
+Deno.test('spec: string-utf8-mb3-check', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('string-utf8-mb3-check', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '\u2705');
+});
+
+Deno.test('spec: string-utf8-mb3-plus', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('string-utf8-mb3-plus', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '\uff0b');
+});
+
+Deno.test('spec: string-utf8-mb4-robot', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('string-utf8-mb4-robot', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, '\ud83e\udd16');
 });
 
 Deno.test('spec: integer-0', async () => {
