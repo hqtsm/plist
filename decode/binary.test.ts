@@ -1231,3 +1231,12 @@ Deno.test('spec: binary-edge infinite-recursion', async () => {
 		binaryError(8),
 	);
 });
+
+Deno.test('spec: binary-edge uid-over', async () => {
+	const data = await fixturePlist('binary-edge', 'uid-over');
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(8),
+	);
+});
