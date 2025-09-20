@@ -2357,7 +2357,7 @@ Deno.test('spec: real-sizes', async () => {
 		let [type, hex] = k.value.split(' ');
 		const v: PLType = plist.get(i)!;
 		assertInstanceOf(v, PLReal, tag);
-		assertEquals(v.bits, 64);
+		assertEquals(v.bits, 64, tag);
 
 		// Official encoder encodes -0.0 as 0.0.
 		switch (hex) {
