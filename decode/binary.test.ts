@@ -274,16 +274,6 @@ Deno.test('spec: data-0', async () => {
 	assertEquals(plist.byteLength, 0);
 });
 
-Deno.test('spec: date-0.0', async () => {
-	const { format, plist } = decodeBinary(
-		await fixturePlist('date-0.0', 'binary'),
-		CF_STYLE,
-	);
-	assertEquals(format, FORMAT_BINARY_V1_0);
-	assertInstanceOf(plist, PLDate);
-	assertEquals(plist.time, 0);
-});
-
 Deno.test('spec: data-1', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('data-1', 'binary'),
@@ -404,6 +394,16 @@ Deno.test('spec: data-256', async () => {
 		new Uint8Array(plist.buffer),
 		bytes,
 	);
+});
+
+Deno.test('spec: date-0.0', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('date-0.0', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLDate);
+	assertEquals(plist.time, 0);
 });
 
 Deno.test('spec: real-double-p0.0', async () => {
