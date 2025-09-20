@@ -526,7 +526,213 @@ Deno.test('spec: dict-empties', async () => {
 	assertEquals(dict.size, 0);
 });
 
-// TODO: dict
+Deno.test('spec: dict-26', async () => {
+	const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	const { format, plist } = decodeBinary(
+		await fixturePlist('dict-26', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 26);
+
+	for (let i = 0; i < plist.size; i++) {
+		const str = plist.find(alphabet[i]);
+		assertInstanceOf(str, PLString);
+		assertEquals(str.value, alphabet[i].toLowerCase());
+	}
+});
+
+Deno.test('spec: dict-long-key', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('dict-long-key', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 1);
+
+	const str = plist.find(
+		'ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789',
+	);
+	assertInstanceOf(str, PLString);
+	assertEquals(str.value, '64');
+});
+
+Deno.test('spec: dict-unicode-key', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('dict-unicode-key', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 1);
+
+	const str = plist.find('UTF\u20138');
+	assertInstanceOf(str, PLString);
+	assertEquals(str.value, 'utf-8');
+});
+
+Deno.test('spec: dict-nesting', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('dict-nesting', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 2);
+
+	const A = plist.find('A');
+	assertInstanceOf(A, PLDict);
+	assertEquals(A.size, 2);
+
+	const AA = A.find('AA');
+	assertInstanceOf(AA, PLDict);
+	assertEquals(AA.size, 2);
+
+	const AAA = AA.find('AAA');
+	assertInstanceOf(AAA, PLString);
+	assertEquals(AAA.value, 'aaa');
+
+	const AAB = AA.find('AAB');
+	assertInstanceOf(AAB, PLString);
+	assertEquals(AAB.value, 'aab');
+
+	const AB = A.find('AB');
+	assertInstanceOf(AB, PLDict);
+	assertEquals(AB.size, 2);
+
+	const ABA = AB.find('ABA');
+	assertInstanceOf(ABA, PLString);
+	assertEquals(ABA.value, 'aba');
+
+	const ABB = AB.find('ABB');
+	assertInstanceOf(ABB, PLString);
+	assertEquals(ABB.value, 'abb');
+
+	const B = plist.find('B');
+	assertInstanceOf(B, PLDict);
+	assertEquals(B.size, 2);
+
+	const BA = B.find('BA');
+	assertInstanceOf(BA, PLDict);
+	assertEquals(BA.size, 2);
+
+	const BAA = BA.find('BAA');
+	assertInstanceOf(BAA, PLString);
+	assertEquals(BAA.value, 'baa');
+
+	const BAB = BA.find('BAB');
+	assertInstanceOf(BAB, PLString);
+	assertEquals(BAB.value, 'bab');
+
+	const BB = B.find('BB');
+	assertInstanceOf(BB, PLDict);
+	assertEquals(BB.size, 2);
+
+	const BBA = BB.find('BBA');
+	assertInstanceOf(BBA, PLString);
+	assertEquals(BBA.value, 'bba');
+
+	const BBB = BB.find('BBB');
+	assertInstanceOf(BBB, PLString);
+	assertEquals(BBB.value, 'bbb');
+});
+
+Deno.test('spec: dict-order', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('dict-order', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 7);
+
+	const empty = plist.find('');
+	assertInstanceOf(empty, PLString);
+	assertEquals(empty.value, '0');
+
+	const a = plist.find('a');
+	assertInstanceOf(a, PLString);
+	assertEquals(a.value, '1');
+
+	const aa = plist.find('aa');
+	assertInstanceOf(aa, PLString);
+	assertEquals(aa.value, '2');
+
+	const aaa = plist.find('aaa');
+	assertInstanceOf(aaa, PLString);
+	assertEquals(aaa.value, '3');
+
+	const ab = plist.find('ab');
+	assertInstanceOf(ab, PLString);
+	assertEquals(ab.value, '4');
+
+	const abb = plist.find('abb');
+	assertInstanceOf(abb, PLString);
+	assertEquals(abb.value, '5');
+
+	const ac = plist.find('ac');
+	assertInstanceOf(ac, PLString);
+	assertEquals(ac.value, '6');
+});
+
+Deno.test('spec: dict-reuse', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('dict-reuse', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLDict);
+
+	const AA = plist.find('AA');
+	assertInstanceOf(AA, PLDict);
+	{
+		const AAAA = AA.find('AAAA');
+		assertInstanceOf(AAAA, PLString);
+		assertEquals(AAAA.value, '1111');
+		const BBBB = AA.find('BBBB');
+		assertInstanceOf(BBBB, PLString);
+		assertEquals(BBBB.value, '2222');
+	}
+
+	const BB = plist.find('BB');
+	assertInstanceOf(BB, PLDict);
+	{
+		const AAAA = BB.find('AAAA');
+		assertInstanceOf(AAAA, PLString);
+		assertEquals(AAAA.value, '1111');
+		const BBBB = BB.find('BBBB');
+		assertInstanceOf(BBBB, PLString);
+		assertEquals(BBBB.value, '2222');
+	}
+
+	assertStrictEquals(AA, BB);
+});
+
+Deno.test('spec: dict-repeat', async () => {
+	const expected = [
+		['C', '32'],
+		['A', '11'],
+		['C', '31'],
+		['B', '21'],
+		['C', '33'],
+		['B', '22'],
+	];
+	const { format, plist } = decodeBinary(
+		await fixturePlist('dict-repeat', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 6);
+
+	for (const [i, [k, v]] of [...plist].entries()) {
+		assertInstanceOf(v, PLString);
+		assertEquals(k.value, expected[i][0], `key:${i}`);
+		assertEquals(v.value, expected[i][1], `value:${i}`);
+	}
+});
 
 Deno.test('spec: string-empty', async () => {
 	const { format, plist } = decodeBinary(
