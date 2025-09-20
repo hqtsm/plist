@@ -811,6 +811,84 @@ Deno.test('spec: real-float-p0.0', async () => {
 	assertEquals(plist.bits, 32);
 });
 
+Deno.test('spec: real-reuse', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('real-reuse', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+
+	const a = plist.get(0)!;
+	assertInstanceOf(a, PLReal);
+	assertEquals(a.value, 3.14);
+	assertEquals(a.bits, 64);
+
+	const b = plist.get(1)!;
+	assertInstanceOf(b, PLReal);
+	assertEquals(b.value, 3.14);
+	assertEquals(b.bits, 64);
+
+	assertStrictEquals(a, b);
+});
+
+Deno.test('spec: real-sizes', async () => {
+	const reused = new Map<number, number>();
+
+	const { format, plist } = decodeBinary(
+		await fixturePlist('real-sizes', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 84);
+
+	const d64 = new Uint8Array(8);
+	const d32 = new Uint8Array(d64.buffer, 0, 4);
+	const dv = new DataView(d64.buffer);
+	for (let i = 0; i < 84;) {
+		const k: PLType = plist.get(i)!;
+		assertInstanceOf(k, PLString, `${i}`);
+		const tag: string = k.value;
+		i++;
+
+		const [type, hex] = k.value.split(' ');
+		const v: PLType = plist.get(i)!;
+		assertInstanceOf(v, PLReal, tag);
+
+		// CF reuses non-finite reals at encode.
+		let bits = type === 'f32' ? 32 : 64;
+		if (!Number.isFinite(v.value)) {
+			if (reused.has(v.value)) {
+				bits = reused.get(v.value)!;
+			} else {
+				reused.set(v.value, bits);
+			}
+		}
+		assertEquals(v.bits, bits, tag);
+
+		let d;
+		switch (type) {
+			case 'f32': {
+				dv.setFloat32(0, v.value);
+				d = d32;
+				break;
+			}
+			case 'f64': {
+				dv.setFloat64(0, v.value);
+				d = d64;
+				break;
+			}
+			default: {
+				throw new Error(`Unknown type: ${type}`);
+			}
+		}
+		const dh = [...d].map((b) => b.toString(16).padStart(2, '0')).join('');
+		assertEquals(dh, hex, tag);
+		i++;
+	}
+});
+
 Deno.test('spec: uid-42', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('uid-42', 'binary'),
