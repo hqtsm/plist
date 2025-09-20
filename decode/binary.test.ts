@@ -406,6 +406,109 @@ Deno.test('spec: date-0.0', async () => {
 	assertEquals(plist.time, 0);
 });
 
+Deno.test('spec: date-edge', async () => {
+	const d = new Uint8Array(8);
+	const dv = new DataView(d.buffer);
+
+	const { format, plist } = decodeBinary(
+		await fixturePlist('date-edge', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 92);
+
+	for (let i = 0; i < plist.length;) {
+		const key: PLType = plist.get(i)!;
+		assertInstanceOf(key, PLString, `${i}`);
+		const tag: string = key.value;
+		const hex = key.value.split(' ')[1];
+		for (let i = hex.length / 2; i--;) {
+			d[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+		}
+		i++;
+
+		const date = plist.get(i);
+		assertInstanceOf(date, PLDate, tag);
+		const expected = dv.getFloat64(0);
+		assertEquals(date.time, expected, tag);
+		i++;
+	}
+});
+
+Deno.test('spec: date-every-day-2001', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('date-every-day-2001', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 365 * 2);
+
+	const d = new Date(0);
+	d.setUTCFullYear(2001);
+	for (let i = 0; i < plist.length;) {
+		const key = plist.get(i);
+		assertInstanceOf(key, PLString, `${i}`);
+		const tag: string = key.value;
+		d.setUTCMonth(0);
+		d.setUTCDate(+key.value);
+		i++;
+
+		const date = plist.get(i);
+		assertInstanceOf(date, PLDate, tag);
+		assertEquals(date.toISOString(), d.toISOString(), tag);
+		i++;
+	}
+});
+
+Deno.test('spec: date-every-day-2004', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('date-every-day-2004', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 366 * 2);
+
+	const d = new Date(0);
+	d.setUTCFullYear(2004);
+	for (let i = 0; i < plist.length;) {
+		const key = plist.get(i);
+		assertInstanceOf(key, PLString, `${i}`);
+		const tag: string = key.value;
+		d.setUTCMonth(0);
+		d.setUTCDate(+key.value);
+		i++;
+
+		const date = plist.get(i);
+		assertInstanceOf(date, PLDate, tag);
+		assertEquals(date.toISOString(), d.toISOString(), tag);
+		i++;
+	}
+});
+
+Deno.test('spec: date-reuse', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('date-reuse', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 2);
+
+	const a = plist.get(0);
+	assertInstanceOf(a, PLDate);
+
+	const b = plist.get(1);
+	assertInstanceOf(b, PLDate);
+
+	assertEquals(a.time, b.time);
+	assertStrictEquals(a, b);
+});
+
+// TODO: dict
+
 Deno.test('spec: real-double-p0.0', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('real-double-p0.0', 'binary'),
