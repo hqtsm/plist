@@ -1,4 +1,9 @@
-import { assertEquals, assertInstanceOf } from '@std/assert';
+import {
+	assertEquals,
+	assertInstanceOf,
+	assertStrictEquals,
+} from '@std/assert';
+import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
@@ -7,6 +12,7 @@ import { PLInteger } from '../integer.ts';
 import { PLReal } from '../real.ts';
 import { fixturePlist } from '../spec/fixture.ts';
 import { PLString } from '../string.ts';
+import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 import { decodeBinary, type DecodeBinaryOptions } from './binary.ts';
 
@@ -32,6 +38,230 @@ Deno.test('spec: false', async () => {
 	assertEquals(format, FORMAT_BINARY_V1_0);
 	assertInstanceOf(plist, PLBoolean);
 	assertEquals(plist.value, false);
+});
+
+Deno.test('spec: array-0', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-0', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 0);
+});
+
+Deno.test('spec: array-1', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-1', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 1);
+
+	const entry = plist.get(0);
+	assertInstanceOf(entry, PLString);
+	assertEquals(entry.value, 'A');
+});
+
+Deno.test('spec: array-4', async () => {
+	const aa = new Uint8Array([0x61, 0x61]);
+	const bb = new Uint8Array([0x62, 0x62]);
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-4', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 4);
+
+	for (let i = 0; i < plist.length; i++) {
+		const str = plist.get(i);
+		assertInstanceOf(str, PLData);
+		assertEquals(new Uint8Array(str.buffer), i % 2 ? bb : aa);
+	}
+});
+
+Deno.test('spec: array-8', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-8', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 8);
+
+	for (let i = 0; i < 8; i++) {
+		const entry: PLType = plist.get(i)!;
+		assertInstanceOf(entry, PLString, `${i}`);
+		assertEquals(entry.value, i % 2 ? 'B' : 'A', `${i}`);
+	}
+});
+
+Deno.test('spec: array-14', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-14', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 14);
+
+	for (let i = 0; i < 14; i++) {
+		const entry: PLType = plist.get(i)!;
+		assertInstanceOf(entry, PLBoolean, `${i}`);
+		assertEquals(entry.value, i % 2 ? true : false, `${i}`);
+	}
+});
+
+Deno.test('spec: array-15', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-15', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 15);
+
+	for (let i = 0; i < 14; i++) {
+		const entry: PLType = plist.get(i)!;
+		assertInstanceOf(entry, PLDate, `${i}`);
+		assertEquals(entry.time, i % 2, `${i}`);
+	}
+});
+
+Deno.test('spec: array-26', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-26', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 26);
+
+	for (let i = 0; i < 26; i++) {
+		const entry: PLType = plist.get(i)!;
+		assertInstanceOf(entry, PLString, `${i}`);
+		assertEquals(entry.value, String.fromCharCode(65 + i), `${i}`);
+	}
+});
+
+Deno.test('spec: array-128', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-128', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 128);
+
+	for (let i = 0; i < 128; i++) {
+		const entry: PLType = plist.get(i)!;
+		assertInstanceOf(entry, PLReal, `${i}`);
+		assertEquals(entry.value, i % 2 ? 1 : 0, `${i}`);
+	}
+});
+
+Deno.test('spec: array-255', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-255', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 255);
+
+	for (let i = 0; i < 255; i++) {
+		const entry: PLType = plist.get(i)!;
+		assertInstanceOf(entry, PLInteger, `${i}`);
+		assertEquals(entry.value, i % 2 ? 1n : 0n, `${i}`);
+	}
+});
+
+Deno.test('spec: array-256', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-256', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 256);
+
+	for (let i = 0; i < 256; i++) {
+		const entry: PLType = plist.get(i)!;
+		assertInstanceOf(entry, PLBoolean, `${i}`);
+		assertEquals(entry.value, i % 2 ? true : false, `${i}`);
+	}
+});
+
+Deno.test('spec: array-65534', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-65534', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 65534);
+
+	for (let i = 0; i < 65534; i++) {
+		const entry: PLType = plist.get(i)!;
+		assertInstanceOf(entry, PLBoolean, `${i}`);
+		assertEquals(entry.value, i % 2 ? true : false, `${i}`);
+	}
+});
+
+Deno.test('spec: array-65535', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-65535', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 65535);
+
+	for (let i = 0; i < 65535; i++) {
+		const entry: PLType = plist.get(i)!;
+		assertInstanceOf(entry, PLBoolean, `${i}`);
+		assertEquals(entry.value, i % 2 ? true : false, `${i}`);
+	}
+});
+
+Deno.test('spec: array-65536', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-65536', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 65536);
+
+	for (let i = 0; i < 65536; i++) {
+		const entry: PLType = plist.get(i)!;
+		assertInstanceOf(entry, PLBoolean, `${i}`);
+		assertEquals(entry.value, i % 2 ? true : false, `${i}`);
+	}
+});
+
+Deno.test('spec: array-reuse', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-reuse', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 2);
+	assertStrictEquals(plist.get(0), plist.get(1));
+
+	for (let i = 0; i < plist.length; i++) {
+		const a = plist.get(i);
+		assertInstanceOf(a, PLArray);
+		assertEquals(a.length, 2);
+		for (let j = 0; j < a.length; j++) {
+			const b: PLType = a.get(j)!;
+			assertInstanceOf(b, PLString);
+			assertEquals(b.value, j ? 'BBBB' : 'AAAA');
+		}
+	}
 });
 
 Deno.test('spec: data-0', async () => {

@@ -4,6 +4,7 @@
  * Binary decoding.
  */
 
+import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
@@ -51,6 +52,26 @@ function getUU(d: Uint8Array, i: number, c: number): bigint {
 	let r = 0n;
 	for (; c--; r = r << 8n & U128_MAX | BigInt(d[i++]));
 	return r;
+}
+
+/**
+ * Get references.
+ *
+ * @param d Data.
+ * @param i Offset.
+ * @param c Byte count.
+ * @param l Length.
+ * @yields Integer.
+ */
+function* getRefs(
+	d: Uint8Array,
+	i: number,
+	c: number,
+	l: number,
+): Generator<number> {
+	for (; l--; i += c) {
+		yield Number(getU(d, i, c));
+	}
 }
 
 /**
@@ -157,7 +178,6 @@ export function decodeBinary(
 		}
 	}
 	const objects = new Map<number, PLType>();
-	// deno-lint-ignore require-yield
 	const walk = function* (
 		refs: Iterable<number>,
 		push: (p: PLType) => unknown,
@@ -317,6 +337,31 @@ export function decodeBinary(
 							break;
 						}
 						objects.set(x, p = new PLUID(c));
+						push(p);
+						continue;
+					}
+					case 10: {
+						c = marker & 15;
+						if (c === 15) {
+							if (
+								i > tableI ||
+								((p = d[i++]) & 0xf0) !== 16 ||
+								i + (p = 1 << (p & 15)) > tableI
+							) {
+								break;
+							}
+							c = Number(getU(d, i, p));
+							i += p;
+						}
+						if (i + c * refC > tableI) {
+							break;
+						}
+						objects.set(x, p = new PLArray());
+						yield walk(
+							getRefs(d, i, refC, c),
+							p.push.bind(p),
+							top as Next,
+						);
 						push(p);
 						continue;
 					}
