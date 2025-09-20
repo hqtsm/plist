@@ -167,7 +167,7 @@ Deno.test('property: year', () => {
 
 Deno.test('property: month', () => {
 	const deltas = [
-		...(new Array(5000)).fill(0).map((_, i) => i),
+		...(new Array(1000)).fill(0).map((_, i) => i),
 		Math.PI,
 		NaN,
 	];

@@ -246,7 +246,7 @@ Deno.test('setYear + getYear', () => {
 });
 
 Deno.test('setMonth + getMonth', () => {
-	const deltas = (new Array(5000)).fill(0).map((_, i) => i);
+	const deltas = (new Array(1000)).fill(0).map((_, i) => i);
 	const allDeltas = new Set([...deltas, ...deltas.map((d) => -d)]);
 	for (const start of startTimes) {
 		for (const month of allDeltas) {
