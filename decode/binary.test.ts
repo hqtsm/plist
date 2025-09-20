@@ -181,6 +181,36 @@ Deno.test('Bad trailer: ref = 0', () => {
 	);
 });
 
+Deno.test('Bad trailer: objects * int > U64_MAX', () => {
+	const data = new Uint8Array(44);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, I64_MAX);
+	view.setBigUint64(data.length - 8, 9n);
+	data[data.length - 26] = 255;
+	data[data.length - 25] = 1;
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(data.length - 24),
+	);
+});
+
+Deno.test('Bad trailer: table * objects * int != length', () => {
+	const data = new Uint8Array(44);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 1n);
+	view.setBigUint64(data.length - 8, 10n);
+	data[data.length - 26] = 1;
+	data[data.length - 25] = 1;
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(data.length - 24),
+	);
+});
+
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('true', 'binary'),
