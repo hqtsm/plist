@@ -2,6 +2,7 @@ import {
 	assertEquals,
 	assertInstanceOf,
 	assertStrictEquals,
+	assertThrows,
 } from '@std/assert';
 import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
@@ -16,10 +17,67 @@ import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 import { decodeBinary, type DecodeBinaryOptions } from './binary.ts';
 import { PLDict } from '../dict.ts';
+import { binaryError } from '../pri/data.ts';
 
 const CF_STYLE = {
 	int64: true,
 } as const satisfies DecodeBinaryOptions;
+
+Deno.test('Bad header', () => {
+	let data: Uint8Array;
+	data = new Uint8Array([...'bplist0'].map((c) => c.charCodeAt(0)));
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(0),
+	);
+	data = new Uint8Array([...'bplist_0'].map((c) => c.charCodeAt(0)));
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(0),
+	);
+	data = new Uint8Array([...'bplis_00'].map((c) => c.charCodeAt(0)));
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(0),
+	);
+	data = new Uint8Array([...'bpl_st00'].map((c) => c.charCodeAt(0)));
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(0),
+	);
+	data = new Uint8Array([...'bp_ist00'].map((c) => c.charCodeAt(0)));
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(0),
+	);
+	data = new Uint8Array([...'b_list00'].map((c) => c.charCodeAt(0)));
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(0),
+	);
+	data = new Uint8Array([...'_plist00'].map((c) => c.charCodeAt(0)));
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(0),
+	);
+});
+
+Deno.test('Bad trailer', () => {
+	const data = new Uint8Array(39);
+	data.set([...'bplist0'].map((c) => c.charCodeAt(0)));
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(8),
+	);
+});
 
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeBinary(
