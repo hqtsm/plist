@@ -395,6 +395,7 @@ export function decodeBinary(
 						objects.set(x, p = new PLDict());
 						if (c) {
 							ancestors.add(p);
+							anci = x;
 							ref = new Map<number, PLString>();
 							marker = 0;
 							yield walk(
@@ -413,7 +414,7 @@ export function decodeBinary(
 									);
 								},
 								top as Next,
-								anci = x,
+								anci,
 							);
 							marker = 0;
 							yield walk(
