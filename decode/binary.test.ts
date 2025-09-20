@@ -721,6 +721,74 @@ Deno.test('spec: integer-big', async () => {
 	}
 });
 
+Deno.test('spec: integer-min', async () => {
+	const MIN64 = -0x8000000000000000n;
+
+	const { format, plist } = decodeBinary(
+		await fixturePlist('integer-min', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLInteger);
+	assertEquals(plist.value, MIN64);
+	assertEquals(plist.bits, 64);
+});
+
+Deno.test('spec: integer-negative', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('integer-negative', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLInteger);
+	assertEquals(plist.value, -42n);
+	assertEquals(plist.bits, 64);
+});
+
+Deno.test('spec: integer-reuse', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('integer-reuse', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 2);
+
+	const a = plist.get(0)!;
+	assertInstanceOf(a, PLInteger);
+	assertEquals(a.value, 42n);
+	assertEquals(a.bits, 64);
+
+	const b = plist.get(1)!;
+	assertInstanceOf(b, PLInteger);
+	assertEquals(b.value, 42n);
+	assertEquals(b.bits, 64);
+
+	assertStrictEquals(a, b);
+});
+
+Deno.test('spec: integer-sizes', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('integer-sizes', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 38);
+
+	for (let i = 0; i < 38;) {
+		const k: PLType = plist.get(i)!;
+		assertInstanceOf(k, PLString, `${i}`);
+		i++;
+
+		const v: PLType = plist.get(i)!;
+		assertInstanceOf(v, PLInteger, `${i}`);
+		const expected = BigInt.asIntN(64, BigInt(k.value));
+		assertEquals(v.value, expected, k.value);
+		i++;
+	}
+});
+
 Deno.test('spec: real-double-p0.0', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('real-double-p0.0', 'binary'),
