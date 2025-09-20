@@ -267,13 +267,13 @@ export function decodeBinary(
 						if (c === 15) {
 							if (
 								i > tableI ||
-								((p = d[i++]) & 0xf0) !== 16 ||
-								i + (p = 1 << (p & 15)) > tableI
+								((ref = d[i++]) & 0xf0) !== 16 ||
+								i + (ref = 1 << (ref & 15)) > tableI
 							) {
 								break;
 							}
-							c = Number(getU(d, i, p));
-							i += p;
+							c = Number(getU(d, i, ref));
+							i += ref;
 						}
 						if (i + c > tableI) {
 							break;
@@ -288,13 +288,13 @@ export function decodeBinary(
 						if (c === 15) {
 							if (
 								i > tableI ||
-								((p = d[i++]) & 0xf0) !== 16 ||
-								i + (p = 1 << (p & 15)) > tableI
+								((ref = d[i++]) & 0xf0) !== 16 ||
+								i + (ref = 1 << (ref & 15)) > tableI
 							) {
 								break;
 							}
-							c = Number(getU(d, i, p));
-							i += p;
+							c = Number(getU(d, i, ref));
+							i += ref;
 						}
 						if (i + c > tableI) {
 							break;
@@ -312,13 +312,13 @@ export function decodeBinary(
 						if (c === 15) {
 							if (
 								i > tableI ||
-								((p = d[i++]) & 0xf0) !== 16 ||
-								i + (p = 1 << (p & 15)) > tableI
+								((ref = d[i++]) & 0xf0) !== 16 ||
+								i + (ref = 1 << (ref & 15)) > tableI
 							) {
 								break;
 							}
-							c = Number(getU(d, i, p));
-							i += p;
+							c = Number(getU(d, i, ref));
+							i += ref;
 						}
 						if (i + c * 2 > tableI) {
 							break;
@@ -345,13 +345,13 @@ export function decodeBinary(
 						if (c === 15) {
 							if (
 								i > tableI ||
-								((p = d[i++]) & 0xf0) !== 16 ||
-								i + (p = 1 << (p & 15)) > tableI
+								((ref = d[i++]) & 0xf0) !== 16 ||
+								i + (ref = 1 << (ref & 15)) > tableI
 							) {
 								break;
 							}
-							c = Number(getU(d, i, p));
-							i += p;
+							c = Number(getU(d, i, ref));
+							i += ref;
 						}
 						if (i + c * refC > tableI) {
 							break;
