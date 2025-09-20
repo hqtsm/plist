@@ -299,11 +299,11 @@ export function decodeBinary(
 						if (i + c > tableI) {
 							break;
 						}
-						p = '';
+						ref = '';
 						for (; c--;) {
-							p += String.fromCharCode(d[i++]);
+							ref += String.fromCharCode(d[i++]);
 						}
-						objects.set(x, p = new PLString(p));
+						objects.set(x, p = new PLString(ref));
 						push(p);
 						continue;
 					}
@@ -323,11 +323,11 @@ export function decodeBinary(
 						if (i + c * 2 > tableI) {
 							break;
 						}
-						p = '';
+						ref = '';
 						for (; c--; i += 2) {
-							p += String.fromCharCode(v.getUint16(i));
+							ref += String.fromCharCode(v.getUint16(i));
 						}
-						objects.set(x, p = new PLString(p));
+						objects.set(x, p = new PLString(ref));
 						push(p);
 						continue;
 					}
