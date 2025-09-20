@@ -357,11 +357,13 @@ export function decodeBinary(
 							break;
 						}
 						objects.set(x, p = new PLArray());
-						yield walk(
-							getRefs(d, i, refC, c),
-							p.push.bind(p),
-							top as Next,
-						);
+						if (c) {
+							yield walk(
+								getRefs(d, i, refC, c),
+								p.push.bind(p),
+								top as Next,
+							);
+						}
 						push(p);
 						continue;
 					}
