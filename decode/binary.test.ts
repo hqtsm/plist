@@ -898,3 +898,44 @@ Deno.test('spec: uid-42', async () => {
 	assertInstanceOf(plist, PLUID);
 	assertEquals(plist.value, 42n);
 });
+
+Deno.test('spec: uid-reuse', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('uid-reuse', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+
+	const a = plist.get(0)!;
+	assertInstanceOf(a, PLUID);
+	assertEquals(a.value, 42n);
+
+	const b = plist.get(1)!;
+	assertInstanceOf(b, PLUID);
+	assertEquals(b.value, 42n);
+
+	assertStrictEquals(a, b);
+});
+
+Deno.test('spec: uid-sizes', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('uid-sizes', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 22);
+
+	for (let i = 0; i < 22;) {
+		const k: PLType = plist.get(i)!;
+		assertInstanceOf(k, PLString, `${i}`);
+		i++;
+
+		const v: PLType = plist.get(i)!;
+		assertInstanceOf(v, PLUID, `${i}`);
+		const expected = BigInt(k.value);
+		assertEquals(v.value, expected, k.value);
+		i++;
+	}
+});
