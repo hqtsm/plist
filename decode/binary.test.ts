@@ -509,28 +509,6 @@ Deno.test('spec: date-reuse', async () => {
 
 // TODO: dict
 
-Deno.test('spec: real-double-p0.0', async () => {
-	const { format, plist } = decodeBinary(
-		await fixturePlist('real-double-p0.0', 'binary'),
-		CF_STYLE,
-	);
-	assertEquals(format, FORMAT_BINARY_V1_0);
-	assertInstanceOf(plist, PLReal);
-	assertEquals(plist.value, 0);
-	assertEquals(plist.bits, 64);
-});
-
-Deno.test('spec: real-float-p0.0', async () => {
-	const { format, plist } = decodeBinary(
-		await fixturePlist('real-float-p0.0', 'binary'),
-		CF_STYLE,
-	);
-	assertEquals(format, FORMAT_BINARY_V1_0);
-	assertInstanceOf(plist, PLReal);
-	assertEquals(plist.value, 0);
-	assertEquals(plist.bits, 32);
-});
-
 Deno.test('spec: string-empty', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('string-empty', 'binary'),
@@ -633,6 +611,28 @@ Deno.test('spec: integer-0', async () => {
 	assertInstanceOf(plist, PLInteger);
 	assertEquals(plist.value, 0n);
 	assertEquals(plist.bits, 64);
+});
+
+Deno.test('spec: real-double-p0.0', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('real-double-p0.0', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLReal);
+	assertEquals(plist.value, 0);
+	assertEquals(plist.bits, 64);
+});
+
+Deno.test('spec: real-float-p0.0', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('real-float-p0.0', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLReal);
+	assertEquals(plist.value, 0);
+	assertEquals(plist.bits, 32);
 });
 
 Deno.test('spec: uid-42', async () => {
