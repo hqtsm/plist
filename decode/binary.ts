@@ -419,14 +419,13 @@ export function decodeBinary(
 							marker = 0;
 							yield walk(
 								getRefs(d, i + c * refC, refC, c),
-								(o) => {
+								(o) =>
 									(p as PLDict).set(
 										(ref as Map<number, PLString>).get(
 											marker++,
 										)!,
 										o,
-									);
-								},
+									),
 								top as Next,
 								anci,
 							);
