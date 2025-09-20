@@ -634,6 +634,93 @@ Deno.test('spec: integer-0', async () => {
 	assertEquals(plist.bits, 64);
 });
 
+Deno.test('spec: integer-big', async () => {
+	const MIN_128 = -0x8000000000000000_0000000000000000n;
+	const data = await fixturePlist('integer-big', 'binary');
+	{
+		const { format, plist } = decodeBinary(data, CF_STYLE);
+		assertEquals(format, FORMAT_BINARY_V1_0);
+		assertInstanceOf(plist, PLArray);
+		assertEquals(plist.length, 12);
+		const all = new Map<string, PLInteger>();
+		for (let i = 0; i < 12;) {
+			const name: PLType = plist.get(i)!;
+			assertInstanceOf(name, PLString, `${i}`);
+			i++;
+
+			const value: PLType = plist.get(i)!;
+			assertInstanceOf(value, PLInteger, `${i}`);
+			all.set(name.value, value);
+			i++;
+		}
+
+		const BIG = all.get('BIG')!;
+		assertEquals(BIG.value, 0x102030405060708n);
+		assertEquals(BIG.bits, 128);
+
+		const SMALL = all.get('SMALL')!;
+		assertEquals(SMALL.value, 42n);
+		assertEquals(SMALL.bits, 128);
+
+		const MAX = all.get('MAX')!;
+		assertEquals(MAX.value, 0xFFFFFFFFFFFFFFFFn);
+		assertEquals(MAX.bits, 128);
+
+		const MIN = all.get('MIN')!;
+		assertEquals(MIN.value, 0n);
+		assertEquals(MIN.bits, 128);
+
+		const MIN_PLUS_1 = all.get('MIN+1')!;
+		assertEquals(MIN_PLUS_1.value, 1n);
+		assertEquals(MIN_PLUS_1.bits, 128);
+
+		const MIN_PLUS_2 = all.get('MIN+2')!;
+		assertEquals(MIN_PLUS_2.value, 2n);
+		assertEquals(MIN_PLUS_2.bits, 128);
+	}
+	{
+		const { format, plist } = decodeBinary(data);
+		assertEquals(format, FORMAT_BINARY_V1_0);
+		assertInstanceOf(plist, PLArray);
+		assertEquals(plist.length, 12);
+		const all = new Map<string, PLInteger>();
+		for (let i = 0; i < 12;) {
+			const name: PLType = plist.get(i)!;
+			assertInstanceOf(name, PLString, `${i}`);
+			i++;
+
+			const value: PLType = plist.get(i)!;
+			assertInstanceOf(value, PLInteger, `${i}`);
+			all.set(name.value, value);
+			i++;
+		}
+
+		const BIG = all.get('BIG')!;
+		assertEquals(BIG.value, 0x1112131415161718_0102030405060708n);
+		assertEquals(BIG.bits, 128);
+
+		const SMALL = all.get('SMALL')!;
+		assertEquals(SMALL.value, 42n);
+		assertEquals(SMALL.bits, 128);
+
+		const MAX = all.get('MAX')!;
+		assertEquals(MAX.value, 0x7FFFFFFFFFFFFFFF_FFFFFFFFFFFFFFFFn);
+		assertEquals(MAX.bits, 128);
+
+		const MIN = all.get('MIN')!;
+		assertEquals(MIN.value, MIN_128);
+		assertEquals(MIN.bits, 128);
+
+		const MIN_PLUS_1 = all.get('MIN+1')!;
+		assertEquals(MIN_PLUS_1.value, MIN_128 + 1n);
+		assertEquals(MIN_PLUS_1.bits, 128);
+
+		const MIN_PLUS_2 = all.get('MIN+2')!;
+		assertEquals(MIN_PLUS_2.value, MIN_128 + 2n);
+		assertEquals(MIN_PLUS_2.bits, 128);
+	}
+});
+
 Deno.test('spec: real-double-p0.0', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('real-double-p0.0', 'binary'),
