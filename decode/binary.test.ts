@@ -23,6 +23,8 @@ const CF_STYLE = {
 	int64: true,
 } as const satisfies DecodeBinaryOptions;
 
+const I64_MAX = 0x7fffffffffffffffn;
+
 Deno.test('Bad header', () => {
 	let data: Uint8Array;
 	data = new Uint8Array([...'bplist0'].map((c) => c.charCodeAt(0)));
@@ -69,13 +71,113 @@ Deno.test('Bad header', () => {
 	);
 });
 
-Deno.test('Bad trailer', () => {
+Deno.test('Bad trailer: length', () => {
 	const data = new Uint8Array(39);
 	data.set([...'bplist0'].map((c) => c.charCodeAt(0)));
 	assertThrows(
 		() => decodeBinary(data, CF_STYLE),
 		SyntaxError,
 		binaryError(8),
+	);
+});
+
+Deno.test('Bad trailer: objects > I64_MAX', () => {
+	const data = new Uint8Array(40);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, I64_MAX + 1n);
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(data.length - 24),
+	);
+});
+
+Deno.test('Bad trailer: table > I64_MAX', () => {
+	const data = new Uint8Array(40);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 8, I64_MAX + 1n);
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(data.length - 8),
+	);
+});
+
+Deno.test('Bad trailer: objects = 0', () => {
+	const data = new Uint8Array(40);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(data.length - 24),
+	);
+});
+
+Deno.test('Bad trailer: top >= objects', () => {
+	const data = new Uint8Array(40);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 1n);
+	view.setBigUint64(data.length - 16, 1n);
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(data.length - 16),
+	);
+});
+
+Deno.test('Bad trailer: table < 9', () => {
+	const data = new Uint8Array(44);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 1n);
+	view.setBigUint64(data.length - 8, 8n);
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(data.length - 8),
+	);
+});
+
+Deno.test('Bad trailer: table > trailer', () => {
+	const data = new Uint8Array(44);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 1n);
+	view.setBigUint64(data.length - 8, BigInt(data.length - 32 + 1));
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(data.length - 8),
+	);
+});
+
+Deno.test('Bad trailer: int = 0', () => {
+	const data = new Uint8Array(44);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 1n);
+	view.setBigUint64(data.length - 8, 9n);
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(data.length - 26),
+	);
+});
+
+Deno.test('Bad trailer: ref = 0', () => {
+	const data = new Uint8Array(44);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 1n);
+	view.setBigUint64(data.length - 8, 9n);
+	data[data.length - 26] = 1;
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(data.length - 25),
 	);
 });
 
