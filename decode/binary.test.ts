@@ -529,6 +529,27 @@ Deno.test('spec: string-ascii', async () => {
 	assertEquals(plist.value, 'ASCII');
 });
 
+Deno.test('spec: string-chars', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('string-chars', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+
+	for (let i = 0; i < plist.length;) {
+		const k: PLType = plist.get(i)!;
+		assertInstanceOf(k, PLString, `[${i}]`);
+		const code = +k.value;
+		i++;
+
+		const v: PLType = plist.get(i)!;
+		assertInstanceOf(v, PLString, k.value);
+		assertEquals(v.value, String.fromCharCode(code), k.value);
+		i++;
+	}
+});
+
 Deno.test('spec: string-unicode', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('string-unicode', 'binary'),
