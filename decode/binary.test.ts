@@ -15,6 +15,7 @@ import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 import { decodeBinary, type DecodeBinaryOptions } from './binary.ts';
+import { PLDict } from '../dict.ts';
 
 const CF_STYLE = {
 	int64: true,
@@ -505,6 +506,24 @@ Deno.test('spec: date-reuse', async () => {
 
 	assertEquals(a.time, b.time);
 	assertStrictEquals(a, b);
+});
+
+Deno.test('spec: dict-empties', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('dict-empties', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 2);
+
+	const array = plist.find('array');
+	assertInstanceOf(array, PLArray);
+	assertEquals(array.length, 0);
+
+	const dict = plist.find('dict');
+	assertInstanceOf(dict, PLDict);
+	assertEquals(dict.size, 0);
 });
 
 // TODO: dict

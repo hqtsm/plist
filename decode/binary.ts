@@ -8,11 +8,12 @@ import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
+import { PLDict } from '../dict.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { binaryError, bytes } from '../pri/data.ts';
 import { PLReal } from '../real.ts';
-import { PLString } from '../string.ts';
+import { PLString, PLTYPE_STRING } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 
@@ -184,10 +185,10 @@ export function decodeBinary(
 		next?: Next,
 	): Next {
 		let c;
-		let i;
-		let p;
+		let i: number;
+		let p: PLType | undefined;
 		let ref;
-		let marker;
+		let marker: number;
 		for (ref of refs) {
 			i = Number(getU(d, x = tableI + ref * intC, intC));
 			if (i > 7) {
@@ -361,6 +362,52 @@ export function decodeBinary(
 							yield walk(
 								getRefs(d, i, refC, c),
 								p.push.bind(p),
+								top as Next,
+							);
+						}
+						push(p);
+						continue;
+					}
+					case 13: {
+						c = marker & 15;
+						if (c === 15) {
+							if (
+								i > tableI ||
+								((ref = d[i++]) & 0xf0) !== 16 ||
+								i + (ref = 1 << (ref & 15)) > tableI
+							) {
+								break;
+							}
+							c = Number(getU(d, i, ref));
+							i += ref;
+						}
+						if (i + c * 2 * refC > tableI) {
+							break;
+						}
+						objects.set(x, p = new PLDict());
+						if (c) {
+							const m = new Map<number, PLString>();
+							marker = 0;
+							yield walk(
+								getRefs(d, i, refC, c),
+								(o) => {
+									if (
+										o[Symbol.toStringTag] !== PLTYPE_STRING
+									) {
+										throw new SyntaxError(
+											binaryError(i + marker * refC),
+										);
+									}
+									m.set(marker++, o as PLString);
+								},
+								top as Next,
+							);
+							marker = 0;
+							yield walk(
+								getRefs(d, i + c * refC, refC, c),
+								(o) => {
+									(p as PLDict).set(m.get(marker++)!, o);
+								},
 								top as Next,
 							);
 						}
