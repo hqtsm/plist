@@ -147,8 +147,11 @@ export function decodeBinary(
 	if (tableI > I64_MAX) {
 		throw new SyntaxError(binaryError(l - 8));
 	}
-	if (!objectC || top >= objectC) {
+	if (!objectC) {
 		throw new SyntaxError(binaryError(l - 24));
+	}
+	if (top >= objectC) {
+		throw new SyntaxError(binaryError(l - 16));
 	}
 	if (tableI < 9 || tableI > l - 32) {
 		throw new SyntaxError(binaryError(l - 8));
