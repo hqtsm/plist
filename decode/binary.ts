@@ -178,11 +178,13 @@ export function decodeBinary(
 			throw new SyntaxError(binaryError(x));
 		}
 	}
+	const ancestors = new Set<PLType>();
 	const objects = new Map<number, PLType>();
 	const walk = function* (
 		refs: Iterable<number>,
 		push: (p: PLType) => unknown,
 		next?: Next,
+		anci?: number,
 	): Next {
 		let c;
 		let i: number;
@@ -193,6 +195,9 @@ export function decodeBinary(
 			i = Number(getU(d, x = tableI + ref * intC, intC));
 			if (i > 7) {
 				if ((p = objects.get(i))) {
+					if (ancestors.has(p)) {
+						throw new SyntaxError(binaryError(anci!));
+					}
 					push(p);
 					continue;
 				}
@@ -359,11 +364,14 @@ export function decodeBinary(
 						}
 						objects.set(x, p = new PLArray());
 						if (c) {
+							ancestors.add(p);
 							yield walk(
 								getRefs(d, i, refC, c),
 								p.push.bind(p),
 								top as Next,
+								x,
 							);
+							ancestors.delete(p);
 						}
 						push(p);
 						continue;
@@ -386,6 +394,7 @@ export function decodeBinary(
 						}
 						objects.set(x, p = new PLDict());
 						if (c) {
+							ancestors.add(p);
 							ref = new Map<number, PLString>();
 							marker = 0;
 							yield walk(
@@ -404,6 +413,7 @@ export function decodeBinary(
 									);
 								},
 								top as Next,
+								anci = x,
 							);
 							marker = 0;
 							yield walk(
@@ -417,7 +427,9 @@ export function decodeBinary(
 									);
 								},
 								top as Next,
+								anci,
 							);
+							ancestors.delete(p);
 						}
 						push(p);
 						continue;
