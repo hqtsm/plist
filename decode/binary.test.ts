@@ -241,6 +241,28 @@ Deno.test('Bad trailer: int size too small', () => {
 	);
 });
 
+Deno.test('Bad trailer: ref value over under', () => {
+	const data = new Uint8Array(8 + 1 + 1 + 32);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 1n);
+	view.setBigUint64(data.length - 8, 9n);
+	data[data.length - 26] = 1;
+	data[data.length - 25] = 1;
+	data[9] = 9;
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(9),
+	);
+	data[9] = 7;
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(9),
+	);
+});
+
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('true', 'binary'),
