@@ -1407,6 +1407,15 @@ Deno.test('spec: uid-sizes', async () => {
 	}
 });
 
+Deno.test('spec: binary-edge fill', async () => {
+	const data = await fixturePlist('binary-edge', 'fill');
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(8),
+	);
+});
+
 Deno.test('spec: binary-edge infinite-recursion', async () => {
 	const data = await fixturePlist('binary-edge', 'infinite-recursion');
 	assertThrows(
