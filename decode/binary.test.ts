@@ -211,6 +211,36 @@ Deno.test('Bad trailer: table * objects * int != length', () => {
 	);
 });
 
+Deno.test('Bad trailer: ref size too small', () => {
+	const data = new Uint8Array(500);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 500n - 132n);
+	view.setBigUint64(data.length - 8, 100n);
+	data[data.length - 26] = 1;
+	data[data.length - 25] = 1;
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(data.length - 25),
+	);
+});
+
+Deno.test('Bad trailer: int size too small', () => {
+	const data = new Uint8Array(500);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 1n);
+	view.setBigUint64(data.length - 8, 500n - 33n);
+	data[data.length - 26] = 1;
+	data[data.length - 25] = 1;
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(data.length - 26),
+	);
+});
+
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('true', 'binary'),
