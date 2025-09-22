@@ -1642,6 +1642,39 @@ Deno.test('spec: binary-edge depth-25', async () => {
 	}
 	assertInstanceOf(p, PLBoolean);
 	assertEquals(p.value, true);
+
+	// Ensure deep recursion does not expand the stack.
+	// Spy on the objects created with a Map set override.
+	// Ensure exported function does not get pushed down the stack.
+	const traces: string[] = [];
+	const setDesc = Object.getOwnPropertyDescriptor(Map.prototype, 'set');
+	try {
+		const f = setDesc!.value!;
+		Object.defineProperty(Map.prototype, 'set', {
+			...setDesc,
+			value: function set(
+				key: unknown,
+				value: unknown,
+			): Map<unknown, unknown> {
+				if (
+					typeof key === 'number' &&
+					PLBoolean.is(value) &&
+					value.value
+				) {
+					traces.push(new Error().stack!);
+				}
+				return f.apply(this, arguments);
+			},
+		});
+
+		decodeBinary(data, CF_STYLE);
+	} finally {
+		Object.defineProperty(Map.prototype, 'set', setDesc!);
+	}
+	assertEquals(traces.length, 1);
+	const top10 = traces[0].split('\n').slice(0, 10)
+		.filter((s) => s.includes('decodeBinary'));
+	assertEquals(top10.length, 1);
 });
 
 Deno.test('spec: binary-edge fill', async () => {
