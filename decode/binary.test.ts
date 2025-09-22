@@ -971,8 +971,8 @@ Deno.test('spec: dict-repeat', async () => {
 
 	for (const [i, [k, v]] of [...plist].entries()) {
 		assertInstanceOf(v, PLString);
-		assertEquals(k.value, expected[i][0], `key:${i}`);
-		assertEquals(v.value, expected[i][1], `value:${i}`);
+		assertEquals(k.value, expected[i][0], `key: ${i}`);
+		assertEquals(v.value, expected[i][1], `value: ${i}`);
 	}
 });
 
