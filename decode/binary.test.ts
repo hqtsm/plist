@@ -278,7 +278,7 @@ Deno.test('Bad markers', () => {
 		[0xE0, 0xEF],
 		[0xF0, 0xFF],
 	] as const;
-	const data = new Uint8Array(8 + 10 + 1 + 32);
+	const data = new Uint8Array(8 + 247 + 1 + 32);
 	const view = new DataView(data.buffer);
 	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
 	view.setBigUint64(data.length - 24, 1n);
