@@ -276,7 +276,7 @@ export function decodeBinary(
 						if (c === 15) {
 							if (
 								i > table ||
-								((ref = d[i++]) & 0xf0) !== 16 ||
+								((ref = d[i++]) & 240) !== 16 ||
 								i + (ref = 1 << (ref & 15)) > table
 							) {
 								break;
@@ -297,7 +297,7 @@ export function decodeBinary(
 						if (c === 15) {
 							if (
 								i > table ||
-								((ref = d[i++]) & 0xf0) !== 16 ||
+								((ref = d[i++]) & 240) !== 16 ||
 								i + (ref = 1 << (ref & 15)) > table
 							) {
 								break;
@@ -321,7 +321,7 @@ export function decodeBinary(
 						if (c === 15) {
 							if (
 								i > table ||
-								((ref = d[i++]) & 0xf0) !== 16 ||
+								((ref = d[i++]) & 240) !== 16 ||
 								i + (ref = 1 << (ref & 15)) > table
 							) {
 								break;
@@ -354,7 +354,7 @@ export function decodeBinary(
 						if (c === 15) {
 							if (
 								i > table ||
-								((ref = d[i++]) & 0xf0) !== 16 ||
+								((ref = d[i++]) & 240) !== 16 ||
 								i + (ref = 1 << (ref & 15)) > table
 							) {
 								break;
@@ -384,7 +384,7 @@ export function decodeBinary(
 						if (c === 15) {
 							if (
 								i > table ||
-								((ref = d[i++]) & 0xf0) !== 16 ||
+								((ref = d[i++]) & 240) !== 16 ||
 								i + (ref = 1 << (ref & 15)) > table
 							) {
 								break;
