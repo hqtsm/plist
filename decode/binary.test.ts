@@ -1630,6 +1630,20 @@ Deno.test('spec: uid-sizes', async () => {
 	}
 });
 
+Deno.test('spec: binary-edge depth-25', async () => {
+	const data = await fixturePlist('binary-edge', 'depth-25');
+	const { format, plist } = decodeBinary(data, CF_STYLE);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	let p: PLType = plist;
+	for (let i = 0; i < 25; i++) {
+		assertInstanceOf(p, PLArray);
+		assertEquals(p.length, 1);
+		p = p.get(0)!;
+	}
+	assertInstanceOf(p, PLBoolean);
+	assertEquals(p.value, true);
+});
+
 Deno.test('spec: binary-edge fill', async () => {
 	const data = await fixturePlist('binary-edge', 'fill');
 	assertThrows(
