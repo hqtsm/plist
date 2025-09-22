@@ -1,4 +1,5 @@
 import {
+	assert,
 	assertEquals,
 	assertInstanceOf,
 	assertStrictEquals,
@@ -1632,21 +1633,12 @@ Deno.test('spec: uid-sizes', async () => {
 
 Deno.test('spec: binary-edge depth-25', async () => {
 	const data = await fixturePlist('binary-edge', 'depth-25');
-	const { format, plist } = decodeBinary(data, CF_STYLE);
-	assertEquals(format, FORMAT_BINARY_V1_0);
-	let p: PLType = plist;
-	for (let i = 0; i < 25; i++) {
-		assertInstanceOf(p, PLArray);
-		assertEquals(p.length, 1);
-		p = p.get(0)!;
-	}
-	assertInstanceOf(p, PLBoolean);
-	assertEquals(p.value, true);
 
 	// Ensure deep recursion does not expand the stack.
 	// Spy on the objects created with a Map set override.
 	// Ensure exported function does not get pushed down the stack.
-	const traces: string[] = [];
+	let decoded;
+	const traces = new Map<PLBoolean, string>();
 	const setDesc = Object.getOwnPropertyDescriptor(Map.prototype, 'set');
 	try {
 		const f = setDesc!.value!;
@@ -1661,20 +1653,34 @@ Deno.test('spec: binary-edge depth-25', async () => {
 					PLBoolean.is(value) &&
 					value.value
 				) {
-					traces.push(new Error().stack!);
+					traces.set(value, new Error().stack!);
 				}
 				return f.apply(this, arguments);
 			},
 		});
 
-		decodeBinary(data, CF_STYLE);
+		decoded = decodeBinary(data, CF_STYLE);
 	} finally {
 		Object.defineProperty(Map.prototype, 'set', setDesc!);
 	}
-	assertEquals(traces.length, 1);
-	const top10 = traces[0].split('\n').slice(0, 10)
-		.filter((s) => s.includes('decodeBinary'));
-	assertEquals(top10.length, 1);
+
+	const { format, plist } = decoded;
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	let p: PLType = plist;
+	for (let i = 0; i < 25; i++) {
+		assertInstanceOf(p, PLArray);
+		assertEquals(p.length, 1);
+		p = p.get(0)!;
+	}
+	assertInstanceOf(p, PLBoolean);
+	assertEquals(p.value, true);
+
+	const trace = traces.get(p);
+	assert(trace);
+	const called = trace.split('\n').slice(0, 10).filter(
+		(s) => s.includes('decodeBinary'),
+	);
+	assertEquals(called.length, 1);
 });
 
 Deno.test('spec: binary-edge fill', async () => {
