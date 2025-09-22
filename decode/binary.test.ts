@@ -367,6 +367,41 @@ Deno.test('OOB Date', () => {
 	);
 });
 
+Deno.test('OOB UID', () => {
+	{
+		const data = new Uint8Array(8 + 1 + 1 + 32);
+		const view = new DataView(data.buffer);
+		data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+		view.setBigUint64(data.length - 24, 1n);
+		view.setBigUint64(data.length - 8, BigInt(data.length - 33));
+		data[data.length - 26] = 1;
+		data[data.length - 25] = 1;
+		data[data.length - 33] = 8;
+		data[8] = 0x80;
+		assertThrows(
+			() => decodeBinary(data, CF_STYLE),
+			SyntaxError,
+			binaryError(8),
+		);
+	}
+	{
+		const data = new Uint8Array(8 + 2 + 1 + 32);
+		const view = new DataView(data.buffer);
+		data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+		view.setBigUint64(data.length - 24, 1n);
+		view.setBigUint64(data.length - 8, BigInt(data.length - 33));
+		data[data.length - 26] = 1;
+		data[data.length - 25] = 1;
+		data[data.length - 33] = 8;
+		data[8] = 0x81;
+		assertThrows(
+			() => decodeBinary(data, CF_STYLE),
+			SyntaxError,
+			binaryError(8),
+		);
+	}
+});
+
 Deno.test('OOB Data String Array Dict', () => {
 	for (
 		const [name, marker] of [
