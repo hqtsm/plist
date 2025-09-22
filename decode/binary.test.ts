@@ -367,6 +367,77 @@ Deno.test('OOB Date', () => {
 	);
 });
 
+Deno.test('OOB Data 1', () => {
+	const data = new Uint8Array(8 + 1 + 1 + 32);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 1n);
+	view.setBigUint64(data.length - 8, BigInt(data.length - 33));
+	data[data.length - 26] = 1;
+	data[data.length - 25] = 1;
+	data[data.length - 33] = 8;
+	data[8] = 0x4F;
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(8),
+	);
+});
+
+Deno.test('OOB Data 2', () => {
+	const data = new Uint8Array(8 + 2 + 1 + 32);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 1n);
+	view.setBigUint64(data.length - 8, BigInt(data.length - 33));
+	data[data.length - 26] = 1;
+	data[data.length - 25] = 1;
+	data[data.length - 33] = 8;
+	data[8] = 0x4F;
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(8),
+	);
+});
+
+Deno.test('OOB Data 3', () => {
+	const data = new Uint8Array(8 + 3 + 1 + 32);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 1n);
+	view.setBigUint64(data.length - 8, BigInt(data.length - 33));
+	data[data.length - 26] = 1;
+	data[data.length - 25] = 1;
+	data[data.length - 33] = 8;
+	data[8] = 0x4F;
+	data[9] = 0x11;
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(8),
+	);
+});
+
+Deno.test('OOB Data 4', () => {
+	const data = new Uint8Array(8 + 3 + 1 + 32);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 1n);
+	view.setBigUint64(data.length - 8, BigInt(data.length - 33));
+	data[data.length - 26] = 1;
+	data[data.length - 25] = 1;
+	data[data.length - 33] = 8;
+	data[8] = 0x4F;
+	data[9] = 0x10;
+	data[10] = 0x01;
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(8),
+	);
+});
+
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('true', 'binary'),
