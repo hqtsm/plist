@@ -263,6 +263,42 @@ Deno.test('Bad trailer: ref value over under', () => {
 	);
 });
 
+Deno.test('Bad markers', () => {
+	const ranges = [
+		[0x00, 0x07],
+		[0x0A, 0x0F],
+		[0x20, 0x21],
+		[0x24, 0x2F],
+		[0x30, 0x32],
+		[0x34, 0x3F],
+		[0x70, 0x7F],
+		[0x90, 0x9F],
+		[0xB0, 0xBF],
+		[0xC0, 0xCF],
+		[0xE0, 0xEF],
+		[0xF0, 0xFF],
+	] as const;
+	const data = new Uint8Array(8 + 10 + 1 + 32);
+	const view = new DataView(data.buffer);
+	data.set([...'bplist00'].map((c) => c.charCodeAt(0)));
+	view.setBigUint64(data.length - 24, 1n);
+	view.setBigUint64(data.length - 8, BigInt(data.length - 33));
+	data[data.length - 26] = 1;
+	data[data.length - 25] = 1;
+	data[data.length - 33] = 8;
+	for (const [start, end] of ranges) {
+		for (let i = start; i <= end; i++) {
+			data[8] = i;
+			assertThrows(
+				() => decodeBinary(data, CF_STYLE),
+				SyntaxError,
+				binaryError(8),
+				`marker: ${i.toString(16).padStart(2, '0')}`,
+			);
+		}
+	}
+});
+
 Deno.test('spec: true', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('true', 'binary'),
