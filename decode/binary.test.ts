@@ -367,12 +367,14 @@ Deno.test('OOB Date', () => {
 	);
 });
 
-Deno.test('OOB Data+String', () => {
+Deno.test('OOB Data String Array Dict', () => {
 	for (
 		const [name, marker] of [
 			['Data', 0x40],
 			['String-ASCII', 0x50],
 			['String-U16', 0x60],
+			['Array', 0xA0],
+			['Dict', 0xD0],
 		] as const
 	) {
 		{
