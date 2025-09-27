@@ -15,7 +15,7 @@ import { type PLReal, PLTYPE_REAL } from '../real.ts';
 import { type PLString, PLTYPE_STRING } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLTYPE_UID, type PLUID } from '../uid.ts';
-import { walk } from '../walk.ts';
+import { walk } from '../pri/walk.ts';
 
 const rUni = /[^\0-\x7F]/;
 

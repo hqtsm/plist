@@ -9,7 +9,7 @@ import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
 import { esc, unquoted } from '../pri/openstep.ts';
 import type { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
-import { walk } from '../walk.ts';
+import { walk } from '../pri/walk.ts';
 
 const rIndent = /^[\t ]*$/;
 

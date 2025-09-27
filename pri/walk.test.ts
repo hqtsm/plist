@@ -1,14 +1,14 @@
 import { assert, assertEquals, assertStrictEquals } from '@std/assert';
-import { PLArray, PLTYPE_ARRAY } from './array.ts';
-import { PLBoolean, PLTYPE_BOOLEAN } from './boolean.ts';
-import { PLData, PLTYPE_DATA } from './data.ts';
-import { PLDate, PLTYPE_DATE } from './date.ts';
-import { PLDict, PLTYPE_DICT } from './dict.ts';
-import { PLInteger, PLTYPE_INTEGER } from './integer.ts';
-import { PLReal, PLTYPE_REAL } from './real.ts';
-import { PLString, PLTYPE_STRING } from './string.ts';
-import type { PLType } from './type.ts';
-import { PLTYPE_UID, PLUID } from './uid.ts';
+import { PLArray, PLTYPE_ARRAY } from '../array.ts';
+import { PLBoolean, PLTYPE_BOOLEAN } from '../boolean.ts';
+import { PLData, PLTYPE_DATA } from '../data.ts';
+import { PLDate, PLTYPE_DATE } from '../date.ts';
+import { PLDict, PLTYPE_DICT } from '../dict.ts';
+import { PLInteger, PLTYPE_INTEGER } from '../integer.ts';
+import { PLReal, PLTYPE_REAL } from '../real.ts';
+import { PLString, PLTYPE_STRING } from '../string.ts';
+import type { PLType } from '../type.ts';
+import { PLTYPE_UID, PLUID } from '../uid.ts';
 import { walk, type WalkParent } from './walk.ts';
 
 /**

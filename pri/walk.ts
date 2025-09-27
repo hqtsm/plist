@@ -1,13 +1,13 @@
-import { type PLArray, PLTYPE_ARRAY } from './array.ts';
-import { type PLBoolean, PLTYPE_BOOLEAN } from './boolean.ts';
-import { type PLData, PLTYPE_DATA } from './data.ts';
-import { type PLDate, PLTYPE_DATE } from './date.ts';
-import { type PLDict, PLTYPE_DICT } from './dict.ts';
-import { type PLInteger, PLTYPE_INTEGER } from './integer.ts';
-import { type PLReal, PLTYPE_REAL } from './real.ts';
-import { type PLString, PLTYPE_STRING } from './string.ts';
-import type { PLType } from './type.ts';
-import { PLTYPE_UID, type PLUID } from './uid.ts';
+import { type PLArray, PLTYPE_ARRAY } from '../array.ts';
+import { type PLBoolean, PLTYPE_BOOLEAN } from '../boolean.ts';
+import { type PLData, PLTYPE_DATA } from '../data.ts';
+import { type PLDate, PLTYPE_DATE } from '../date.ts';
+import { type PLDict, PLTYPE_DICT } from '../dict.ts';
+import { type PLInteger, PLTYPE_INTEGER } from '../integer.ts';
+import { type PLReal, PLTYPE_REAL } from '../real.ts';
+import { type PLString, PLTYPE_STRING } from '../string.ts';
+import type { PLType } from '../type.ts';
+import { PLTYPE_UID, type PLUID } from '../uid.ts';
 
 const noop = () => {};
 

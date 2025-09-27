@@ -9,7 +9,7 @@ import { utf8Encode, utf8Size } from '../pri/utf8.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { b64e } from '../pri/base.ts';
 import type { PLType } from '../type.ts';
-import { walk } from '../walk.ts';
+import { walk } from '../pri/walk.ts';
 
 const rIndent = /^[\t ]*$/;
 const rDateY4 = /^(-)0*(\d{3}-)|\+?0*(\d{4,}-)/;
