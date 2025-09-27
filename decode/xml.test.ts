@@ -48,6 +48,26 @@ function realWS(): string[] {
 	return ws;
 }
 
+Deno.test('Option: decoded', () => {
+	{
+		const { format, plist } = decodeXml(
+			TE.encode(
+				[
+					DOCTYPE,
+					'<plist version="1.0">',
+					'<true/>',
+					'</plist>',
+					'',
+				].join('\n'),
+			),
+			{ decoded: true },
+		);
+		assertEquals(format, FORMAT_XML_V1_0);
+		assertInstanceOf(plist, PLBoolean);
+		assertEquals(plist.value, true);
+	}
+});
+
 Deno.test('XML encoding: default', () => {
 	const options = {
 		decoder(encoding: string): Uint8Array | null {

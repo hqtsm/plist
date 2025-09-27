@@ -210,6 +210,14 @@ Deno.test('Data EOF', () => {
 	);
 });
 
+Deno.test('Option: decoded', () => {
+	const data = new Uint8Array([...'ABC123'].map((c) => c.charCodeAt(0)));
+	const { format, plist } = decodeOpenStep(data, { decoded: true });
+	assertEquals(format, FORMAT_OPENSTEP);
+	assertInstanceOf(plist, PLString);
+	assertEquals(plist.value, 'ABC123');
+});
+
 Deno.test('Option: utf16le: UTF-16BE NO-BOM', () => {
 	const _ = ' '.charCodeAt(0);
 	const A = 'A'.charCodeAt(0);
