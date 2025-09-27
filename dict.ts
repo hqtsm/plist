@@ -21,6 +21,11 @@ export class PLDict<T extends PLType = PLType> {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_DICT;
 
 	/**
+	 * Variable type.
+	 */
+	declare public readonly type: typeof PLTYPE_DICT;
+
+	/**
 	 * Create property list dict reference.
 	 *
 	 * @param itter Property list key value pairs.
@@ -226,8 +231,8 @@ export class PLDict<T extends PLType = PLType> {
 	}
 
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: PLTYPE_DICT,
-		});
+		const value = { value: PLTYPE_DICT } as const;
+		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
+		Object.defineProperty(this.prototype, 'type', value);
 	}
 }

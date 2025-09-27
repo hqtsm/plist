@@ -1,5 +1,5 @@
 import { assertEquals, assertThrows } from '@std/assert';
-import { PLReal } from './real.ts';
+import { PLReal, PLTYPE_REAL } from './real.ts';
 import { PLInteger } from './integer.ts';
 
 const PI64 = Math.PI;
@@ -70,6 +70,13 @@ Deno.test('bad bits', () => {
 });
 
 Deno.test('is type', () => {
+	assertEquals(new PLReal().type, PLTYPE_REAL);
+	assertEquals(new PLReal()[Symbol.toStringTag], PLTYPE_REAL);
+	assertEquals(
+		Object.prototype.toString.call(new PLReal()),
+		`[object ${PLTYPE_REAL}]`,
+	);
+
 	assertEquals(PLReal.is(new PLReal()), true);
 	assertEquals(PLReal.is(new PLInteger()), false);
 	assertEquals(PLReal.is({}), false);

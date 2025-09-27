@@ -1,5 +1,5 @@
 import { assertEquals } from '@std/assert';
-import { PLData } from './data.ts';
+import { PLData, PLTYPE_DATA } from './data.ts';
 import { PLBoolean } from './boolean.ts';
 
 Deno.test('initial value', () => {
@@ -10,6 +10,13 @@ Deno.test('initial value', () => {
 });
 
 Deno.test('is type', () => {
+	assertEquals(new PLData().type, PLTYPE_DATA);
+	assertEquals(new PLData()[Symbol.toStringTag], PLTYPE_DATA);
+	assertEquals(
+		Object.prototype.toString.call(new PLData()),
+		`[object ${PLTYPE_DATA}]`,
+	);
+
 	assertEquals(PLData.is(new PLData()), true);
 	assertEquals(PLData.is(new PLBoolean()), false);
 	assertEquals(PLData.is({}), false);

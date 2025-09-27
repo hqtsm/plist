@@ -37,6 +37,11 @@ export class PLDate {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_DATE;
 
 	/**
+	 * Variable type.
+	 */
+	declare public readonly type: typeof PLTYPE_DATE;
+
+	/**
 	 * Create property list date reference.
 	 *
 	 * @param time Date time.
@@ -264,9 +269,9 @@ export class PLDate {
 	public static readonly UNIX_EPOCH: number;
 
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: PLTYPE_DATE,
-		});
+		const value = { value: PLTYPE_DATE } as const;
+		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
+		Object.defineProperty(this.prototype, 'type', value);
 		Object.defineProperty(this, 'UNIX_EPOCH', { value: UNIX_EPOCH });
 	}
 }

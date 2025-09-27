@@ -20,6 +20,11 @@ export class PLBoolean {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_BOOLEAN;
 
 	/**
+	 * Variable type.
+	 */
+	declare public readonly type: typeof PLTYPE_BOOLEAN;
+
+	/**
 	 * Create property list boolean reference.
 	 *
 	 * @param value Boolean value.
@@ -57,8 +62,8 @@ export class PLBoolean {
 	}
 
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: PLTYPE_BOOLEAN,
-		});
+		const value = { value: PLTYPE_BOOLEAN } as const;
+		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
+		Object.defineProperty(this.prototype, 'type', value);
 	}
 }

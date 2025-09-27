@@ -26,6 +26,11 @@ export class PLReal {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_REAL;
 
 	/**
+	 * Variable type.
+	 */
+	declare public readonly type: typeof PLTYPE_REAL;
+
+	/**
 	 * Create property list real reference.
 	 *
 	 * @param value Real value.
@@ -111,8 +116,8 @@ export class PLReal {
 	}
 
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: PLTYPE_REAL,
-		});
+		const value = { value: PLTYPE_REAL } as const;
+		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
+		Object.defineProperty(this.prototype, 'type', value);
 	}
 }

@@ -1,5 +1,5 @@
 import { assertEquals, assertThrows } from '@std/assert';
-import { PLInteger } from './integer.ts';
+import { PLInteger, PLTYPE_INTEGER } from './integer.ts';
 import { PLReal } from './real.ts';
 
 Deno.test('initial value', () => {
@@ -94,6 +94,13 @@ Deno.test('value wrap', () => {
 });
 
 Deno.test('is type', () => {
+	assertEquals(new PLInteger().type, PLTYPE_INTEGER);
+	assertEquals(new PLInteger()[Symbol.toStringTag], PLTYPE_INTEGER);
+	assertEquals(
+		Object.prototype.toString.call(new PLInteger()),
+		`[object ${PLTYPE_INTEGER}]`,
+	);
+
 	assertEquals(PLInteger.is(new PLInteger()), true);
 	assertEquals(PLInteger.is(new PLReal()), false);
 	assertEquals(PLInteger.is({}), false);

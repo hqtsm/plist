@@ -20,6 +20,11 @@ export class PLUID {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_UID;
 
 	/**
+	 * Variable type.
+	 */
+	declare public readonly type: typeof PLTYPE_UID;
+
+	/**
 	 * Create property list UID reference.
 	 *
 	 * @param value UID value.
@@ -57,8 +62,8 @@ export class PLUID {
 	}
 
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: PLTYPE_UID,
-		});
+		const value = { value: PLTYPE_UID } as const;
+		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
+		Object.defineProperty(this.prototype, 'type', value);
 	}
 }

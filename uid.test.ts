@@ -1,6 +1,6 @@
 import { assertEquals } from '@std/assert';
 import { PLInteger } from './integer.ts';
-import { PLUID } from './uid.ts';
+import { PLTYPE_UID, PLUID } from './uid.ts';
 
 const MAX_U32 = 0xffffffffn;
 
@@ -36,6 +36,13 @@ Deno.test('value wrap', () => {
 });
 
 Deno.test('is type', () => {
+	assertEquals(new PLUID().type, PLTYPE_UID);
+	assertEquals(new PLUID()[Symbol.toStringTag], PLTYPE_UID);
+	assertEquals(
+		Object.prototype.toString.call(new PLUID()),
+		`[object ${PLTYPE_UID}]`,
+	);
+
 	assertEquals(PLUID.is(new PLUID()), true);
 	assertEquals(PLUID.is(new PLInteger()), false);
 	assertEquals(PLUID.is({}), false);

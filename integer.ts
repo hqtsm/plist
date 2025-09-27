@@ -26,6 +26,11 @@ export class PLInteger {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_INTEGER;
 
 	/**
+	 * Variable type.
+	 */
+	declare public readonly type: typeof PLTYPE_INTEGER;
+
+	/**
 	 * Create property list integer reference.
 	 *
 	 * @param value Integer value.
@@ -141,8 +146,8 @@ export class PLInteger {
 	}
 
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: PLTYPE_INTEGER,
-		});
+		const value = { value: PLTYPE_INTEGER } as const;
+		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
+		Object.defineProperty(this.prototype, 'type', value);
 	}
 }

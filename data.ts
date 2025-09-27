@@ -20,6 +20,11 @@ export class PLData {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_DATA;
 
 	/**
+	 * Variable type.
+	 */
+	declare public readonly type: typeof PLTYPE_DATA;
+
+	/**
 	 * Create property list data reference.
 	 *
 	 * @param byteLength Byte length.
@@ -57,8 +62,8 @@ export class PLData {
 	}
 
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: PLTYPE_DATA,
-		});
+		const value = { value: PLTYPE_DATA } as const;
+		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
+		Object.defineProperty(this.prototype, 'type', value);
 	}
 }

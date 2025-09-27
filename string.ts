@@ -20,6 +20,11 @@ export class PLString {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_STRING;
 
 	/**
+	 * Variable type.
+	 */
+	declare public readonly type: typeof PLTYPE_STRING;
+
+	/**
 	 * Create property list string reference.
 	 *
 	 * @param value String value.
@@ -66,8 +71,8 @@ export class PLString {
 	}
 
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: PLTYPE_STRING,
-		});
+		const value = { value: PLTYPE_STRING } as const;
+		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
+		Object.defineProperty(this.prototype, 'type', value);
 	}
 }

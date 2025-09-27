@@ -5,7 +5,7 @@ import {
 	assertLessOrEqual,
 	assertStrictEquals,
 } from '@std/assert';
-import { PLDate } from './date.ts';
+import { PLDate, PLTYPE_DATE } from './date.ts';
 import { PLReal } from './real.ts';
 
 const rISO = /^([-+]?\d+)-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}\.\d{3})Z$/;
@@ -133,6 +133,13 @@ Deno.test('parse', () => {
 });
 
 Deno.test('is type', () => {
+	assertEquals(new PLDate().type, PLTYPE_DATE);
+	assertEquals(new PLDate()[Symbol.toStringTag], PLTYPE_DATE);
+	assertEquals(
+		Object.prototype.toString.call(new PLDate()),
+		`[object ${PLTYPE_DATE}]`,
+	);
+
 	assertEquals(PLDate.is(new PLDate()), true);
 	assertEquals(PLDate.is(new PLReal()), false);
 	assertEquals(PLDate.is({}), false);

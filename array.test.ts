@@ -1,5 +1,5 @@
 import { assertEquals, assertStrictEquals } from '@std/assert';
-import { PLArray } from './array.ts';
+import { PLArray, PLTYPE_ARRAY } from './array.ts';
 import { PLBoolean } from './boolean.ts';
 import { PLInteger } from './integer.ts';
 
@@ -440,6 +440,13 @@ Deno.test('toArray', () => {
 });
 
 Deno.test('is type', () => {
+	assertEquals(new PLArray().type, PLTYPE_ARRAY);
+	assertEquals(new PLArray()[Symbol.toStringTag], PLTYPE_ARRAY);
+	assertEquals(
+		Object.prototype.toString.call(new PLArray()),
+		`[object ${PLTYPE_ARRAY}]`,
+	);
+
 	assertEquals(PLArray.is(new PLArray()), true);
 	assertEquals(PLArray.is(new PLInteger()), false);
 	assertEquals(PLArray.is({}), false);

@@ -1,5 +1,5 @@
 import { assertEquals, assertStrictEquals } from '@std/assert';
-import { PLDict } from './dict.ts';
+import { PLDict, PLTYPE_DICT } from './dict.ts';
 import { PLString } from './string.ts';
 
 /**
@@ -226,6 +226,13 @@ Deno.test('toValueMap', () => {
 });
 
 Deno.test('is type', () => {
+	assertEquals(new PLDict().type, PLTYPE_DICT);
+	assertEquals(new PLDict()[Symbol.toStringTag], PLTYPE_DICT);
+	assertEquals(
+		Object.prototype.toString.call(new PLDict()),
+		`[object ${PLTYPE_DICT}]`,
+	);
+
 	assertEquals(PLDict.is(new PLDict()), true);
 	assertEquals(PLDict.is(new PLString()), false);
 	assertEquals(PLDict.is({}), false);

@@ -20,6 +20,11 @@ export class PLArray<T extends PLType = PLType> {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_ARRAY;
 
 	/**
+	 * Variable type.
+	 */
+	declare public readonly type: typeof PLTYPE_ARRAY;
+
+	/**
 	 * Create property list array reference.
 	 *
 	 * @param itter Property list values.
@@ -292,8 +297,8 @@ export class PLArray<T extends PLType = PLType> {
 	}
 
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, {
-			value: PLTYPE_ARRAY,
-		});
+		const value = { value: PLTYPE_ARRAY } as const;
+		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
+		Object.defineProperty(this.prototype, 'type', value);
 	}
 }

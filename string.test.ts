@@ -1,5 +1,5 @@
 import { assertEquals } from '@std/assert';
-import { PLString } from './string.ts';
+import { PLString, PLTYPE_STRING } from './string.ts';
 import { PLBoolean } from './boolean.ts';
 
 const edge = '[\0][\u00f7][\u03a9][\u2705][\uff0b][\u{1f916}]';
@@ -22,6 +22,13 @@ Deno.test('set value', () => {
 });
 
 Deno.test('is type', () => {
+	assertEquals(new PLString().type, PLTYPE_STRING);
+	assertEquals(new PLString()[Symbol.toStringTag], PLTYPE_STRING);
+	assertEquals(
+		Object.prototype.toString.call(new PLString()),
+		`[object ${PLTYPE_STRING}]`,
+	);
+
 	assertEquals(PLString.is(new PLString()), true);
 	assertEquals(PLString.is(new PLBoolean()), false);
 	assertEquals(PLString.is({}), false);
