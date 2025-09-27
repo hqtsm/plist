@@ -15,7 +15,6 @@ import { b16d, b64d } from '../pri/base.ts';
 import { bytes } from '../pri/data.ts';
 import { getTime } from '../pri/date.ts';
 import {
-	utf8,
 	utf8Decode,
 	utf8Encoded,
 	utf8ErrorEnd,
@@ -635,6 +634,13 @@ export interface DecodeXmlOptions {
 	 * @default false
 	 */
 	int64?: boolean;
+
+	/**
+	 * Flag to skip decoding and assumed UTF-8 without BOM.
+	 *
+	 * @default false
+	 */
+	decoded?: boolean;
 }
 
 /**
@@ -665,15 +671,14 @@ export function decodeXml(
 		decoder,
 		utf16le,
 		int64 = false,
+		decoded = false,
 	}: Readonly<DecodeXmlOptions> = {},
 ): DecodeXmlResult {
 	let x;
-	let d;
+	let d = bytes(encoded);
 	let keyed;
-	if (utf8.has(encoded as Uint8Array)) {
-		d = encoded as Uint8Array;
-	} else {
-		keyed = utf8Encoded(d = bytes(encoded), utf16le);
+	if (!decoded) {
+		keyed = utf8Encoded(d, utf16le);
 		if (
 			!keyed &&
 			(x = encoding(d)) !== null &&

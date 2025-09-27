@@ -12,7 +12,6 @@ import { b16d } from '../pri/base.ts';
 import { bytes } from '../pri/data.ts';
 import { latin, unesc, unquoted } from '../pri/openstep.ts';
 import {
-	utf8,
 	utf8Decode,
 	utf8Encoded,
 	utf8ErrorEnd,
@@ -227,6 +226,13 @@ export interface DecodeOpenStepOptions {
 	 * Defaults to auto detect.
 	 */
 	utf16le?: boolean;
+
+	/**
+	 * Flag to skip decoding and assumed UTF-8 without BOM.
+	 *
+	 * @default false
+	 */
+	decoded?: boolean;
 }
 
 /**
@@ -256,9 +262,10 @@ export function decodeOpenStep(
 	{
 		allowMissingSemi = false,
 		utf16le,
+		decoded = false,
 	}: Readonly<DecodeOpenStepOptions> = {},
 ): DecodeOpenStepResult {
-	let d;
+	let d = bytes(encoded);
 	let p: [number];
 	let format: DecodeOpenStepResult['format'] = FORMAT_OPENSTEP;
 	let n: Node | null = null;
@@ -266,11 +273,8 @@ export function decodeOpenStep(
 	let e;
 	let plist;
 	let c = (
-		utf8Length(
-			d = utf8.has(encoded as Uint8Array)
-				? encoded as Uint8Array
-				: utf8Encoded(d = bytes(encoded), utf16le) || d,
-		), next(d, p = [0])
+		utf8Length(d = decoded ? d : utf8Encoded(d, utf16le) || d),
+			next(d, p = [0])
 	);
 	if (c < 0) {
 		return { format: FORMAT_STRINGS, plist: new PLDict() };
