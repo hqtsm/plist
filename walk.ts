@@ -12,6 +12,41 @@ import { PLTYPE_UID, type PLUID } from './uid.ts';
 const noop = () => {};
 
 /**
+ * Linked list node type.
+ */
+interface Node {
+	/**
+	 * Parent of the itter, null for root.
+	 */
+	p: PLArray | PLDict | null;
+
+	/**
+	 * Key value generator.
+	 */
+	g: {
+		/**
+		 * Next key value pair.
+		 */
+		next(): {
+			/**
+			 * Generator done flag.
+			 */
+			done?: boolean;
+
+			/**
+			 * Key value pair.
+			 */
+			value?: [number | PLString, PLType];
+		};
+	};
+
+	/**
+	 * Next node.
+	 */
+	n: Node | null;
+}
+
+/**
  * Walk parent.
  */
 export type WalkParent = PLArray | PLDict | null;
@@ -142,41 +177,6 @@ export interface WalkVisitors {
 		 */
 		default?: WalkVisitor<PLArray | PLDict>;
 	};
-}
-
-/**
- * Linked list node type.
- */
-interface Node {
-	/**
-	 * Parent of the itter, null for root.
-	 */
-	p: PLArray | PLDict | null;
-
-	/**
-	 * Key value generator.
-	 */
-	g: {
-		/**
-		 * Next key value pair.
-		 */
-		next(): {
-			/**
-			 * Generator done flag.
-			 */
-			done?: boolean;
-
-			/**
-			 * Key value pair.
-			 */
-			value?: [number | PLString, PLType];
-		};
-	};
-
-	/**
-	 * Next node.
-	 */
-	n: Node | null;
 }
 
 /**
