@@ -4,7 +4,6 @@
  * OpenStep encoding.
  */
 
-import { PLTYPE_DICT } from '../dict.ts';
 import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
 import { esc, unquoted } from '../pri/openstep.ts';
 import type { PLType } from '../type.ts';
@@ -237,8 +236,8 @@ export function encodeOpenStep(
 	walk(
 		plist,
 		{
-			PLArray(v, d, k, p): void {
-				if (!p && base) {
+			PLArray(v, d, k): void {
+				if (!d && base) {
 					throw new TypeError('Invalid strings root type');
 				}
 				if (k && typeof k !== 'number') {
@@ -255,8 +254,8 @@ export function encodeOpenStep(
 					i += 2;
 				}
 			},
-			PLData(v, _, k, p): void {
-				if (!p && base) {
+			PLData(v, d, k): void {
+				if (!d && base) {
 					throw new TypeError('Invalid strings root type');
 				}
 				if (k && typeof k !== 'number') {
@@ -265,8 +264,8 @@ export function encodeOpenStep(
 				k = v.byteLength;
 				i += k ? 2 + k + k + (k - (k % 4 || 4)) / 4 : 2;
 			},
-			PLString(v, _, k, p): void {
-				if (!p && base) {
+			PLString(v, d, k): void {
+				if (!d && base) {
 					throw new TypeError('Invalid strings root type');
 				}
 				if (k && typeof k !== 'number') {
@@ -409,26 +408,26 @@ export function encodeOpenStep(
 			},
 		},
 		{
-			PLArray(v, d, _, p): void {
+			PLArray(v, d, k): void {
 				if (v.length && (d += base + 1)) {
 					r[i++] = 10;
 					for (; --d; i += indentL) {
 						r.set(indentD, i);
 					}
 					r[i++] = 41;
-					if (p?.[Symbol.toStringTag] === PLTYPE_DICT) {
+					if (k && typeof k !== 'number') {
 						r[i++] = 59;
 					}
 				}
 			},
-			PLDict(v, d, _, p): void {
+			PLDict(v, d, k): void {
 				if (v.size && (d += base + 1)) {
 					r[i++] = 10;
 					for (; --d; i += indentL) {
 						r.set(indentD, i);
 					}
 					r[i++] = 125;
-					if (p?.[Symbol.toStringTag] === PLTYPE_DICT) {
+					if (k && typeof k !== 'number') {
 						r[i++] = 59;
 					}
 				}
