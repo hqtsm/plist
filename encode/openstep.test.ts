@@ -496,10 +496,7 @@ Deno.test('spec: dict-reuse', async () => {
 	]);
 	{
 		const encode = encodeOpenStep(
-			new PLDict([
-				[new PLString('AA'), reuse],
-				[new PLString('BB'), reuse],
-			]),
+			new PLArray([reuse, reuse]),
 			CF_STYLE,
 		);
 		assertEquals(
@@ -510,8 +507,8 @@ Deno.test('spec: dict-reuse', async () => {
 	{
 		const encode = encodeOpenStep(
 			new PLDict([
-				[new PLString('AA'), reuse],
-				[new PLString('BB'), reuse],
+				[new PLString('A'), reuse],
+				[new PLString('B'), reuse],
 			]),
 			{
 				...CF_STYLE,

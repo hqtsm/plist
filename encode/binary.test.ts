@@ -512,10 +512,7 @@ Deno.test('spec: dict-reuse', async () => {
 		[new PLString('BBBB'), new PLString('2222')],
 	]);
 	const encode = encodeBinary(
-		new PLDict([
-			[new PLString('AA'), reuse],
-			[new PLString('BB'), reuse],
-		]),
+		new PLArray([reuse, reuse]),
 		CF_STYLE,
 	);
 	assertEquals(

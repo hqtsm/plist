@@ -699,32 +699,32 @@ Deno.test('spec: dict-reuse', async () => {
 			CF_STYLE,
 		);
 		assertEquals(format, FORMAT_OPENSTEP);
-		assertInstanceOf(plist, PLDict);
-		assertEquals(plist.size, 2);
+		assertInstanceOf(plist, PLArray);
+		assertEquals(plist.length, 2);
 
-		const AA = plist.find('AA');
-		assertInstanceOf(AA, PLDict);
+		const A = plist.get(0);
+		assertInstanceOf(A, PLDict);
 		{
-			const AAAA = AA.find('AAAA');
+			const AAAA = A.find('AAAA');
 			assertInstanceOf(AAAA, PLString);
 			assertEquals(AAAA.value, '1111');
-			const BBBB = AA.find('BBBB');
+			const BBBB = A.find('BBBB');
 			assertInstanceOf(BBBB, PLString);
 			assertEquals(BBBB.value, '2222');
 		}
 
-		const BB = plist.find('BB');
-		assertInstanceOf(BB, PLDict);
+		const B = plist.get(1);
+		assertInstanceOf(B, PLDict);
 		{
-			const AAAA = BB.find('AAAA');
+			const AAAA = B.find('AAAA');
 			assertInstanceOf(AAAA, PLString);
 			assertEquals(AAAA.value, '1111');
-			const BBBB = BB.find('BBBB');
+			const BBBB = B.find('BBBB');
 			assertInstanceOf(BBBB, PLString);
 			assertEquals(BBBB.value, '2222');
 		}
 
-		assertNotStrictEquals(AA, BB);
+		assertNotStrictEquals(A, B);
 	}
 	{
 		const { format, plist } = decodeOpenStep(
@@ -733,30 +733,31 @@ Deno.test('spec: dict-reuse', async () => {
 		);
 		assertEquals(format, FORMAT_STRINGS);
 		assertInstanceOf(plist, PLDict);
+		assertEquals(plist.size, 2);
 
-		const AA = plist.find('AA');
-		assertInstanceOf(AA, PLDict);
+		const A = plist.find('A');
+		assertInstanceOf(A, PLDict);
 		{
-			const AAAA = AA.find('AAAA');
+			const AAAA = A.find('AAAA');
 			assertInstanceOf(AAAA, PLString);
 			assertEquals(AAAA.value, '1111');
-			const BBBB = AA.find('BBBB');
+			const BBBB = A.find('BBBB');
 			assertInstanceOf(BBBB, PLString);
 			assertEquals(BBBB.value, '2222');
 		}
 
-		const BB = plist.find('BB');
-		assertInstanceOf(BB, PLDict);
+		const B = plist.find('B');
+		assertInstanceOf(B, PLDict);
 		{
-			const AAAA = BB.find('AAAA');
+			const AAAA = B.find('AAAA');
 			assertInstanceOf(AAAA, PLString);
 			assertEquals(AAAA.value, '1111');
-			const BBBB = BB.find('BBBB');
+			const BBBB = B.find('BBBB');
 			assertInstanceOf(BBBB, PLString);
 			assertEquals(BBBB.value, '2222');
 		}
 
-		assertNotStrictEquals(AA, BB);
+		assertNotStrictEquals(A, B);
 	}
 });
 
