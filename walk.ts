@@ -127,7 +127,7 @@ export interface WalkVisit {
 	/**
 	 * Default close visitor.
 	 */
-	default?: WalkVisitor<PLArray | PLDict>;
+	default?: WalkVisitor<PLType>;
 }
 
 /**
