@@ -48,6 +48,10 @@ function realWS(): string[] {
 	return ws;
 }
 
+function kp(value: string): (key: PLString) => boolean {
+	return (key: PLString) => key.value === value;
+}
+
 Deno.test('Option: decoded', () => {
 	{
 		const { format, plist } = decodeXml(
@@ -1845,11 +1849,11 @@ Deno.test('spec: dict-empties', async () => {
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
 
-	const array = plist.find('array');
+	const array = plist.find(kp('array'));
 	assertInstanceOf(array, PLArray);
 	assertEquals(array.length, 0);
 
-	const dict = plist.find('dict');
+	const dict = plist.find(kp('dict'));
 	assertInstanceOf(dict, PLDict);
 	assertEquals(dict.size, 0);
 });
@@ -1865,7 +1869,7 @@ Deno.test('spec: dict-26', async () => {
 	assertEquals(plist.size, 26);
 
 	for (let i = 0; i < plist.size; i++) {
-		const str = plist.find(alphabet[i]);
+		const str = plist.find(kp(alphabet[i]));
 		assertInstanceOf(str, PLString);
 		assertEquals(str.value, alphabet[i].toLowerCase());
 	}
@@ -1881,7 +1885,7 @@ Deno.test('spec: dict-long-key', async () => {
 	assertEquals(plist.size, 1);
 
 	const str = plist.find(
-		'ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789',
+		kp('ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789'),
 	);
 	assertInstanceOf(str, PLString);
 	assertEquals(str.value, '64');
@@ -1896,7 +1900,7 @@ Deno.test('spec: dict-unicode-key', async () => {
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 1);
 
-	const str = plist.find('UTF\u20138');
+	const str = plist.find(kp('UTF\u20138'));
 	assertInstanceOf(str, PLString);
 	assertEquals(str.value, 'utf-8');
 });
@@ -1910,59 +1914,59 @@ Deno.test('spec: dict-nesting', async () => {
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
 
-	const A = plist.find('A');
+	const A = plist.find(kp('A'));
 	assertInstanceOf(A, PLDict);
 	assertEquals(A.size, 2);
 
-	const AA = A.find('AA');
+	const AA = A.find(kp('AA'));
 	assertInstanceOf(AA, PLDict);
 	assertEquals(AA.size, 2);
 
-	const AAA = AA.find('AAA');
+	const AAA = AA.find(kp('AAA'));
 	assertInstanceOf(AAA, PLString);
 	assertEquals(AAA.value, 'aaa');
 
-	const AAB = AA.find('AAB');
+	const AAB = AA.find(kp('AAB'));
 	assertInstanceOf(AAB, PLString);
 	assertEquals(AAB.value, 'aab');
 
-	const AB = A.find('AB');
+	const AB = A.find(kp('AB'));
 	assertInstanceOf(AB, PLDict);
 	assertEquals(AB.size, 2);
 
-	const ABA = AB.find('ABA');
+	const ABA = AB.find(kp('ABA'));
 	assertInstanceOf(ABA, PLString);
 	assertEquals(ABA.value, 'aba');
 
-	const ABB = AB.find('ABB');
+	const ABB = AB.find(kp('ABB'));
 	assertInstanceOf(ABB, PLString);
 	assertEquals(ABB.value, 'abb');
 
-	const B = plist.find('B');
+	const B = plist.find(kp('B'));
 	assertInstanceOf(B, PLDict);
 	assertEquals(B.size, 2);
 
-	const BA = B.find('BA');
+	const BA = B.find(kp('BA'));
 	assertInstanceOf(BA, PLDict);
 	assertEquals(BA.size, 2);
 
-	const BAA = BA.find('BAA');
+	const BAA = BA.find(kp('BAA'));
 	assertInstanceOf(BAA, PLString);
 	assertEquals(BAA.value, 'baa');
 
-	const BAB = BA.find('BAB');
+	const BAB = BA.find(kp('BAB'));
 	assertInstanceOf(BAB, PLString);
 	assertEquals(BAB.value, 'bab');
 
-	const BB = B.find('BB');
+	const BB = B.find(kp('BB'));
 	assertInstanceOf(BB, PLDict);
 	assertEquals(BB.size, 2);
 
-	const BBA = BB.find('BBA');
+	const BBA = BB.find(kp('BBA'));
 	assertInstanceOf(BBA, PLString);
 	assertEquals(BBA.value, 'bba');
 
-	const BBB = BB.find('BBB');
+	const BBB = BB.find(kp('BBB'));
 	assertInstanceOf(BBB, PLString);
 	assertEquals(BBB.value, 'bbb');
 });
@@ -1976,31 +1980,31 @@ Deno.test('spec: dict-order', async () => {
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 7);
 
-	const empty = plist.find('');
+	const empty = plist.find(kp(''));
 	assertInstanceOf(empty, PLString);
 	assertEquals(empty.value, '0');
 
-	const a = plist.find('a');
+	const a = plist.find(kp('a'));
 	assertInstanceOf(a, PLString);
 	assertEquals(a.value, '1');
 
-	const aa = plist.find('aa');
+	const aa = plist.find(kp('aa'));
 	assertInstanceOf(aa, PLString);
 	assertEquals(aa.value, '2');
 
-	const aaa = plist.find('aaa');
+	const aaa = plist.find(kp('aaa'));
 	assertInstanceOf(aaa, PLString);
 	assertEquals(aaa.value, '3');
 
-	const ab = plist.find('ab');
+	const ab = plist.find(kp('ab'));
 	assertInstanceOf(ab, PLString);
 	assertEquals(ab.value, '4');
 
-	const abb = plist.find('abb');
+	const abb = plist.find(kp('abb'));
 	assertInstanceOf(abb, PLString);
 	assertEquals(abb.value, '5');
 
-	const ac = plist.find('ac');
+	const ac = plist.find(kp('ac'));
 	assertInstanceOf(ac, PLString);
 	assertEquals(ac.value, '6');
 });
@@ -2016,10 +2020,10 @@ Deno.test('spec: dict-reuse', async () => {
 	const A = plist.get(0);
 	assertInstanceOf(A, PLDict);
 	{
-		const AAAA = A.find('AAAA');
+		const AAAA = A.find(kp('AAAA'));
 		assertInstanceOf(AAAA, PLString);
 		assertEquals(AAAA.value, '1111');
-		const BBBB = A.find('BBBB');
+		const BBBB = A.find(kp('BBBB'));
 		assertInstanceOf(BBBB, PLString);
 		assertEquals(BBBB.value, '2222');
 	}
@@ -2027,10 +2031,10 @@ Deno.test('spec: dict-reuse', async () => {
 	const B = plist.get(1);
 	assertInstanceOf(B, PLDict);
 	{
-		const AAAA = B.find('AAAA');
+		const AAAA = B.find(kp('AAAA'));
 		assertInstanceOf(AAAA, PLString);
 		assertEquals(AAAA.value, '1111');
-		const BBBB = B.find('BBBB');
+		const BBBB = B.find(kp('BBBB'));
 		assertInstanceOf(BBBB, PLString);
 		assertEquals(BBBB.value, '2222');
 	}
@@ -2509,11 +2513,11 @@ Deno.test('spec: xml-edge comments', async () => {
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
 
-	const dict = plist.find('dict')!;
+	const dict = plist.find(kp('dict'))!;
 	assertInstanceOf(dict, PLDict);
 	assertEquals(dict.size, 0);
 
-	const array = plist.find('array')!;
+	const array = plist.find(kp('array'))!;
 	assertInstanceOf(array, PLArray);
 	assertEquals(array.length, 2);
 
@@ -2664,7 +2668,7 @@ Deno.test('spec: xml-edge date-edge', async () => {
 	assertInstanceOf(plist, PLDict);
 
 	{
-		const d = plist.find('leapyear');
+		const d = plist.find(kp('leapyear'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '2008-02-29T00:00:00.000Z');
 		assertEquals(
@@ -2673,92 +2677,92 @@ Deno.test('spec: xml-edge date-edge', async () => {
 		);
 	}
 	{
-		const d = plist.find('year 999');
+		const d = plist.find(kp('year 999'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '0999-01-01T00:00:00.000Z');
 	}
 	{
-		const d = plist.find('year 99');
+		const d = plist.find(kp('year 99'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '0099-01-01T00:00:00.000Z');
 	}
 	{
-		const d = plist.find('year 9');
+		const d = plist.find(kp('year 9'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '0009-01-01T00:00:00.000Z');
 	}
 	{
-		const d = plist.find('year 1');
+		const d = plist.find(kp('year 1'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '0001-01-01T00:00:00.000Z');
 	}
 	{
-		const d = plist.find('limit');
+		const d = plist.find(kp('limit'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '+2147483647-01-01T00:00:00.000Z');
 	}
 	{
-		const d = plist.find('overflow');
+		const d = plist.find(kp('overflow'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '-2147481647-01-01T00:00:00.000Z');
 	}
 	{
-		const d = plist.find('underflow');
+		const d = plist.find(kp('underflow'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '+2147483647-01-01T00:00:00.000Z');
 	}
 	{
-		const d = plist.find('rollover s 60');
+		const d = plist.find(kp('rollover s 60'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '2010-01-01T00:01:00.000Z');
 	}
 	{
-		const d = plist.find('rollover s 99');
+		const d = plist.find(kp('rollover s 99'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '2010-01-01T00:01:39.000Z');
 	}
 	{
-		const d = plist.find('rollover m 60');
+		const d = plist.find(kp('rollover m 60'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '2010-01-01T01:00:00.000Z');
 	}
 	{
-		const d = plist.find('rollover m 99');
+		const d = plist.find(kp('rollover m 99'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '2010-01-01T01:39:00.000Z');
 	}
 	{
-		const d = plist.find('rollover h 24');
+		const d = plist.find(kp('rollover h 24'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '2010-01-02T00:00:00.000Z');
 	}
 	{
-		const d = plist.find('rollover h 99');
+		const d = plist.find(kp('rollover h 99'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '2010-01-05T03:00:00.000Z');
 	}
 	{
-		const d = plist.find('rollover d 00');
+		const d = plist.find(kp('rollover d 00'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '2009-12-31T00:00:00.000Z');
 	}
 	{
-		const d = plist.find('rollover d 32');
+		const d = plist.find(kp('rollover d 32'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '2010-02-01T00:00:00.000Z');
 	}
 	{
-		const d = plist.find('rollover m 00');
+		const d = plist.find(kp('rollover m 00'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '2010-01-01T00:00:00.000Z');
 	}
 	{
-		const d = plist.find('rollover m 13');
+		const d = plist.find(kp('rollover m 13'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '2011-01-01T00:00:00.000Z');
 	}
 	{
-		const d = plist.find('rollover feb 29');
+		const d = plist.find(kp('rollover feb 29'));
 		assertInstanceOf(d, PLDate);
 		assertEquals(d.toISOString(), '2010-03-01T00:00:00.000Z');
 	}
@@ -2934,11 +2938,11 @@ Deno.test('spec: xml-edge key-dict', async () => {
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
 
-	const A = plist.find('A');
+	const A = plist.find(kp('A'));
 	assertInstanceOf(A, PLString);
 	assertEquals(A.value, 'Apple');
 
-	const B = plist.find('B');
+	const B = plist.find(kp('B'));
 	assertInstanceOf(B, PLString);
 	assertEquals(B.value, 'Banana');
 });
@@ -2962,7 +2966,7 @@ Deno.test('spec: xml-edge legacy-10.0-0.9-1-null', async () => {
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 1);
 
-	const name = plist.find('Name');
+	const name = plist.find(kp('Name'));
 	assertInstanceOf(name, PLString);
 	assertEquals(name.value, 'John Smith');
 });
@@ -2978,11 +2982,11 @@ Deno.test('spec: xml-edge legacy-10.0-0.9-2', async () => {
 
 	assertEquals([...plist.keys()].map((k) => k.value), ['Age', 'Name']);
 
-	const age = plist.find('Age');
+	const age = plist.find(kp('Age'));
 	assertInstanceOf(age, PLInteger);
 	assertEquals(age.value, 42n);
 
-	const name = plist.find('Name');
+	const name = plist.find(kp('Name'));
 	assertInstanceOf(name, PLString);
 	assertEquals(name.value, 'John Smith');
 });
@@ -3057,11 +3061,11 @@ Deno.test('spec: xml-edge plist-tags-dict', async () => {
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
 
-	const t = plist.find('true');
+	const t = plist.find(kp('true'));
 	assertInstanceOf(t, PLBoolean);
 	assertEquals(t.value, true);
 
-	const f = plist.find('false');
+	const f = plist.find(kp('false'));
 	assertInstanceOf(f, PLBoolean);
 	assertEquals(f.value, false);
 });
@@ -3085,11 +3089,11 @@ Deno.test('spec: xml-edge processing-instructions', async () => {
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
 
-	const dict = plist.find('dict')!;
+	const dict = plist.find(kp('dict'))!;
 	assertInstanceOf(dict, PLDict);
 	assertEquals(dict.size, 0);
 
-	const array = plist.find('array')!;
+	const array = plist.find(kp('array'))!;
 	assertInstanceOf(array, PLArray);
 	assertEquals(array.length, 2);
 
@@ -3293,11 +3297,11 @@ Deno.test('spec: xml-edge uid-not', async () => {
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
 
-	const a = plist.find('CF$UID');
+	const a = plist.find(kp('CF$UID'));
 	assertInstanceOf(a, PLInteger);
 	assertEquals(a.value, 42n);
 
-	const b = plist.find('other');
+	const b = plist.find(kp('other'));
 	assertInstanceOf(b, PLInteger);
 	assertEquals(b.value, 123n);
 });
@@ -3378,7 +3382,7 @@ Deno.test('spec: xml-edge uid-string', async () => {
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 1);
 
-	const a = plist.find('CF$UID');
+	const a = plist.find(kp('CF$UID'));
 	assertInstanceOf(a, PLString);
 	assertEquals(a.value, '42');
 });
@@ -3458,23 +3462,23 @@ Deno.test('spec: xml-encoding-utf', async () => {
 		assertInstanceOf(plist, PLDict, file);
 		assertEquals(plist.size, 5, file);
 
-		const divide = plist.find('divide');
+		const divide = plist.find(kp('divide'));
 		assertInstanceOf(divide, PLString, file);
 		assertEquals(divide.value, '\u00f7', file);
 
-		const ohm = plist.find('ohm');
+		const ohm = plist.find(kp('ohm'));
 		assertInstanceOf(ohm, PLString, file);
 		assertEquals(ohm.value, '\u03a9', file);
 
-		const check = plist.find('check');
+		const check = plist.find(kp('check'));
 		assertInstanceOf(check, PLString, file);
 		assertEquals(check.value, '\u2705', file);
 
-		const plus = plist.find('plus');
+		const plus = plist.find(kp('plus'));
 		assertInstanceOf(plus, PLString, file);
 		assertEquals(plus.value, '\uff0b', file);
 
-		const robot = plist.find('robot');
+		const robot = plist.find(kp('robot'));
 		assertInstanceOf(robot, PLString, file);
 		assertEquals(robot.value, '\ud83e\udd16', file);
 	}

@@ -95,12 +95,12 @@ export class PLDict<T extends PLType = PLType> {
 	/**
 	 * Find value for first key of value.
 	 *
-	 * @param key Key value.
+	 * @param predicate Key search predicate.
 	 * @returns Value or undefined.
 	 */
-	public find(key: string): T | undefined {
+	public find(predicate: (key: PLString) => boolean): T | undefined {
 		for (const [k, v] of (maps.get(this) as Map<PLString, T>)) {
-			if (k.value === key) {
+			if (predicate(k)) {
 				return v;
 			}
 		}
@@ -109,12 +109,14 @@ export class PLDict<T extends PLType = PLType> {
 	/**
 	 * Find first key of value.
 	 *
-	 * @param key Key value.
+	 * @param predicate Key search predicate.
 	 * @returns Key or undefined.
 	 */
-	public findKey(key: string): PLString | undefined {
+	public findKey(
+		predicate: (key: PLString) => boolean,
+	): PLString | undefined {
 		for (const [k] of (maps.get(this) as Map<PLString, T>)) {
-			if (k.value === key) {
+			if (predicate(k)) {
 				return k;
 			}
 		}
@@ -123,13 +125,13 @@ export class PLDict<T extends PLType = PLType> {
 	/**
 	 * Find value for last key of value.
 	 *
-	 * @param key Key value.
+	 * @param predicate Key search predicate.
 	 * @returns Value or undefined.
 	 */
-	public findLast(key: string): T | undefined {
+	public findLast(predicate: (key: PLString) => boolean): T | undefined {
 		let r: T | undefined;
 		for (const [k, v] of (maps.get(this) as Map<PLString, T>)) {
-			if (k.value === key) {
+			if (predicate(k)) {
 				r = v;
 			}
 		}
@@ -139,13 +141,15 @@ export class PLDict<T extends PLType = PLType> {
 	/**
 	 * Find last key of value.
 	 *
-	 * @param key Key value.
+	 * @param predicate Key search predicate.
 	 * @returns Key or undefined.
 	 */
-	public findLastKey(key: string): PLString | undefined {
+	public findLastKey(
+		predicate: (key: PLString) => boolean,
+	): PLString | undefined {
 		let r;
 		for (const [k] of (maps.get(this) as Map<PLString, T>)) {
-			if (k.value === key) {
+			if (predicate(k)) {
 				r = k;
 			}
 		}

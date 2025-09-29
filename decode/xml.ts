@@ -39,6 +39,14 @@ const rRLWS = /^[\0-\x20\x7F-\xA0\u2000-\u200B\u3000]+/;
 const ws = (c: number) => c === 9 || c === 10 || c === 13 || c === 32;
 
 /**
+ * Key predicate for CF$UID.
+ *
+ * @param key Key.
+ * @returns True if CF$UID.
+ */
+const cfuid = (key: PLString) => key.value === 'CF$UID';
+
+/**
  * Plist wrapper.
  */
 interface Plist {
@@ -739,7 +747,7 @@ export function decodeXml(
 			sc = x.a;
 			if (sc === 100) {
 				sc = obj = x.p as PLDict;
-				if (obj.size === 1 && (x = obj.find('CF$UID'))) {
+				if (obj.size === 1 && (x = obj.find(cfuid))) {
 					cId = x[Symbol.toStringTag];
 					if (cId === PLTYPE_INTEGER) {
 						obj = new PLUID((x as PLInteger).value);

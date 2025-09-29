@@ -7,16 +7,14 @@ import {
 import { PLDict, PLTYPE_DICT } from './dict.ts';
 import { PLString } from './string.ts';
 
-/**
- * Iterator result values.
- *
- * @param ir Iterator result.
- * @returns Iterator values.
- */
 function irv<T>(
 	ir: { done?: boolean; value?: T },
 ): [boolean | undefined, T | undefined] {
 	return [ir.done, ir.value];
+}
+
+function kp(value: string): (key: PLString) => boolean {
+	return (key: PLString) => key.value === value;
 }
 
 Deno.test('initial value', () => {
@@ -101,11 +99,11 @@ Deno.test('find', () => {
 	const bKey = new PLString('repeat');
 	const bValue = new PLString('B');
 	const dict = new PLDict([[aKey, aValue], [bKey, bValue]]);
-	assertStrictEquals(dict.find('repeat'), aValue);
+	assertStrictEquals(dict.find(kp('repeat')), aValue);
 	dict.delete(aKey);
-	assertStrictEquals(dict.find('repeat'), bValue);
+	assertStrictEquals(dict.find(kp('repeat')), bValue);
 	dict.delete(bKey);
-	assertEquals(dict.find('repeat'), undefined);
+	assertEquals(dict.find(kp('repeat')), undefined);
 });
 
 Deno.test('findKey', () => {
@@ -114,11 +112,11 @@ Deno.test('findKey', () => {
 	const bKey = new PLString('repeat');
 	const bValue = new PLString('B');
 	const dict = new PLDict([[aKey, aValue], [bKey, bValue]]);
-	assertStrictEquals(dict.findKey('repeat'), aKey);
+	assertStrictEquals(dict.findKey(kp('repeat')), aKey);
 	dict.delete(aKey);
-	assertStrictEquals(dict.findKey('repeat'), bKey);
+	assertStrictEquals(dict.findKey(kp('repeat')), bKey);
 	dict.delete(bKey);
-	assertEquals(dict.findKey('repeat'), undefined);
+	assertEquals(dict.findKey(kp('repeat')), undefined);
 });
 
 Deno.test('findLast', () => {
@@ -127,11 +125,11 @@ Deno.test('findLast', () => {
 	const bKey = new PLString('repeat');
 	const bValue = new PLString('B');
 	const dict = new PLDict([[aKey, aValue], [bKey, bValue]]);
-	assertStrictEquals(dict.findLast('repeat'), bValue);
+	assertStrictEquals(dict.findLast(kp('repeat')), bValue);
 	dict.delete(bKey);
-	assertStrictEquals(dict.findLast('repeat'), aValue);
+	assertStrictEquals(dict.findLast(kp('repeat')), aValue);
 	dict.delete(aKey);
-	assertEquals(dict.findLast('repeat'), undefined);
+	assertEquals(dict.findLast(kp('repeat')), undefined);
 });
 
 Deno.test('findLastKey', () => {
@@ -140,11 +138,11 @@ Deno.test('findLastKey', () => {
 	const bKey = new PLString('repeat');
 	const bValue = new PLString('B');
 	const dict = new PLDict([[aKey, aValue], [bKey, bValue]]);
-	assertStrictEquals(dict.findLastKey('repeat'), bKey);
+	assertStrictEquals(dict.findLastKey(kp('repeat')), bKey);
 	dict.delete(bKey);
-	assertStrictEquals(dict.findLastKey('repeat'), aKey);
+	assertStrictEquals(dict.findLastKey(kp('repeat')), aKey);
 	dict.delete(aKey);
-	assertEquals(dict.findLastKey('repeat'), undefined);
+	assertEquals(dict.findLastKey(kp('repeat')), undefined);
 });
 
 Deno.test('entries', () => {
