@@ -69,6 +69,28 @@ Deno.test('bad bits', () => {
 	}
 });
 
+Deno.test('valueOf', () => {
+	const pl = new PLReal(3.14);
+	assertEquals(pl.valueOf(), 3.14);
+	pl.value = -3.14;
+	assertEquals(pl.valueOf(), -3.14);
+});
+
+Deno.test('toString', () => {
+	const pl = new PLReal();
+	assertEquals(pl.toString(), '0');
+	pl.value = 3.14;
+	assertEquals(pl.toString(), '3.14');
+	pl.value = -3.14;
+	assertEquals(pl.toString(), '-3.14');
+	pl.value = NaN;
+	assertEquals(pl.toString(), 'NaN');
+	pl.value = Infinity;
+	assertEquals(pl.toString(), 'Infinity');
+	pl.value = -Infinity;
+	assertEquals(pl.toString(), '-Infinity');
+});
+
 Deno.test('is type', () => {
 	assertEquals(new PLReal().type, PLTYPE_REAL);
 	assertEquals(new PLReal()[Symbol.toStringTag], PLTYPE_REAL);

@@ -136,6 +136,24 @@ export class PLInteger {
 	}
 
 	/**
+	 * Value getter.
+	 *
+	 * @returns Integer value.
+	 */
+	public valueOf(): bigint {
+		return values.get(this)!;
+	}
+
+	/**
+	 * String getter.
+	 *
+	 * @returns Integer string.
+	 */
+	public toString(): string {
+		return `${values.get(this)!}`;
+	}
+
+	/**
 	 * Check if integer type.
 	 *
 	 * @param arg Variable.

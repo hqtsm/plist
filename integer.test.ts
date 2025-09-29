@@ -93,6 +93,24 @@ Deno.test('value wrap', () => {
 	}
 });
 
+Deno.test('valueOf', () => {
+	const pl = new PLInteger();
+	assertEquals(pl.valueOf(), 0n);
+	pl.value = 42n;
+	assertEquals(pl.valueOf(), 42n);
+	pl.value = -42n;
+	assertEquals(pl.valueOf(), -42n);
+});
+
+Deno.test('toString', () => {
+	const pl = new PLInteger();
+	assertEquals(pl.valueOf(), 0n);
+	pl.value = 42n;
+	assertEquals(pl.toString(), '42');
+	pl.value = -42n;
+	assertEquals(pl.toString(), '-42');
+});
+
 Deno.test('is type', () => {
 	assertEquals(new PLInteger().type, PLTYPE_INTEGER);
 	assertEquals(new PLInteger()[Symbol.toStringTag], PLTYPE_INTEGER);

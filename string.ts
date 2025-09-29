@@ -61,6 +61,24 @@ export class PLString {
 	}
 
 	/**
+	 * Value getter.
+	 *
+	 * @returns String value.
+	 */
+	public valueOf(): string {
+		return values.get(this)!;
+	}
+
+	/**
+	 * Value getter.
+	 *
+	 * @returns String value.
+	 */
+	public toString(): string {
+		return values.get(this)!;
+	}
+
+	/**
 	 * Check if string type.
 	 *
 	 * @param arg Variable.

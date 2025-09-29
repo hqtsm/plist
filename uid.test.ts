@@ -35,6 +35,20 @@ Deno.test('value wrap', () => {
 	}
 });
 
+Deno.test('valueOf', () => {
+	const pl = new PLUID();
+	assertEquals(pl.valueOf(), 0n);
+	pl.value = 42n;
+	assertEquals(pl.valueOf(), 42n);
+});
+
+Deno.test('toString', () => {
+	const pl = new PLUID();
+	assertEquals(pl.valueOf(), 0n);
+	pl.value = 42n;
+	assertEquals(pl.toString(), '42');
+});
+
 Deno.test('is type', () => {
 	assertEquals(new PLUID().type, PLTYPE_UID);
 	assertEquals(new PLUID()[Symbol.toStringTag], PLTYPE_UID);

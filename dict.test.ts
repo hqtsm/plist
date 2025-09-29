@@ -1,4 +1,9 @@
-import { assertEquals, assertStrictEquals } from '@std/assert';
+import {
+	assertEquals,
+	assertInstanceOf,
+	assertNotStrictEquals,
+	assertStrictEquals,
+} from '@std/assert';
 import { PLDict, PLTYPE_DICT } from './dict.ts';
 import { PLString } from './string.ts';
 
@@ -223,6 +228,20 @@ Deno.test('toValueMap', () => {
 	assertEquals(map.size, 2);
 	assertStrictEquals(map.get('A'), a);
 	assertStrictEquals(map.get('B'), b);
+});
+
+Deno.test('valueOf', () => {
+	const A = new PLString('A');
+	const B = new PLString('B');
+	const map = new Map([[A, B], [B, A]]);
+	const dict = new PLDict(map);
+	const value = dict.valueOf();
+	assertInstanceOf(value, Map);
+	assertNotStrictEquals(value, map);
+	assertEquals(value.size, map.size);
+	for (const [k, v] of map) {
+		assertStrictEquals(map.get(k), v, k.value);
+	}
 });
 
 Deno.test('is type', () => {

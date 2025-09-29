@@ -287,6 +287,15 @@ export class PLArray<T extends PLType = PLType> {
 	}
 
 	/**
+	 * Value getter.
+	 *
+	 * @returns Array values.
+	 */
+	public valueOf(): T[] {
+		return (arrays.get(this) as T[]).slice();
+	}
+
+	/**
 	 * Check if array type.
 	 *
 	 * @param arg Variable.

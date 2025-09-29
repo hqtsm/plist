@@ -52,6 +52,24 @@ export class PLBoolean {
 	}
 
 	/**
+	 * Value getter.
+	 *
+	 * @returns Boolean value.
+	 */
+	public valueOf(): boolean {
+		return values.get(this)!;
+	}
+
+	/**
+	 * String getter.
+	 *
+	 * @returns Boolean string.
+	 */
+	public toString(): string {
+		return `${values.get(this)!}`;
+	}
+
+	/**
 	 * Check if boolean type.
 	 *
 	 * @param arg Variable.

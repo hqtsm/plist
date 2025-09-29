@@ -213,6 +213,24 @@ export class PLDate {
 	}
 
 	/**
+	 * Value getter.
+	 *
+	 * @returns Date time.
+	 */
+	public valueOf(): number {
+		return times.get(this)!;
+	}
+
+	/**
+	 * String getter.
+	 *
+	 * @returns ISO string.
+	 */
+	public toString(): string {
+		return getISO(times.get(this)!);
+	}
+
+	/**
 	 * Check if date type.
 	 *
 	 * @param arg Variable.

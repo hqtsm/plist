@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert';
+import { assertEquals, assertStrictEquals } from '@std/assert';
 import { PLData, PLTYPE_DATA } from './data.ts';
 import { PLBoolean } from './boolean.ts';
 
@@ -7,6 +7,22 @@ Deno.test('initial value', () => {
 	assertEquals(new PLData().byteLength, 0);
 	assertEquals(new PLData(42).buffer.byteLength, 42);
 	assertEquals(new PLData(42).byteLength, 42);
+});
+
+Deno.test('valueOf', () => {
+	const pl = new PLData(42);
+	assertStrictEquals(pl.valueOf(), pl.buffer);
+});
+
+Deno.test('toString', () => {
+	const pl = new PLData(256);
+	const a = new Uint8Array(pl.buffer);
+	let e = '';
+	for (let i = 0; i < 256; i++) {
+		a[i] = i;
+		e += String.fromCharCode(i);
+	}
+	assertEquals(pl.toString(), e);
 });
 
 Deno.test('is type', () => {

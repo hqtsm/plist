@@ -16,6 +16,20 @@ Deno.test('set value', () => {
 	assertEquals(pl.value, false);
 });
 
+Deno.test('valueOf', () => {
+	const pl = new PLBoolean(true);
+	assertEquals(pl.valueOf(), true);
+	pl.value = false;
+	assertEquals(pl.valueOf(), false);
+});
+
+Deno.test('toString', () => {
+	const pl = new PLBoolean(true);
+	assertEquals(pl.toString(), 'true');
+	pl.value = false;
+	assertEquals(pl.toString(), 'false');
+});
+
 Deno.test('is type', () => {
 	assertEquals(new PLBoolean().type, PLTYPE_BOOLEAN);
 	assertEquals(new PLBoolean()[Symbol.toStringTag], PLTYPE_BOOLEAN);

@@ -106,6 +106,24 @@ export class PLReal {
 	}
 
 	/**
+	 * Value getter.
+	 *
+	 * @returns Real value.
+	 */
+	public valueOf(): number {
+		return values.get(this)!;
+	}
+
+	/**
+	 * String getter.
+	 *
+	 * @returns Real string.
+	 */
+	public toString(): string {
+		return `${values.get(this)!}`;
+	}
+
+	/**
 	 * Check if real type.
 	 *
 	 * @param arg Variable.

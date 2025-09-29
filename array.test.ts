@@ -1,4 +1,9 @@
-import { assertEquals, assertStrictEquals } from '@std/assert';
+import {
+	assertEquals,
+	assertInstanceOf,
+	assertNotStrictEquals,
+	assertStrictEquals,
+} from '@std/assert';
 import { PLArray, PLTYPE_ARRAY } from './array.ts';
 import { PLBoolean } from './boolean.ts';
 import { PLInteger } from './integer.ts';
@@ -437,6 +442,22 @@ Deno.test('toArray', () => {
 	assertEquals(array.toArray(1, 4), [b, c, d]);
 	assertEquals(array.toArray(1, 5), [b, c, d]);
 	assertEquals(array.toArray(1, -1), [b, c]);
+});
+
+Deno.test('valueOf', () => {
+	const values = [
+		new PLInteger(0n),
+		new PLInteger(1n),
+		new PLInteger(2n),
+	];
+	const array = new PLArray(values);
+	const value = array.valueOf();
+	assertInstanceOf(value, Array);
+	assertNotStrictEquals(value, values);
+	assertNotStrictEquals(value, array.valueOf());
+	assertStrictEquals(value[0], values[0]);
+	assertStrictEquals(value[1], values[1]);
+	assertStrictEquals(value[2], values[2]);
 });
 
 Deno.test('is type', () => {

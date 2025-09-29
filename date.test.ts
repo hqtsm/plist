@@ -132,6 +132,18 @@ Deno.test('parse', () => {
 	assertEquals(PLDate.parse(new Date(0).toISOString()), PLDate.UNIX_EPOCH);
 });
 
+Deno.test('valueOf', () => {
+	const time = 123456789.123456789;
+	const pl = new PLDate(time);
+	assertStrictEquals(pl.valueOf(), time);
+});
+
+Deno.test('toString', () => {
+	const time = 123456789.123456789;
+	const pl = new PLDate(time);
+	assertStrictEquals(pl.toString(), pl.toISOString());
+});
+
 Deno.test('is type', () => {
 	assertEquals(new PLDate().type, PLTYPE_DATE);
 	assertEquals(new PLDate()[Symbol.toStringTag], PLTYPE_DATE);

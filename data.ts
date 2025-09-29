@@ -52,6 +52,31 @@ export class PLData {
 	}
 
 	/**
+	 * Value getter.
+	 *
+	 * @returns Buffer value.
+	 */
+	public valueOf(): ArrayBuffer {
+		return buffers.get(this)!;
+	}
+
+	/**
+	 * String getter.
+	 *
+	 * @returns ASCII string.
+	 */
+	public toString(): string {
+		let r = '';
+		for (
+			let a = new Uint8Array(buffers.get(this)!), i = 0, l = a.length;
+			l--;
+		) {
+			r += String.fromCharCode(a[i++]);
+		}
+		return r;
+	}
+
+	/**
 	 * Check if data type.
 	 *
 	 * @param arg Variable.

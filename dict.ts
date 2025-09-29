@@ -221,6 +221,15 @@ export class PLDict<T extends PLType = PLType> {
 	}
 
 	/**
+	 * Value getter.
+	 *
+	 * @returns Dict values.
+	 */
+	public valueOf(): Map<PLString, T> {
+		return new Map(maps.get(this) as Map<PLString, T>);
+	}
+
+	/**
 	 * Check if dict type.
 	 *
 	 * @param arg Variable.
