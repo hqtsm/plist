@@ -9,7 +9,7 @@ import { utf8Encode, utf8Size } from '../pri/utf8.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { b64e } from '../pri/base.ts';
 import type { PLType } from '../type.ts';
-import { walk } from '../pri/walk.ts';
+import { walk } from '../walk.ts';
 
 const rIndent = /^[\t ]*$/;
 const rDateY4 = /^(-)0*(\d{3}-)|\+?0*(\d{4,}-)/;
@@ -149,39 +149,20 @@ export function encodeXml(
 		indentD[x] = indent.charCodeAt(x);
 	}
 
-	walk(plist, {
-		enter: {
-			PLArray(v, d): number {
+	walk(
+		plist,
+		{
+			PLArray(v, d): void {
 				if ((x = v.length)) {
 					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
 					}
 					ancestors.add(v);
 					i += 16 + d++ * indentL + (d * indentL + 1) * x;
-					return 0;
+				} else {
+					i += 8;
 				}
-				i += 8;
-				return 1;
 			},
-			PLDict(v, d): number {
-				if ((x = v.size)) {
-					if (ancestors.has(v)) {
-						throw new TypeError('Circular reference');
-					}
-					ancestors.add(v);
-					i += 14 + d++ * indentL + (d * indentL + 1) * 2 * x;
-					return 0;
-				}
-				i += 7;
-				return 1;
-			},
-		},
-		key: {
-			PLDict(v): void {
-				i += 11 + utf8Size(v.value.replace(rEnt, ent));
-			},
-		},
-		value: {
 			PLBoolean(v): void {
 				i += v.value ? 7 : 8;
 			},
@@ -200,23 +181,35 @@ export function encodeXml(
 			PLReal(v): void {
 				i += 13 + real(v.value, unsignZero).length;
 			},
-			PLString(v): void {
-				i += 17 + utf8Size(v.value.replace(rEnt, ent));
+			PLString(v, d, k): void {
+				i += (d && k === null ? 11 : 17) +
+					utf8Size(v.value.replace(rEnt, ent));
 			},
 			PLUID(v, d): void {
 				i += 52 + v.value.toString().length + d++ * indentL +
 					d * indentL * 2;
 			},
+			PLDict(v, d): void {
+				if ((x = v.size)) {
+					if (ancestors.has(v)) {
+						throw new TypeError('Circular reference');
+					}
+					ancestors.add(v);
+					i += 14 + d++ * indentL + (d * indentL + 1) * 2 * x;
+				} else {
+					i += 7;
+				}
+			},
 			default(): void {
 				throw new TypeError('Invalid XML value type');
 			},
 		},
-		leave: {
+		{
 			default(v): void {
 				ancestors.delete(v);
 			},
 		},
-	});
+	);
 
 	const r = new Uint8Array(i);
 	i = utf8Encode('<?xml version="1.0" encoding="UTF-8"?>', r, 0);
@@ -226,47 +219,16 @@ export function encodeXml(
 	i = utf8Encode(`<plist version="${version}">`, r, i);
 	r[i++] = 10;
 
-	walk(plist, {
-		enter: {
-			PLArray(v, d): number {
+	walk(
+		plist,
+		{
+			PLArray(v, d): void {
 				for (; d--; i += indentL) {
 					r.set(indentD, i);
 				}
-				if (v.length) {
-					i = utf8Encode('<array>', r, i);
-					r[i++] = 10;
-					return 0;
-				}
-				i = utf8Encode('<array/>', r, i);
-				r[i++] = 10;
-				return 1;
-			},
-			PLDict(v, d): number {
-				for (; d--; i += indentL) {
-					r.set(indentD, i);
-				}
-				if (v.size) {
-					i = utf8Encode('<dict>', r, i);
-					r[i++] = 10;
-					return 0;
-				}
-				i = utf8Encode('<dict/>', r, i);
-				r[i++] = 10;
-				return 1;
-			},
-		},
-		key: {
-			PLDict(v, d): void {
-				for (; d--; i += indentL) {
-					r.set(indentD, i);
-				}
-				i = utf8Encode('<key>', r, i);
-				i = utf8Encode(v.value.replace(rEnt, ent), r, i);
-				i = utf8Encode('</key>', r, i);
+				i = utf8Encode(v.length ? '<array>' : '<array/>', r, i);
 				r[i++] = 10;
 			},
-		},
-		value: {
 			PLBoolean(v, d): void {
 				for (; d--; i += indentL) {
 					r.set(indentD, i);
@@ -331,6 +293,13 @@ export function encodeXml(
 				i = utf8Encode('</date>', r, i);
 				r[i++] = 10;
 			},
+			PLDict(v, d): void {
+				for (; d--; i += indentL) {
+					r.set(indentD, i);
+				}
+				i = utf8Encode(v.size ? '<dict>' : '<dict/>', r, i);
+				r[i++] = 10;
+			},
 			PLInteger(v, d): void {
 				for (; d--; i += indentL) {
 					r.set(indentD, i);
@@ -349,13 +318,14 @@ export function encodeXml(
 				i = utf8Encode('</real>', r, i);
 				r[i++] = 10;
 			},
-			PLString(v, d): void {
+			PLString(v, d, k): void {
+				x = d && k === null;
 				for (; d--; i += indentL) {
 					r.set(indentD, i);
 				}
-				i = utf8Encode('<string>', r, i);
+				i = utf8Encode(x ? '<key>' : '<string>', r, i);
 				i = utf8Encode(v.value.replace(rEnt, ent), r, i);
-				i = utf8Encode('</string>', r, i);
+				i = utf8Encode(x ? '</key>' : '</string>', r, i);
 				r[i++] = 10;
 			},
 			PLUID(v, d): void {
@@ -383,23 +353,27 @@ export function encodeXml(
 				r[i++] = 10;
 			},
 		},
-		leave: {
-			PLArray(_, d): void {
-				for (; d--; i += indentL) {
-					r.set(indentD, i);
+		{
+			PLArray(v, d): void {
+				if (v.length) {
+					for (; d--; i += indentL) {
+						r.set(indentD, i);
+					}
+					i = utf8Encode('</array>', r, i);
+					r[i++] = 10;
 				}
-				i = utf8Encode('</array>', r, i);
-				r[i++] = 10;
 			},
-			PLDict(_, d): void {
-				for (; d--; i += indentL) {
-					r.set(indentD, i);
+			PLDict(v, d): void {
+				if (v.size) {
+					for (; d--; i += indentL) {
+						r.set(indentD, i);
+					}
+					i = utf8Encode('</dict>', r, i);
+					r[i++] = 10;
 				}
-				i = utf8Encode('</dict>', r, i);
-				r[i++] = 10;
 			},
 		},
-	});
+	);
 
 	i = utf8Encode('</plist>', r, i);
 	r[i] = 10;
