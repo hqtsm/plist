@@ -15,7 +15,7 @@ import { type PLReal, PLTYPE_REAL } from '../real.ts';
 import { type PLString, PLTYPE_STRING } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLTYPE_UID, type PLUID } from '../uid.ts';
-import { walk } from '../pri/walk.ts';
+import { walk } from '../walk.ts';
 
 const rUni = /[^\0-\x7F]/;
 
@@ -140,9 +140,10 @@ export function encodeBinary(
 		}
 	};
 
-	walk(plist, {
-		enter: {
-			PLArray(v): number {
+	walk(
+		plist,
+		{
+			PLArray(v): void {
 				if ((x = v.length)) {
 					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
@@ -152,35 +153,10 @@ export function encodeBinary(
 						i += x < 15 ? 1 : 2 + byteCount(x);
 						table += x;
 					}
-					return 0;
-				}
-				if (add(v)) {
+				} else if (add(v)) {
 					i++;
 				}
-				return 1;
 			},
-			PLDict(v): number {
-				if ((x = v.size)) {
-					if (ancestors.has(v)) {
-						throw new TypeError('Circular reference');
-					}
-					ancestors.add(v);
-					if (add(v)) {
-						i += x < 15 ? 1 : 2 + byteCount(x);
-						table += x + x;
-					}
-					for (x of v.keys()) {
-						str(x);
-					}
-					return 0;
-				}
-				if (add(v)) {
-					i++;
-				}
-				return 1;
-			},
-		},
-		value: {
 			PLBoolean(v): void {
 				if (add(v)) {
 					i++;
@@ -197,6 +173,23 @@ export function encodeBinary(
 					i += 9;
 				}
 			},
+			PLDict(v): void {
+				if ((x = v.size)) {
+					if (ancestors.has(v)) {
+						throw new TypeError('Circular reference');
+					}
+					ancestors.add(v);
+					if (add(v)) {
+						i += x < 15 ? 1 : 2 + byteCount(x);
+						table += x + x;
+					}
+					for (x of v.keys()) {
+						str(x);
+					}
+				} else if (add(v)) {
+					i++;
+				}
+			},
 			PLInteger(v): void {
 				if (add(v)) {
 					i += 128 === v.bits
@@ -211,7 +204,11 @@ export function encodeBinary(
 					i += v.bits === 32 ? 5 : 9;
 				}
 			},
-			PLString: str,
+			PLString(v, d, k): void {
+				if (!(d && k === null)) {
+					str(v);
+				}
+			},
 			PLUID(v): void {
 				if (add(v)) {
 					i += 1 + byteCount(v.value);
@@ -221,12 +218,12 @@ export function encodeBinary(
 				throw new TypeError('Invalid binary value type');
 			},
 		},
-		leave: {
+		{
 			default(v): void {
 				ancestors.delete(v);
 			},
 		},
-	});
+	);
 
 	const refC = byteCount(l);
 	const intC = byteCount(table = i += refC * table);
