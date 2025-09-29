@@ -159,8 +159,8 @@ export interface WalkLeave {
  */
 export function walk(
 	plist: PLType,
-	visit: WalkVisit = {},
-	leave: WalkVisit = {},
+	visit: Readonly<WalkVisit> = {},
+	leave: Readonly<WalkVisit> = {},
 ): void {
 	const vd = visit.default ?? noop;
 	const ld = leave.default ?? noop;
