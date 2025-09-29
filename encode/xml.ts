@@ -375,7 +375,6 @@ export function encodeXml(
 		},
 	);
 
-	i = utf8Encode('</plist>', r, i);
-	r[i] = 10;
+	r[utf8Encode('</plist>', r, i)] = 10;
 	return r;
 }
