@@ -53,6 +53,29 @@ Deno.test('Invalid format', () => {
 	);
 });
 
+Deno.test('Invalid keys', () => {
+	const keys: PLType[] = [
+		new PLArray(),
+		new PLBoolean(),
+		new PLData(),
+		new PLDate(),
+		new PLInteger(),
+		new PLReal(),
+		new PLUID(),
+		new PLDict(),
+		{ [Symbol.toStringTag]: 'UNKNOWN' } as unknown as PLString,
+	];
+	for (const key of keys) {
+		const dict = new PLDict();
+		dict.set(key as PLString, new PLString());
+		assertThrows(
+			() => encodeBinary(dict),
+			TypeError,
+			'Invalid binary key type',
+		);
+	}
+});
+
 Deno.test('Circular reference: array', () => {
 	const array = new PLArray();
 	array.push(new PLDict([[new PLString('A'), array]]));

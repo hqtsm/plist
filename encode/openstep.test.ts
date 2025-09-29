@@ -1,11 +1,16 @@
 import { assertEquals, assertThrows } from '@std/assert';
 import { fixturePlist } from '../spec/fixture.ts';
 import { PLArray } from '../array.ts';
-import { PLString } from '../string.ts';
+import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
+import { PLDate } from '../date.ts';
 import { PLDict } from '../dict.ts';
 import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
+import { PLInteger } from '../integer.ts';
+import { PLReal } from '../real.ts';
+import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
+import { PLUID } from '../uid.ts';
 import { encodeOpenStep, type EncodeOpenStepOptions } from './openstep.ts';
 
 // No offical encoder so no known encode quirks.
@@ -37,6 +42,29 @@ Deno.test('Invalid format', () => {
 		RangeError,
 		'Invalid format',
 	);
+});
+
+Deno.test('Invalid keys', () => {
+	const keys: PLType[] = [
+		new PLArray(),
+		new PLBoolean(),
+		new PLData(),
+		new PLDate(),
+		new PLInteger(),
+		new PLReal(),
+		new PLUID(),
+		new PLDict(),
+		{ [Symbol.toStringTag]: 'UNKNOWN' } as unknown as PLString,
+	];
+	for (const key of keys) {
+		const dict = new PLDict();
+		dict.set(key as PLString, new PLString());
+		assertThrows(
+			() => encodeOpenStep(dict),
+			TypeError,
+			'Invalid OpenStep key type',
+		);
+	}
 });
 
 Deno.test('Invalid strings root', () => {

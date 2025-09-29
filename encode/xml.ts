@@ -152,7 +152,10 @@ export function encodeXml(
 	walk(
 		plist,
 		{
-			PLArray(v, d): void {
+			PLArray(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid XML key type');
+				}
 				if ((x = v.length)) {
 					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
@@ -163,33 +166,54 @@ export function encodeXml(
 					i += 8;
 				}
 			},
-			PLBoolean(v): void {
+			PLBoolean(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid XML key type');
+				}
 				i += v.value ? 7 : 8;
 			},
-			PLData(v, d): void {
+			PLData(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid XML key type');
+				}
 				x = v.byteLength;
 				x = ((x - (x % 3 || 3)) / 3 + 1) * 4;
 				i += 13 + x +
 					(d * indentL + 1) * ((x - (x % 76 || 76)) / 76 + 2);
 			},
-			PLDate(v): void {
+			PLDate(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid XML key type');
+				}
 				i += 13 + date(v).length;
 			},
-			PLInteger(v): void {
+			PLInteger(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid XML key type');
+				}
 				i += 19 + integer(v.value, min128Zero).length;
 			},
-			PLReal(v): void {
+			PLReal(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid XML key type');
+				}
 				i += 13 + real(v.value, unsignZero).length;
 			},
 			PLString(v, d, k): void {
 				i += (d && k === null ? 11 : 17) +
 					utf8Size(v.value.replace(rEnt, ent));
 			},
-			PLUID(v, d): void {
+			PLUID(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid XML key type');
+				}
 				i += 52 + v.value.toString().length + d++ * indentL +
 					d * indentL * 2;
 			},
-			PLDict(v, d): void {
+			PLDict(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid XML key type');
+				}
 				if ((x = v.size)) {
 					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
@@ -200,8 +224,12 @@ export function encodeXml(
 					i += 7;
 				}
 			},
-			default(): void {
-				throw new TypeError('Invalid XML value type');
+			default(_, d, k): void {
+				throw new TypeError(
+					d && k === null
+						? 'Invalid XML key type'
+						: 'Invalid XML value type',
+				);
 			},
 		},
 		{

@@ -143,7 +143,10 @@ export function encodeBinary(
 	walk(
 		plist,
 		{
-			PLArray(v): void {
+			PLArray(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid binary key type');
+				}
 				if ((x = v.length)) {
 					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
@@ -157,23 +160,35 @@ export function encodeBinary(
 					i++;
 				}
 			},
-			PLBoolean(v): void {
+			PLBoolean(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid binary key type');
+				}
 				if (add(v)) {
 					i++;
 				}
 			},
-			PLData(v): void {
+			PLData(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid binary key type');
+				}
 				if (add(v)) {
 					x = v.byteLength;
 					i += (x < 15 ? 1 : 2 + byteCount(x)) + x;
 				}
 			},
-			PLDate(v): void {
+			PLDate(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid binary key type');
+				}
 				if (add(v)) {
 					i += 9;
 				}
 			},
-			PLDict(v): void {
+			PLDict(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid binary key type');
+				}
 				if ((x = v.size)) {
 					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
@@ -190,7 +205,10 @@ export function encodeBinary(
 					i++;
 				}
 			},
-			PLInteger(v): void {
+			PLInteger(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid binary key type');
+				}
 				if (add(v)) {
 					i += 128 === v.bits
 						? 17
@@ -199,7 +217,10 @@ export function encodeBinary(
 						: 1 + byteCount(x);
 				}
 			},
-			PLReal(v): void {
+			PLReal(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid binary key type');
+				}
 				if (add(v)) {
 					i += v.bits === 32 ? 5 : 9;
 				}
@@ -209,13 +230,20 @@ export function encodeBinary(
 					str(v);
 				}
 			},
-			PLUID(v): void {
+			PLUID(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid binary key type');
+				}
 				if (add(v)) {
 					i += 1 + byteCount(v.value);
 				}
 			},
-			default(): void {
-				throw new TypeError('Invalid binary value type');
+			default(_, d, k): void {
+				throw new TypeError(
+					d && k === null
+						? 'Invalid binary key type'
+						: 'Invalid binary value type',
+				);
 			},
 		},
 		{

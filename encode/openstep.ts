@@ -237,7 +237,11 @@ export function encodeOpenStep(
 		plist,
 		{
 			PLArray(v, d, k): void {
-				if (!d && base) {
+				if (d) {
+					if (k === null) {
+						throw new TypeError('Invalid OpenStep key type');
+					}
+				} else if (base) {
 					throw new TypeError('Invalid strings root type');
 				}
 				if (k && typeof k !== 'number') {
@@ -255,7 +259,11 @@ export function encodeOpenStep(
 				}
 			},
 			PLData(v, d, k): void {
-				if (!d && base) {
+				if (d) {
+					if (k === null) {
+						throw new TypeError('Invalid OpenStep key type');
+					}
+				} else if (base) {
 					throw new TypeError('Invalid strings root type');
 				}
 				if (k && typeof k !== 'number') {
@@ -277,6 +285,9 @@ export function encodeOpenStep(
 				}
 			},
 			PLDict(v, d, k): void {
+				if (d && k === null) {
+					throw new TypeError('Invalid OpenStep key type');
+				}
 				d += base + 1;
 				if (k && typeof k !== 'number') {
 					i += 3;
@@ -292,8 +303,12 @@ export function encodeOpenStep(
 					i += 2;
 				}
 			},
-			default(): void {
-				throw new TypeError('Invalid OpenStep value type');
+			default(_, d, k): void {
+				throw new TypeError(
+					d && k === null
+						? 'Invalid OpenStep key type'
+						: 'Invalid OpenStep value type',
+				);
 			},
 		},
 		{
