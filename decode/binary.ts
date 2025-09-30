@@ -13,7 +13,7 @@ import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { binaryError, bytes } from '../pri/data.ts';
 import { PLReal } from '../real.ts';
-import { PLString, PLTYPE_STRING } from '../string.ts';
+import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 
@@ -188,14 +188,15 @@ export function decodeBinary(
 		push: (p: PLType) => unknown,
 		next?: Next,
 		aoff?: number,
+		prim?: boolean,
 	): Next {
 		let c;
 		let i: number;
 		let p: PLType | undefined;
 		let m: number;
-		let ref: number | string | Map<number, PLType>;
-		for (ref of refs) {
-			i = Number(getU(d, x = table + ref * intc, intc));
+		let r: number | string | Map<number, PLType>;
+		for (r of refs) {
+			i = Number(getU(d, x = table + r * intc, intc));
 			if (i > 7) {
 				if ((p = object.get(i))) {
 					if (ancestors.has(p)) {
@@ -276,13 +277,13 @@ export function decodeBinary(
 						if (c === 15) {
 							if (
 								i >= table ||
-								((ref = d[i++]) & 240) !== 16 ||
-								i + (ref = 1 << (ref & 15)) > table
+								((r = d[i++]) & 240) !== 16 ||
+								i + (r = 1 << (r & 15)) > table
 							) {
 								break;
 							}
-							c = Number(getU(d, i, ref));
-							i += ref;
+							c = Number(getU(d, i, r));
+							i += r;
 						}
 						if (i + c > table) {
 							break;
@@ -297,22 +298,22 @@ export function decodeBinary(
 						if (c === 15) {
 							if (
 								i >= table ||
-								((ref = d[i++]) & 240) !== 16 ||
-								i + (ref = 1 << (ref & 15)) > table
+								((r = d[i++]) & 240) !== 16 ||
+								i + (r = 1 << (r & 15)) > table
 							) {
 								break;
 							}
-							c = Number(getU(d, i, ref));
-							i += ref;
+							c = Number(getU(d, i, r));
+							i += r;
 						}
 						if (i + c > table) {
 							break;
 						}
-						ref = '';
+						r = '';
 						for (; c--;) {
-							ref += String.fromCharCode(d[i++]);
+							r += String.fromCharCode(d[i++]);
 						}
-						object.set(x, p = new PLString(ref));
+						object.set(x, p = new PLString(r));
 						push(p);
 						continue;
 					}
@@ -321,22 +322,22 @@ export function decodeBinary(
 						if (c === 15) {
 							if (
 								i >= table ||
-								((ref = d[i++]) & 240) !== 16 ||
-								i + (ref = 1 << (ref & 15)) > table
+								((r = d[i++]) & 240) !== 16 ||
+								i + (r = 1 << (r & 15)) > table
 							) {
 								break;
 							}
-							c = Number(getU(d, i, ref));
-							i += ref;
+							c = Number(getU(d, i, r));
+							i += r;
 						}
 						if (i + c * 2 > table) {
 							break;
 						}
-						ref = '';
+						r = '';
 						for (; c--; i += 2) {
-							ref += String.fromCharCode(v.getUint16(i));
+							r += String.fromCharCode(v.getUint16(i));
 						}
-						object.set(x, p = new PLString(ref));
+						object.set(x, p = new PLString(r));
 						push(p);
 						continue;
 					}
@@ -350,17 +351,20 @@ export function decodeBinary(
 						continue;
 					}
 					case 10: {
+						if (prim) {
+							break;
+						}
 						c = m & 15;
 						if (c === 15) {
 							if (
 								i >= table ||
-								((ref = d[i++]) & 240) !== 16 ||
-								i + (ref = 1 << (ref & 15)) > table
+								((r = d[i++]) & 240) !== 16 ||
+								i + (r = 1 << (r & 15)) > table
 							) {
 								break;
 							}
-							c = Number(getU(d, i, ref));
-							i += ref;
+							c = Number(getU(d, i, r));
+							i += r;
 						}
 						if (i + c * refc > table) {
 							break;
@@ -380,17 +384,20 @@ export function decodeBinary(
 						continue;
 					}
 					case 13: {
+						if (prim) {
+							break;
+						}
 						c = m & 15;
 						if (c === 15) {
 							if (
 								i >= table ||
-								((ref = d[i++]) & 240) !== 16 ||
-								i + (ref = 1 << (ref & 15)) > table
+								((r = d[i++]) & 240) !== 16 ||
+								i + (r = 1 << (r & 15)) > table
 							) {
 								break;
 							}
-							c = Number(getU(d, i, ref));
-							i += ref;
+							c = Number(getU(d, i, r));
+							i += r;
 						}
 						if (i + c * 2 * refc > table) {
 							break;
@@ -399,29 +406,21 @@ export function decodeBinary(
 						if (c) {
 							ancestors.add(p);
 							aoff = x;
-							ref = new Map<number, PLType>();
+							r = new Map<number, PLType>();
 							m = 0;
 							yield walk(
 								getRefs(d, i, refc, c),
-								(o) => {
-									if (
-										o[Symbol.toStringTag] !== PLTYPE_STRING
-									) {
-										throw new SyntaxError(
-											binaryError(i + m * refc),
-										);
-									}
-									(ref as Map<number, PLType>).set(m++, o);
-								},
+								(o) => (r as Map<number, PLType>).set(m++, o),
 								top as Next,
 								aoff,
+								true,
 							);
 							m = 0;
 							yield walk(
 								getRefs(d, i + c * refc, refc, c),
 								(o) =>
 									(p as PLDict).set(
-										(ref as Map<number, PLType>).get(m++)!,
+										(r as Map<number, PLType>).get(m++)!,
 										o,
 									),
 								top as Next,
