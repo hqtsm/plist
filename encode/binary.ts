@@ -199,7 +199,10 @@ export function encodeBinary(
 						table += x + x;
 					}
 					for (x of v.keys()) {
-						str(x);
+						if (x[Symbol.toStringTag] !== PLTYPE_STRING) {
+							throw new TypeError('Invalid binary key type');
+						}
+						str(x as PLString);
 					}
 				} else if (add(v)) {
 					i++;

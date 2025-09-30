@@ -44,7 +44,7 @@ const ws = (c: number) => c === 9 || c === 10 || c === 13 || c === 32;
  * @param key Key.
  * @returns True if CF$UID.
  */
-const cfuid = (key: PLString) => key.value === 'CF$UID';
+const cfuid = (key: PLType) => PLString.is(key) && key.value === 'CF$UID';
 
 /**
  * Plist wrapper.

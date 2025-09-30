@@ -4,10 +4,9 @@
  * Property list dict.
  */
 
-import type { PLString } from './string.ts';
 import type { PLType } from './type.ts';
 
-const maps: WeakMap<PLDict, Map<PLString, PLType>> = new WeakMap();
+const maps: WeakMap<PLDict, Map<PLType, PLType>> = new WeakMap();
 
 /**
  * PLDict type.
@@ -17,7 +16,7 @@ export const PLTYPE_DICT = 'PLDict' as const;
 /**
  * Property list dict type.
  */
-export class PLDict<T extends PLType = PLType> {
+export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_DICT;
 
 	/**
@@ -30,7 +29,7 @@ export class PLDict<T extends PLType = PLType> {
 	 *
 	 * @param itter Property list key value pairs.
 	 */
-	constructor(itter: Iterable<readonly [PLString, T]> | null = null) {
+	constructor(itter: Iterable<readonly [K, V]> | null = null) {
 		maps.set(this, new Map(itter));
 	}
 
@@ -40,7 +39,7 @@ export class PLDict<T extends PLType = PLType> {
 	 * @returns Dict size.
 	 */
 	public get size(): number {
-		return (maps.get(this) as Map<PLString, T>).size;
+		return (maps.get(this) as Map<K, V>).size;
 	}
 
 	/**
@@ -49,8 +48,8 @@ export class PLDict<T extends PLType = PLType> {
 	 * @param key Key.
 	 * @returns Has.
 	 */
-	public has(key: PLString): boolean {
-		return (maps.get(this) as Map<PLString, T>).has(key);
+	public has(key: K): boolean {
+		return (maps.get(this) as Map<K, V>).has(key);
 	}
 
 	/**
@@ -59,8 +58,8 @@ export class PLDict<T extends PLType = PLType> {
 	 * @param key Key.
 	 * @returns Value or undefined.
 	 */
-	public get(key: PLString): T | undefined {
-		return (maps.get(this) as Map<PLString, T>).get(key);
+	public get(key: K): V | undefined {
+		return (maps.get(this) as Map<K, V>).get(key);
 	}
 
 	/**
@@ -69,8 +68,8 @@ export class PLDict<T extends PLType = PLType> {
 	 * @param key Key.
 	 * @param value Value.
 	 */
-	public set(key: PLString, value: T): void {
-		(maps.get(this) as Map<PLString, T>).set(key, value);
+	public set(key: K, value: V): void {
+		(maps.get(this) as Map<K, V>).set(key, value);
 	}
 
 	/**
@@ -79,8 +78,8 @@ export class PLDict<T extends PLType = PLType> {
 	 * @param key Key.
 	 * @returns Deleted.
 	 */
-	public delete(key: PLString): boolean {
-		return (maps.get(this) as Map<PLString, T>).delete(key);
+	public delete(key: K): boolean {
+		return (maps.get(this) as Map<K, V>).delete(key);
 	}
 
 	/**
@@ -89,7 +88,7 @@ export class PLDict<T extends PLType = PLType> {
 	 * @returns Dict.
 	 */
 	public clear(): void {
-		(maps.get(this) as Map<PLString, T>).clear();
+		(maps.get(this) as Map<K, V>).clear();
 	}
 
 	/**
@@ -98,8 +97,8 @@ export class PLDict<T extends PLType = PLType> {
 	 * @param predicate Key search predicate.
 	 * @returns Value or undefined.
 	 */
-	public find(predicate: (key: PLString) => boolean): T | undefined {
-		for (const [k, v] of (maps.get(this) as Map<PLString, T>)) {
+	public find(predicate: (key: K) => boolean): V | undefined {
+		for (const [k, v] of (maps.get(this) as Map<K, V>)) {
 			if (predicate(k)) {
 				return v;
 			}
@@ -112,10 +111,8 @@ export class PLDict<T extends PLType = PLType> {
 	 * @param predicate Key search predicate.
 	 * @returns Key or undefined.
 	 */
-	public findKey(
-		predicate: (key: PLString) => boolean,
-	): PLString | undefined {
-		for (const [k] of (maps.get(this) as Map<PLString, T>)) {
+	public findKey(predicate: (key: K) => boolean): K | undefined {
+		for (const [k] of (maps.get(this) as Map<K, V>)) {
 			if (predicate(k)) {
 				return k;
 			}
@@ -128,9 +125,9 @@ export class PLDict<T extends PLType = PLType> {
 	 * @param predicate Key search predicate.
 	 * @returns Value or undefined.
 	 */
-	public findLast(predicate: (key: PLString) => boolean): T | undefined {
-		let r: T | undefined;
-		for (const [k, v] of (maps.get(this) as Map<PLString, T>)) {
+	public findLast(predicate: (key: K) => boolean): V | undefined {
+		let r: V | undefined;
+		for (const [k, v] of (maps.get(this) as Map<K, V>)) {
 			if (predicate(k)) {
 				r = v;
 			}
@@ -144,11 +141,9 @@ export class PLDict<T extends PLType = PLType> {
 	 * @param predicate Key search predicate.
 	 * @returns Key or undefined.
 	 */
-	public findLastKey(
-		predicate: (key: PLString) => boolean,
-	): PLString | undefined {
-		let r;
-		for (const [k] of (maps.get(this) as Map<PLString, T>)) {
+	public findLastKey(predicate: (key: K) => boolean): K | undefined {
+		let r: K | undefined;
+		for (const [k] of (maps.get(this) as Map<K, V>)) {
 			if (predicate(k)) {
 				r = k;
 			}
@@ -161,8 +156,8 @@ export class PLDict<T extends PLType = PLType> {
 	 *
 	 * @returns Dict entries.
 	 */
-	public entries(): IterableIterator<[PLString, T]> {
-		return (maps.get(this) as Map<PLString, T>).entries();
+	public entries(): IterableIterator<[K, V]> {
+		return (maps.get(this) as Map<K, V>).entries();
 	}
 
 	/**
@@ -170,8 +165,8 @@ export class PLDict<T extends PLType = PLType> {
 	 *
 	 * @returns Dict keys.
 	 */
-	public keys(): IterableIterator<PLString> {
-		return (maps.get(this) as Map<PLString, T>).keys();
+	public keys(): IterableIterator<K> {
+		return (maps.get(this) as Map<K, V>).keys();
 	}
 
 	/**
@@ -179,8 +174,8 @@ export class PLDict<T extends PLType = PLType> {
 	 *
 	 * @returns Dict values.
 	 */
-	public values(): IterableIterator<T> {
-		return (maps.get(this) as Map<PLString, T>).values();
+	public values(): IterableIterator<V> {
+		return (maps.get(this) as Map<K, V>).values();
 	}
 
 	/**
@@ -188,8 +183,8 @@ export class PLDict<T extends PLType = PLType> {
 	 *
 	 * @returns Dict iterator.
 	 */
-	public [Symbol.iterator](): IterableIterator<[PLString, T]> {
-		return (maps.get(this) as Map<PLString, T>)[Symbol.iterator]();
+	public [Symbol.iterator](): IterableIterator<[K, V]> {
+		return (maps.get(this) as Map<K, V>)[Symbol.iterator]();
 	}
 
 	/**
@@ -197,8 +192,8 @@ export class PLDict<T extends PLType = PLType> {
 	 *
 	 * @returns Map.
 	 */
-	public toMap(): Map<PLString, T> {
-		return new Map(maps.get(this) as Map<PLString, T>);
+	public toMap(): Map<K, V> {
+		return new Map(maps.get(this) as Map<K, V>);
 	}
 
 	/**
@@ -207,17 +202,17 @@ export class PLDict<T extends PLType = PLType> {
 	 * @param first On duplicate, use the first key.
 	 * @returns Value map.
 	 */
-	public toValueMap(first = false): Map<string, T> {
+	public toValueMap(first = false): Map<ReturnType<K['valueOf']>, V> {
 		const r = new Map();
 		if (first) {
-			for (const [k, v] of maps.get(this) as Map<PLString, T>) {
+			for (const [k, v] of maps.get(this) as Map<K, V>) {
 				const value = k.valueOf();
 				if (!r.has(value)) {
 					r.set(value, v);
 				}
 			}
 		} else {
-			for (const [k, v] of maps.get(this) as Map<PLString, T>) {
+			for (const [k, v] of maps.get(this) as Map<K, V>) {
 				r.set(k.valueOf(), v);
 			}
 		}
@@ -229,8 +224,8 @@ export class PLDict<T extends PLType = PLType> {
 	 *
 	 * @returns Dict values.
 	 */
-	public valueOf(): Map<PLString, T> {
-		return new Map(maps.get(this) as Map<PLString, T>);
+	public valueOf(): Map<K, V> {
+		return new Map(maps.get(this) as Map<K, V>);
 	}
 
 	/**

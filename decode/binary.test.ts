@@ -26,8 +26,8 @@ const CF_STYLE = {
 
 const I64_MAX = 0x7fffffffffffffffn;
 
-function kp(value: string): (key: PLString) => boolean {
-	return (key: PLString) => key.value === value;
+function kp(value: string): (key: PLType) => boolean {
+	return (key: PLType) => PLString.is(key) && key.value === value;
 }
 
 Deno.test('Bad header', () => {
@@ -1199,6 +1199,7 @@ Deno.test('spec: dict-repeat', async () => {
 	assertEquals(plist.size, 6);
 
 	for (const [i, [k, v]] of [...plist].entries()) {
+		assertInstanceOf(k, PLString);
 		assertInstanceOf(v, PLString);
 		assertEquals(k.value, expected[i][0], `key: ${i}`);
 		assertEquals(v.value, expected[i][1], `value: ${i}`);

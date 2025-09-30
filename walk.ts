@@ -23,7 +23,7 @@ interface Node {
 	/**
 	 * Key of the itter, null for root.
 	 */
-	k: PLString | number | null;
+	k: PLType | number | null;
 
 	/**
 	 * Key value generator.
@@ -41,7 +41,7 @@ interface Node {
 			/**
 			 * Key value pair.
 			 */
-			value?: [PLString | number, PLType];
+			value?: [PLType | number, PLType];
 		};
 	};
 
@@ -71,7 +71,7 @@ export type WalkVisitor<
 > = (
 	visit: T,
 	depth: number,
-	key: PLString | number | null,
+	key: PLType | number | null,
 	parent: P,
 ) => boolean | null | void;
 
@@ -167,7 +167,7 @@ export function walk(
 	let x;
 	let next;
 	let depth = 0;
-	let k: PLString | number | null = null;
+	let k: PLType | number | null = null;
 	let v: PLType;
 	let p: WalkParent = null;
 	let t;

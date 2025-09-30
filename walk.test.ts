@@ -55,14 +55,14 @@ Deno.test('walk: all', () => {
 		string,
 		PLType,
 		number,
-		PLString | number | null,
+		PLType | number | null,
 		WalkParent,
 	][] = [];
 	const visiter = (method: string) => {
 		return (
 			visit: PLType,
 			depth: number,
-			key: PLString | number | null,
+			key: PLType | number | null,
 			parent: WalkParent,
 		) => {
 			visited.push([

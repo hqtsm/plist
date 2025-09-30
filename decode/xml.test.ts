@@ -48,8 +48,8 @@ function realWS(): string[] {
 	return ws;
 }
 
-function kp(value: string): (key: PLString) => boolean {
-	return (key: PLString) => key.value === value;
+function kp(value: string): (key: PLType) => boolean {
+	return (key: PLType) => PLString.is(key) && key.value === value;
 }
 
 Deno.test('Option: decoded', () => {
@@ -2060,6 +2060,7 @@ Deno.test('spec: dict-repeat', async () => {
 	assertEquals(plist.size, 6);
 
 	for (const [i, [k, v]] of [...plist].entries()) {
+		assertInstanceOf(k, PLString);
 		assertInstanceOf(v, PLString);
 		assertEquals(k.value, expected[i][0], `key: ${i}`);
 		assertEquals(v.value, expected[i][1], `value: ${i}`);
@@ -2498,6 +2499,7 @@ Deno.test('spec: xml-edge cdata', async () => {
 	assertEquals(plist.size, 1);
 
 	for (const [k, v] of plist) {
+		assertInstanceOf(k, PLString);
 		assertEquals(k.value, `For "<keys>" & '<strings>' only!`);
 		assertInstanceOf(v, PLString);
 		assertEquals(v.value, `_<!--[[]]-->_`);
@@ -2787,6 +2789,7 @@ Deno.test('spec: xml-edge date-over-under', async () => {
 	assertInstanceOf(plist, PLDict);
 
 	for (const [k, v] of plist) {
+		assertInstanceOf(k, PLString);
 		const [tag, date, time] = k.value.split(' ');
 		assertInstanceOf(v, PLDate, tag);
 		const expected = `${date}T${time}.000Z`;
@@ -2899,6 +2902,7 @@ Deno.test('spec: xml-edge integer-edge', async () => {
 	assertEquals(format, FORMAT_XML_V1_0);
 	assertInstanceOf(plist, PLDict);
 	for (const [k, v] of plist) {
+		assertInstanceOf(k, PLString);
 		const key = k.value;
 		assertInstanceOf(v, PLInteger, key);
 		const expected = BigInt(key.split('|')[1]);
@@ -2980,7 +2984,7 @@ Deno.test('spec: xml-edge legacy-10.0-0.9-2', async () => {
 	assertInstanceOf(plist, PLDict);
 	assertEquals(plist.size, 2);
 
-	assertEquals([...plist.keys()].map((k) => k.value), ['Age', 'Name']);
+	assertEquals([...plist.keys()].map((k) => k.valueOf()), ['Age', 'Name']);
 
 	const age = plist.find(kp('Age'));
 	assertInstanceOf(age, PLInteger);
@@ -3281,6 +3285,7 @@ Deno.test('spec: xml-edge uid-negative', async () => {
 	assertEquals(plist.size, 3);
 
 	for (const [k, v] of plist) {
+		assertInstanceOf(k, PLString);
 		const tag = k.value;
 		assertInstanceOf(v, PLUID, tag);
 		const expected = BigInt(k.value.split('|')[1]);
@@ -3316,6 +3321,7 @@ Deno.test('spec: xml-edge uid-over', async () => {
 	assertEquals(plist.size, 4);
 
 	for (const [k, v] of plist) {
+		assertInstanceOf(k, PLString);
 		const tag = k.value;
 		assertInstanceOf(v, PLUID, tag);
 		const expected = BigInt(k.value.split('|')[1]);

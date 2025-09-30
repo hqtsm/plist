@@ -25,8 +25,8 @@ const TE = new TextEncoder();
 const LS = String.fromCharCode(0x2028);
 const PS = String.fromCharCode(0x2029);
 
-function kp(value: string): (key: PLString) => boolean {
-	return (key: PLString) => key.value === value;
+function kp(value: string): (key: PLType) => boolean {
+	return (key: PLType) => PLString.is(key) && key.value === value;
 }
 
 Deno.test('Empty', () => {
@@ -783,8 +783,9 @@ Deno.test('spec: dict-repeat', async () => {
 	assertEquals(plist.size, 6);
 
 	for (const [i, [k, v]] of [...plist].entries()) {
+		assertInstanceOf(k, PLString);
 		assertInstanceOf(v, PLString);
-		assertEquals(k.value, expected[i][0], `key: ${i}`);
+		assertEquals(k.valueOf(), expected[i][0], `key: ${i}`);
 		assertEquals(v.value, expected[i][1], `value: ${i}`);
 	}
 });
@@ -817,6 +818,7 @@ Deno.test('spec: string-chars', async () => {
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
 	for (const [k, v] of plist) {
+		assertInstanceOf(k, PLString);
 		const key = k.value;
 		assertInstanceOf(v, PLString, key);
 		const str = String.fromCharCode(+key);
@@ -1154,6 +1156,7 @@ Deno.test('spec: openstep-edge escapes-repeat', async () => {
 	assertInstanceOf(plist, PLDict);
 
 	for (const [k, v] of [...plist]) {
+		assertInstanceOf(k, PLString);
 		const tag = k.value;
 		assertInstanceOf(v, PLString, tag);
 
@@ -1173,6 +1176,7 @@ Deno.test('spec: openstep-edge escapes-all-octal', async () => {
 	assertInstanceOf(plist, PLDict);
 
 	for (const [k, v] of [...plist]) {
+		assertInstanceOf(k, PLString);
 		const key = k.value;
 		assertInstanceOf(v, PLString, key);
 
@@ -1191,6 +1195,7 @@ Deno.test('spec: openstep-edge escapes-single', async () => {
 	assertInstanceOf(plist, PLDict);
 
 	for (const [k, v] of plist) {
+		assertInstanceOf(k, PLString);
 		const key = k.value;
 		assertInstanceOf(v, PLString, key);
 
@@ -1211,6 +1216,7 @@ Deno.test('spec: openstep-edge escapes-double', async () => {
 	assertInstanceOf(plist, PLDict);
 
 	for (const [k, v] of plist) {
+		assertInstanceOf(k, PLString);
 		const key = k.value;
 		assertInstanceOf(v, PLString, key);
 
@@ -1231,6 +1237,7 @@ Deno.test('spec: openstep-edge escapes-unicode-partial', async () => {
 	assertInstanceOf(plist, PLDict);
 
 	for (const [k, v] of plist) {
+		assertInstanceOf(k, PLString);
 		const key = k.value;
 		assertInstanceOf(v, PLString, key);
 
