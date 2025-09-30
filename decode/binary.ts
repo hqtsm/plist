@@ -192,7 +192,7 @@ export function decodeBinary(
 		let c;
 		let i: number;
 		let p: PLType | undefined;
-		let ref: number | string | Map<number, PLString>;
+		let ref: number | string | Map<number, PLType>;
 		let marker: number;
 		for (ref of refs) {
 			i = Number(getU(d, x = table + ref * intc, intc));
@@ -399,7 +399,7 @@ export function decodeBinary(
 						if (c) {
 							ancestors.add(p);
 							anci = x;
-							ref = new Map<number, PLString>();
+							ref = new Map<number, PLType>();
 							marker = 0;
 							yield walk(
 								getRefs(d, i, refc, c),
@@ -411,9 +411,9 @@ export function decodeBinary(
 											binaryError(i + marker * refc),
 										);
 									}
-									(ref as Map<number, PLString>).set(
+									(ref as Map<number, PLType>).set(
 										marker++,
-										o as PLString,
+										o,
 									);
 								},
 								top as Next,
@@ -424,7 +424,7 @@ export function decodeBinary(
 								getRefs(d, i + c * refc, refc, c),
 								(o) =>
 									(p as PLDict).set(
-										(ref as Map<number, PLString>).get(
+										(ref as Map<number, PLType>).get(
 											marker++,
 										)!,
 										o,

@@ -54,11 +54,11 @@ Deno.test('Invalid keys', () => {
 		new PLReal(),
 		new PLUID(),
 		new PLDict(),
-		{ [Symbol.toStringTag]: 'UNKNOWN' } as unknown as PLString,
+		{ [Symbol.toStringTag]: 'UNKNOWN' } as unknown as PLType,
 	];
 	for (const key of keys) {
 		const dict = new PLDict();
-		dict.set(key as PLString, new PLString());
+		dict.set(key, new PLString());
 		assertThrows(
 			() => encodeOpenStep(dict),
 			TypeError,
