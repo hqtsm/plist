@@ -144,75 +144,61 @@ export function encodeBinary(
 		plist,
 		{
 			PLArray(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
-				if ((x = v.length)) {
-					if (ancestors.has(v)) {
-						throw new TypeError('Circular reference');
+				if (!(d && k === null)) {
+					if ((x = v.length)) {
+						if (ancestors.has(v)) {
+							throw new TypeError('Circular reference');
+						}
+						ancestors.add(v);
+						if (add(v)) {
+							i += x < 15 ? 1 : 2 + byteCount(x);
+							table += x;
+						}
+					} else if (add(v)) {
+						i++;
 					}
-					ancestors.add(v);
-					if (add(v)) {
-						i += x < 15 ? 1 : 2 + byteCount(x);
-						table += x;
-					}
-				} else if (add(v)) {
-					i++;
 				}
 			},
 			PLBoolean(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
-				if (add(v)) {
+				if (!(d && k === null) && add(v)) {
 					i++;
 				}
 			},
 			PLData(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
-				if (add(v)) {
+				if (!(d && k === null) && add(v)) {
 					x = v.byteLength;
 					i += (x < 15 ? 1 : 2 + byteCount(x)) + x;
 				}
 			},
 			PLDate(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
-				if (add(v)) {
+				if (!(d && k === null) && add(v)) {
 					i += 9;
 				}
 			},
 			PLDict(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
-				if ((x = v.size)) {
-					if (ancestors.has(v)) {
-						throw new TypeError('Circular reference');
-					}
-					ancestors.add(v);
-					if (add(v)) {
-						i += x < 15 ? 1 : 2 + byteCount(x);
-						table += x + x;
-					}
-					for (x of v.keys()) {
-						if (x[Symbol.toStringTag] !== PLTYPE_STRING) {
-							throw new TypeError('Invalid binary key type');
+				if (!(d && k === null)) {
+					if ((x = v.size)) {
+						if (ancestors.has(v)) {
+							throw new TypeError('Circular reference');
 						}
-						str(x as PLString);
+						ancestors.add(v);
+						if (add(v)) {
+							i += x < 15 ? 1 : 2 + byteCount(x);
+							table += x + x;
+						}
+						for (x of v.keys()) {
+							if (x[Symbol.toStringTag] !== PLTYPE_STRING) {
+								throw new TypeError('Invalid binary key type');
+							}
+							str(x as PLString);
+						}
+					} else if (add(v)) {
+						i++;
 					}
-				} else if (add(v)) {
-					i++;
 				}
 			},
 			PLInteger(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
-				if (add(v)) {
+				if (!(d && k === null) && add(v)) {
 					i += 128 === v.bits
 						? 17
 						: (x = v.value) < 0
@@ -221,10 +207,7 @@ export function encodeBinary(
 				}
 			},
 			PLReal(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
-				if (add(v)) {
+				if (!(d && k === null) && add(v)) {
 					i += v.bits === 32 ? 5 : 9;
 				}
 			},
@@ -234,19 +217,12 @@ export function encodeBinary(
 				}
 			},
 			PLUID(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
-				if (add(v)) {
+				if (!(d && k === null) && add(v)) {
 					i += 1 + byteCount(v.value);
 				}
 			},
-			default(_, d, k): void {
-				throw new TypeError(
-					d && k === null
-						? 'Invalid binary key type'
-						: 'Invalid binary value type',
-				);
+			default(): void {
+				throw new TypeError('Invalid binary value type');
 			},
 		},
 		{
