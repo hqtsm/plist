@@ -211,14 +211,14 @@ export class PLDict<T extends PLType = PLType> {
 		const r = new Map();
 		if (first) {
 			for (const [k, v] of maps.get(this) as Map<PLString, T>) {
-				const { value } = k;
+				const value = k.valueOf();
 				if (!r.has(value)) {
 					r.set(value, v);
 				}
 			}
 		} else {
 			for (const [k, v] of maps.get(this) as Map<PLString, T>) {
-				r.set(k.value, v);
+				r.set(k.valueOf(), v);
 			}
 		}
 		return r;
