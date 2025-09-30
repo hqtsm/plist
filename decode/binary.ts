@@ -192,8 +192,8 @@ export function decodeBinary(
 		let c;
 		let i: number;
 		let p: PLType | undefined;
+		let m: number;
 		let ref: number | string | Map<number, PLType>;
-		let marker: number;
 		for (ref of refs) {
 			i = Number(getU(d, x = table + ref * intc, intc));
 			if (i > 7) {
@@ -204,10 +204,10 @@ export function decodeBinary(
 					push(p);
 					continue;
 				}
-				marker = d[x = i++];
-				switch (marker >> 4) {
+				m = d[x = i++];
+				switch (m >> 4) {
 					case 0: {
-						switch (marker) {
+						switch (m) {
 							case 8: {
 								object.set(x, p = new PLBoolean(false));
 								push(p);
@@ -222,7 +222,7 @@ export function decodeBinary(
 						break;
 					}
 					case 1: {
-						c = 1 << (marker & 15);
+						c = 1 << (m & 15);
 						if (i + c > table) {
 							break;
 						}
@@ -237,7 +237,7 @@ export function decodeBinary(
 						continue;
 					}
 					case 2: {
-						switch (marker & 15) {
+						switch (m & 15) {
 							case 2: {
 								if (i + 4 > table) {
 									break;
@@ -264,7 +264,7 @@ export function decodeBinary(
 						break;
 					}
 					case 3: {
-						if (marker !== 51 || i + 8 > table) {
+						if (m !== 51 || i + 8 > table) {
 							break;
 						}
 						object.set(x, p = new PLDate(v.getFloat64(i)));
@@ -272,7 +272,7 @@ export function decodeBinary(
 						continue;
 					}
 					case 4: {
-						c = marker & 15;
+						c = m & 15;
 						if (c === 15) {
 							if (
 								i >= table ||
@@ -293,7 +293,7 @@ export function decodeBinary(
 						continue;
 					}
 					case 5: {
-						c = marker & 15;
+						c = m & 15;
 						if (c === 15) {
 							if (
 								i >= table ||
@@ -317,7 +317,7 @@ export function decodeBinary(
 						continue;
 					}
 					case 6: {
-						c = marker & 15;
+						c = m & 15;
 						if (c === 15) {
 							if (
 								i >= table ||
@@ -341,7 +341,7 @@ export function decodeBinary(
 						continue;
 					}
 					case 8: {
-						c = (marker & 15) + 1;
+						c = (m & 15) + 1;
 						if (i + c > table || (c = getU(d, i, c)) > U32_MAX) {
 							break;
 						}
@@ -350,7 +350,7 @@ export function decodeBinary(
 						continue;
 					}
 					case 10: {
-						c = marker & 15;
+						c = m & 15;
 						if (c === 15) {
 							if (
 								i >= table ||
@@ -380,7 +380,7 @@ export function decodeBinary(
 						continue;
 					}
 					case 13: {
-						c = marker & 15;
+						c = m & 15;
 						if (c === 15) {
 							if (
 								i >= table ||
@@ -400,7 +400,7 @@ export function decodeBinary(
 							ancestors.add(p);
 							anci = x;
 							ref = new Map<number, PLType>();
-							marker = 0;
+							m = 0;
 							yield walk(
 								getRefs(d, i, refc, c),
 								(o) => {
@@ -408,25 +408,20 @@ export function decodeBinary(
 										o[Symbol.toStringTag] !== PLTYPE_STRING
 									) {
 										throw new SyntaxError(
-											binaryError(i + marker * refc),
+											binaryError(i + m * refc),
 										);
 									}
-									(ref as Map<number, PLType>).set(
-										marker++,
-										o,
-									);
+									(ref as Map<number, PLType>).set(m++, o);
 								},
 								top as Next,
 								anci,
 							);
-							marker = 0;
+							m = 0;
 							yield walk(
 								getRefs(d, i + c * refc, refc, c),
 								(o) =>
 									(p as PLDict).set(
-										(ref as Map<number, PLType>).get(
-											marker++,
-										)!,
+										(ref as Map<number, PLType>).get(m++)!,
 										o,
 									),
 								top as Next,
