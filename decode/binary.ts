@@ -187,7 +187,7 @@ export function decodeBinary(
 		refs: Iterable<number>,
 		push: (p: PLType) => unknown,
 		next?: Next,
-		anci?: number,
+		aoff?: number,
 	): Next {
 		let c;
 		let i: number;
@@ -199,7 +199,7 @@ export function decodeBinary(
 			if (i > 7) {
 				if ((p = object.get(i))) {
 					if (ancestors.has(p)) {
-						throw new SyntaxError(binaryError(anci!));
+						throw new SyntaxError(binaryError(aoff!));
 					}
 					push(p);
 					continue;
@@ -398,7 +398,7 @@ export function decodeBinary(
 						object.set(x, p = new PLDict());
 						if (c) {
 							ancestors.add(p);
-							anci = x;
+							aoff = x;
 							ref = new Map<number, PLType>();
 							m = 0;
 							yield walk(
@@ -414,7 +414,7 @@ export function decodeBinary(
 									(ref as Map<number, PLType>).set(m++, o);
 								},
 								top as Next,
-								anci,
+								aoff,
 							);
 							m = 0;
 							yield walk(
@@ -425,7 +425,7 @@ export function decodeBinary(
 										o,
 									),
 								top as Next,
-								anci,
+								aoff,
 							);
 							ancestors.delete(p);
 						}
