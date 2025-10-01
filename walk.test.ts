@@ -7,6 +7,7 @@ import { PLDict, PLTYPE_DICT } from './dict.ts';
 import { PLInteger, PLTYPE_INTEGER } from './integer.ts';
 import { PLNull, PLTYPE_NULL } from './null.ts';
 import { PLReal, PLTYPE_REAL } from './real.ts';
+import { PLSet, PLTYPE_SET } from './set.ts';
 import { PLString, PLTYPE_STRING } from './string.ts';
 import type { PLType } from './type.ts';
 import { PLTYPE_UID, PLUID } from './uid.ts';
@@ -56,6 +57,10 @@ Deno.test('walk: all', () => {
 	const vNull = new PLNull();
 	plist.set(kNull, vNull);
 
+	const kSet = new PLString('Set');
+	const vSet = new PLSet([int0, int1, int2]);
+	plist.set(kSet, vSet);
+
 	const visited: [
 		string,
 		PLType,
@@ -90,6 +95,7 @@ Deno.test('walk: all', () => {
 			[PLTYPE_INTEGER]: visiter(`visit.${PLTYPE_INTEGER}`),
 			[PLTYPE_NULL]: visiter(`visit.${PLTYPE_NULL}`),
 			[PLTYPE_REAL]: visiter(`visit.${PLTYPE_REAL}`),
+			[PLTYPE_SET]: visiter(`visit.${PLTYPE_SET}`),
 			[PLTYPE_STRING]: visiter(`visit.${PLTYPE_STRING}`),
 			[PLTYPE_UID]: visiter(`visit.${PLTYPE_UID}`),
 			default: visiter('visit.default'),
@@ -97,6 +103,7 @@ Deno.test('walk: all', () => {
 		{
 			[PLTYPE_ARRAY]: visiter(`leave.${PLTYPE_ARRAY}`),
 			[PLTYPE_DICT]: visiter(`leave.${PLTYPE_DICT}`),
+			[PLTYPE_SET]: visiter(`leave.${PLTYPE_SET}`),
 			default: visiter('leave.default'),
 		},
 	);
@@ -141,6 +148,15 @@ Deno.test('walk: all', () => {
 
 		[`visit.${PLTYPE_STRING}`, kNull, 1, null, plist],
 		[`visit.${PLTYPE_NULL}`, vNull, 1, kNull, plist],
+
+		[`visit.${PLTYPE_STRING}`, kSet, 1, null, plist],
+		[`visit.${PLTYPE_SET}`, vSet, 1, kSet, plist],
+
+		[`visit.${PLTYPE_INTEGER}`, int0, 2, int0, vSet],
+		[`visit.${PLTYPE_INTEGER}`, int1, 2, int1, vSet],
+		[`visit.${PLTYPE_INTEGER}`, int2, 2, int2, vSet],
+
+		[`leave.${PLTYPE_SET}`, vSet, 1, kSet, plist],
 
 		[`leave.${PLTYPE_DICT}`, plist, 0, null, null],
 	];
