@@ -346,13 +346,13 @@ export function encodeBinary(
 					i = encodeInt(d, i, l);
 				}
 				if (x) {
-					for (
-						x = 0;
-						x < l;
-						d.setInt16(i, e.charCodeAt(x++)), i += 2
-					);
+					for (x = 0; x < l; i += 2) {
+						d.setInt16(i, e.charCodeAt(x++));
+					}
 				} else {
-					for (x = 0; x < l; r[i++] = e.charCodeAt(x++));
+					for (x = 0; x < l;) {
+						r[i++] = e.charCodeAt(x++);
+					}
 				}
 				break;
 			}

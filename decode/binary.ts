@@ -38,7 +38,9 @@ const U128_MAX = 0xffffffffffffffffffffffffffffffffn;
  */
 function getU(d: Uint8Array, i: number, c: number, m = U64_MAX): bigint {
 	let r = 0n;
-	for (; c--; r = r << 8n & m | BigInt(d[i++]));
+	for (; c--;) {
+		r = r << 8n & m | BigInt(d[i++]);
+	}
 	return r;
 }
 

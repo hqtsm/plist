@@ -205,7 +205,9 @@ function decodeStrU(d: Uint8Array, p: [number]): PLString {
 	let [i] = p;
 	let c;
 	let s = String.fromCharCode(d[i]);
-	for (; unquoted(c = d[++i]); s += String.fromCharCode(c));
+	while (unquoted(c = d[++i])) {
+		s += String.fromCharCode(c);
+	}
 	p[0] = i;
 	return new PLString(s);
 }
