@@ -164,40 +164,64 @@ export class PLArray<T extends PLType = PLType> {
 	 * Find value.
 	 *
 	 * @param callback Find callback.
+	 * @param thisArg Callback context.
 	 * @returns Found value or undefined.
 	 */
-	public find(callback: (value: T) => boolean): T | undefined {
-		return (arrays.get(this) as T[]).find(callback);
+	public find(
+		callback: (value: T, index: number, array: this) => boolean,
+		thisArg?: unknown,
+	): T | undefined {
+		return (arrays.get(this) as T[]).find(
+			(value, index) => callback.call(thisArg, value, index, this),
+		);
 	}
 
 	/**
 	 * Find index of value.
 	 *
 	 * @param callback Find callback.
+	 * @param thisArg Callback context.
 	 * @returns Found index or -1.
 	 */
-	public findIndex(callback: (value: T) => boolean): number {
-		return (arrays.get(this) as T[]).findIndex(callback);
+	public findIndex(
+		callback: (value: T, index: number, array: this) => boolean,
+		thisArg?: unknown,
+	): number {
+		return (arrays.get(this) as T[]).findIndex((value, index) =>
+			callback.call(thisArg, value, index, this)
+		);
 	}
 
 	/**
 	 * Find last value.
 	 *
 	 * @param callback Find callback.
+	 * @param thisArg Callback context.
 	 * @returns Found value or undefined.
 	 */
-	public findLast(callback: (value: T) => boolean): T | undefined {
-		return (arrays.get(this) as T[]).findLast(callback);
+	public findLast(
+		callback: (value: T, index: number, array: this) => boolean,
+		thisArg?: unknown,
+	): T | undefined {
+		return (arrays.get(this) as T[]).findLast((value, index) =>
+			callback.call(thisArg, value, index, this)
+		);
 	}
 
 	/**
 	 * Find last index of value.
 	 *
 	 * @param callback Find callback.
+	 * @param thisArg Callback context.
 	 * @returns Found index or -1.
 	 */
-	public findLastIndex(callback: (value: T) => boolean): number {
-		return (arrays.get(this) as T[]).findLastIndex(callback);
+	public findLastIndex(
+		callback: (value: T, index: number, array: this) => boolean,
+		thisArg?: unknown,
+	): number {
+		return (arrays.get(this) as T[]).findLastIndex((value, index) =>
+			callback.call(thisArg, value, index, this)
+		);
 	}
 
 	/**
