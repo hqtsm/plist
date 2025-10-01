@@ -30,10 +30,10 @@ const U128_MAX = 0xffffffffffffffffffffffffffffffffn;
 /**
  * Get uint of size.
  *
- * @param m Max.
  * @param d Data.
  * @param i Offset.
  * @param c Byte count.
+ * @param m Max.
  * @returns Integer.
  */
 function getU(
