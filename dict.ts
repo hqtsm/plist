@@ -95,11 +95,15 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	 * Find value for first key of value.
 	 *
 	 * @param predicate Key search predicate.
+	 * @param thisArg Callback context.
 	 * @returns Value or undefined.
 	 */
-	public find(predicate: (key: K) => boolean): V | undefined {
+	public find(
+		predicate: (value: V, key: K, dict: this) => boolean,
+		thisArg?: unknown,
+	): V | undefined {
 		for (const [k, v] of (maps.get(this) as Map<K, V>)) {
-			if (predicate(k)) {
+			if (predicate.call(thisArg, v, k, this)) {
 				return v;
 			}
 		}
@@ -109,11 +113,15 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	 * Find first key of value.
 	 *
 	 * @param predicate Key search predicate.
+	 * @param thisArg Callback context.
 	 * @returns Key or undefined.
 	 */
-	public findKey(predicate: (key: K) => boolean): K | undefined {
-		for (const [k] of (maps.get(this) as Map<K, V>)) {
-			if (predicate(k)) {
+	public findKey(
+		predicate: (value: V, key: K, dict: this) => boolean,
+		thisArg?: unknown,
+	): K | undefined {
+		for (const [k, v] of (maps.get(this) as Map<K, V>)) {
+			if (predicate.call(thisArg, v, k, this)) {
 				return k;
 			}
 		}
@@ -123,12 +131,16 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	 * Find value for last key of value.
 	 *
 	 * @param predicate Key search predicate.
+	 * @param thisArg Callback context.
 	 * @returns Value or undefined.
 	 */
-	public findLast(predicate: (key: K) => boolean): V | undefined {
+	public findLast(
+		predicate: (value: V, key: K, dict: this) => boolean,
+		thisArg?: unknown,
+	): V | undefined {
 		let r: V | undefined;
 		for (const [k, v] of (maps.get(this) as Map<K, V>)) {
-			if (predicate(k)) {
+			if (predicate.call(thisArg, v, k, this)) {
 				r = v;
 			}
 		}
@@ -139,12 +151,16 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	 * Find last key of value.
 	 *
 	 * @param predicate Key search predicate.
+	 * @param thisArg Callback context.
 	 * @returns Key or undefined.
 	 */
-	public findLastKey(predicate: (key: K) => boolean): K | undefined {
+	public findLastKey(
+		predicate: (value: V, key: K, dict: this) => boolean,
+		thisArg?: unknown,
+	): K | undefined {
 		let r: K | undefined;
-		for (const [k] of (maps.get(this) as Map<K, V>)) {
-			if (predicate(k)) {
+		for (const [k, v] of (maps.get(this) as Map<K, V>)) {
+			if (predicate.call(thisArg, v, k, this)) {
 				r = k;
 			}
 		}

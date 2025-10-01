@@ -26,8 +26,8 @@ const CF_STYLE = {
 
 const I64_MAX = 0x7fffffffffffffffn;
 
-function kp(value: string): (key: PLType) => boolean {
-	return (key: PLType) => PLString.is(key) && key.value === value;
+function kp(value: string): (_: PLType, key: PLType) => boolean {
+	return (_: PLType, key: PLType) => PLString.is(key) && key.value === value;
 }
 
 Deno.test('Bad header', () => {

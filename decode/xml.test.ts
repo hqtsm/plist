@@ -48,8 +48,8 @@ function realWS(): string[] {
 	return ws;
 }
 
-function kp(value: string): (key: PLType) => boolean {
-	return (key: PLType) => PLString.is(key) && key.value === value;
+function kp(value: string): (_: PLType, key: PLType) => boolean {
+	return (_: PLType, key: PLType) => PLString.is(key) && key.value === value;
 }
 
 Deno.test('Option: decoded', () => {

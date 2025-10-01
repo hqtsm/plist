@@ -25,8 +25,8 @@ const TE = new TextEncoder();
 const LS = String.fromCharCode(0x2028);
 const PS = String.fromCharCode(0x2029);
 
-function kp(value: string): (key: PLType) => boolean {
-	return (key: PLType) => PLString.is(key) && key.value === value;
+function kp(value: string): (_: PLType, key: PLType) => boolean {
+	return (_: PLType, key: PLType) => PLString.is(key) && key.value === value;
 }
 
 Deno.test('Empty', () => {
