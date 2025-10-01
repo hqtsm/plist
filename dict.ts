@@ -92,7 +92,7 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	}
 
 	/**
-	 * Find value for first key of value.
+	 * Find first value for predicate.
 	 *
 	 * @param predicate Key search predicate.
 	 * @param thisArg Callback context.
@@ -110,7 +110,7 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	}
 
 	/**
-	 * Find first key of value.
+	 * Find first key for predicate.
 	 *
 	 * @param predicate Key search predicate.
 	 * @param thisArg Callback context.
@@ -128,7 +128,7 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	}
 
 	/**
-	 * Find value for last key of value.
+	 * Find last value for predicate.
 	 *
 	 * @param predicate Key search predicate.
 	 * @param thisArg Callback context.
@@ -139,15 +139,15 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 		thisArg?: unknown,
 	): V | undefined {
 		for (
-			let m = maps.get(this) as Map<K, V>,
-				keys = [...m.keys()],
-				i = keys.length,
+			let c = maps.get(this) as Map<K, V>,
+				a = [...c.keys()],
+				i = a.length,
 				k: K,
 				v: V | undefined;
 			i;
 		) {
 			if (
-				(v = m.get(k = keys[--i])) &&
+				(v = c.get(k = a[--i])) &&
 				predicate.call(thisArg, v, k, this)
 			) {
 				return v;
@@ -156,7 +156,7 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	}
 
 	/**
-	 * Find last key of value.
+	 * Find last key for predicate.
 	 *
 	 * @param predicate Key search predicate.
 	 * @param thisArg Callback context.
@@ -167,15 +167,15 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 		thisArg?: unknown,
 	): K | undefined {
 		for (
-			let m = maps.get(this) as Map<K, V>,
-				keys = [...m.keys()],
-				i = keys.length,
+			let c = maps.get(this) as Map<K, V>,
+				a = [...c.keys()],
+				i = a.length,
 				k: K,
 				v: V | undefined;
 			i;
 		) {
 			if (
-				(v = m.get(k = keys[--i])) &&
+				(v = c.get(k = a[--i])) &&
 				predicate.call(thisArg, v, k, this)
 			) {
 				return k;
