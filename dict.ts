@@ -235,17 +235,17 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	 * @returns Value map.
 	 */
 	public toValueMap(first = false): Map<ReturnType<K['valueOf']>, V> {
-		const r = new Map();
+		const r = new Map<ReturnType<K['valueOf']>, V>();
 		if (first) {
 			for (const [k, v] of maps.get(this) as Map<K, V>) {
-				const value = k.valueOf();
+				const value = k.valueOf() as ReturnType<K['valueOf']>;
 				if (!r.has(value)) {
 					r.set(value, v);
 				}
 			}
 		} else {
 			for (const [k, v] of maps.get(this) as Map<K, V>) {
-				r.set(k.valueOf(), v);
+				r.set(k.valueOf() as ReturnType<K['valueOf']>, v);
 			}
 		}
 		return r;

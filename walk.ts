@@ -6,6 +6,7 @@ import { type PLDict, PLTYPE_DICT } from './dict.ts';
 import type { PLInteger, PLTYPE_INTEGER } from './integer.ts';
 import type { PLNull, PLTYPE_NULL } from './null.ts';
 import type { PLReal, PLTYPE_REAL } from './real.ts';
+import { type PLSet, PLTYPE_SET } from './set.ts';
 import type { PLString, PLTYPE_STRING } from './string.ts';
 import type { PLType } from './type.ts';
 import type { PLTYPE_UID, PLUID } from './uid.ts';
@@ -19,7 +20,7 @@ interface Node {
 	/**
 	 * Parent of the itter, null for root.
 	 */
-	p: PLArray | PLDict | null;
+	p: PLArray | PLDict | PLSet | null;
 
 	/**
 	 * Key of the itter, null for root.
@@ -55,7 +56,7 @@ interface Node {
 /**
  * Walk parent.
  */
-export type WalkParent = PLArray | PLDict | null;
+export type WalkParent = PLArray | PLDict | PLSet | null;
 
 /**
  * Walk visitor.
@@ -121,6 +122,11 @@ export interface WalkVisit {
 	[PLTYPE_REAL]?: WalkVisitor<PLReal>;
 
 	/**
+	 * PLSet visit.
+	 */
+	[PLTYPE_SET]?: WalkVisitor<PLSet>;
+
+	/**
 	 * PLString visit.
 	 */
 	[PLTYPE_STRING]?: WalkVisitor<PLString>;
@@ -151,6 +157,11 @@ export interface WalkLeave {
 	[PLTYPE_DICT]?: WalkVisitor<PLDict>;
 
 	/**
+	 * PLSet leave.
+	 */
+	[PLTYPE_SET]?: WalkVisitor<PLSet>;
+
+	/**
 	 * Default leave.
 	 */
 	default?: WalkVisitor<PLArray | PLDict>;
@@ -179,7 +190,7 @@ export function walk(
 	let t;
 	let node: Node | null = { p, k, g: [plist].entries(), n: p };
 	// deno-lint-ignore no-explicit-any
-	let visitor: WalkVisitor<any, any>;
+	let wv: WalkVisitor<any, any>;
 	do {
 		next = node.g.next();
 		if (next.done) {
@@ -188,36 +199,43 @@ export function walk(
 			}
 			k = node.k;
 			node = node.n!;
-			visitor = leave[p[Symbol.toStringTag]] ?? ld;
-			if (visitor(p, --depth, k, p = node.p) === false) {
+			wv = leave[p[Symbol.toStringTag]] ?? ld;
+			if (wv(p, --depth, k, p = node.p) === false) {
 				return;
 			}
 			t = p?.[Symbol.toStringTag];
 		} else {
 			if (p) {
 				[k, v] = next.value!;
-				if (t !== PLTYPE_ARRAY) {
-					visitor = visit[(k as PLType)[Symbol.toStringTag]] ?? vd;
-					if (visitor(k as PLType, depth, null, p) === false) {
-						return;
+				switch (t) {
+					case PLTYPE_ARRAY:
+					case PLTYPE_SET: {
+						break;
+					}
+					default: {
+						wv = visit[(k as PLType)[Symbol.toStringTag]] ?? vd;
+						if (wv(k as PLType, depth, null, p) === false) {
+							return;
+						}
 					}
 				}
 			} else {
 				v = next.value![1];
 			}
-			visitor = visit[x = v[Symbol.toStringTag]] ?? vd;
-			next = visitor(v, depth, k, p);
+			wv = visit[x = v[Symbol.toStringTag]] ?? vd;
+			next = wv(v, depth, k, p);
 			if (next === false) {
 				return;
 			}
 			if (next !== true) {
 				switch (x) {
 					case PLTYPE_ARRAY:
-					case PLTYPE_DICT: {
+					case PLTYPE_DICT:
+					case PLTYPE_SET: {
 						node = {
-							p: (p = v as PLArray | PLDict),
+							p: (p = v as PLArray | PLDict | PLSet),
 							k,
-							g: (v as PLArray | PLDict).entries(),
+							g: (v as PLArray | PLDict | PLSet).entries(),
 							n: node,
 						} satisfies Node;
 						depth++;
