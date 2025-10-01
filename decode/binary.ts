@@ -352,6 +352,7 @@ export function decodeBinary(
 					}
 					case 10: {
 						if (prim) {
+							x = aoff!;
 							break;
 						}
 						c = m & 15;
@@ -385,6 +386,7 @@ export function decodeBinary(
 					}
 					case 13: {
 						if (prim) {
+							x = aoff!;
 							break;
 						}
 						c = m & 15;
