@@ -262,9 +262,9 @@ Deno.test('find', () => {
 	let index = 0;
 	array.find(function (this: typeof that, v, i, a): boolean {
 		const tag = `${i}`;
+		assertStrictEquals(this, that, tag);
 		assertStrictEquals(v, a.get(i), tag);
 		assertStrictEquals(i, index, tag);
-		assertStrictEquals(this, that, tag);
 		assertStrictEquals(a, array, tag);
 		index++;
 		return false;
@@ -287,9 +287,9 @@ Deno.test('findIndex', () => {
 	let index = 0;
 	array.findIndex(function (this: typeof that, v, i, a): boolean {
 		const tag = `${i}`;
+		assertStrictEquals(this, that, tag);
 		assertStrictEquals(v, a.get(i), tag);
 		assertStrictEquals(i, index, tag);
-		assertStrictEquals(this, that, tag);
 		assertStrictEquals(a, array, tag);
 		index++;
 		return false;
@@ -312,9 +312,9 @@ Deno.test('findLast', () => {
 	let index = array.length - 1;
 	array.findLast(function (this: typeof that, v, i, a): boolean {
 		const tag = `${i}`;
+		assertStrictEquals(this, that, tag);
 		assertStrictEquals(v, a.get(i), tag);
 		assertStrictEquals(i, index, tag);
-		assertStrictEquals(this, that, tag);
 		assertStrictEquals(a, array, tag);
 		index--;
 		return false;
@@ -337,9 +337,9 @@ Deno.test('findLastIndex', () => {
 	let index = array.length - 1;
 	array.findLastIndex(function (this: typeof that, v, i, a): boolean {
 		const tag = `${i}`;
+		assertStrictEquals(this, that, tag);
 		assertStrictEquals(v, a.get(i), tag);
 		assertStrictEquals(i, index, tag);
-		assertStrictEquals(this, that, tag);
 		assertStrictEquals(a, array, tag);
 		index--;
 		return false;
