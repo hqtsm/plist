@@ -28,30 +28,22 @@ const U64_MAX = 0xffffffffffffffffn;
 const U128_MAX = 0xffffffffffffffffffffffffffffffffn;
 
 /**
- * Get 64-bit uint of size.
+ * Get uint of size.
  *
+ * @param m Max.
  * @param d Data.
  * @param i Offset.
  * @param c Byte count.
  * @returns Integer.
  */
-function getU(d: Uint8Array, i: number, c: number): bigint {
+function getU(
+	d: Uint8Array,
+	i: number,
+	c: number,
+	m: bigint = U64_MAX,
+): bigint {
 	let r = 0n;
-	for (; c--; r = r << 8n & U64_MAX | BigInt(d[i++]));
-	return r;
-}
-
-/**
- * Get 128-bit uint of size.
- *
- * @param d Data.
- * @param i Offset.
- * @param c Byte count.
- * @returns Integer.
- */
-function getUU(d: Uint8Array, i: number, c: number): bigint {
-	let r = 0n;
-	for (; c--; r = r << 8n & U128_MAX | BigInt(d[i++]));
+	for (; c--; r = r << 8n & m | BigInt(d[i++]));
 	return r;
 }
 
@@ -230,7 +222,7 @@ export function decodeBinary(
 						object.set(
 							x,
 							p = new PLInteger(
-								int64 ? getU(d, i, c) : getUU(d, i, c),
+								getU(d, i, c, int64 ? U64_MAX : U128_MAX),
 								c > 8 ? 128 : 64,
 							),
 						);
