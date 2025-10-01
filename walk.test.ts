@@ -13,6 +13,85 @@ import type { PLType } from './type.ts';
 import { PLTYPE_UID, PLUID } from './uid.ts';
 import { walk, type WalkParent } from './walk.ts';
 
+Deno.test('walk: default', () => {
+	for (
+		const plist of [
+			new PLArray(),
+			new PLBoolean(),
+			new PLData(),
+			new PLDate(),
+			new PLDict(),
+			new PLInteger(),
+			new PLNull(),
+			new PLReal(),
+			new PLSet(),
+			new PLString(),
+			new PLUID(),
+		]
+	) {
+		let visit: PLType | null = null;
+		let leave: PLType | null = null;
+		walk(
+			plist,
+			{
+				default(v, d, k, p): void {
+					visit = v;
+					assertEquals(d, 0);
+					assertStrictEquals(k, null);
+					assertStrictEquals(p, null);
+				},
+			},
+			{
+				default(v, d, k, p): void {
+					leave = v;
+					assertEquals(d, 0);
+					assertStrictEquals(k, null);
+					assertStrictEquals(p, null);
+				},
+			},
+		);
+		assertStrictEquals(visit, plist);
+		if (PLArray.is(visit) || PLDict.is(visit) || PLSet.is(visit)) {
+			assertStrictEquals(leave, plist);
+		} else {
+			assertStrictEquals(leave, null);
+		}
+
+		const collection = new PLArray([plist]);
+		visit = null;
+		leave = null;
+		walk(
+			collection,
+			{
+				default(v, d, k, p): void {
+					if (v !== collection) {
+						visit = v;
+						assertEquals(d, 1);
+						assertStrictEquals(k, 0);
+						assertStrictEquals(p, collection);
+					}
+				},
+			},
+			{
+				default(v, d, k, p): void {
+					if (v !== collection) {
+						leave = v;
+						assertEquals(d, 1);
+						assertStrictEquals(k, 0);
+						assertStrictEquals(p, collection);
+					}
+				},
+			},
+		);
+		assertStrictEquals(visit, plist);
+		if (PLArray.is(visit) || PLDict.is(visit) || PLSet.is(visit)) {
+			assertStrictEquals(leave, plist);
+		} else {
+			assertStrictEquals(leave, null);
+		}
+	}
+});
+
 Deno.test('walk: all', () => {
 	const plist = new PLDict();
 
