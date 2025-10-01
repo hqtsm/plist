@@ -296,8 +296,7 @@ export function decodeBinary(
 						if (i + c > table) {
 							break;
 						}
-						r = '';
-						for (; c--;) {
+						for (r = ''; c--;) {
 							r += String.fromCharCode(d[i++]);
 						}
 						object.set(x, p = new PLString(r));
@@ -320,8 +319,7 @@ export function decodeBinary(
 						if (i + c * 2 > table) {
 							break;
 						}
-						r = '';
-						for (; c--; i += 2) {
+						for (r = ''; c--; i += 2) {
 							r += String.fromCharCode(v.getUint16(i));
 						}
 						object.set(x, p = new PLString(r));
