@@ -156,14 +156,14 @@ Deno.test('findLast', () => {
 	const dict = new PLDict(values);
 
 	const that = {};
-	let index = 0;
+	let index = values.length - 1;
 	dict.findLast(function (this: typeof that, v, k, d): boolean {
 		const tag = `${k.toString()} => ${v.toString()}`;
 		assertStrictEquals(this, that, tag);
 		assertStrictEquals(v, values[index][1], tag);
 		assertStrictEquals(k, values[index][0], tag);
 		assertStrictEquals(d, dict, tag);
-		index++;
+		index--;
 		return false;
 	}, that);
 
@@ -183,14 +183,14 @@ Deno.test('findLastKey', () => {
 	const dict = new PLDict(values);
 
 	const that = {};
-	let index = 0;
+	let index = values.length - 1;
 	dict.findLastKey(function (this: typeof that, v, k, d): boolean {
 		const tag = `${k.toString()} => ${v.toString()}`;
 		assertStrictEquals(this, that, tag);
 		assertStrictEquals(v, values[index][1], tag);
 		assertStrictEquals(k, values[index][0], tag);
 		assertStrictEquals(d, dict, tag);
-		index++;
+		index--;
 		return false;
 	}, that);
 

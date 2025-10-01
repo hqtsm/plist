@@ -138,13 +138,21 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 		predicate: (value: V, key: K, dict: this) => boolean,
 		thisArg?: unknown,
 	): V | undefined {
-		let r: V | undefined;
-		for (const [k, v] of (maps.get(this) as Map<K, V>)) {
-			if (predicate.call(thisArg, v, k, this)) {
-				r = v;
+		for (
+			let m = maps.get(this) as Map<K, V>,
+				keys = [...m.keys()],
+				i = keys.length,
+				k: K,
+				v: V | undefined;
+			i;
+		) {
+			if (
+				(v = m.get(k = keys[--i])) &&
+				predicate.call(thisArg, v, k, this)
+			) {
+				return v;
 			}
 		}
-		return r;
 	}
 
 	/**
@@ -158,13 +166,21 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 		predicate: (value: V, key: K, dict: this) => boolean,
 		thisArg?: unknown,
 	): K | undefined {
-		let r: K | undefined;
-		for (const [k, v] of (maps.get(this) as Map<K, V>)) {
-			if (predicate.call(thisArg, v, k, this)) {
-				r = k;
+		for (
+			let m = maps.get(this) as Map<K, V>,
+				keys = [...m.keys()],
+				i = keys.length,
+				k: K,
+				v: V | undefined;
+			i;
+		) {
+			if (
+				(v = m.get(k = keys[--i])) &&
+				predicate.call(thisArg, v, k, this)
+			) {
+				return k;
 			}
 		}
-		return r;
 	}
 
 	/**
