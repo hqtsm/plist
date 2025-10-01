@@ -29,6 +29,7 @@ Deno.test('walk: default', () => {
 			new PLUID(),
 		]
 	) {
+		const tag = plist.type;
 		let visit: PLType | null = null;
 		let leave: PLType | null = null;
 		walk(
@@ -36,25 +37,25 @@ Deno.test('walk: default', () => {
 			{
 				default(v, d, k, p): void {
 					visit = v;
-					assertEquals(d, 0);
-					assertStrictEquals(k, null);
-					assertStrictEquals(p, null);
+					assertEquals(d, 0, tag);
+					assertStrictEquals(k, null, tag);
+					assertStrictEquals(p, null, tag);
 				},
 			},
 			{
 				default(v, d, k, p): void {
 					leave = v;
-					assertEquals(d, 0);
-					assertStrictEquals(k, null);
-					assertStrictEquals(p, null);
+					assertEquals(d, 0, tag);
+					assertStrictEquals(k, null, tag);
+					assertStrictEquals(p, null, tag);
 				},
 			},
 		);
-		assertStrictEquals(visit, plist);
+		assertStrictEquals(visit, plist, tag);
 		if (PLArray.is(visit) || PLDict.is(visit) || PLSet.is(visit)) {
-			assertStrictEquals(leave, plist);
+			assertStrictEquals(leave, plist, tag);
 		} else {
-			assertStrictEquals(leave, null);
+			assertStrictEquals(leave, null, tag);
 		}
 
 		const collection = new PLArray([plist]);
@@ -66,9 +67,9 @@ Deno.test('walk: default', () => {
 				default(v, d, k, p): void {
 					if (v !== collection) {
 						visit = v;
-						assertEquals(d, 1);
-						assertStrictEquals(k, 0);
-						assertStrictEquals(p, collection);
+						assertEquals(d, 1, tag);
+						assertStrictEquals(k, 0, tag);
+						assertStrictEquals(p, collection, tag);
 					}
 				},
 			},
@@ -76,18 +77,18 @@ Deno.test('walk: default', () => {
 				default(v, d, k, p): void {
 					if (v !== collection) {
 						leave = v;
-						assertEquals(d, 1);
-						assertStrictEquals(k, 0);
-						assertStrictEquals(p, collection);
+						assertEquals(d, 1, tag);
+						assertStrictEquals(k, 0, tag);
+						assertStrictEquals(p, collection, tag);
 					}
 				},
 			},
 		);
-		assertStrictEquals(visit, plist);
+		assertStrictEquals(visit, plist, tag);
 		if (PLArray.is(visit) || PLDict.is(visit) || PLSet.is(visit)) {
-			assertStrictEquals(leave, plist);
+			assertStrictEquals(leave, plist, tag);
 		} else {
-			assertStrictEquals(leave, null);
+			assertStrictEquals(leave, null, tag);
 		}
 	}
 });
