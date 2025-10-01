@@ -252,11 +252,6 @@ Deno.test('find', () => {
 	const c = new PLInteger(2n);
 	const d = new PLInteger(3n);
 	const array = new PLArray([a, a, b, b, c, c, d, d]);
-	assertStrictEquals(array.find((v) => v.value === 0n), a);
-	assertStrictEquals(array.find((v) => v.value === 1n), b);
-	assertStrictEquals(array.find((v) => v.value === 2n), c);
-	assertStrictEquals(array.find((v) => v.value === 3n), d);
-	assertEquals(array.find((v) => v.value === 4n), undefined);
 
 	const that = {};
 	let index = 0;
@@ -269,6 +264,12 @@ Deno.test('find', () => {
 		index++;
 		return false;
 	}, that);
+
+	assertStrictEquals(array.find((v) => v.value === 0n), a);
+	assertStrictEquals(array.find((v) => v.value === 1n), b);
+	assertStrictEquals(array.find((v) => v.value === 2n), c);
+	assertStrictEquals(array.find((v) => v.value === 3n), d);
+	assertEquals(array.find((v) => v.value === 4n), undefined);
 });
 
 Deno.test('findIndex', () => {
@@ -277,11 +278,6 @@ Deno.test('findIndex', () => {
 	const c = new PLInteger(2n);
 	const d = new PLInteger(3n);
 	const array = new PLArray([a, a, b, b, c, c, d, d]);
-	assertEquals(array.findIndex((v) => v.value === 0n), 0);
-	assertEquals(array.findIndex((v) => v.value === 1n), 2);
-	assertEquals(array.findIndex((v) => v.value === 2n), 4);
-	assertEquals(array.findIndex((v) => v.value === 3n), 6);
-	assertEquals(array.findIndex((v) => v.value === 4n), -1);
 
 	const that = {};
 	let index = 0;
@@ -294,6 +290,12 @@ Deno.test('findIndex', () => {
 		index++;
 		return false;
 	}, that);
+
+	assertEquals(array.findIndex((v) => v.value === 0n), 0);
+	assertEquals(array.findIndex((v) => v.value === 1n), 2);
+	assertEquals(array.findIndex((v) => v.value === 2n), 4);
+	assertEquals(array.findIndex((v) => v.value === 3n), 6);
+	assertEquals(array.findIndex((v) => v.value === 4n), -1);
 });
 
 Deno.test('findLast', () => {
@@ -302,11 +304,6 @@ Deno.test('findLast', () => {
 	const c = new PLInteger(2n);
 	const d = new PLInteger(3n);
 	const array = new PLArray([a, a, b, b, c, c, d, d]);
-	assertStrictEquals(array.findLast((v) => v.value === 0n), a);
-	assertStrictEquals(array.findLast((v) => v.value === 1n), b);
-	assertStrictEquals(array.findLast((v) => v.value === 2n), c);
-	assertStrictEquals(array.findLast((v) => v.value === 3n), d);
-	assertEquals(array.findLast((v) => v.value === 4n), undefined);
 
 	const that = {};
 	let index = array.length - 1;
@@ -319,6 +316,12 @@ Deno.test('findLast', () => {
 		index--;
 		return false;
 	}, that);
+
+	assertStrictEquals(array.findLast((v) => v.value === 0n), a);
+	assertStrictEquals(array.findLast((v) => v.value === 1n), b);
+	assertStrictEquals(array.findLast((v) => v.value === 2n), c);
+	assertStrictEquals(array.findLast((v) => v.value === 3n), d);
+	assertEquals(array.findLast((v) => v.value === 4n), undefined);
 });
 
 Deno.test('findLastIndex', () => {
@@ -327,11 +330,6 @@ Deno.test('findLastIndex', () => {
 	const c = new PLInteger(2n);
 	const d = new PLInteger(3n);
 	const array = new PLArray([a, a, b, b, c, c, d, d]);
-	assertEquals(array.findLastIndex((v) => v.value === 0n), 1);
-	assertEquals(array.findLastIndex((v) => v.value === 1n), 3);
-	assertEquals(array.findLastIndex((v) => v.value === 2n), 5);
-	assertEquals(array.findLastIndex((v) => v.value === 3n), 7);
-	assertEquals(array.findLastIndex((v) => v.value === 4n), -1);
 
 	const that = {};
 	let index = array.length - 1;
@@ -344,6 +342,12 @@ Deno.test('findLastIndex', () => {
 		index--;
 		return false;
 	}, that);
+
+	assertEquals(array.findLastIndex((v) => v.value === 0n), 1);
+	assertEquals(array.findLastIndex((v) => v.value === 1n), 3);
+	assertEquals(array.findLastIndex((v) => v.value === 2n), 5);
+	assertEquals(array.findLastIndex((v) => v.value === 3n), 7);
+	assertEquals(array.findLastIndex((v) => v.value === 4n), -1);
 });
 
 Deno.test('includes', () => {
