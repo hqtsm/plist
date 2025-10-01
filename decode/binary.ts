@@ -352,8 +352,7 @@ export function decodeBinary(
 					}
 					case 10: {
 						if (prim) {
-							x = aoff!;
-							break;
+							throw new SyntaxError(binaryError(aoff!));
 						}
 						c = m & 15;
 						if (c === 15) {
@@ -386,8 +385,7 @@ export function decodeBinary(
 					}
 					case 13: {
 						if (prim) {
-							x = aoff!;
-							break;
+							throw new SyntaxError(binaryError(aoff!));
 						}
 						c = m & 15;
 						if (c === 15) {
