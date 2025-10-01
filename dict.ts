@@ -84,8 +84,6 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 
 	/**
 	 * Clear dict.
-	 *
-	 * @returns Dict.
 	 */
 	public clear(): void {
 		(maps.get(this) as Map<K, V>).clear();

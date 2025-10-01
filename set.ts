@@ -73,8 +73,6 @@ export class PLSet<T extends PLType = PLType> {
 
 	/**
 	 * Clear set.
-	 *
-	 * @returns Set.
 	 */
 	public clear(): void {
 		(sets.get(this) as Set<T>).clear();
