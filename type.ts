@@ -10,6 +10,7 @@ import type { PLData } from './data.ts';
 import type { PLDate } from './date.ts';
 import type { PLDict } from './dict.ts';
 import type { PLInteger } from './integer.ts';
+import type { PLNull } from './null.ts';
 import type { PLReal } from './real.ts';
 import type { PLString } from './string.ts';
 import type { PLUID } from './uid.ts';
@@ -24,6 +25,7 @@ export type PLType =
 	| PLDate
 	| PLDict
 	| PLInteger
+	| PLNull
 	| PLReal
 	| PLString
 	| PLUID;

@@ -4,6 +4,7 @@ import type { PLData, PLTYPE_DATA } from './data.ts';
 import type { PLDate, PLTYPE_DATE } from './date.ts';
 import { type PLDict, PLTYPE_DICT } from './dict.ts';
 import type { PLInteger, PLTYPE_INTEGER } from './integer.ts';
+import type { PLNull, PLTYPE_NULL } from './null.ts';
 import type { PLReal, PLTYPE_REAL } from './real.ts';
 import type { PLString, PLTYPE_STRING } from './string.ts';
 import type { PLType } from './type.ts';
@@ -108,6 +109,11 @@ export interface WalkVisit {
 	 * PLInteger visit.
 	 */
 	[PLTYPE_INTEGER]?: WalkVisitor<PLInteger>;
+
+	/**
+	 * PLNull visit.
+	 */
+	[PLTYPE_NULL]?: WalkVisitor<PLNull>;
 
 	/**
 	 * PLReal visit.

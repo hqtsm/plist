@@ -5,6 +5,7 @@ import { PLData, PLTYPE_DATA } from './data.ts';
 import { PLDate, PLTYPE_DATE } from './date.ts';
 import { PLDict, PLTYPE_DICT } from './dict.ts';
 import { PLInteger, PLTYPE_INTEGER } from './integer.ts';
+import { PLNull, PLTYPE_NULL } from './null.ts';
 import { PLReal, PLTYPE_REAL } from './real.ts';
 import { PLString, PLTYPE_STRING } from './string.ts';
 import type { PLType } from './type.ts';
@@ -18,38 +19,42 @@ Deno.test('walk: all', () => {
 	const int1 = new PLInteger(2n);
 	const int2 = new PLInteger(3n);
 	const kArray = new PLString('Array');
-	const array = new PLArray([int0, int1, int2]);
-	plist.set(kArray, array);
+	const vArray = new PLArray([int0, int1, int2]);
+	plist.set(kArray, vArray);
 
 	const kData = new PLString('Data');
-	const data = new PLData(8);
-	plist.set(kData, data);
+	const vData = new PLData(8);
+	plist.set(kData, vData);
 
 	const kDate = new PLString('Date');
-	const date = new PLDate(0);
-	plist.set(kDate, date);
+	const vDate = new PLDate(0);
+	plist.set(kDate, vDate);
 
 	const kDict = new PLString('Dict');
 	const dict = new PLDict();
 	const kTrue = new PLString('TRUE');
-	const bTrue = new PLBoolean(true);
-	dict.set(kTrue, bTrue);
+	const vTrue = new PLBoolean(true);
+	dict.set(kTrue, vTrue);
 	const kFalse = new PLString('FALSE');
-	const bFalse = new PLBoolean(false);
-	dict.set(kFalse, bFalse);
+	const vFalse = new PLBoolean(false);
+	dict.set(kFalse, vFalse);
 	plist.set(kDict, dict);
 
 	const kReal = new PLString('Real');
-	const real = new PLReal(3.14);
-	plist.set(kReal, real);
+	const vReal = new PLReal(3.14);
+	plist.set(kReal, vReal);
 
 	const kString = new PLString('String');
-	const string = new PLString('Hello world!');
-	plist.set(kString, string);
+	const vString = new PLString('Hello world!');
+	plist.set(kString, vString);
 
 	const kUID = new PLString('UID');
-	const uid = new PLUID(42n);
-	plist.set(kUID, uid);
+	const vUID = new PLUID(42n);
+	plist.set(kUID, vUID);
+
+	const kNull = new PLString('Null');
+	const vNull = new PLNull();
+	plist.set(kNull, vNull);
 
 	const visited: [
 		string,
@@ -83,6 +88,7 @@ Deno.test('walk: all', () => {
 			[PLTYPE_DATE]: visiter(`visit.${PLTYPE_DATE}`),
 			[PLTYPE_DICT]: visiter(`visit.${PLTYPE_DICT}`),
 			[PLTYPE_INTEGER]: visiter(`visit.${PLTYPE_INTEGER}`),
+			[PLTYPE_NULL]: visiter(`visit.${PLTYPE_NULL}`),
 			[PLTYPE_REAL]: visiter(`visit.${PLTYPE_REAL}`),
 			[PLTYPE_STRING]: visiter(`visit.${PLTYPE_STRING}`),
 			[PLTYPE_UID]: visiter(`visit.${PLTYPE_UID}`),
@@ -99,39 +105,42 @@ Deno.test('walk: all', () => {
 		[`visit.${PLTYPE_DICT}`, plist, 0, null, null],
 
 		[`visit.${PLTYPE_STRING}`, kArray, 1, null, plist],
-		[`visit.${PLTYPE_ARRAY}`, array, 1, kArray, plist],
+		[`visit.${PLTYPE_ARRAY}`, vArray, 1, kArray, plist],
 
-		[`visit.${PLTYPE_INTEGER}`, int0, 2, 0, array],
-		[`visit.${PLTYPE_INTEGER}`, int1, 2, 1, array],
-		[`visit.${PLTYPE_INTEGER}`, int2, 2, 2, array],
+		[`visit.${PLTYPE_INTEGER}`, int0, 2, 0, vArray],
+		[`visit.${PLTYPE_INTEGER}`, int1, 2, 1, vArray],
+		[`visit.${PLTYPE_INTEGER}`, int2, 2, 2, vArray],
 
-		[`leave.${PLTYPE_ARRAY}`, array, 1, kArray, plist],
+		[`leave.${PLTYPE_ARRAY}`, vArray, 1, kArray, plist],
 
 		[`visit.${PLTYPE_STRING}`, kData, 1, null, plist],
-		[`visit.${PLTYPE_DATA}`, data, 1, kData, plist],
+		[`visit.${PLTYPE_DATA}`, vData, 1, kData, plist],
 
 		[`visit.${PLTYPE_STRING}`, kDate, 1, null, plist],
-		[`visit.${PLTYPE_DATE}`, date, 1, kDate, plist],
+		[`visit.${PLTYPE_DATE}`, vDate, 1, kDate, plist],
 
 		[`visit.${PLTYPE_STRING}`, kDict, 1, null, plist],
 		[`visit.${PLTYPE_DICT}`, dict, 1, kDict, plist],
 
 		[`visit.${PLTYPE_STRING}`, kTrue, 2, null, dict],
-		[`visit.${PLTYPE_BOOLEAN}`, bTrue, 2, kTrue, dict],
+		[`visit.${PLTYPE_BOOLEAN}`, vTrue, 2, kTrue, dict],
 
 		[`visit.${PLTYPE_STRING}`, kFalse, 2, null, dict],
-		[`visit.${PLTYPE_BOOLEAN}`, bFalse, 2, kFalse, dict],
+		[`visit.${PLTYPE_BOOLEAN}`, vFalse, 2, kFalse, dict],
 
 		[`leave.${PLTYPE_DICT}`, dict, 1, kDict, plist],
 
 		[`visit.${PLTYPE_STRING}`, kReal, 1, null, plist],
-		[`visit.${PLTYPE_REAL}`, real, 1, kReal, plist],
+		[`visit.${PLTYPE_REAL}`, vReal, 1, kReal, plist],
 
 		[`visit.${PLTYPE_STRING}`, kString, 1, null, plist],
-		[`visit.${PLTYPE_STRING}`, string, 1, kString, plist],
+		[`visit.${PLTYPE_STRING}`, vString, 1, kString, plist],
 
 		[`visit.${PLTYPE_STRING}`, kUID, 1, null, plist],
-		[`visit.${PLTYPE_UID}`, uid, 1, kUID, plist],
+		[`visit.${PLTYPE_UID}`, vUID, 1, kUID, plist],
+
+		[`visit.${PLTYPE_STRING}`, kNull, 1, null, plist],
+		[`visit.${PLTYPE_NULL}`, vNull, 1, kNull, plist],
 
 		[`leave.${PLTYPE_DICT}`, plist, 0, null, null],
 	];
