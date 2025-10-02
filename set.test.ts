@@ -164,6 +164,110 @@ Deno.test('Symbol.iterator', () => {
 	}
 });
 
+Deno.test('union', () => {
+	const strA = new PLString('a');
+	const strB = new PLString('b');
+	const strC = new PLString('c');
+	const strD = new PLString('d');
+
+	const setA = new PLSet([strA, strB, strC]);
+	const setB = new PLSet([strC, strD]);
+	const set = setA.union(setB);
+	const values = [...set];
+
+	assertEquals(set.size, 4);
+	assertStrictEquals(values[0], strA);
+	assertStrictEquals(values[1], strB);
+	assertStrictEquals(values[2], strC);
+	assertStrictEquals(values[3], strD);
+});
+
+Deno.test('intersection', () => {
+	const strA = new PLString('a');
+	const strB = new PLString('b');
+	const strC = new PLString('c');
+	const strD = new PLString('d');
+
+	const setA = new PLSet([strA, strB, strC]);
+	const setB = new PLSet([strB, strC, strD]);
+	const set = setA.intersection(setB);
+	const values = [...set];
+
+	assertEquals(set.size, 2);
+	assertStrictEquals(values[0], strB);
+	assertStrictEquals(values[1], strC);
+});
+
+Deno.test('difference', () => {
+	const strA = new PLString('a');
+	const strB = new PLString('b');
+	const strC = new PLString('c');
+	const strD = new PLString('d');
+
+	const setA = new PLSet([strA, strB, strC]);
+	const setB = new PLSet([strC, strD]);
+	const set = setA.difference(setB);
+	const values = [...set];
+
+	assertEquals(set.size, 2);
+	assertStrictEquals(values[0], strA);
+	assertStrictEquals(values[1], strB);
+});
+
+Deno.test('symmetricDifference', () => {
+	const strA = new PLString('a');
+	const strB = new PLString('b');
+	const strC = new PLString('c');
+	const strD = new PLString('d');
+
+	const setA = new PLSet([strA, strB, strC]);
+	const setB = new PLSet([strB, strC, strD]);
+	const set = setA.symmetricDifference(setB);
+	const values = [...set];
+
+	assertEquals(set.size, 2);
+	assertStrictEquals(values[0], strA);
+	assertStrictEquals(values[1], strD);
+});
+
+Deno.test('isSubsetOf', () => {
+	const strA = new PLString('a');
+	const strB = new PLString('b');
+	const strC = new PLString('c');
+
+	const setA = new PLSet([strA, strB]);
+	const setB = new PLSet([strA, strB, strC]);
+	assertEquals(setA.isSubsetOf(setB), true);
+	assertEquals(setB.isSubsetOf(setA), false);
+});
+
+Deno.test('isSupersetOf', () => {
+	const strA = new PLString('a');
+	const strB = new PLString('b');
+	const strC = new PLString('c');
+
+	const setA = new PLSet([strA, strB]);
+	const setB = new PLSet([strA, strB, strC]);
+	assertEquals(setA.isSupersetOf(setB), false);
+	assertEquals(setB.isSupersetOf(setA), true);
+});
+
+Deno.test('isDisjointFrom', () => {
+	const strA = new PLString('a');
+	const strB = new PLString('b');
+	const strC = new PLString('c');
+	const strD = new PLString('d');
+
+	const setA = new PLSet([strA, strB]);
+	const setB = new PLSet([strC, strD]);
+	const setC = new PLSet([strA, strC]);
+
+	assertEquals(setA.isDisjointFrom(setB), true);
+	assertEquals(setB.isDisjointFrom(setA), true);
+	assertEquals(setC.isDisjointFrom(setA), false);
+	assertEquals(setC.isDisjointFrom(setB), false);
+});
+
 Deno.test('toSet', () => {
 	const a = new PLString('a');
 	const b = new PLString('b');

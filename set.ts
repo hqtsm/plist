@@ -157,6 +157,122 @@ export class PLSet<T extends PLType = PLType> {
 	}
 
 	/**
+	 * Create a new set of every value in either this set or another.
+	 *
+	 * @param other Other set.
+	 * @returns Union set.
+	 */
+	public union<U extends PLType>(other: PLSet<U>): PLSet<T | U> {
+		const r = new PLSet<T | U>(sets.get(this) as Set<T>);
+		for (const v of other) {
+			r.add(v);
+		}
+		return r;
+	}
+
+	/**
+	 * Create a new set of every value in both this set and another.
+	 *
+	 * @param other Other set.
+	 * @returns Intersection set.
+	 */
+	public intersection<U extends PLType>(other: PLSet<U>): PLSet<T & U> {
+		const r = new PLSet<T & U>();
+		for (const v of sets.get(this) as Set<T & U>) {
+			if (other.has(v)) {
+				r.add(v);
+			}
+		}
+		return r;
+	}
+
+	/**
+	 * Create a new set of every value in this set but not in another.
+	 *
+	 * @param other Other set.
+	 * @returns Difference set.
+	 */
+	public difference<U extends PLType>(other: PLSet<U>): PLSet<T> {
+		const r = new PLSet<T>();
+		for (const v of sets.get(this) as Set<T>) {
+			if (!other.has(v as unknown as U)) {
+				r.add(v);
+			}
+		}
+		return r;
+	}
+
+	/**
+	 * Create a new set of every value only in either this set or another.
+	 *
+	 * @param other Other set.
+	 * @returns Symmetric difference set.
+	 */
+	public symmetricDifference<U extends PLType>(
+		other: PLSet<U>,
+	): PLSet<T | U> {
+		const s = sets.get(this) as Set<T | U>;
+		const r = new PLSet<T | U>();
+		for (const v of s) {
+			if (!other.has(v as U)) {
+				r.add(v);
+			}
+		}
+		for (const v of other) {
+			if (!s.has(v)) {
+				r.add(v);
+			}
+		}
+		return r;
+	}
+
+	/**
+	 * Check if this set only have values that are in another.
+	 *
+	 * @param other Other set.
+	 * @returns Is subset.
+	 */
+	public isSubsetOf(other: PLSet): boolean {
+		for (const v of sets.get(this)!) {
+			if (!other.has(v)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Check if this set has every value of another.
+	 *
+	 * @param other Other set.
+	 * @returns Is superset.
+	 */
+	public isSupersetOf(other: PLSet): boolean {
+		const s = sets.get(this)!;
+		for (const v of other) {
+			if (!s.has(v)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Check if this set has no values in common with another.
+	 *
+	 * @param other Other set.
+	 * @returns Is disjoint.
+	 */
+	public isDisjointFrom(other: PLSet): boolean {
+		for (const v of sets.get(this)!) {
+			if (other.has(v)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Get as set.
 	 *
 	 * @returns Set.
