@@ -19,6 +19,7 @@ import { PLUID } from '../uid.ts';
 import { decodeBinary, type DecodeBinaryOptions } from './binary.ts';
 import { PLDict } from '../dict.ts';
 import { binaryError } from '../pri/data.ts';
+import { PLNull } from '../null.ts';
 
 const CF_STYLE = {
 	int64: true,
@@ -270,7 +271,7 @@ Deno.test('Bad trailer: ref value over under', () => {
 
 Deno.test('Bad markers', () => {
 	const ranges = [
-		[0x00, 0x07],
+		[0x01, 0x07],
 		[0x0A, 0x0F],
 		[0x20, 0x21],
 		[0x24, 0x2F],
@@ -1635,6 +1636,15 @@ Deno.test('spec: uid-sizes', async () => {
 		assertEquals(v.value, expected, k.value);
 		i++;
 	}
+});
+
+Deno.test('spec: null', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('null', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLNull);
 });
 
 Deno.test('spec: binary-edge depth-25', async () => {

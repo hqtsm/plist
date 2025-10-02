@@ -11,6 +11,7 @@ import { PLDate } from '../date.ts';
 import { PLDict } from '../dict.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
+import { PLNull } from '../null.ts';
 import { binaryError, bytes } from '../pri/data.ts';
 import { PLReal } from '../real.ts';
 import { PLString } from '../string.ts';
@@ -198,6 +199,11 @@ export function decodeBinary(
 				switch (m >> 4) {
 					case 0: {
 						switch (m) {
+							case 0: {
+								object.set(x, p = new PLNull());
+								push(p);
+								continue;
+							}
 							case 8: {
 								object.set(x, p = new PLBoolean(false));
 								push(p);
