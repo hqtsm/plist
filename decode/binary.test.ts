@@ -1847,6 +1847,20 @@ Deno.test('spec: set-65535', async () => {
 	}
 });
 
+Deno.test('spec: array-set', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-set', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 1);
+
+	const set = plist.get(0);
+	assertInstanceOf(set, PLSet);
+	assertEquals(set.size, 0);
+});
+
 Deno.test('spec: binary-edge depth-25', async () => {
 	const data = await fixturePlist('binary-edge', 'depth-25');
 
