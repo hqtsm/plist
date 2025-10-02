@@ -13,6 +13,7 @@ import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { type PLInteger, PLTYPE_INTEGER } from '../integer.ts';
 import { PLTYPE_NULL } from '../null.ts';
 import { type PLReal, PLTYPE_REAL } from '../real.ts';
+import { type PLSet, PLTYPE_SET } from '../set.ts';
 import { type PLString, PLTYPE_STRING } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLTYPE_UID, type PLUID } from '../uid.ts';
@@ -217,6 +218,22 @@ export function encodeBinary(
 					i += v.bits === 32 ? 5 : 9;
 				}
 			},
+			PLSet(v, d, k): void {
+				if (!(d && k === null)) {
+					if ((x = v.size)) {
+						if (ancestors.has(v)) {
+							throw new TypeError('Circular reference');
+						}
+						ancestors.add(v);
+						if (add(v)) {
+							i += x < 15 ? 1 : 2 + byteCount(x);
+							table += x;
+						}
+					} else if (add(v)) {
+						i++;
+					}
+				}
+			},
 			PLString(v, d, k): void {
 				if (!(d && k === null)) {
 					str(v);
@@ -343,6 +360,20 @@ export function encodeBinary(
 					r[i++] = 35;
 					d.setFloat64(i, (e as PLReal).value);
 					i += 8;
+				}
+				break;
+			}
+			case PLTYPE_SET: {
+				l = (e as PLSet).size;
+				if (l < 15) {
+					r[i++] = 192 | l;
+				} else {
+					r[i++] = 207;
+					i = encodeInt(d, i, l);
+				}
+				for (x of (e as PLSet)) {
+					setInt(d, i, refC, index.get(x)!);
+					i += refC;
 				}
 				break;
 			}

@@ -9,6 +9,7 @@ import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { PLNull } from '../null.ts';
 import { PLReal } from '../real.ts';
+import { PLSet } from '../set.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLTYPE_UID, PLUID } from '../uid.ts';
@@ -1070,5 +1071,140 @@ Deno.test('spec: array-null', async () => {
 	assertEquals(
 		encode,
 		await fixturePlist('array-null', 'binary'),
+	);
+});
+
+Deno.test('spec: set-0', async () => {
+	const plist = new PLSet();
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('set-0', 'binary'),
+	);
+});
+
+Deno.test('spec: set-1', async () => {
+	const plist = new PLSet([new PLString('A')]);
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('set-1', 'binary'),
+	);
+});
+
+Deno.test('spec: set-14', async () => {
+	const plist = new PLSet();
+	for (let i = 0; i < 14; i++) {
+		plist.add(new PLString(i.toString(16).toUpperCase()));
+	}
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('set-14', 'binary'),
+	);
+});
+
+Deno.test('spec: set-15', async () => {
+	const plist = new PLSet();
+	for (let i = 0; i < 15; i++) {
+		plist.add(new PLString(i.toString(16).toUpperCase()));
+	}
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('set-15', 'binary'),
+	);
+});
+
+Deno.test('spec: set-26', async () => {
+	const plist = new PLSet();
+	for (let i = 0; i < 26; i++) {
+		plist.add(new PLString(String.fromCharCode(65 + i)));
+	}
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('set-26', 'binary'),
+	);
+});
+
+Deno.test('spec: set-128', async () => {
+	const plist = new PLSet();
+	for (let i = 0; i < 128; i++) {
+		plist.add(new PLString(i.toString().padStart(3, '0')));
+	}
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('set-128', 'binary'),
+	);
+});
+
+Deno.test('spec: set-254', async () => {
+	const plist = new PLSet();
+	for (let i = 0; i < 254; i++) {
+		plist.add(new PLString(i.toString().padStart(3, '0')));
+	}
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('set-254', 'binary'),
+	);
+});
+
+Deno.test('spec: set-255', async () => {
+	const plist = new PLSet();
+	for (let i = 0; i < 255; i++) {
+		plist.add(new PLString(i.toString().padStart(3, '0')));
+	}
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('set-255', 'binary'),
+	);
+});
+
+Deno.test('spec: set-256', async () => {
+	const plist = new PLSet();
+	for (let i = 0; i < 256; i++) {
+		plist.add(new PLString(i.toString().padStart(3, '0')));
+	}
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('set-256', 'binary'),
+	);
+});
+
+Deno.test('spec: set-65534', async () => {
+	const plist = new PLSet();
+	for (let i = 0; i < 65534; i++) {
+		plist.add(new PLString(i.toString().padStart(5, '0')));
+	}
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('set-65534', 'binary'),
+	);
+});
+
+Deno.test('spec: set-65535', async () => {
+	const plist = new PLSet();
+	for (let i = 0; i < 65535; i++) {
+		plist.add(new PLString(i.toString().padStart(5, '0')));
+	}
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('set-65535', 'binary'),
+	);
+});
+
+Deno.test('spec: array-set', async () => {
+	const plist = new PLArray([new PLSet()]);
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('array-set', 'binary'),
 	);
 });
