@@ -1648,6 +1648,19 @@ Deno.test('spec: null', async () => {
 	assertInstanceOf(plist, PLNull);
 });
 
+Deno.test('spec: array-null', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('array-null', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 1);
+
+	const [value] = [...plist.values()];
+	assertInstanceOf(value, PLNull);
+});
+
 Deno.test('spec: set-0', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('set-0', 'binary'),

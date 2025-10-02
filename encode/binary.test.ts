@@ -1063,3 +1063,12 @@ Deno.test('spec: null', async () => {
 		await fixturePlist('null', 'binary'),
 	);
 });
+
+Deno.test('spec: array-null', async () => {
+	const plist = new PLArray([new PLNull()]);
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('array-null', 'binary'),
+	);
+});
