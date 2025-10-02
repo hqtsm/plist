@@ -14,6 +14,7 @@ import { PLInteger } from '../integer.ts';
 import { PLNull } from '../null.ts';
 import { binaryError, bytes } from '../pri/data.ts';
 import { PLReal } from '../real.ts';
+import { PLSet } from '../set.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
@@ -368,6 +369,39 @@ export function decodeBinary(
 							yield walk(
 								getRefs(d, i, refc, c),
 								p.push.bind(p),
+								top as Next,
+								x,
+							);
+							ancestors.delete(p);
+						}
+						push(p);
+						continue;
+					}
+					case 12: {
+						if (prim) {
+							throw new SyntaxError(binaryError(aoff!));
+						}
+						c = m & 15;
+						if (c === 15) {
+							if (
+								i >= table ||
+								((r = d[i++]) & 240) !== 16 ||
+								i + (r = 1 << (r & 15)) > table
+							) {
+								break;
+							}
+							c = Number(getU(d, i, r));
+							i += r;
+						}
+						if (i + c * refc > table) {
+							break;
+						}
+						object.set(x, p = new PLSet());
+						if (c) {
+							ancestors.add(p);
+							yield walk(
+								getRefs(d, i, refc, c),
+								p.add.bind(p),
 								top as Next,
 								x,
 							);

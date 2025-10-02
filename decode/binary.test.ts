@@ -281,7 +281,6 @@ Deno.test('Bad markers', () => {
 		[0x70, 0x7F],
 		[0x90, 0x9F],
 		[0xB0, 0xBF],
-		[0xC0, 0xCF],
 		[0xE0, 0xEF],
 		[0xF0, 0xFF],
 	] as const;
@@ -416,6 +415,7 @@ Deno.test('OOB Data String Array Dict', () => {
 			['String-ASCII', 0x50],
 			['String-U16', 0x60],
 			['Array', 0xA0],
+			['Set', 0xC0],
 			['Dict', 0xD0],
 		] as const
 	) {
@@ -1646,6 +1646,192 @@ Deno.test('spec: null', async () => {
 	);
 	assertEquals(format, FORMAT_BINARY_V1_0);
 	assertInstanceOf(plist, PLNull);
+});
+
+Deno.test('spec: set-0', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('set-0', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLSet);
+	assertEquals(plist.size, 0);
+});
+
+Deno.test('spec: set-1', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('set-1', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLSet);
+	assertEquals(plist.size, 1);
+
+	const [value] = [...plist.values()];
+	assertInstanceOf(value, PLString);
+	assertEquals(value.value, 'A');
+});
+
+Deno.test('spec: set-14', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('set-14', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLSet);
+	assertEquals(plist.size, 14);
+
+	const values = [...plist.values()];
+	for (let i = 0; i < values.length; i++) {
+		const c = i.toString(16).toUpperCase();
+		const value = values[i];
+		assertInstanceOf(value, PLString, `${i}`);
+		assertEquals(value.value, c, c);
+	}
+});
+
+Deno.test('spec: set-15', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('set-15', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLSet);
+	assertEquals(plist.size, 15);
+
+	const values = [...plist.values()];
+	for (let i = 0; i < values.length; i++) {
+		const c = i.toString(16).toUpperCase();
+		const value = values[i];
+		assertInstanceOf(value, PLString, `${i}`);
+		assertEquals(value.value, c, c);
+	}
+});
+
+Deno.test('spec: set-26', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('set-26', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLSet);
+	assertEquals(plist.size, 26);
+
+	const values = [...plist.values()];
+	for (let i = 0; i < values.length; i++) {
+		const c = String.fromCharCode(65 + i);
+		const value = values[i];
+		assertInstanceOf(value, PLString, `${i}`);
+		assertEquals(value.value, c, c);
+	}
+});
+
+Deno.test('spec: set-128', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('set-128', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLSet);
+	assertEquals(plist.size, 128);
+
+	const values = [...plist.values()];
+	for (let i = 0; i < values.length; i++) {
+		const digits = i.toString().padStart(3, '0');
+		const value = values[i];
+		assertInstanceOf(value, PLString, `${i}`);
+		assertEquals(value.value, digits, digits);
+	}
+});
+
+Deno.test('spec: set-254', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('set-254', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLSet);
+	assertEquals(plist.size, 254);
+
+	const values = [...plist.values()];
+	for (let i = 0; i < values.length; i++) {
+		const digits = i.toString().padStart(3, '0');
+		const value = values[i];
+		assertInstanceOf(value, PLString, `${i}`);
+		assertEquals(value.value, digits, digits);
+	}
+});
+
+Deno.test('spec: set-255', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('set-255', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLSet);
+	assertEquals(plist.size, 255);
+
+	const values = [...plist.values()];
+	for (let i = 0; i < values.length; i++) {
+		const digits = i.toString().padStart(3, '0');
+		const value = values[i];
+		assertInstanceOf(value, PLString, `${i}`);
+		assertEquals(value.value, digits, digits);
+	}
+});
+
+Deno.test('spec: set-256', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('set-256', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLSet);
+	assertEquals(plist.size, 256);
+
+	const values = [...plist.values()];
+	for (let i = 0; i < values.length; i++) {
+		const digits = i.toString().padStart(3, '0');
+		const value = values[i];
+		assertInstanceOf(value, PLString, `${i}`);
+		assertEquals(value.value, digits, digits);
+	}
+});
+
+Deno.test('spec: set-65534', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('set-65534', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLSet);
+	assertEquals(plist.size, 65534);
+
+	const values = [...plist.values()];
+	for (let i = 0; i < values.length; i++) {
+		const digits = i.toString().padStart(5, '0');
+		const value = values[i];
+		assertInstanceOf(value, PLString, `${i}`);
+		assertEquals(value.value, digits, digits);
+	}
+});
+
+Deno.test('spec: set-65535', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('set-65535', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLSet);
+	assertEquals(plist.size, 65535);
+
+	const values = [...plist.values()];
+	for (let i = 0; i < values.length; i++) {
+		const digits = i.toString().padStart(5, '0');
+		const value = values[i];
+		assertInstanceOf(value, PLString, `${i}`);
+		assertEquals(value.value, digits, digits);
+	}
 });
 
 Deno.test('spec: binary-edge depth-25', async () => {
