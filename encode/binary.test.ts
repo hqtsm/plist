@@ -7,6 +7,7 @@ import { PLDate } from '../date.ts';
 import { PLDict, PLTYPE_DICT } from '../dict.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
+import { PLNull } from '../null.ts';
 import { PLReal } from '../real.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
@@ -1051,5 +1052,14 @@ Deno.test('spec: uid-sizes', async () => {
 	assertEquals(
 		encode,
 		await fixturePlist('uid-sizes', 'binary'),
+	);
+});
+
+Deno.test('spec: null', async () => {
+	const plist = new PLNull();
+	const encode = encodeBinary(plist, CF_STYLE);
+	assertEquals(
+		encode,
+		await fixturePlist('null', 'binary'),
 	);
 });

@@ -11,6 +11,7 @@ import { type PLDate, PLTYPE_DATE } from '../date.ts';
 import { type PLDict, PLTYPE_DICT } from '../dict.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { type PLInteger, PLTYPE_INTEGER } from '../integer.ts';
+import { PLTYPE_NULL } from '../null.ts';
 import { type PLReal, PLTYPE_REAL } from '../real.ts';
 import { type PLString, PLTYPE_STRING } from '../string.ts';
 import type { PLType } from '../type.ts';
@@ -206,6 +207,11 @@ export function encodeBinary(
 						: 1 + byteCount(x);
 				}
 			},
+			PLNull(v, d, k): void {
+				if (!(d && k === null) && add(v)) {
+					i++;
+				}
+			},
 			PLReal(v, d, k): void {
 				if (!(d && k === null) && add(v)) {
 					i += v.bits === 32 ? 5 : 9;
@@ -322,6 +328,10 @@ export function encodeBinary(
 				} else {
 					i = encodeInt(d, i, x);
 				}
+				break;
+			}
+			case PLTYPE_NULL: {
+				r[i++] = 0;
 				break;
 			}
 			case PLTYPE_REAL: {
