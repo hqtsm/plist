@@ -102,6 +102,18 @@ Deno.test('Circular reference: dict', () => {
 	);
 });
 
+Deno.test('Circular reference: set', () => {
+	const set = new PLSet();
+	set.add(new PLDict([[new PLString('A'), set]]));
+	assertThrows(
+		() => {
+			encodeBinary(set);
+		},
+		TypeError,
+		'Circular reference',
+	);
+});
+
 Deno.test('Invalid type', () => {
 	assertThrows(
 		() => {
