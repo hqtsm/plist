@@ -5,6 +5,7 @@ import {
 	assertNotStrictEquals,
 	assertThrows,
 } from '@std/assert';
+import { fixturePlist } from '../spec/fixture.ts';
 import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
@@ -13,7 +14,6 @@ import { PLDict } from '../dict.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { PLReal } from '../real.ts';
-import { fixturePlist } from '../spec/fixture.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';

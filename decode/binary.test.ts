@@ -5,21 +5,22 @@ import {
 	assertStrictEquals,
 	assertThrows,
 } from '@std/assert';
+import { fixturePlist } from '../spec/fixture.ts';
 import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
+import { PLDict } from '../dict.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
+import { PLNull } from '../null.ts';
+import { binaryError } from '../pri/data.ts';
 import { PLReal } from '../real.ts';
-import { fixturePlist } from '../spec/fixture.ts';
+import { PLSet } from '../set.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 import { decodeBinary, type DecodeBinaryOptions } from './binary.ts';
-import { PLDict } from '../dict.ts';
-import { binaryError } from '../pri/data.ts';
-import { PLNull } from '../null.ts';
 
 const CF_STYLE = {
 	int64: true,
