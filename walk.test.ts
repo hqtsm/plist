@@ -445,6 +445,7 @@ Deno.test('walk: skip: value', () => {
 	const arrays: PLArray[] = [];
 	const uids: PLUID[] = [];
 	const reals: PLReal[] = [];
+	const strings: PLString[] = [];
 	walk(
 		plist,
 		{
@@ -466,6 +467,9 @@ Deno.test('walk: skip: value', () => {
 			[PLTYPE_REAL](value): void {
 				reals.push(value);
 			},
+			[PLTYPE_STRING](value): void {
+				strings.push(value);
+			},
 		},
 	);
 
@@ -476,6 +480,14 @@ Deno.test('walk: skip: value', () => {
 
 	assertEquals(uids.length, 1);
 	assertStrictEquals(uids[0], uid);
+
+	assertEquals(reals.length, 1);
+	assertStrictEquals(reals[0], real);
+
+	assertEquals(strings.length, 3);
+	assertStrictEquals(strings[0], kInt);
+	assertStrictEquals(strings[1], kUID);
+	assertStrictEquals(strings[2], kReal);
 });
 
 Deno.test('walk: stop: key', () => {
