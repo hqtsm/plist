@@ -364,16 +364,16 @@ Deno.test('walk: skip: value', () => {
 	const plist = new PLDict();
 
 	const kInt = new PLString('int');
-	const aInt = new PLArray([int]);
-	plist.set(kInt, aInt);
+	const vInt = new PLArray([int]);
+	plist.set(kInt, vInt);
 
 	const kUID = new PLString('uid');
-	const aUID = new PLArray([uid]);
-	plist.set(kUID, aUID);
+	const vUID = new PLArray([uid]);
+	plist.set(kUID, vUID);
 
 	const kReal = new PLString('real');
-	const aReal = new PLArray([real]);
-	plist.set(kReal, aReal);
+	const vReal = new PLArray([real]);
+	plist.set(kReal, vReal);
 
 	const arrays: PLArray[] = [];
 	const uids: PLUID[] = [];
@@ -383,7 +383,7 @@ Deno.test('walk: skip: value', () => {
 		{
 			[PLTYPE_ARRAY](value): boolean | void {
 				arrays.push(value);
-				if (value === aInt) {
+				if (value === vInt) {
 					return true;
 				}
 			},
@@ -403,9 +403,9 @@ Deno.test('walk: skip: value', () => {
 	);
 
 	assertEquals(arrays.length, 3);
-	assertStrictEquals(arrays[0], aInt);
-	assertStrictEquals(arrays[1], aUID);
-	assertStrictEquals(arrays[2], aReal);
+	assertStrictEquals(arrays[0], vInt);
+	assertStrictEquals(arrays[1], vUID);
+	assertStrictEquals(arrays[2], vReal);
 
 	assertEquals(uids.length, 1);
 	assertStrictEquals(uids[0], uid);
