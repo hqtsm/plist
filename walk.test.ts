@@ -357,21 +357,22 @@ Deno.test('walk: keys', () => {
 });
 
 Deno.test('walk: skip: value', () => {
+	const int = new PLInteger();
+	const uid = new PLUID();
+	const real = new PLReal();
+
 	const plist = new PLDict();
 
-	const vInt = new PLInteger();
 	const kInt = new PLString('int');
-	const aInt = new PLArray([vInt]);
+	const aInt = new PLArray([int]);
 	plist.set(kInt, aInt);
 
-	const vUID = new PLUID();
 	const kUID = new PLString('uid');
-	const aUID = new PLArray([vUID]);
+	const aUID = new PLArray([uid]);
 	plist.set(kUID, aUID);
 
-	const vReal = new PLReal();
 	const kReal = new PLString('real');
-	const aReal = new PLArray([vReal]);
+	const aReal = new PLArray([real]);
 	plist.set(kReal, aReal);
 
 	const arrays: PLArray[] = [];
@@ -407,7 +408,7 @@ Deno.test('walk: skip: value', () => {
 	assertStrictEquals(arrays[2], aReal);
 
 	assertEquals(uids.length, 1);
-	assertStrictEquals(uids[0], vUID);
+	assertStrictEquals(uids[0], uid);
 });
 
 Deno.test('walk: stop: key', () => {
