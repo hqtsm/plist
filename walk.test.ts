@@ -13,11 +13,33 @@ import type { PLType } from './type.ts';
 import { PLTYPE_UID, PLUID } from './uid.ts';
 import { walk, type WalkParent } from './walk.ts';
 
+interface Visited {
+	method: string;
+	visit: PLType;
+	depth: number;
+	key: PLType | number | null;
+	parent: WalkParent;
+}
+
 interface DepthVisit {
 	value: PLArray | PLDict | PLSet;
 	depth: number;
 	parent: PLType | null;
 }
+
+const visit = (
+	method: string,
+	visit: PLType,
+	depth: number,
+	key: PLType | number | null,
+	parent: WalkParent,
+): Visited => ({
+	method,
+	visit,
+	depth,
+	key,
+	parent,
+});
 
 Deno.test('walk: default', () => {
 	for (
@@ -147,13 +169,7 @@ Deno.test('walk: all', () => {
 	const vSet = new PLSet([int0, int1, int2]);
 	plist.set(kSet, vSet);
 
-	const visited: [
-		string,
-		PLType,
-		number,
-		PLType | number | null,
-		WalkParent,
-	][] = [];
+	const visited: Visited[] = [];
 	const visiter = (method: string) => {
 		return (
 			visit: PLType,
@@ -161,13 +177,13 @@ Deno.test('walk: all', () => {
 			key: PLType | number | null,
 			parent: WalkParent,
 		) => {
-			visited.push([
+			visited.push({
 				method,
 				visit,
 				depth,
 				key,
 				parent,
-			]);
+			});
 		};
 	};
 	walk(
@@ -195,65 +211,65 @@ Deno.test('walk: all', () => {
 	);
 
 	const expected: typeof visited = [
-		[`visit.${PLTYPE_DICT}`, plist, 0, null, null],
+		visit(`visit.${PLTYPE_DICT}`, plist, 0, null, null),
 
-		[`visit.${PLTYPE_STRING}`, kArray, 1, null, plist],
+		visit(`visit.${PLTYPE_STRING}`, kArray, 1, null, plist),
 		// =
-		[`visit.${PLTYPE_ARRAY}`, vArray, 1, kArray, plist],
-		[`visit.${PLTYPE_INTEGER}`, int0, 2, 0, vArray],
-		[`visit.${PLTYPE_INTEGER}`, int1, 2, 1, vArray],
-		[`visit.${PLTYPE_INTEGER}`, int2, 2, 2, vArray],
-		[`leave.${PLTYPE_ARRAY}`, vArray, 1, kArray, plist],
+		visit(`visit.${PLTYPE_ARRAY}`, vArray, 1, kArray, plist),
+		visit(`visit.${PLTYPE_INTEGER}`, int0, 2, 0, vArray),
+		visit(`visit.${PLTYPE_INTEGER}`, int1, 2, 1, vArray),
+		visit(`visit.${PLTYPE_INTEGER}`, int2, 2, 2, vArray),
+		visit(`leave.${PLTYPE_ARRAY}`, vArray, 1, kArray, plist),
 
-		[`visit.${PLTYPE_STRING}`, kData, 1, null, plist],
+		visit(`visit.${PLTYPE_STRING}`, kData, 1, null, plist),
 		// =
-		[`visit.${PLTYPE_DATA}`, vData, 1, kData, plist],
+		visit(`visit.${PLTYPE_DATA}`, vData, 1, kData, plist),
 
-		[`visit.${PLTYPE_STRING}`, kDate, 1, null, plist],
+		visit(`visit.${PLTYPE_STRING}`, kDate, 1, null, plist),
 		// =
-		[`visit.${PLTYPE_DATE}`, vDate, 1, kDate, plist],
+		visit(`visit.${PLTYPE_DATE}`, vDate, 1, kDate, plist),
 
-		[`visit.${PLTYPE_STRING}`, kDict, 1, null, plist],
+		visit(`visit.${PLTYPE_STRING}`, kDict, 1, null, plist),
 		// =
-		[`visit.${PLTYPE_DICT}`, vDict, 1, kDict, plist],
-		[`visit.${PLTYPE_STRING}`, kTrue, 2, null, vDict],
-		[`visit.${PLTYPE_BOOLEAN}`, vTrue, 2, kTrue, vDict],
-		[`visit.${PLTYPE_STRING}`, kFalse, 2, null, vDict],
-		[`visit.${PLTYPE_BOOLEAN}`, vFalse, 2, kFalse, vDict],
-		[`leave.${PLTYPE_DICT}`, vDict, 1, kDict, plist],
+		visit(`visit.${PLTYPE_DICT}`, vDict, 1, kDict, plist),
+		visit(`visit.${PLTYPE_STRING}`, kTrue, 2, null, vDict),
+		visit(`visit.${PLTYPE_BOOLEAN}`, vTrue, 2, kTrue, vDict),
+		visit(`visit.${PLTYPE_STRING}`, kFalse, 2, null, vDict),
+		visit(`visit.${PLTYPE_BOOLEAN}`, vFalse, 2, kFalse, vDict),
+		visit(`leave.${PLTYPE_DICT}`, vDict, 1, kDict, plist),
 
-		[`visit.${PLTYPE_STRING}`, kReal, 1, null, plist],
+		visit(`visit.${PLTYPE_STRING}`, kReal, 1, null, plist),
 		// =
-		[`visit.${PLTYPE_REAL}`, vReal, 1, kReal, plist],
+		visit(`visit.${PLTYPE_REAL}`, vReal, 1, kReal, plist),
 
-		[`visit.${PLTYPE_STRING}`, kString, 1, null, plist],
+		visit(`visit.${PLTYPE_STRING}`, kString, 1, null, plist),
 		// =
-		[`visit.${PLTYPE_STRING}`, vString, 1, kString, plist],
+		visit(`visit.${PLTYPE_STRING}`, vString, 1, kString, plist),
 
-		[`visit.${PLTYPE_STRING}`, kUID, 1, null, plist],
+		visit(`visit.${PLTYPE_STRING}`, kUID, 1, null, plist),
 		// =
-		[`visit.${PLTYPE_UID}`, vUID, 1, kUID, plist],
+		visit(`visit.${PLTYPE_UID}`, vUID, 1, kUID, plist),
 
-		[`visit.${PLTYPE_STRING}`, kNull, 1, null, plist],
+		visit(`visit.${PLTYPE_STRING}`, kNull, 1, null, plist),
 		// =
-		[`visit.${PLTYPE_NULL}`, vNull, 1, kNull, plist],
+		visit(`visit.${PLTYPE_NULL}`, vNull, 1, kNull, plist),
 
-		[`visit.${PLTYPE_STRING}`, kSet, 1, null, plist],
+		visit(`visit.${PLTYPE_STRING}`, kSet, 1, null, plist),
 		// =
-		[`visit.${PLTYPE_SET}`, vSet, 1, kSet, plist],
-		[`visit.${PLTYPE_INTEGER}`, int0, 2, int0, vSet],
-		[`visit.${PLTYPE_INTEGER}`, int1, 2, int1, vSet],
-		[`visit.${PLTYPE_INTEGER}`, int2, 2, int2, vSet],
-		[`leave.${PLTYPE_SET}`, vSet, 1, kSet, plist],
+		visit(`visit.${PLTYPE_SET}`, vSet, 1, kSet, plist),
+		visit(`visit.${PLTYPE_INTEGER}`, int0, 2, int0, vSet),
+		visit(`visit.${PLTYPE_INTEGER}`, int1, 2, int1, vSet),
+		visit(`visit.${PLTYPE_INTEGER}`, int2, 2, int2, vSet),
+		visit(`leave.${PLTYPE_SET}`, vSet, 1, kSet, plist),
 
-		[`leave.${PLTYPE_DICT}`, plist, 0, null, null],
+		visit(`leave.${PLTYPE_DICT}`, plist, 0, null, null),
 	];
 	for (let i = 0; i < expected.length; i++) {
-		assertStrictEquals(visited[i][0], expected[i][0], `[${i}]: method`);
-		assertStrictEquals(visited[i][1], expected[i][1], `[${i}]: visit`);
-		assertStrictEquals(visited[i][2], expected[i][2], `[${i}]: depth`);
-		assertStrictEquals(visited[i][3], expected[i][3], `[${i}]: key`);
-		assertStrictEquals(visited[i][4], expected[i][4], `[${i}]: parent`);
+		assertStrictEquals(visited[i].method, expected[i].method, `[${i}]`);
+		assertStrictEquals(visited[i].visit, expected[i].visit, `[${i}]`);
+		assertStrictEquals(visited[i].depth, expected[i].depth, `[${i}]`);
+		assertStrictEquals(visited[i].key, expected[i].key, `[${i}]`);
+		assertStrictEquals(visited[i].parent, expected[i].parent, `[${i}]`);
 	}
 	assertEquals(visited.length, expected.length);
 });
@@ -282,13 +298,7 @@ Deno.test('walk: keys', () => {
 	const vSet = new PLString('Set');
 	plist.set(kSet, vSet);
 
-	const visited: [
-		string,
-		PLType,
-		number,
-		PLType | number | null,
-		WalkParent,
-	][] = [];
+	const visited: Visited[] = [];
 	const visiter = (method: string) => {
 		return (
 			visit: PLType,
@@ -296,13 +306,13 @@ Deno.test('walk: keys', () => {
 			key: PLType | number | null,
 			parent: WalkParent,
 		) => {
-			visited.push([
+			visited.push({
 				method,
 				visit,
 				depth,
 				key,
 				parent,
-			]);
+			});
 		};
 	};
 	walk(
@@ -325,39 +335,39 @@ Deno.test('walk: keys', () => {
 	);
 
 	const expected: typeof visited = [
-		[`visit.${PLTYPE_DICT}`, plist, 0, null, null],
+		visit(`visit.${PLTYPE_DICT}`, plist, 0, null, null),
 
-		[`visit.${PLTYPE_ARRAY}`, kArray, 1, null, plist],
-		[`visit.${PLTYPE_INTEGER}`, int0, 2, 0, kArray],
-		[`visit.${PLTYPE_INTEGER}`, int1, 2, 1, kArray],
-		[`leave.${PLTYPE_ARRAY}`, kArray, 1, null, plist],
+		visit(`visit.${PLTYPE_ARRAY}`, kArray, 1, null, plist),
+		visit(`visit.${PLTYPE_INTEGER}`, int0, 2, 0, kArray),
+		visit(`visit.${PLTYPE_INTEGER}`, int1, 2, 1, kArray),
+		visit(`leave.${PLTYPE_ARRAY}`, kArray, 1, null, plist),
 		// =
-		[`visit.${PLTYPE_STRING}`, vArray, 1, kArray, plist],
+		visit(`visit.${PLTYPE_STRING}`, vArray, 1, kArray, plist),
 
-		[`visit.${PLTYPE_DICT}`, kDict, 1, null, plist],
-		[`visit.${PLTYPE_BOOLEAN}`, kTrue, 2, null, kDict],
-		[`visit.${PLTYPE_STRING}`, vTrue, 2, kTrue, kDict],
-		[`visit.${PLTYPE_BOOLEAN}`, kFalse, 2, null, kDict],
-		[`visit.${PLTYPE_STRING}`, vFalse, 2, kFalse, kDict],
-		[`leave.${PLTYPE_DICT}`, kDict, 1, null, plist],
+		visit(`visit.${PLTYPE_DICT}`, kDict, 1, null, plist),
+		visit(`visit.${PLTYPE_BOOLEAN}`, kTrue, 2, null, kDict),
+		visit(`visit.${PLTYPE_STRING}`, vTrue, 2, kTrue, kDict),
+		visit(`visit.${PLTYPE_BOOLEAN}`, kFalse, 2, null, kDict),
+		visit(`visit.${PLTYPE_STRING}`, vFalse, 2, kFalse, kDict),
+		visit(`leave.${PLTYPE_DICT}`, kDict, 1, null, plist),
 		// =
-		[`visit.${PLTYPE_STRING}`, vDict, 1, kDict, plist],
+		visit(`visit.${PLTYPE_STRING}`, vDict, 1, kDict, plist),
 
-		[`visit.${PLTYPE_SET}`, kSet, 1, null, plist],
-		[`visit.${PLTYPE_INTEGER}`, int0, 2, int0, kSet],
-		[`visit.${PLTYPE_INTEGER}`, int1, 2, int1, kSet],
-		[`leave.${PLTYPE_SET}`, kSet, 1, null, plist],
+		visit(`visit.${PLTYPE_SET}`, kSet, 1, null, plist),
+		visit(`visit.${PLTYPE_INTEGER}`, int0, 2, int0, kSet),
+		visit(`visit.${PLTYPE_INTEGER}`, int1, 2, int1, kSet),
+		visit(`leave.${PLTYPE_SET}`, kSet, 1, null, plist),
 		// =
-		[`visit.${PLTYPE_STRING}`, vSet, 1, kSet, plist],
+		visit(`visit.${PLTYPE_STRING}`, vSet, 1, kSet, plist),
 
-		[`leave.${PLTYPE_DICT}`, plist, 0, null, null],
+		visit(`leave.${PLTYPE_DICT}`, plist, 0, null, null),
 	];
 	for (let i = 0; i < expected.length; i++) {
-		assertStrictEquals(visited[i][0], expected[i][0], `[${i}]: method`);
-		assertStrictEquals(visited[i][1], expected[i][1], `[${i}]: visit`);
-		assertStrictEquals(visited[i][2], expected[i][2], `[${i}]: depth`);
-		assertStrictEquals(visited[i][3], expected[i][3], `[${i}]: key`);
-		assertStrictEquals(visited[i][4], expected[i][4], `[${i}]: parent`);
+		assertStrictEquals(visited[i].method, expected[i].method, `[${i}]`);
+		assertStrictEquals(visited[i].visit, expected[i].visit, `[${i}]`);
+		assertStrictEquals(visited[i].depth, expected[i].depth, `[${i}]`);
+		assertStrictEquals(visited[i].key, expected[i].key, `[${i}]`);
+		assertStrictEquals(visited[i].parent, expected[i].parent, `[${i}]`);
 	}
 	assertEquals(visited.length, expected.length);
 });
