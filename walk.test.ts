@@ -356,6 +356,73 @@ Deno.test('walk: keys', () => {
 	assertEquals(visited.length, expected.length);
 });
 
+Deno.test('walk: skip: key', () => {
+	const int = new PLInteger();
+	const uid = new PLUID();
+	const real = new PLReal();
+
+	const plist = new PLDict();
+
+	const kInt = new PLArray([int]);
+	const vInt = new PLString('int');
+	plist.set(kInt, vInt);
+
+	const kUID = new PLArray([uid]);
+	const vUID = new PLString('uid');
+	plist.set(kUID, vUID);
+
+	const kReal = new PLArray([real]);
+	const vReal = new PLString('real');
+	plist.set(kReal, vReal);
+
+	const arrays: PLArray[] = [];
+	const uids: PLUID[] = [];
+	const reals: PLReal[] = [];
+	const strings: PLString[] = [];
+	walk(
+		plist,
+		{
+			[PLTYPE_ARRAY](value): boolean | void {
+				arrays.push(value);
+				if (value === kInt) {
+					return true;
+				}
+			},
+			[PLTYPE_INTEGER](): void {
+				throw new Error('should not be called');
+			},
+			[PLTYPE_UID](value): boolean {
+				uids.push(value);
+
+				// Ignored for this type.
+				return true;
+			},
+			[PLTYPE_REAL](value): void {
+				reals.push(value);
+			},
+			[PLTYPE_STRING](value): void {
+				strings.push(value);
+			},
+		},
+	);
+
+	assertEquals(arrays.length, 3);
+	assertStrictEquals(arrays[0], kInt);
+	assertStrictEquals(arrays[1], kUID);
+	assertStrictEquals(arrays[2], kReal);
+
+	assertEquals(uids.length, 1);
+	assertStrictEquals(uids[0], uid);
+
+	assertEquals(reals.length, 1);
+	assertStrictEquals(reals[0], real);
+
+	assertEquals(strings.length, 3);
+	assertStrictEquals(strings[0], vInt);
+	assertStrictEquals(strings[1], vUID);
+	assertStrictEquals(strings[2], vReal);
+});
+
 Deno.test('walk: skip: value', () => {
 	const int = new PLInteger();
 	const uid = new PLUID();
