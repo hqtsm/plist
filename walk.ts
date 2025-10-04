@@ -14,6 +14,27 @@ import type { PLTYPE_UID, PLUID } from './uid.ts';
 const noop = () => {};
 
 /**
+ * Itterate root.
+ *
+ * @param root The root element.
+ */
+function* root(root: PLType): Generator<[null, PLType]> {
+	yield [null, root];
+}
+
+/**
+ * Itterate dict.
+ *
+ * @param dict Dict to itterate.
+ */
+function* dict(dict: PLDict): Generator<[null | PLType, PLType]> {
+	for (const [k, v] of dict) {
+		yield [null, k];
+		yield [k, v];
+	}
+}
+
+/**
  * Linked list node type.
  */
 interface Node {
@@ -43,7 +64,7 @@ interface Node {
 			/**
 			 * Key value pair.
 			 */
-			value?: [PLType | number, PLType];
+			value?: [PLType | number | null, PLType];
 		};
 	};
 
@@ -187,8 +208,7 @@ export function walk(
 	let k: PLType | number | null = null;
 	let v: PLType;
 	let p: WalkParent = null;
-	let t;
-	let node: Node | null = { p, k, g: [plist].entries(), n: p };
+	let node: Node | null = { p, k, g: root(plist), n: p };
 	// deno-lint-ignore no-explicit-any
 	let wv: WalkVisitor<any, any>;
 	do {
@@ -203,25 +223,8 @@ export function walk(
 			if (wv(p, --depth, k, p = node.p) === false) {
 				return;
 			}
-			t = p?.[Symbol.toStringTag];
 		} else {
-			if (p) {
-				[k, v] = next.value!;
-				switch (t) {
-					case PLTYPE_ARRAY:
-					case PLTYPE_SET: {
-						break;
-					}
-					default: {
-						wv = visit[(k as PLType)[Symbol.toStringTag]] ?? vd;
-						if (wv(k as PLType, depth, null, p) === false) {
-							return;
-						}
-					}
-				}
-			} else {
-				v = next.value![1];
-			}
+			[k, v] = next.value!;
 			wv = visit[x = v[Symbol.toStringTag]] ?? vd;
 			next = wv(v, depth, k, p);
 			if (next === false) {
@@ -229,17 +232,26 @@ export function walk(
 			}
 			if (next !== true) {
 				switch (x) {
-					case PLTYPE_ARRAY:
-					case PLTYPE_DICT:
-					case PLTYPE_SET: {
+					case PLTYPE_DICT: {
 						node = {
-							p: (p = v as PLArray | PLDict | PLSet),
+							p: (p = v as PLDict),
 							k,
-							g: (v as PLArray | PLDict | PLSet).entries(),
+							g: dict(v as PLDict),
 							n: node,
 						} satisfies Node;
 						depth++;
-						t = x;
+						break;
+					}
+					case PLTYPE_ARRAY:
+					case PLTYPE_SET: {
+						node = {
+							p: (p = v as PLArray | PLSet),
+							k,
+							g: (v as PLArray | PLSet).entries(),
+							n: node,
+						} satisfies Node;
+						depth++;
+						break;
 					}
 				}
 			}
