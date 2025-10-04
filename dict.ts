@@ -27,10 +27,10 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	/**
 	 * Create property list dict reference.
 	 *
-	 * @param itter Property list key value pairs.
+	 * @param entries Key value pairs.
 	 */
-	constructor(itter: Iterable<readonly [K, V]> | null = null) {
-		maps.set(this, new Map(itter));
+	constructor(entries: Iterable<readonly [K, V]> | null = null) {
+		maps.set(this, new Map(entries));
 	}
 
 	/**

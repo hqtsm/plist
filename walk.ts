@@ -14,7 +14,7 @@ import type { PLTYPE_UID, PLUID } from './uid.ts';
 const noop = () => {};
 
 /**
- * Itterate root.
+ * Iterate root.
  *
  * @param root The root element.
  */
@@ -23,9 +23,9 @@ function* rootValue(root: PLType): Generator<[null, PLType]> {
 }
 
 /**
- * Itterate dict.
+ * Iterate dict.
  *
- * @param dict Dict to itterate.
+ * @param dict Dict to iterate.
  */
 function* dict(dict: PLDict): Generator<[null | PLType, PLType]> {
 	let k, v;
@@ -42,12 +42,12 @@ function* dict(dict: PLDict): Generator<[null | PLType, PLType]> {
  */
 interface Node {
 	/**
-	 * Parent of the itter, null for root.
+	 * Parent of the generator, null for root.
 	 */
 	p: PLArray | PLDict | PLSet | null;
 
 	/**
-	 * Key of the itter, null for root.
+	 * Key of the generator, null for root.
 	 */
 	k: PLType | number | null;
 

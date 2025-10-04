@@ -27,10 +27,10 @@ export class PLArray<T extends PLType = PLType> {
 	/**
 	 * Create property list array reference.
 	 *
-	 * @param itter Property list values.
+	 * @param entries Entries.
 	 */
-	constructor(itter: Iterable<T> | ArrayLike<T> | null = null) {
-		arrays.set(this, itter ? Array.from(itter) : []);
+	constructor(entries: Iterable<T> | ArrayLike<T> | null = null) {
+		arrays.set(this, entries ? Array.from(entries) : []);
 	}
 
 	/**

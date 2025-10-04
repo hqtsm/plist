@@ -27,10 +27,10 @@ export class PLSet<T extends PLType = PLType> {
 	/**
 	 * Create property list set reference.
 	 *
-	 * @param itter Property list values.
+	 * @param entries Entries.
 	 */
-	constructor(itter: Iterable<T> | null = null) {
-		sets.set(this, new Set(itter));
+	constructor(entries: Iterable<T> | null = null) {
+		sets.set(this, new Set(entries));
 	}
 
 	/**
