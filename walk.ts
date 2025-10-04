@@ -28,9 +28,12 @@ function* root(root: PLType): Generator<[null, PLType]> {
  * @param dict Dict to itterate.
  */
 function* dict(dict: PLDict): Generator<[null | PLType, PLType]> {
-	for (const [k, v] of dict) {
+	let v;
+	for (const k of dict.keys()) {
 		yield [null, k];
-		yield [k, v];
+		if ((v = dict.get(k))) {
+			yield [k, v];
+		}
 	}
 }
 
