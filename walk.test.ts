@@ -112,14 +112,14 @@ Deno.test('walk: all', () => {
 	plist.set(kDate, vDate);
 
 	const kDict = new PLString('Dict');
-	const dict = new PLDict();
+	const vDict = new PLDict();
 	const kTrue = new PLString('TRUE');
 	const vTrue = new PLBoolean(true);
-	dict.set(kTrue, vTrue);
+	vDict.set(kTrue, vTrue);
 	const kFalse = new PLString('FALSE');
 	const vFalse = new PLBoolean(false);
-	dict.set(kFalse, vFalse);
-	plist.set(kDict, dict);
+	vDict.set(kFalse, vFalse);
+	plist.set(kDict, vDict);
 
 	const kReal = new PLString('Real');
 	const vReal = new PLReal(3.14);
@@ -207,15 +207,15 @@ Deno.test('walk: all', () => {
 		[`visit.${PLTYPE_DATE}`, vDate, 1, kDate, plist],
 
 		[`visit.${PLTYPE_STRING}`, kDict, 1, null, plist],
-		[`visit.${PLTYPE_DICT}`, dict, 1, kDict, plist],
+		[`visit.${PLTYPE_DICT}`, vDict, 1, kDict, plist],
 
-		[`visit.${PLTYPE_STRING}`, kTrue, 2, null, dict],
-		[`visit.${PLTYPE_BOOLEAN}`, vTrue, 2, kTrue, dict],
+		[`visit.${PLTYPE_STRING}`, kTrue, 2, null, vDict],
+		[`visit.${PLTYPE_BOOLEAN}`, vTrue, 2, kTrue, vDict],
 
-		[`visit.${PLTYPE_STRING}`, kFalse, 2, null, dict],
-		[`visit.${PLTYPE_BOOLEAN}`, vFalse, 2, kFalse, dict],
+		[`visit.${PLTYPE_STRING}`, kFalse, 2, null, vDict],
+		[`visit.${PLTYPE_BOOLEAN}`, vFalse, 2, kFalse, vDict],
 
-		[`leave.${PLTYPE_DICT}`, dict, 1, kDict, plist],
+		[`leave.${PLTYPE_DICT}`, vDict, 1, kDict, plist],
 
 		[`visit.${PLTYPE_STRING}`, kReal, 1, null, plist],
 		[`visit.${PLTYPE_REAL}`, vReal, 1, kReal, plist],
