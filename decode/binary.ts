@@ -179,7 +179,7 @@ export function decodeBinary(
 		push: (p: PLType) => unknown,
 		next?: Next,
 		aoff?: number,
-		prim?: boolean,
+		keys?: boolean,
 	): Next {
 		let c;
 		let i: number;
@@ -345,7 +345,7 @@ export function decodeBinary(
 						continue;
 					}
 					case 10: {
-						if (prim) {
+						if (keys) {
 							throw new SyntaxError(binaryError(aoff!));
 						}
 						c = m & 15;
@@ -378,7 +378,7 @@ export function decodeBinary(
 						continue;
 					}
 					case 12: {
-						if (prim) {
+						if (keys) {
 							throw new SyntaxError(binaryError(aoff!));
 						}
 						c = m & 15;
@@ -411,7 +411,7 @@ export function decodeBinary(
 						continue;
 					}
 					case 13: {
-						if (prim) {
+						if (keys) {
 							throw new SyntaxError(binaryError(aoff!));
 						}
 						c = m & 15;
