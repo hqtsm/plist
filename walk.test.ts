@@ -391,11 +391,8 @@ Deno.test('walk: skip: key', () => {
 			[PLTYPE_INTEGER](): void {
 				throw new Error('should not be called');
 			},
-			[PLTYPE_UID](value): boolean {
+			[PLTYPE_UID](value): void {
 				uids.push(value);
-
-				// Ignored for this type.
-				return true;
 			},
 			[PLTYPE_REAL](value): void {
 				reals.push(value);
@@ -467,8 +464,11 @@ Deno.test('walk: skip: value', () => {
 			[PLTYPE_REAL](value): void {
 				reals.push(value);
 			},
-			[PLTYPE_STRING](value): void {
+			[PLTYPE_STRING](value): boolean {
 				strings.push(value);
+
+				// Ignored for this type.
+				return true;
 			},
 		},
 	);
