@@ -250,7 +250,7 @@ Deno.test('walk: all', () => {
 	assertEquals(visited.length, expected.length);
 });
 
-Deno.test('skip: value', () => {
+Deno.test('walk: skip: value', () => {
 	const plist = new PLDict();
 
 	const vInt = new PLInteger();
@@ -304,7 +304,7 @@ Deno.test('skip: value', () => {
 	assertStrictEquals(uids[0], vUID);
 });
 
-Deno.test('stop: key', () => {
+Deno.test('walk: stop: key', () => {
 	const plist = new PLDict();
 
 	const kA = new PLString('A');
@@ -338,7 +338,7 @@ Deno.test('stop: key', () => {
 	assertStrictEquals(strings[2], kB);
 });
 
-Deno.test('stop: value', () => {
+Deno.test('walk: stop: value', () => {
 	const plist = new PLDict();
 
 	const kA = new PLString('A');
@@ -373,7 +373,7 @@ Deno.test('stop: value', () => {
 	assertStrictEquals(strings[3], vB);
 });
 
-Deno.test('stop: leave', () => {
+Deno.test('walk: stop: leave', () => {
 	const plist = new PLDict();
 
 	const kA = new PLString('A');
