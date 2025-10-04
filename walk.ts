@@ -18,7 +18,7 @@ const noop = () => {};
  *
  * @param root The root element.
  */
-function* root(root: PLType): Generator<[null, PLType]> {
+function* rootValue(root: PLType): Generator<[null, PLType]> {
 	yield [null, root];
 }
 
@@ -191,6 +191,22 @@ export interface WalkLeave {
 	default?: WalkVisitor<PLArray | PLDict>;
 }
 
+export interface WalkOptions {
+	/**
+	 * Maximum depth, negative for no limit.
+	 *
+	 * @default -1
+	 */
+	max?: number;
+
+	/**
+	 * Minimum depth, 1 to skip root.
+	 *
+	 * @default 0
+	 */
+	min?: number;
+}
+
 /**
  * Wall through a plist.
  *
@@ -202,16 +218,18 @@ export function walk(
 	plist: PLType,
 	visit: Readonly<WalkVisit> = {},
 	leave: Readonly<WalkVisit> = {},
+	{ max = -1, min = 0 }: Readonly<WalkOptions> = {},
 ): void {
 	const vd = visit.default ?? noop;
 	const ld = leave.default ?? noop;
+	const g = rootValue(plist);
 	let x;
 	let next;
 	let depth = 0;
 	let k: PLType | number | null = null;
 	let v: PLType;
 	let p: WalkParent = null;
-	let node: Node | null = { p, k, g: root(plist), n: p };
+	let node: Node | null = { p, k, g, n: p };
 	// deno-lint-ignore no-explicit-any
 	let wv: WalkVisitor<any, any>;
 	do {
@@ -223,13 +241,16 @@ export function walk(
 			k = node.k;
 			node = node.n!;
 			wv = leave[p[Symbol.toStringTag]] ?? ld;
-			if (wv(p, --depth, k, p = node.p) === false) {
+			--depth;
+			if (min > 0 && depth < min) {
+				p = node.p;
+			} else if (wv(p, depth, k, p = node.p) === false) {
 				return;
 			}
 		} else {
 			[k, v] = next.value!;
 			wv = visit[x = v[Symbol.toStringTag]] ?? vd;
-			next = wv(v, depth, k, p);
+			next = min > 0 && depth < min ? null : wv(v, depth, k, p);
 			if (next === false) {
 				return;
 			}
@@ -239,7 +260,7 @@ export function walk(
 						node = {
 							p: (p = v as PLDict),
 							k,
-							g: dict(v as PLDict),
+							g: (max < 0 || depth < max) ? dict(v as PLDict) : g,
 							n: node,
 						} satisfies Node;
 						depth++;
@@ -250,7 +271,9 @@ export function walk(
 						node = {
 							p: (p = v as PLArray | PLSet),
 							k,
-							g: (v as PLArray | PLSet).entries(),
+							g: (max < 0 || depth < max)
+								? (v as PLArray | PLSet).entries()
+								: g,
 							n: node,
 						} satisfies Node;
 						depth++;

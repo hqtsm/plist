@@ -13,6 +13,12 @@ import type { PLType } from './type.ts';
 import { PLTYPE_UID, PLUID } from './uid.ts';
 import { walk, type WalkParent } from './walk.ts';
 
+interface DepthVisit {
+	value: PLArray | PLDict | PLSet;
+	depth: number;
+	parent: PLType | null;
+}
+
 Deno.test('walk: default', () => {
 	for (
 		const plist of [
@@ -594,4 +600,365 @@ Deno.test('walk: stop: leave', () => {
 	assertEquals(leave.length, 2);
 	assertStrictEquals(leave[0], vA);
 	assertStrictEquals(leave[1], vB);
+});
+
+Deno.test('walk: depth: 3+', () => {
+	const D6 = new PLArray();
+	const D5 = new PLArray([D6]);
+	const D4 = new PLArray([D5]);
+	const D3 = new PLArray([D4]);
+	const D2 = new PLArray([D3]);
+	const D1 = new PLArray([D2]);
+	const D0 = new PLArray([D1]);
+
+	const visit: DepthVisit[] = [];
+	const leave: DepthVisit[] = [];
+	walk(
+		D0,
+		{
+			[PLTYPE_ARRAY](value, depth, _, parent): void {
+				visit.push({ value, depth, parent });
+			},
+		},
+		{
+			[PLTYPE_ARRAY](value, depth, _, parent): void {
+				leave.push({ value, depth, parent });
+			},
+		},
+		{ min: 3 },
+	);
+
+	assertEquals(visit.length, 4);
+
+	assertStrictEquals(visit[0].value, D3);
+	assertStrictEquals(visit[0].depth, 3);
+	assertStrictEquals(visit[0].parent, D2);
+
+	assertStrictEquals(visit[1].value, D4);
+	assertStrictEquals(visit[1].depth, 4);
+	assertStrictEquals(visit[1].parent, D3);
+
+	assertStrictEquals(visit[2].value, D5);
+	assertStrictEquals(visit[2].depth, 5);
+	assertStrictEquals(visit[2].parent, D4);
+
+	assertStrictEquals(visit[3].value, D6);
+	assertStrictEquals(visit[3].depth, 6);
+	assertStrictEquals(visit[3].parent, D5);
+
+	assertEquals(leave.length, 4);
+
+	assertStrictEquals(leave[0].value, D6);
+	assertStrictEquals(leave[0].depth, 6);
+	assertStrictEquals(leave[0].parent, D5);
+
+	assertStrictEquals(leave[1].value, D5);
+	assertStrictEquals(leave[1].depth, 5);
+	assertStrictEquals(leave[1].parent, D4);
+
+	assertStrictEquals(leave[2].value, D4);
+	assertStrictEquals(leave[2].depth, 4);
+	assertStrictEquals(leave[2].parent, D3);
+
+	assertStrictEquals(leave[3].value, D3);
+	assertStrictEquals(leave[3].depth, 3);
+	assertStrictEquals(leave[3].parent, D2);
+});
+
+Deno.test('walk: depth: 6+', () => {
+	const D6 = new PLArray();
+	const D5 = new PLArray([D6]);
+	const D4 = new PLArray([D5]);
+	const D3 = new PLArray([D4]);
+	const D2 = new PLArray([D3]);
+	const D1 = new PLArray([D2]);
+	const D0 = new PLArray([D1]);
+
+	const visit: DepthVisit[] = [];
+	const leave: DepthVisit[] = [];
+	walk(
+		D0,
+		{
+			[PLTYPE_ARRAY](value, depth, _, parent): void {
+				visit.push({ value, depth, parent });
+			},
+		},
+		{
+			[PLTYPE_ARRAY](value, depth, _, parent): void {
+				leave.push({ value, depth, parent });
+			},
+		},
+		{ min: 6 },
+	);
+
+	assertEquals(visit.length, 1);
+
+	assertStrictEquals(visit[0].value, D6);
+	assertStrictEquals(visit[0].depth, 6);
+	assertStrictEquals(visit[0].parent, D5);
+
+	assertEquals(leave.length, 1);
+
+	assertStrictEquals(leave[0].value, D6);
+	assertStrictEquals(leave[0].depth, 6);
+	assertStrictEquals(leave[0].parent, D5);
+});
+
+Deno.test('walk: depth: 7+', () => {
+	const D6 = new PLArray();
+	const D5 = new PLArray([D6]);
+	const D4 = new PLArray([D5]);
+	const D3 = new PLArray([D4]);
+	const D2 = new PLArray([D3]);
+	const D1 = new PLArray([D2]);
+	const D0 = new PLArray([D1]);
+
+	const visit: DepthVisit[] = [];
+	const leave: DepthVisit[] = [];
+	walk(
+		D0,
+		{
+			[PLTYPE_ARRAY](value, depth, _, parent): void {
+				visit.push({ value, depth, parent });
+			},
+		},
+		{
+			[PLTYPE_ARRAY](value, depth, _, parent): void {
+				leave.push({ value, depth, parent });
+			},
+		},
+		{ min: 7 },
+	);
+
+	assertEquals(visit.length, 0);
+
+	assertEquals(leave.length, 0);
+});
+
+Deno.test('walk: depth: 0-3', () => {
+	const D6 = new PLSet();
+	const D5 = new PLSet([D6]);
+	const D4 = new PLSet([D5]);
+	const D3 = new PLSet([D4]);
+	const D2 = new PLSet([D3]);
+	const D1 = new PLSet([D2]);
+	const D0 = new PLSet([D1]);
+
+	const visit: DepthVisit[] = [];
+	const leave: DepthVisit[] = [];
+	walk(
+		D0,
+		{
+			[PLTYPE_SET](value, depth, _, parent): void {
+				visit.push({ value, depth, parent });
+			},
+		},
+		{
+			[PLTYPE_SET](value, depth, _, parent): void {
+				leave.push({ value, depth, parent });
+			},
+		},
+		{ max: 3 },
+	);
+
+	assertEquals(visit.length, 4);
+
+	assertStrictEquals(visit[0].value, D0);
+	assertStrictEquals(visit[0].depth, 0);
+	assertStrictEquals(visit[0].parent, null);
+
+	assertStrictEquals(visit[1].value, D1);
+	assertStrictEquals(visit[1].depth, 1);
+	assertStrictEquals(visit[1].parent, D0);
+
+	assertStrictEquals(visit[2].value, D2);
+	assertStrictEquals(visit[2].depth, 2);
+	assertStrictEquals(visit[2].parent, D1);
+
+	assertStrictEquals(visit[3].value, D3);
+	assertStrictEquals(visit[3].depth, 3);
+	assertStrictEquals(visit[3].parent, D2);
+
+	assertEquals(leave.length, 4);
+
+	assertStrictEquals(leave[0].value, D3);
+	assertStrictEquals(leave[0].depth, 3);
+	assertStrictEquals(leave[0].parent, D2);
+
+	assertStrictEquals(leave[1].value, D2);
+	assertStrictEquals(leave[1].depth, 2);
+	assertStrictEquals(leave[1].parent, D1);
+
+	assertStrictEquals(leave[2].value, D1);
+	assertStrictEquals(leave[2].depth, 1);
+	assertStrictEquals(leave[2].parent, D0);
+
+	assertStrictEquals(leave[3].value, D0);
+	assertStrictEquals(leave[3].depth, 0);
+	assertStrictEquals(leave[3].parent, null);
+});
+
+Deno.test('walk: depth: 0', () => {
+	const D6 = new PLArray();
+	const D5 = new PLArray([D6]);
+	const D4 = new PLArray([D5]);
+	const D3 = new PLArray([D4]);
+	const D2 = new PLArray([D3]);
+	const D1 = new PLArray([D2]);
+	const D0 = new PLArray([D1]);
+
+	const visit: DepthVisit[] = [];
+	const leave: DepthVisit[] = [];
+	walk(
+		D0,
+		{
+			[PLTYPE_ARRAY](value, depth, _, parent): void {
+				visit.push({ value, depth, parent });
+			},
+		},
+		{
+			[PLTYPE_ARRAY](value, depth, _, parent): void {
+				leave.push({ value, depth, parent });
+			},
+		},
+		{ max: 0 },
+	);
+
+	assertEquals(visit.length, 1);
+
+	assertStrictEquals(visit[0].value, D0);
+	assertStrictEquals(visit[0].depth, 0);
+	assertStrictEquals(visit[0].parent, null);
+
+	assertEquals(leave.length, 1);
+
+	assertStrictEquals(leave[0].value, D0);
+	assertStrictEquals(leave[0].depth, 0);
+	assertStrictEquals(leave[0].parent, null);
+});
+
+Deno.test('walk: depth: 3', () => {
+	const D6 = new PLArray();
+	const D5 = new PLArray([D6]);
+	const D4 = new PLArray([D5]);
+	const D3 = new PLArray([D4]);
+	const D2 = new PLArray([D3]);
+	const D1 = new PLArray([D2]);
+	const D0 = new PLArray([D1]);
+
+	const visit: DepthVisit[] = [];
+	const leave: DepthVisit[] = [];
+	walk(
+		D0,
+		{
+			[PLTYPE_ARRAY](value, depth, _, parent): void {
+				visit.push({ value, depth, parent });
+			},
+		},
+		{
+			[PLTYPE_ARRAY](value, depth, _, parent): void {
+				leave.push({ value, depth, parent });
+			},
+		},
+		{ min: 3, max: 3 },
+	);
+
+	assertEquals(visit.length, 1);
+
+	assertStrictEquals(visit[0].value, D3);
+	assertStrictEquals(visit[0].depth, 3);
+	assertStrictEquals(visit[0].parent, D2);
+
+	assertEquals(leave.length, 1);
+
+	assertStrictEquals(leave[0].value, D3);
+	assertStrictEquals(leave[0].depth, 3);
+	assertStrictEquals(leave[0].parent, D2);
+});
+
+Deno.test('walk: depth: 2-4', () => {
+	const K = new PLString('K');
+	const D6 = new PLDict();
+	const D5 = new PLDict([[D6, K]]);
+	const D4 = new PLDict([[K, D5]]);
+	const D3 = new PLDict([[D4, K]]);
+	const D2 = new PLDict([[K, D3]]);
+	const D1 = new PLDict([[D2, K]]);
+	const D0 = new PLDict([[K, D1]]);
+
+	const visit: DepthVisit[] = [];
+	const leave: DepthVisit[] = [];
+	walk(
+		D0,
+		{
+			[PLTYPE_DICT](value, depth, _, parent): void {
+				visit.push({ value, depth, parent });
+			},
+		},
+		{
+			[PLTYPE_DICT](value, depth, _, parent): void {
+				leave.push({ value, depth, parent });
+			},
+		},
+		{ min: 2, max: 4 },
+	);
+
+	assertEquals(visit.length, 3);
+
+	assertStrictEquals(visit[0].value, D2);
+	assertStrictEquals(visit[0].depth, 2);
+	assertStrictEquals(visit[0].parent, D1);
+
+	assertStrictEquals(visit[1].value, D3);
+	assertStrictEquals(visit[1].depth, 3);
+	assertStrictEquals(visit[1].parent, D2);
+
+	assertStrictEquals(visit[2].value, D4);
+	assertStrictEquals(visit[2].depth, 4);
+	assertStrictEquals(visit[2].parent, D3);
+
+	assertEquals(leave.length, 3);
+
+	assertStrictEquals(leave[0].value, D4);
+	assertStrictEquals(leave[0].depth, 4);
+	assertStrictEquals(leave[0].parent, D3);
+
+	assertStrictEquals(leave[1].value, D3);
+	assertStrictEquals(leave[1].depth, 3);
+	assertStrictEquals(leave[1].parent, D2);
+
+	assertStrictEquals(leave[2].value, D2);
+	assertStrictEquals(leave[2].depth, 2);
+	assertStrictEquals(leave[2].parent, D1);
+});
+
+Deno.test('walk: depth: 4-3', () => {
+	const D6 = new PLArray();
+	const D5 = new PLArray([D6]);
+	const D4 = new PLArray([D5]);
+	const D3 = new PLArray([D4]);
+	const D2 = new PLArray([D3]);
+	const D1 = new PLArray([D2]);
+	const D0 = new PLArray([D1]);
+
+	const visit: DepthVisit[] = [];
+	const leave: DepthVisit[] = [];
+	walk(
+		D0,
+		{
+			[PLTYPE_ARRAY](value, depth, _, parent): void {
+				visit.push({ value, depth, parent });
+			},
+		},
+		{
+			[PLTYPE_ARRAY](value, depth, _, parent): void {
+				leave.push({ value, depth, parent });
+			},
+		},
+		{ min: 4, max: 3 },
+	);
+
+	assertEquals(visit.length, 0);
+
+	assertEquals(leave.length, 0);
 });
