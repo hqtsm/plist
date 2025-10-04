@@ -612,6 +612,43 @@ Deno.test('walk: stop: leave', () => {
 	assertStrictEquals(leave[1], vB);
 });
 
+Deno.test('walk: keysFirst', () => {
+	const plist = new PLDict();
+
+	const kA = new PLString('A');
+	const vA = new PLString('Alpha');
+	plist.set(kA, vA);
+
+	const kB = new PLString('B');
+	const vB = new PLString('Beta');
+	plist.set(kB, vB);
+
+	const kG = new PLString('G');
+	const vG = new PLString('Gamma');
+	plist.set(kG, vG);
+
+	const leave: PLString[] = [];
+	walk(
+		plist,
+		{
+			[PLTYPE_STRING](value): void {
+				leave.push(value);
+			},
+		},
+		{},
+		{ keysFirst: true },
+	);
+
+	assertEquals(leave.length, 6);
+
+	assertStrictEquals(leave[0], kA);
+	assertStrictEquals(leave[1], kB);
+	assertStrictEquals(leave[2], kG);
+	assertStrictEquals(leave[3], vA);
+	assertStrictEquals(leave[4], vB);
+	assertStrictEquals(leave[5], vG);
+});
+
 Deno.test('walk: depth: 3+', () => {
 	const D6 = new PLArray();
 	const D5 = new PLArray([D6]);

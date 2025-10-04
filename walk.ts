@@ -23,14 +23,33 @@ function* rootValue(root: PLType): Generator<[null, PLType]> {
 }
 
 /**
- * Iterate dict.
+ * Iterate dict in pairs.
  *
  * @param dict Dict to iterate.
  */
-function* dict(dict: PLDict): Generator<[null | PLType, PLType]> {
+function* dictPairs(dict: PLDict): Generator<[null | PLType, PLType]> {
 	let k, v;
 	for (k of dict.keys()) {
 		yield [null, k];
+		if ((v = dict.get(k))) {
+			yield [k, v];
+		}
+	}
+}
+
+/**
+ * Iterate dict keys and then values.
+ *
+ * @param dict Dict to iterate.
+ */
+function* dictKeysFirst(dict: PLDict): Generator<[null | PLType, PLType]> {
+	let k, v;
+	const keys = new Set<PLType>();
+	for (k of dict.keys()) {
+		yield [null, k];
+		keys.add(k);
+	}
+	for (k of keys) {
 		if ((v = dict.get(k))) {
 			yield [k, v];
 		}
@@ -205,6 +224,13 @@ export interface WalkOptions {
 	 * @default 0
 	 */
 	min?: number;
+
+	/**
+	 * Visit dict keys first, then values.
+	 *
+	 * @default false
+	 */
+	keysFirst?: boolean;
 }
 
 /**
@@ -213,74 +239,83 @@ export interface WalkOptions {
  * @param plist Plist object.
  * @param visit Visit callbacks.
  * @param leave Leave callbacks.
+ * @param options Walk options.
  */
 export function walk(
 	plist: PLType,
 	visit: Readonly<WalkVisit> = {},
 	leave: Readonly<WalkVisit> = {},
-	{ max = -1, min = 0 }: Readonly<WalkOptions> = {},
+	{ max = -1, min = 0, keysFirst = false }: Readonly<WalkOptions> = {},
 ): void {
 	const vd = visit.default ?? noop;
 	const ld = leave.default ?? noop;
 	const g = rootValue(plist);
-	let x;
 	let next;
 	let depth = 0;
+	let t;
 	let k: PLType | number | null = null;
 	let v: PLType;
 	let p: WalkParent = null;
-	let node: Node | null = { p, k, g, n: p };
-	// deno-lint-ignore no-explicit-any
-	let wv: WalkVisitor<any, any>;
+	let n: Node | null = { p, k, g, n: p };
+	let wv: WalkVisitor;
 	do {
-		next = node.g.next();
+		next = n.g.next();
 		if (next.done) {
 			if (!p) {
 				return;
 			}
-			k = node.k;
-			node = node.n!;
-			wv = leave[p[Symbol.toStringTag]] ?? ld;
-			--depth;
-			if (min > 0 && depth < min) {
-				p = node.p;
-			} else if (wv(p, depth, k, p = node.p) === false) {
-				return;
+			k = n.k;
+			n = n.n!;
+			if (--depth < min) {
+				p = n.p;
+			} else {
+				wv = (leave[p[Symbol.toStringTag]] ?? ld) as WalkVisitor;
+				if (wv(p, depth, k, p = n.p) === false) {
+					return;
+				}
 			}
 		} else {
 			[k, v] = next.value!;
-			wv = visit[x = v[Symbol.toStringTag]] ?? vd;
-			next = min > 0 && depth < min ? null : wv(v, depth, k, p);
-			if (next === false) {
-				return;
+			t = v[Symbol.toStringTag];
+			if (!(depth < min)) {
+				wv = (visit[t] ?? vd) as WalkVisitor;
+				next = wv(v, depth, k, p);
+				if (next === false) {
+					return;
+				}
+				if (next === true) {
+					continue;
+				}
 			}
-			if (next !== true) {
-				switch (x) {
-					case PLTYPE_DICT: {
-						node = {
-							p: (p = v as PLDict),
-							k,
-							g: (max < 0 || depth < max) ? dict(v as PLDict) : g,
-							n: node,
-						} satisfies Node;
-						depth++;
-						break;
-					}
-					case PLTYPE_ARRAY:
-					case PLTYPE_SET: {
-						node = {
-							p: (p = v as PLArray | PLSet),
-							k,
-							g: (max < 0 || depth < max)
-								? (v as PLArray | PLSet).entries()
-								: g,
-							n: node,
-						} satisfies Node;
-						depth++;
-						break;
-					}
+			switch (t) {
+				case PLTYPE_DICT: {
+					n = {
+						p: (p = v as PLDict),
+						k,
+						g: (max < 0 || depth < max)
+							? keysFirst
+								? dictKeysFirst(v as PLDict)
+								: dictPairs(v as PLDict)
+							: g,
+						n,
+					};
+					depth++;
+					break;
+				}
+				case PLTYPE_ARRAY:
+				case PLTYPE_SET: {
+					n = {
+						p: (p = v as PLArray | PLSet),
+						k,
+						g: (max < 0 || depth < max)
+							? (v as PLArray | PLSet).entries()
+							: g,
+						n,
+					};
+					depth++;
+					break;
 				}
 			}
 		}
-	} while (node);
+	} while (n);
 }
