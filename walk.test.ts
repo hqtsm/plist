@@ -192,50 +192,52 @@ Deno.test('walk: all', () => {
 		[`visit.${PLTYPE_DICT}`, plist, 0, null, null],
 
 		[`visit.${PLTYPE_STRING}`, kArray, 1, null, plist],
+		// =
 		[`visit.${PLTYPE_ARRAY}`, vArray, 1, kArray, plist],
-
 		[`visit.${PLTYPE_INTEGER}`, int0, 2, 0, vArray],
 		[`visit.${PLTYPE_INTEGER}`, int1, 2, 1, vArray],
 		[`visit.${PLTYPE_INTEGER}`, int2, 2, 2, vArray],
-
 		[`leave.${PLTYPE_ARRAY}`, vArray, 1, kArray, plist],
 
 		[`visit.${PLTYPE_STRING}`, kData, 1, null, plist],
+		// =
 		[`visit.${PLTYPE_DATA}`, vData, 1, kData, plist],
 
 		[`visit.${PLTYPE_STRING}`, kDate, 1, null, plist],
+		// =
 		[`visit.${PLTYPE_DATE}`, vDate, 1, kDate, plist],
 
 		[`visit.${PLTYPE_STRING}`, kDict, 1, null, plist],
+		// =
 		[`visit.${PLTYPE_DICT}`, vDict, 1, kDict, plist],
-
 		[`visit.${PLTYPE_STRING}`, kTrue, 2, null, vDict],
 		[`visit.${PLTYPE_BOOLEAN}`, vTrue, 2, kTrue, vDict],
-
 		[`visit.${PLTYPE_STRING}`, kFalse, 2, null, vDict],
 		[`visit.${PLTYPE_BOOLEAN}`, vFalse, 2, kFalse, vDict],
-
 		[`leave.${PLTYPE_DICT}`, vDict, 1, kDict, plist],
 
 		[`visit.${PLTYPE_STRING}`, kReal, 1, null, plist],
+		// =
 		[`visit.${PLTYPE_REAL}`, vReal, 1, kReal, plist],
 
 		[`visit.${PLTYPE_STRING}`, kString, 1, null, plist],
+		// =
 		[`visit.${PLTYPE_STRING}`, vString, 1, kString, plist],
 
 		[`visit.${PLTYPE_STRING}`, kUID, 1, null, plist],
+		// =
 		[`visit.${PLTYPE_UID}`, vUID, 1, kUID, plist],
 
 		[`visit.${PLTYPE_STRING}`, kNull, 1, null, plist],
+		// =
 		[`visit.${PLTYPE_NULL}`, vNull, 1, kNull, plist],
 
 		[`visit.${PLTYPE_STRING}`, kSet, 1, null, plist],
+		// =
 		[`visit.${PLTYPE_SET}`, vSet, 1, kSet, plist],
-
 		[`visit.${PLTYPE_INTEGER}`, int0, 2, int0, vSet],
 		[`visit.${PLTYPE_INTEGER}`, int1, 2, int1, vSet],
 		[`visit.${PLTYPE_INTEGER}`, int2, 2, int2, vSet],
-
 		[`leave.${PLTYPE_SET}`, vSet, 1, kSet, plist],
 
 		[`leave.${PLTYPE_DICT}`, plist, 0, null, null],
