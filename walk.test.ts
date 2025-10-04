@@ -250,6 +250,110 @@ Deno.test('walk: all', () => {
 	assertEquals(visited.length, expected.length);
 });
 
+Deno.test('walk: keys', () => {
+	const plist = new PLDict();
+
+	const int0 = new PLInteger(1n);
+	const int1 = new PLInteger(2n);
+
+	const kArray = new PLArray([int0, int1]);
+	const vArray = new PLString('Array');
+	plist.set(kArray, vArray);
+
+	const kDict = new PLDict();
+	const kTrue = new PLBoolean(true);
+	const vTrue = new PLString('TRUE');
+	kDict.set(kTrue, vTrue);
+	const kFalse = new PLBoolean(false);
+	const vFalse = new PLString('FALSE');
+	kDict.set(kFalse, vFalse);
+	const vDict = new PLString('Dict');
+	plist.set(kDict, vDict);
+
+	const kSet = new PLSet([int0, int1]);
+	const vSet = new PLString('Set');
+	plist.set(kSet, vSet);
+
+	const visited: [
+		string,
+		PLType,
+		number,
+		PLType | number | null,
+		WalkParent,
+	][] = [];
+	const visiter = (method: string) => {
+		return (
+			visit: PLType,
+			depth: number,
+			key: PLType | number | null,
+			parent: WalkParent,
+		) => {
+			visited.push([
+				method,
+				visit,
+				depth,
+				key,
+				parent,
+			]);
+		};
+	};
+	walk(
+		plist,
+		{
+			[PLTYPE_ARRAY]: visiter(`visit.${PLTYPE_ARRAY}`),
+			[PLTYPE_BOOLEAN]: visiter(`visit.${PLTYPE_BOOLEAN}`),
+			[PLTYPE_DICT]: visiter(`visit.${PLTYPE_DICT}`),
+			[PLTYPE_INTEGER]: visiter(`visit.${PLTYPE_INTEGER}`),
+			[PLTYPE_SET]: visiter(`visit.${PLTYPE_SET}`),
+			[PLTYPE_STRING]: visiter(`visit.${PLTYPE_STRING}`),
+			default: visiter('visit.default'),
+		},
+		{
+			[PLTYPE_ARRAY]: visiter(`leave.${PLTYPE_ARRAY}`),
+			[PLTYPE_DICT]: visiter(`leave.${PLTYPE_DICT}`),
+			[PLTYPE_SET]: visiter(`leave.${PLTYPE_SET}`),
+			default: visiter('leave.default'),
+		},
+	);
+
+	const expected: typeof visited = [
+		[`visit.${PLTYPE_DICT}`, plist, 0, null, null],
+
+		[`visit.${PLTYPE_ARRAY}`, kArray, 1, null, plist],
+		[`visit.${PLTYPE_INTEGER}`, int0, 2, 0, kArray],
+		[`visit.${PLTYPE_INTEGER}`, int1, 2, 1, kArray],
+		[`leave.${PLTYPE_ARRAY}`, kArray, 1, null, plist],
+		// =
+		[`visit.${PLTYPE_STRING}`, vArray, 1, kArray, plist],
+
+		[`visit.${PLTYPE_DICT}`, kDict, 1, null, plist],
+		[`visit.${PLTYPE_BOOLEAN}`, kTrue, 2, null, kDict],
+		[`visit.${PLTYPE_STRING}`, vTrue, 2, kTrue, kDict],
+		[`visit.${PLTYPE_BOOLEAN}`, kFalse, 2, null, kDict],
+		[`visit.${PLTYPE_STRING}`, vFalse, 2, kFalse, kDict],
+		[`leave.${PLTYPE_DICT}`, kDict, 1, null, plist],
+		// =
+		[`visit.${PLTYPE_STRING}`, vDict, 1, kDict, plist],
+
+		[`visit.${PLTYPE_SET}`, kSet, 1, null, plist],
+		[`visit.${PLTYPE_INTEGER}`, int0, 2, int0, kSet],
+		[`visit.${PLTYPE_INTEGER}`, int1, 2, int1, kSet],
+		[`leave.${PLTYPE_SET}`, kSet, 1, null, plist],
+		// =
+		[`visit.${PLTYPE_STRING}`, vSet, 1, kSet, plist],
+
+		[`leave.${PLTYPE_DICT}`, plist, 0, null, null],
+	];
+	for (let i = 0; i < expected.length; i++) {
+		assertStrictEquals(visited[i][0], expected[i][0], `[${i}]: method`);
+		assertStrictEquals(visited[i][1], expected[i][1], `[${i}]: visit`);
+		assertStrictEquals(visited[i][2], expected[i][2], `[${i}]: depth`);
+		assertStrictEquals(visited[i][3], expected[i][3], `[${i}]: key`);
+		assertStrictEquals(visited[i][4], expected[i][4], `[${i}]: parent`);
+	}
+	assertEquals(visited.length, expected.length);
+});
+
 Deno.test('walk: skip: value', () => {
 	const plist = new PLDict();
 
