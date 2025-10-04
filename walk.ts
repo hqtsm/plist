@@ -28,8 +28,8 @@ function* root(root: PLType): Generator<[null, PLType]> {
  * @param dict Dict to itterate.
  */
 function* dict(dict: PLDict): Generator<[null | PLType, PLType]> {
-	let v;
-	for (const k of dict.keys()) {
+	let k, v;
+	for (k of dict.keys()) {
 		yield [null, k];
 		if ((v = dict.get(k))) {
 			yield [k, v];
