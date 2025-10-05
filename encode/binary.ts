@@ -15,7 +15,7 @@ import { PLTYPE_NULL } from '../null.ts';
 import { type PLReal, PLTYPE_REAL } from '../real.ts';
 import { type PLSet, PLTYPE_SET } from '../set.ts';
 import { type PLString, PLTYPE_STRING } from '../string.ts';
-import type { PLType } from '../type.ts';
+import type { PLType, PLTypeName } from '../type.ts';
 import { PLTYPE_UID, type PLUID } from '../uid.ts';
 import { walk } from '../walk.ts';
 
@@ -88,7 +88,7 @@ export interface EncodeBinaryOptions {
 	 *
 	 * @default [] Empty list.
 	 */
-	duplicates?: Iterable<string | PLType>;
+	duplicates?: Iterable<PLTypeName | PLType>;
 }
 
 /**
