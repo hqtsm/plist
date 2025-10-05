@@ -31,3 +31,8 @@ export type PLType =
 	| PLSet
 	| PLString
 	| PLUID;
+
+/**
+ * Every property list type name.
+ */
+export type PLTypeName = PLType['type'];
