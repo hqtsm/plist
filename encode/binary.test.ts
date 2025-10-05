@@ -55,18 +55,8 @@ Deno.test('Invalid format', () => {
 	);
 });
 
-Deno.test('Invalid keys', () => {
+Deno.test('Invalid key', () => {
 	const keys: PLType[] = [
-		new PLArray(),
-		new PLBoolean(),
-		new PLData(),
-		new PLDate(),
-		new PLInteger(),
-		new PLNull(),
-		new PLReal(),
-		new PLSet(),
-		new PLUID(),
-		new PLDict(),
 		{ [Symbol.toStringTag]: 'UNKNOWN' } as unknown as PLType,
 	];
 	for (const key of keys) {

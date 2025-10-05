@@ -135,10 +135,7 @@ export function encodeBinary(
 	walk(
 		plist,
 		{
-			PLArray(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
+			PLArray(v): void {
 				if ((x = v.length)) {
 					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
@@ -152,35 +149,23 @@ export function encodeBinary(
 					i++;
 				}
 			},
-			PLBoolean(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
+			PLBoolean(v): void {
 				if (add(v)) {
 					i++;
 				}
 			},
-			PLData(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
+			PLData(v): void {
 				if (add(v)) {
 					x = v.byteLength;
 					i += (x < 15 ? 1 : 2 + byteCount(x)) + x;
 				}
 			},
-			PLDate(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
+			PLDate(v): void {
 				if (add(v)) {
 					i += 9;
 				}
 			},
-			PLDict(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
+			PLDict(v): void {
 				if ((x = v.size)) {
 					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
@@ -194,10 +179,7 @@ export function encodeBinary(
 					i++;
 				}
 			},
-			PLInteger(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
+			PLInteger(v): void {
 				if (add(v)) {
 					i += 128 === v.bits
 						? 17
@@ -206,26 +188,17 @@ export function encodeBinary(
 						: 1 + byteCount(x);
 				}
 			},
-			PLNull(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
+			PLNull(v): void {
 				if (add(v)) {
 					i++;
 				}
 			},
-			PLReal(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
+			PLReal(v): void {
 				if (add(v)) {
 					i += v.bits === 32 ? 5 : 9;
 				}
 			},
-			PLSet(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
+			PLSet(v): void {
 				if ((x = v.size)) {
 					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
@@ -249,10 +222,7 @@ export function encodeBinary(
 					);
 				}
 			},
-			PLUID(v, d, k): void {
-				if (d && k === null) {
-					throw new TypeError('Invalid binary key type');
-				}
+			PLUID(v): void {
 				if (add(v)) {
 					i += 1 + byteCount(v.value);
 				}
