@@ -277,12 +277,12 @@ export function encodeBinary(
 
 	const refC = byteCount(l);
 	const intC = byteCount(table = i += refC * table);
-	const d = new DataView(x = new ArrayBuffer((i += intC * l) + 32));
+	const d = new DataView(x = new ArrayBuffer((i += intC * l + 6) + 26));
 	const r = new Uint8Array(x);
-	r[i + 6] = intC;
-	r[i + 7] = refC;
-	d.setBigInt64(i + 8, BigInt(l));
-	d.setBigInt64(i + 24, BigInt(table));
+	r[i++] = intC;
+	r[i++] = refC;
+	d.setBigInt64(i, BigInt(l));
+	d.setBigInt64(i + 16, BigInt(table));
 	i = 0;
 	r[i++] = 98;
 	r[i++] = 112;
