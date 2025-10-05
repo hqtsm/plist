@@ -76,6 +76,20 @@ export interface DecodeBinaryOptions {
 	 * @default false
 	 */
 	int64?: boolean;
+
+	/**
+	 * Optionally limit key types to strings.
+	 *
+	 * @default false
+	 */
+	stringKeys?: boolean;
+
+	/**
+	 * Optionally limit key types to primitive types.
+	 *
+	 * @default false
+	 */
+	primitiveKeys?: boolean;
 }
 
 /**
@@ -102,7 +116,11 @@ export interface DecodeBinaryResult {
  */
 export function decodeBinary(
 	encoded: ArrayBufferView | ArrayBuffer,
-	{ int64 = false }: Readonly<DecodeBinaryOptions> = {},
+	{
+		int64 = false,
+		stringKeys = false,
+		primitiveKeys = false,
+	}: Readonly<DecodeBinaryOptions> = {},
 ): DecodeBinaryResult {
 	const d = bytes(encoded);
 	let l = d.length;
@@ -172,6 +190,7 @@ export function decodeBinary(
 			throw new SyntaxError(binaryError(x));
 		}
 	}
+	primitiveKeys ||= stringKeys;
 	const ancestors = new Set<PLType>();
 	const object = new Map<number, PLType>();
 	const walk = function* (
@@ -199,6 +218,9 @@ export function decodeBinary(
 				m = d[x = i++];
 				switch (m >> 4) {
 					case 0: {
+						if (keys && stringKeys) {
+							throw new SyntaxError(binaryError(aoff!));
+						}
 						switch (m) {
 							case 0: {
 								object.set(x, p = new PLNull());
@@ -219,6 +241,9 @@ export function decodeBinary(
 						break;
 					}
 					case 1: {
+						if (keys && stringKeys) {
+							throw new SyntaxError(binaryError(aoff!));
+						}
 						c = 1 << (m & 15);
 						if (i + c > table) {
 							break;
@@ -234,6 +259,9 @@ export function decodeBinary(
 						continue;
 					}
 					case 2: {
+						if (keys && stringKeys) {
+							throw new SyntaxError(binaryError(aoff!));
+						}
 						switch (m & 15) {
 							case 2: {
 								if (i + 4 > table) {
@@ -261,6 +289,9 @@ export function decodeBinary(
 						break;
 					}
 					case 3: {
+						if (keys && stringKeys) {
+							throw new SyntaxError(binaryError(aoff!));
+						}
 						if (m !== 51 || i + 8 > table) {
 							break;
 						}
@@ -269,6 +300,9 @@ export function decodeBinary(
 						continue;
 					}
 					case 4: {
+						if (keys && stringKeys) {
+							throw new SyntaxError(binaryError(aoff!));
+						}
 						c = m & 15;
 						if (c === 15) {
 							if (
@@ -336,6 +370,9 @@ export function decodeBinary(
 						continue;
 					}
 					case 8: {
+						if (keys && stringKeys) {
+							throw new SyntaxError(binaryError(aoff!));
+						}
 						c = (m & 15) + 1;
 						if (i + c > table || (c = getU(d, i, c)) > U32_MAX) {
 							break;
@@ -345,7 +382,7 @@ export function decodeBinary(
 						continue;
 					}
 					case 10: {
-						if (keys) {
+						if (keys && primitiveKeys) {
 							throw new SyntaxError(binaryError(aoff!));
 						}
 						c = m & 15;
@@ -378,7 +415,7 @@ export function decodeBinary(
 						continue;
 					}
 					case 12: {
-						if (keys) {
+						if (keys && primitiveKeys) {
 							throw new SyntaxError(binaryError(aoff!));
 						}
 						c = m & 15;
@@ -411,7 +448,7 @@ export function decodeBinary(
 						continue;
 					}
 					case 13: {
-						if (keys) {
+						if (keys && primitiveKeys) {
 							throw new SyntaxError(binaryError(aoff!));
 						}
 						c = m & 15;
