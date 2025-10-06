@@ -33,3 +33,19 @@ for (name, key) in keys:
 		for o in offsets:
 			out.write(struct.pack('>B', o))
 		out.write(struct.pack('>xxxxxxBBQQQ', 1, 1, len(offsets), 0, offset))
+
+for (name, key) in keys:
+	with open(f'reused-key-type-{name}.plist', 'wb') as out:
+		out.write(b'bplist00')
+		offsets = [out.tell()]
+		out.write(struct.pack('>BBB', 0xA2, 1, 2))
+		offsets.append(out.tell())
+		out.write(key)
+		offsets.append(out.tell())
+		out.write(struct.pack('>BBB', 0xD1, 1, 3))
+		offsets.append(out.tell())
+		out.write(value)
+		offset = out.tell()
+		for o in offsets:
+			out.write(struct.pack('>B', o))
+		out.write(struct.pack('>xxxxxxBBQQQ', 1, 1, len(offsets), 0, offset))
