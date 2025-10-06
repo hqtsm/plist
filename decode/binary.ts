@@ -4,17 +4,17 @@
  * Binary decoding.
  */
 
-import { PLArray } from '../array.ts';
+import { PLArray, PLTYPE_ARRAY } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
-import { PLDict } from '../dict.ts';
+import { PLDict, PLTYPE_DICT } from '../dict.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { PLNull } from '../null.ts';
 import { binaryError, bytes } from '../pri/data.ts';
 import { PLReal } from '../real.ts';
-import { PLSet } from '../set.ts';
+import { PLSet, PLTYPE_SET } from '../set.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
@@ -211,15 +211,13 @@ export function decodeBinary(
 				if ((p = object.get(i))) {
 					if (
 						ancestors.has(p) ||
-						(keys && (
-							stringKeys ? !PLString.is(p) : (
-								primitiveKeys && (
-									PLDict.is(p) ||
-									PLArray.is(p) ||
-									PLSet.is(p)
-								)
+						(keys && (stringKeys ? !PLString.is(p) : (
+							primitiveKeys && (
+								(x = p[Symbol.toStringTag]) === PLTYPE_DICT ||
+								x === PLTYPE_ARRAY ||
+								x === PLTYPE_SET
 							)
-						))
+						)))
 					) {
 						throw new SyntaxError(binaryError(aoff!));
 					}
