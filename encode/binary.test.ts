@@ -1212,3 +1212,159 @@ Deno.test('spec: array-set', async () => {
 		await fixturePlist('array-set', 'binary'),
 	);
 });
+
+Deno.test('spec: binary-edge key-type-string-ascii', async () => {
+	const plist = new PLDict([
+		[new PLString('KEY'), new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-string-ascii'),
+	);
+});
+
+Deno.test('spec: binary-edge key-type-string-unicode', async () => {
+	const plist = new PLDict([
+		[new PLString('\u263A'), new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-string-unicode'),
+	);
+});
+
+Deno.test('spec: binary-edge key-type-null', async () => {
+	const plist = new PLDict([
+		[new PLNull(), new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-null'),
+	);
+});
+
+Deno.test('spec: binary-edge key-type-false', async () => {
+	const plist = new PLDict([
+		[new PLBoolean(false), new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-false'),
+	);
+});
+
+Deno.test('spec: binary-edge key-type-true', async () => {
+	const plist = new PLDict([
+		[new PLBoolean(true), new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-true'),
+	);
+});
+
+Deno.test('spec: binary-edge key-type-data', async () => {
+	const key = new PLData(1);
+	new Uint8Array(key.buffer)[0] = 'K'.charCodeAt(0);
+	const plist = new PLDict([
+		[key, new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-data'),
+	);
+});
+
+Deno.test('spec: binary-edge key-type-date', async () => {
+	const plist = new PLDict([
+		[new PLDate(3.14), new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-date'),
+	);
+});
+
+Deno.test('spec: binary-edge key-type-float', async () => {
+	const plist = new PLDict([
+		[new PLReal(3.14, 32), new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-float'),
+	);
+});
+
+Deno.test('spec: binary-edge key-type-double', async () => {
+	const plist = new PLDict([
+		[new PLReal(3.14, 64), new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-double'),
+	);
+});
+
+Deno.test('spec: binary-edge key-type-int', async () => {
+	const plist = new PLDict([
+		[new PLInteger(123n), new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-int'),
+	);
+});
+
+Deno.test('spec: binary-edge key-type-uid', async () => {
+	const plist = new PLDict([
+		[new PLUID(42n), new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-uid'),
+	);
+});
+
+Deno.test('spec: binary-edge key-type-array', async () => {
+	const plist = new PLDict([
+		[new PLArray(), new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-array'),
+	);
+});
+
+Deno.test('spec: binary-edge key-type-dict', async () => {
+	const plist = new PLDict([
+		[new PLDict(), new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-dict'),
+	);
+});
+
+Deno.test('spec: binary-edge key-type-set', async () => {
+	const plist = new PLDict([
+		[new PLSet(), new PLString('value')],
+	]);
+	const encode = encodeBinary(plist);
+	assertEquals(
+		encode,
+		await fixturePlist('binary-edge', 'key-type-set'),
+	);
+});
