@@ -9,7 +9,7 @@ import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { PLNull } from '../null.ts';
 import { PLReal } from '../real.ts';
-import { PLSet } from '../set.ts';
+import { PLSet, PLTYPE_SET } from '../set.ts';
 import { PLString } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLTYPE_UID, PLUID } from '../uid.ts';
@@ -1201,6 +1201,19 @@ Deno.test('spec: set-65535', async () => {
 	assertEquals(
 		encode,
 		await fixturePlist('set-65535', 'binary'),
+	);
+});
+
+Deno.test('spec: set-reuse', async () => {
+	const set = new PLSet([new PLString('AAAA'), new PLString('BBBB')]);
+	const plist = new PLArray([set, set]);
+	const encode = encodeBinary(plist, {
+		...CF_STYLE,
+		duplicates: [...CF_STYLE.duplicates, PLTYPE_SET],
+	});
+	assertEquals(
+		encode,
+		await fixturePlist('set-reuse', 'binary'),
 	);
 });
 
