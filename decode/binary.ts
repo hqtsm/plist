@@ -15,7 +15,7 @@ import { PLNull } from '../null.ts';
 import { binaryError, bytes } from '../pri/data.ts';
 import { PLReal } from '../real.ts';
 import { PLSet, PLTYPE_SET } from '../set.ts';
-import { PLString } from '../string.ts';
+import { PLString, PLTYPE_STRING } from '../string.ts';
 import type { PLType } from '../type.ts';
 import { PLUID } from '../uid.ts';
 
@@ -211,13 +211,17 @@ export function decodeBinary(
 				if ((p = object.get(i))) {
 					if (
 						ancestors.has(p) ||
-						(keys && (stringKeys ? !PLString.is(p) : (
-							primitiveKeys && (
-								(x = p[Symbol.toStringTag]) === PLTYPE_DICT ||
-								x === PLTYPE_ARRAY ||
-								x === PLTYPE_SET
-							)
-						)))
+						(keys &&
+							(stringKeys
+								? p[Symbol.toStringTag] !== PLTYPE_STRING
+								: (
+									primitiveKeys && (
+										(x = p[Symbol.toStringTag]) ===
+											PLTYPE_DICT ||
+										x === PLTYPE_ARRAY ||
+										x === PLTYPE_SET
+									)
+								)))
 					) {
 						throw new SyntaxError(binaryError(aoff!));
 					}
