@@ -209,7 +209,18 @@ export function decodeBinary(
 			i = Number(getU(d, x = table + r * intc, intc));
 			if (i > 7) {
 				if ((p = object.get(i))) {
-					if (ancestors.has(p)) {
+					if (
+						ancestors.has(p) ||
+						(keys && (
+							stringKeys ? !PLString.is(p) : (
+								primitiveKeys && (
+									PLDict.is(p) ||
+									PLArray.is(p) ||
+									PLSet.is(p)
+								)
+							)
+						))
+					) {
 						throw new SyntaxError(binaryError(aoff!));
 					}
 					push(p);
