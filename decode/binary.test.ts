@@ -1860,6 +1860,23 @@ Deno.test('spec: set-65535', async () => {
 	}
 });
 
+Deno.test('spec: set-reuse', async () => {
+	const { format, plist } = decodeBinary(
+		await fixturePlist('set-reuse', 'binary'),
+		CF_STYLE,
+	);
+	assertEquals(format, FORMAT_BINARY_V1_0);
+	assertInstanceOf(plist, PLArray);
+	assertEquals(plist.length, 2);
+
+	const a = plist.get(0);
+	const b = plist.get(1);
+	assertInstanceOf(a, PLSet);
+	assertInstanceOf(b, PLSet);
+
+	assertStrictEquals(a, b);
+});
+
 Deno.test('spec: array-set', async () => {
 	const { format, plist } = decodeBinary(
 		await fixturePlist('array-set', 'binary'),
