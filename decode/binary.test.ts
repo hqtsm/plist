@@ -1952,8 +1952,26 @@ Deno.test('spec: binary-edge fill', async () => {
 	);
 });
 
-Deno.test('spec: binary-edge infinite-recursion', async () => {
-	const data = await fixturePlist('binary-edge', 'infinite-recursion');
+Deno.test('spec: binary-edge infinite-recursion-array', async () => {
+	const data = await fixturePlist('binary-edge', 'infinite-recursion-array');
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(8),
+	);
+});
+
+Deno.test('spec: binary-edge infinite-recursion-dict', async () => {
+	const data = await fixturePlist('binary-edge', 'infinite-recursion-dict');
+	assertThrows(
+		() => decodeBinary(data, CF_STYLE),
+		SyntaxError,
+		binaryError(8),
+	);
+});
+
+Deno.test('spec: binary-edge infinite-recursion-set', async () => {
+	const data = await fixturePlist('binary-edge', 'infinite-recursion-set');
 	assertThrows(
 		() => decodeBinary(data, CF_STYLE),
 		SyntaxError,
