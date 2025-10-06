@@ -2262,3 +2262,375 @@ Deno.test('spec: binary-edge key-type-set', async () => {
 		}
 	}
 });
+
+Deno.test('spec: binary-edge reused-key-type-string-ascii', async () => {
+	const data = await fixturePlist(
+		'binary-edge',
+		'reused-key-type-string-ascii',
+	);
+	for (const [name, style] of Object.entries(STYLES)) {
+		const { format, plist } = decodeBinary(data, style);
+		assertEquals(format, FORMAT_BINARY_V1_0, name);
+		assertInstanceOf(plist, PLArray, name);
+		assertEquals(plist.length, 2, name);
+		const [reused, dict] = [...plist.values()];
+		assertInstanceOf(reused, PLString, name);
+		assertEquals(reused.value, 'KEY', name);
+		assertInstanceOf(dict, PLDict, name);
+		assertEquals(dict.size, 1, name);
+		const [[key, value]] = [...dict.entries()];
+		assertStrictEquals(reused, key, name);
+		assertInstanceOf(value, PLString, name);
+		assertEquals(value.value, 'value', name);
+	}
+});
+
+Deno.test('spec: binary-edge reused-key-type-string-unicode', async () => {
+	const data = await fixturePlist(
+		'binary-edge',
+		'reused-key-type-string-unicode',
+	);
+	for (const [name, style] of Object.entries(STYLES)) {
+		const { format, plist } = decodeBinary(data, style);
+		assertEquals(format, FORMAT_BINARY_V1_0, name);
+		assertInstanceOf(plist, PLArray, name);
+		assertEquals(plist.length, 2, name);
+		const [reused, dict] = [...plist.values()];
+		assertInstanceOf(reused, PLString, name);
+		assertEquals(reused.value, '\u263A', name);
+		assertInstanceOf(dict, PLDict, name);
+		assertEquals(dict.size, 1, name);
+		const [[key, value]] = [...dict.entries()];
+		assertStrictEquals(reused, key, name);
+		assertInstanceOf(value, PLString, name);
+		assertEquals(value.value, 'value', name);
+	}
+});
+
+Deno.test('spec: binary-edge reused-key-type-null', async () => {
+	const data = await fixturePlist('binary-edge', 'reused-key-type-null');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(0xC),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLArray, name);
+			assertEquals(plist.length, 2, name);
+			const [reused, dict] = [...plist.values()];
+			assertInstanceOf(reused, PLNull, name);
+			assertInstanceOf(dict, PLDict, name);
+			assertEquals(dict.size, 1, name);
+			const [[key, value]] = [...dict.entries()];
+			assertStrictEquals(reused, key, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge reused-key-type-false', async () => {
+	const data = await fixturePlist('binary-edge', 'reused-key-type-false');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(0xC),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLArray, name);
+			assertEquals(plist.length, 2, name);
+			const [reused, dict] = [...plist.values()];
+			assertInstanceOf(reused, PLBoolean, name);
+			assertEquals(reused.value, false, name);
+			assertInstanceOf(dict, PLDict, name);
+			assertEquals(dict.size, 1, name);
+			const [[key, value]] = [...dict.entries()];
+			assertStrictEquals(reused, key, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge reused-key-type-true', async () => {
+	const data = await fixturePlist('binary-edge', 'reused-key-type-true');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(0xC),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLArray, name);
+			assertEquals(plist.length, 2, name);
+			const [reused, dict] = [...plist.values()];
+			assertInstanceOf(reused, PLBoolean, name);
+			assertEquals(reused.value, true, name);
+			assertInstanceOf(dict, PLDict, name);
+			assertEquals(dict.size, 1, name);
+			const [[key, value]] = [...dict.entries()];
+			assertStrictEquals(reused, key, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge reused-key-type-data', async () => {
+	const K = 'K'.charCodeAt(0);
+	const data = await fixturePlist('binary-edge', 'reused-key-type-data');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(0xD),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLArray, name);
+			assertEquals(plist.length, 2, name);
+			const [reused, dict] = [...plist.values()];
+			assertInstanceOf(reused, PLData, name);
+			assertEquals(reused.byteLength, 1, name);
+			assertEquals(new Uint8Array(reused.buffer)[0], K, name);
+			assertInstanceOf(dict, PLDict, name);
+			assertEquals(dict.size, 1, name);
+			const [[key, value]] = [...dict.entries()];
+			assertStrictEquals(reused, key, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge reused-key-type-date', async () => {
+	const data = await fixturePlist('binary-edge', 'reused-key-type-date');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(0x14),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLArray, name);
+			assertEquals(plist.length, 2, name);
+			const [reused, dict] = [...plist.values()];
+			assertInstanceOf(reused, PLDate, name);
+			assertAlmostEquals(reused.time, 3.14, 0.001, name);
+			assertInstanceOf(dict, PLDict, name);
+			assertEquals(dict.size, 1, name);
+			const [[key, value]] = [...dict.entries()];
+			assertStrictEquals(reused, key, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge reused-key-type-float', async () => {
+	const data = await fixturePlist('binary-edge', 'reused-key-type-float');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(0x10),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLArray, name);
+			assertEquals(plist.length, 2, name);
+			const [reused, dict] = [...plist.values()];
+			assertInstanceOf(reused, PLReal, name);
+			assertAlmostEquals(reused.value, 3.14, 0.001, name);
+			assertEquals(reused.bits, 32, name);
+			assertInstanceOf(dict, PLDict, name);
+			assertEquals(dict.size, 1, name);
+			const [[key, value]] = [...dict.entries()];
+			assertStrictEquals(reused, key, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge reused-key-type-double', async () => {
+	const data = await fixturePlist('binary-edge', 'reused-key-type-double');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(0x14),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLArray, name);
+			assertEquals(plist.length, 2, name);
+			const [reused, dict] = [...plist.values()];
+			assertInstanceOf(reused, PLReal, name);
+			assertAlmostEquals(reused.value, 3.14, 0.001, name);
+			assertEquals(reused.bits, 64, name);
+			assertInstanceOf(dict, PLDict, name);
+			assertEquals(dict.size, 1, name);
+			const [[key, value]] = [...dict.entries()];
+			assertStrictEquals(reused, key, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge reused-key-type-int', async () => {
+	const data = await fixturePlist('binary-edge', 'reused-key-type-int');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(0xD),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLArray, name);
+			assertEquals(plist.length, 2, name);
+			const [reused, dict] = [...plist.values()];
+			assertInstanceOf(reused, PLInteger, name);
+			assertEquals(reused.value, 123n, name);
+			assertEquals(reused.bits, 64, name);
+			assertInstanceOf(dict, PLDict, name);
+			assertEquals(dict.size, 1, name);
+			const [[key, value]] = [...dict.entries()];
+			assertStrictEquals(reused, key, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge reused-key-type-uid', async () => {
+	const data = await fixturePlist('binary-edge', 'reused-key-type-uid');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(0xD),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLArray, name);
+			assertEquals(plist.length, 2, name);
+			const [reused, dict] = [...plist.values()];
+			assertInstanceOf(reused, PLUID, name);
+			assertEquals(reused.value, 42n, name);
+			assertInstanceOf(dict, PLDict, name);
+			assertEquals(dict.size, 1, name);
+			const [[key, value]] = [...dict.entries()];
+			assertStrictEquals(reused, key, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge reused-key-type-array', async () => {
+	const data = await fixturePlist('binary-edge', 'reused-key-type-array');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === CF_STYLE || style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(0xC),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLArray, name);
+			assertEquals(plist.length, 2, name);
+			const [reused, dict] = [...plist.values()];
+			assertInstanceOf(reused, PLArray, name);
+			assertEquals(reused.length, 0, name);
+			assertInstanceOf(dict, PLDict, name);
+			assertEquals(dict.size, 1, name);
+			const [[key, value]] = [...dict.entries()];
+			assertStrictEquals(reused, key, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge reused-key-type-dict', async () => {
+	const data = await fixturePlist('binary-edge', 'reused-key-type-dict');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === CF_STYLE || style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(0xC),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLArray, name);
+			assertEquals(plist.length, 2, name);
+			const [reused, dict] = [...plist.values()];
+			assertInstanceOf(reused, PLDict, name);
+			assertEquals(reused.size, 0, name);
+			assertInstanceOf(dict, PLDict, name);
+			assertEquals(dict.size, 1, name);
+			const [[key, value]] = [...dict.entries()];
+			assertStrictEquals(reused, key, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge reused-key-type-set', async () => {
+	const data = await fixturePlist('binary-edge', 'reused-key-type-set');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === CF_STYLE || style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(0xC),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLArray, name);
+			assertEquals(plist.length, 2, name);
+			const [reused, dict] = [...plist.values()];
+			assertInstanceOf(reused, PLSet, name);
+			assertEquals(reused.size, 0, name);
+			assertInstanceOf(dict, PLDict, name);
+			assertEquals(dict.size, 1, name);
+			const [[key, value]] = [...dict.entries()];
+			assertStrictEquals(reused, key, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
