@@ -211,17 +211,20 @@ export function decodeBinary(
 				if ((p = object.get(i))) {
 					if (
 						ancestors.has(p) ||
-						(keys &&
-							(stringKeys
-								? p[Symbol.toStringTag] !== PLTYPE_STRING
-								: (
-									primitiveKeys && (
+						(
+							keys &&
+							primitiveKeys &&
+							(
+								stringKeys
+									? p[Symbol.toStringTag] !== PLTYPE_STRING
+									: (
 										(x = p[Symbol.toStringTag]) ===
 											PLTYPE_DICT ||
 										x === PLTYPE_ARRAY ||
 										x === PLTYPE_SET
 									)
-								)))
+							)
+						)
 					) {
 						throw new SyntaxError(binaryError(aoff!));
 					}
