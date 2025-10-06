@@ -3,8 +3,8 @@ import struct
 
 keys = [
 	('null', struct.pack('>B', 0x00)),
-	('true', struct.pack('>B', 0x08)),
-	('false', struct.pack('>B', 0x09)),
+	('false', struct.pack('>B', 0x08)),
+	('true', struct.pack('>B', 0x09)),
 	('int', struct.pack('>BB', 0x10, 123)),
 	('float', struct.pack('>Bf', 0x22, 3.14)),
 	('double', struct.pack('>Bd', 0x23, 3.14)),
