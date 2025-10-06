@@ -1,5 +1,6 @@
 import {
 	assert,
+	assertAlmostEquals,
 	assertEquals,
 	assertInstanceOf,
 	assertStrictEquals,
@@ -24,7 +25,19 @@ import { decodeBinary, type DecodeBinaryOptions } from './binary.ts';
 
 const CF_STYLE = {
 	int64: true,
+	primitiveKeys: true,
 } as const satisfies DecodeBinaryOptions;
+
+const MAC_STYLE = {
+	int64: true,
+	stringKeys: true,
+} as const satisfies DecodeBinaryOptions;
+
+const STYLES = {
+	CF_STYLE,
+	MAC_STYLE,
+	default: {},
+} as const;
 
 const I64_MAX = 0x7fffffffffffffffn;
 
@@ -1938,4 +1951,328 @@ Deno.test('spec: binary-edge uid-over', async () => {
 		SyntaxError,
 		binaryError(8),
 	);
+});
+
+Deno.test('spec: binary-edge key-type-string-ascii', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-string-ascii');
+	for (const [name, style] of Object.entries(STYLES)) {
+		const { format, plist } = decodeBinary(data, style);
+		assertEquals(format, FORMAT_BINARY_V1_0, name);
+		assertInstanceOf(plist, PLDict, name);
+		const entries = [...plist.entries()];
+		assertEquals(entries.length, 1, name);
+		const [[key, value]] = entries;
+		assertInstanceOf(key, PLString, name);
+		assertEquals(key.value, 'KEY', name);
+		assertInstanceOf(value, PLString, name);
+		assertEquals(value.value, 'value', name);
+	}
+});
+
+Deno.test('spec: binary-edge key-type-string-unicode', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-string-unicode');
+	for (const [name, style] of Object.entries(STYLES)) {
+		const { format, plist } = decodeBinary(data, style);
+		assertEquals(format, FORMAT_BINARY_V1_0, name);
+		assertInstanceOf(plist, PLDict, name);
+		const entries = [...plist.entries()];
+		assertEquals(entries.length, 1, name);
+		const [[key, value]] = entries;
+		assertInstanceOf(key, PLString, name);
+		assertEquals(key.value, '\u263A', name);
+		assertInstanceOf(value, PLString, name);
+		assertEquals(value.value, 'value', name);
+	}
+});
+
+Deno.test('spec: binary-edge key-type-null', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-null');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(8),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLDict, name);
+			const entries = [...plist.entries()];
+			assertEquals(entries.length, 1, name);
+			const [[key, value]] = entries;
+			assertInstanceOf(key, PLNull, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge key-type-false', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-false');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(8),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLDict, name);
+			const entries = [...plist.entries()];
+			assertEquals(entries.length, 1, name);
+			const [[key, value]] = entries;
+			assertInstanceOf(key, PLBoolean, name);
+			assertEquals(key.value, false, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge key-type-true', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-true');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(8),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLDict, name);
+			const entries = [...plist.entries()];
+			assertEquals(entries.length, 1, name);
+			const [[key, value]] = entries;
+			assertInstanceOf(key, PLBoolean, name);
+			assertEquals(key.value, true, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge key-type-data', async () => {
+	const K = 'K'.charCodeAt(0);
+	const data = await fixturePlist('binary-edge', 'key-type-data');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(8),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLDict, name);
+			const entries = [...plist.entries()];
+			assertEquals(entries.length, 1, name);
+			const [[key, value]] = entries;
+			assertInstanceOf(key, PLData, name);
+			assertEquals(key.byteLength, 1, name);
+			assertEquals(new Uint8Array(key.buffer)[0], K, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge key-type-date', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-date');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(8),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLDict, name);
+			const entries = [...plist.entries()];
+			assertEquals(entries.length, 1, name);
+			const [[key, value]] = entries;
+			assertInstanceOf(key, PLDate, name);
+			assertEquals(key.time, 3.14, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge key-type-float', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-float');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(8),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLDict, name);
+			const entries = [...plist.entries()];
+			assertEquals(entries.length, 1, name);
+			const [[key, value]] = entries;
+			assertInstanceOf(key, PLReal, name);
+			assertAlmostEquals(key.value, 3.14, 0.001, name);
+			assertEquals(key.bits, 32, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge key-type-double', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-double');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(8),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLDict, name);
+			const entries = [...plist.entries()];
+			assertEquals(entries.length, 1, name);
+			const [[key, value]] = entries;
+			assertInstanceOf(key, PLReal, name);
+			assertAlmostEquals(key.value, 3.14, 0.001, name);
+			assertEquals(key.bits, 64, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge key-type-int', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-int');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(8),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLDict, name);
+			const entries = [...plist.entries()];
+			assertEquals(entries.length, 1, name);
+			const [[key, value]] = entries;
+			assertInstanceOf(key, PLInteger, name);
+			assertEquals(key.value, 123n, name);
+			assertEquals(key.bits, 64, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge key-type-uid', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-uid');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(8),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLDict, name);
+			const entries = [...plist.entries()];
+			assertEquals(entries.length, 1, name);
+			const [[key, value]] = entries;
+			assertInstanceOf(key, PLUID, name);
+			assertEquals(key.value, 42n, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge key-type-array', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-array');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === CF_STYLE || style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(8),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLDict, name);
+			const entries = [...plist.entries()];
+			assertEquals(entries.length, 1, name);
+			const [[key, value]] = entries;
+			assertInstanceOf(key, PLArray, name);
+			assertEquals(key.length, 0, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge key-type-dict', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-dict');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === CF_STYLE || style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(8),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLDict, name);
+			const entries = [...plist.entries()];
+			assertEquals(entries.length, 1, name);
+			const [[key, value]] = entries;
+			assertInstanceOf(key, PLDict, name);
+			assertEquals(key.size, 0, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
+});
+
+Deno.test('spec: binary-edge key-type-set', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-set');
+	for (const [name, style] of Object.entries(STYLES)) {
+		if (style === CF_STYLE || style === MAC_STYLE) {
+			assertThrows(
+				() => decodeBinary(data, style),
+				SyntaxError,
+				binaryError(8),
+			);
+		} else {
+			const { format, plist } = decodeBinary(data, style);
+			assertEquals(format, FORMAT_BINARY_V1_0, name);
+			assertInstanceOf(plist, PLDict, name);
+			const entries = [...plist.entries()];
+			assertEquals(entries.length, 1, name);
+			const [[key, value]] = entries;
+			assertInstanceOf(key, PLSet, name);
+			assertEquals(key.size, 0, name);
+			assertInstanceOf(value, PLString, name);
+			assertEquals(value.value, 'value', name);
+		}
+	}
 });
