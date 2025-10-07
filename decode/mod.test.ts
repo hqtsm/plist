@@ -37,25 +37,39 @@ Deno.test('Invalid', () => {
 });
 
 Deno.test('XML Option: decoded', () => {
-	{
-		const { format, plist } = decode(
-			TE.encode(
-				[
-					DOCTYPE,
-					'<plist version="1.0">',
-					'<true/>',
-					'</plist>',
-					'',
-				].join('\n'),
-			),
-			{
-				xml: { decoded: true },
-				openstep: { decoded: true },
-			},
-		);
-		assertEquals(format, FORMAT_XML_V1_0);
-		assertInstanceOf(plist, PLBoolean);
-		assertEquals(plist.value, true);
+	const combos = [
+		undefined,
+		{ decoded: true },
+		{ decoded: false },
+		{ decoded: true, int64: true },
+		{ decoded: false, int64: true },
+		{ decoded: true, utf16le: true },
+		{ decoded: true, utf16le: false },
+		{ decoded: false, utf16le: true },
+		{ decoded: false, utf16le: false },
+	];
+	for (const xml of combos) {
+		for (const openstep of combos) {
+			const tag = JSON.stringify({ xml, openstep });
+			const { format, plist } = decode(
+				TE.encode(
+					[
+						DOCTYPE,
+						'<plist version="1.0">',
+						'<true/>',
+						'</plist>',
+						'',
+					].join('\n'),
+				),
+				{
+					xml,
+					openstep,
+				},
+			);
+			assertEquals(format, FORMAT_XML_V1_0, tag);
+			assertInstanceOf(plist, PLBoolean, tag);
+			assertEquals(plist.value, true, tag);
+		}
 	}
 });
 
