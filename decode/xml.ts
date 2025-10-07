@@ -621,7 +621,7 @@ function string(d: Uint8Array, p: [number], l: number): string {
 export type DecodeXmlDecoder = (
 	encoding: string,
 	data: Uint8Array,
-) => ArrayBufferView | ArrayBuffer | null | void;
+) => ArrayBufferView | ArrayBufferLike | null | void;
 
 /**
  * Decode XML plist options.
@@ -676,7 +676,7 @@ export interface DecodeXmlResult {
  * @returns Decode result.
  */
 export function decodeXml(
-	encoded: ArrayBufferView | ArrayBuffer,
+	encoded: ArrayBufferView | ArrayBufferLike,
 	{
 		decoder,
 		utf16le,

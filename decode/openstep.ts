@@ -260,7 +260,7 @@ export interface DecodeOpenStepResult {
  * @returns Decode result.
  */
 export function decodeOpenStep(
-	encoded: ArrayBufferView | ArrayBuffer,
+	encoded: ArrayBufferView | ArrayBufferLike,
 	{
 		allowMissingSemi = false,
 		utf16le,

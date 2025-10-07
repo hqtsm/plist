@@ -115,7 +115,7 @@ export interface DecodeBinaryResult {
  * @returns Decode result.
  */
 export function decodeBinary(
-	encoded: ArrayBufferView | ArrayBuffer,
+	encoded: ArrayBufferView | ArrayBufferLike,
 	{
 		int64 = false,
 		stringKeys = false,

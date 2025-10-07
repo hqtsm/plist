@@ -59,7 +59,7 @@ export interface DecodeResult {
  * @returns Decoded plist and format.
  */
 export function decode(
-	encoded: ArrayBufferView | ArrayBuffer,
+	encoded: ArrayBufferView | ArrayBufferLike,
 	{ binary, xml, openstep }: Readonly<DecodeOptions> = {},
 ): DecodeResult {
 	let x, d;
