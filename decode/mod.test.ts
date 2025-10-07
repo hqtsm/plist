@@ -54,6 +54,7 @@ Deno.test('XML Option: decoded', () => {
 			const { format, plist } = decode(
 				TE.encode(
 					[
+						xml?.decoded ? '' : '\uFEFF',
 						DOCTYPE,
 						'<plist version="1.0">',
 						'<true/>',

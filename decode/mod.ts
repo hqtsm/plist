@@ -62,7 +62,7 @@ export function decode(
 	encoded: ArrayBufferView | ArrayBuffer,
 	{ binary, xml, openstep }: Readonly<DecodeOptions> = {},
 ): DecodeResult {
-	let d, o;
+	let x, d;
 	d = bytes(encoded);
 	if (
 		d.length < 8 ||
@@ -75,15 +75,15 @@ export function decode(
 		d[6] !== 48
 	) {
 		if (
-			!xml?.decoded && !openstep?.decoded &&
-			(o = xml?.utf16le) === openstep?.utf16le
+			(d = !xml?.decoded && !openstep?.decoded &&
+				(x = xml?.utf16le) === openstep?.utf16le &&
+				(utf8Encoded(d, x)))
 		) {
-			if ((d = utf8Encoded(d, o))) {
-				encoded = d;
-				xml = { int64: xml?.int64, decoded: true };
-			}
-		} else {
-			d = null;
+			encoded = d;
+			xml = {
+				int64: xml?.int64,
+				decoded: true,
+			};
 		}
 		try {
 			return decodeXml(encoded, xml);
