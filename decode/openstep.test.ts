@@ -547,18 +547,35 @@ Deno.test('spec: dict-empties', async () => {
 
 Deno.test('spec: dict-26', async () => {
 	const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	const { format, plist } = decodeOpenStep(
-		await fixturePlist('dict-26', 'openstep'),
-		CF_STYLE,
-	);
-	assertEquals(format, FORMAT_OPENSTEP);
-	assertInstanceOf(plist, PLDict);
-	assertEquals(plist.size, 26);
+	{
+		const { format, plist } = decodeOpenStep(
+			await fixturePlist('dict-26', 'openstep'),
+			CF_STYLE,
+		);
+		assertEquals(format, FORMAT_OPENSTEP);
+		assertInstanceOf(plist, PLDict);
+		assertEquals(plist.size, 26);
 
-	for (let i = 0; i < plist.size; i++) {
-		const str = plist.find(kp(alphabet[i]));
-		assertInstanceOf(str, PLString);
-		assertEquals(str.value, alphabet[i].toLowerCase());
+		for (let i = 0; i < plist.size; i++) {
+			const str = plist.find(kp(alphabet[i]));
+			assertInstanceOf(str, PLString);
+			assertEquals(str.value, alphabet[i].toLowerCase());
+		}
+	}
+	{
+		const { format, plist } = decodeOpenStep(
+			await fixturePlist('dict-26', 'strings'),
+			CF_STYLE,
+		);
+		assertEquals(format, FORMAT_STRINGS);
+		assertInstanceOf(plist, PLDict);
+		assertEquals(plist.size, 26);
+
+		for (let i = 0; i < plist.size; i++) {
+			const str = plist.find(kp(alphabet[i]));
+			assertInstanceOf(str, PLString);
+			assertEquals(str.value, alphabet[i].toLowerCase());
+		}
 	}
 });
 
