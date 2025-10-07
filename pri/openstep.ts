@@ -150,7 +150,7 @@ export const latin = [
  * Check if a character is unquoted.
  *
  * @param chr Character code.
- * @returns True if in: a-zA-Z0-9:_$/.-
+ * @returns True if in [a-zA-Z0-9:_$/.-].
  */
 export const unquoted = (chr: number): boolean =>
 	chr < 123 && (

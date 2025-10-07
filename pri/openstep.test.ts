@@ -1,7 +1,7 @@
 import { assertEquals, assertFalse } from '@std/assert';
 import { esc, unesc, unquoted } from './openstep.ts';
 
-const escapes: Record<string, string> = {
+const escapes: Record<string, string | undefined> = {
 	a: '\x07',
 	b: '\b',
 	f: '\f',

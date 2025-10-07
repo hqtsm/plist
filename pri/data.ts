@@ -1,4 +1,10 @@
 /**
+ * @module
+ *
+ * Data utils.
+ */
+
+/**
  * Get buffer or view as bytes.
  *
  * @param buffer Buffer or buffer view.
