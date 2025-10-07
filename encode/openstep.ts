@@ -199,7 +199,7 @@ export function encodeOpenStep(
 		quoted = false,
 		shortcut = false,
 	}: Readonly<EncodeOpenStepOptions> = {},
-): Uint8Array<ArrayBuffer> {
+): InstanceType<typeof Uint8Array> {
 	let base = 0;
 	let i: number;
 

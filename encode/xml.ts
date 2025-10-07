@@ -112,7 +112,7 @@ export function encodeXml(
 		unsignZero = false,
 		min128Zero = false,
 	}: Readonly<EncodeXmlOptions> = {},
-): Uint8Array<ArrayBuffer> {
+): InstanceType<typeof Uint8Array> {
 	let doctype: string;
 	let version: string;
 	let i: number;
