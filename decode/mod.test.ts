@@ -108,38 +108,44 @@ Deno.test('XML encoding: custom', () => {
 		assertEquals(plist.value, true);
 	}
 	{
-		assertThrows(() =>
-			decode(
-				TE.encode(
-					[
-						'<?xml version="1.0" encoding="invalid"?>',
-						DOCTYPE,
-						'<plist version="1.0">',
-						'<true/>',
-						'</plist>',
-						'',
-					].join('\n'),
+		assertThrows(
+			() =>
+				decode(
+					TE.encode(
+						[
+							'<?xml version="1.0" encoding="invalid"?>',
+							DOCTYPE,
+							'<plist version="1.0">',
+							'<true/>',
+							'</plist>',
+							'',
+						].join('\n'),
+					),
+					options,
 				),
-				options,
-			)
+			RangeError,
+			'Unsupported encoding: invalid',
 		);
 		assertEquals(count, 2);
 	}
 	{
-		assertThrows(() =>
-			decode(
-				TE.encode(
-					[
-						'<?xml version="1.0" encoding="ascii">',
-						DOCTYPE,
-						'<plist version="1.0">',
-						'<true/>',
-						'</plist>',
-						'',
-					].join('\n'),
+		assertThrows(
+			() =>
+				decode(
+					TE.encode(
+						[
+							'<?xml version="1.0" encoding="ascii">',
+							DOCTYPE,
+							'<plist version="1.0">',
+							'<true/>',
+							'</plist>',
+							'',
+						].join('\n'),
+					),
+					options,
 				),
-				options,
-			)
+			SyntaxError,
+			'Invalid end on line 6',
 		);
 		assertEquals(count, 3);
 	}
