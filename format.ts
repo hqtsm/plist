@@ -1,7 +1,7 @@
 /**
  * @module
  *
- * Plist formats.
+ * Property list formats.
  */
 
 /**

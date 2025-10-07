@@ -1,3 +1,9 @@
+/**
+ * @module
+ *
+ * Property list walker.
+ */
+
 import { type PLArray, PLTYPE_ARRAY } from './array.ts';
 import type { PLBoolean, PLTYPE_BOOLEAN } from './boolean.ts';
 import type { PLData, PLTYPE_DATA } from './data.ts';
@@ -180,7 +186,7 @@ export interface WalkVisit {
 	[PLTYPE_UID]?: WalkVisitor<PLUID>;
 
 	/**
-	 * Default close visitor.
+	 * Default visit.
 	 */
 	default?: WalkVisitor<PLType>;
 }
@@ -210,6 +216,9 @@ export interface WalkLeave {
 	default?: WalkVisitor<PLArray | PLDict>;
 }
 
+/**
+ * Walk options.
+ */
 export interface WalkOptions {
 	/**
 	 * Maximum depth, negative for no limit.
@@ -256,7 +265,12 @@ export function walk(
 	let k: PLType | number | null = null;
 	let v: PLType;
 	let p: WalkParent = null;
-	let n: Node | null = { p, k, g, n: p };
+	let n: Node | null = {
+		p,
+		k,
+		g,
+		n: p,
+	};
 	let wv: WalkVisitor;
 	do {
 		next = n.g.next();

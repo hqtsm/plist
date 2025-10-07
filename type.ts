@@ -1,7 +1,7 @@
 /**
  * @module
  *
- * Property list type collection.
+ * Property list types.
  */
 
 import type { PLArray } from './array.ts';
