@@ -44,7 +44,7 @@ function* dictPairs(dict: PLDict): Generator<[null | PLType, PLType]> {
 }
 
 /**
- * Iterate dict keys and then values.
+ * Iterate dict keys, then values.
  *
  * @param dict Dict to iterate.
  */
