@@ -27,12 +27,23 @@ function kp(value: string): (_: PLType, key: PLType) => boolean {
 	return (_: PLType, key: PLType) => PLString.is(key) && key.value === value;
 }
 
-Deno.test('Invalid', () => {
+Deno.test('Invalid: binary + OpenStep', () => {
 	const data = new Uint8Array([...'bplist00='].map((c) => c.charCodeAt(0)));
 	assertThrows(
 		() => decode(data),
 		SyntaxError,
 		binaryError(8),
+	);
+});
+
+Deno.test('Invalid: XML + OpenStep', () => {
+	const data = new Uint8Array(
+		[...'<plist></plist>'].map((c) => c.charCodeAt(0)),
+	);
+	assertThrows(
+		() => decode(data),
+		SyntaxError,
+		'Invalid XML on line 1',
 	);
 });
 
@@ -343,6 +354,85 @@ Deno.test('spec: binary-edge infinite-recursion-array', async () => {
 		SyntaxError,
 		binaryError(8),
 	);
+});
+
+Deno.test('spec: binary-edge key-type-false', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-false');
+	assertThrows(
+		() =>
+			decode(data, {
+				binary: {
+					stringKeys: true,
+				},
+			}),
+		SyntaxError,
+		binaryError(8),
+	);
+
+	{
+		const { format, plist } = decode(data, {
+			binary: {
+				primitiveKeys: true,
+			},
+		});
+		assertEquals(format, FORMAT_BINARY_V1_0);
+		assertInstanceOf(plist, PLDict);
+		assertEquals(plist.size, 1);
+		const [[key, value]] = [...plist.entries()];
+		assertInstanceOf(key, PLBoolean);
+		assertEquals(key.value, false);
+		assertInstanceOf(value, PLString);
+		assertEquals(value.value, 'value');
+	}
+
+	{
+		const { format, plist } = decode(data);
+		assertEquals(format, FORMAT_BINARY_V1_0);
+		assertInstanceOf(plist, PLDict);
+		assertEquals(plist.size, 1);
+		const [[key, value]] = [...plist.entries()];
+		assertInstanceOf(key, PLBoolean);
+		assertEquals(key.value, false);
+		assertInstanceOf(value, PLString);
+		assertEquals(value.value, 'value');
+	}
+});
+
+Deno.test('spec: binary-edge key-type-array', async () => {
+	const data = await fixturePlist('binary-edge', 'key-type-array');
+	assertThrows(
+		() =>
+			decode(data, {
+				binary: {
+					stringKeys: true,
+				},
+			}),
+		SyntaxError,
+		binaryError(8),
+	);
+
+	assertThrows(
+		() =>
+			decode(data, {
+				binary: {
+					primitiveKeys: true,
+				},
+			}),
+		SyntaxError,
+		binaryError(8),
+	);
+
+	{
+		const { format, plist } = decode(data);
+		assertEquals(format, FORMAT_BINARY_V1_0);
+		assertInstanceOf(plist, PLDict);
+		assertEquals(plist.size, 1);
+		const [[key, value]] = [...plist.entries()];
+		assertInstanceOf(key, PLArray);
+		assertEquals(key.length, 0);
+		assertInstanceOf(value, PLString);
+		assertEquals(value.value, 'value');
+	}
 });
 
 Deno.test('spec: integer-big: xml', async () => {
