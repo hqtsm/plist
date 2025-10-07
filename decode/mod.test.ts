@@ -262,6 +262,34 @@ Deno.test('spec: strings-edge bplist00-string', async () => {
 	assertEquals(plist.value, 'bplist00');
 });
 
+Deno.test('spec: strings-edge bplist00-dict-opt-sc', async () => {
+	const data = await fixturePlist('strings-edge', 'bplist00-dict-opt-sc');
+	assertThrows(
+		() => decode(data),
+		SyntaxError,
+		'Invalid XML on line 1',
+	);
+
+	const { format, plist } = decode(data, {
+		openstep: {
+			allowMissingSemi: true,
+		},
+	});
+	assertEquals(format, FORMAT_STRINGS);
+	assertInstanceOf(plist, PLDict);
+	assertEquals(plist.size, 2);
+
+	const [[aK, aV], [bK, bV]] = [...plist.entries()];
+	assertInstanceOf(aK, PLString);
+	assertEquals(aK.value, 'bplist00');
+	assertInstanceOf(aV, PLString);
+	assertEquals(aV.value, 'One');
+	assertInstanceOf(bK, PLString);
+	assertEquals(bK.value, 'other');
+	assertInstanceOf(bV, PLString);
+	assertEquals(bV.value, 'Two');
+});
+
 Deno.test('spec: openstep-edge legacy-dict-opt-sc', async () => {
 	const data = await fixturePlist('openstep-edge', 'legacy-dict-opt-sc');
 
