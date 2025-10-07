@@ -253,9 +253,9 @@ Deno.test('spec: xml-encoding-utf', async () => {
 	}
 });
 
-Deno.test('spec: openstep-edge bplist00', async () => {
+Deno.test('spec: strings-edge bplist00-string', async () => {
 	const { format, plist } = decode(
-		await fixturePlist('openstep-edge', 'bplist00'),
+		await fixturePlist('strings-edge', 'bplist00-string'),
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLString);
