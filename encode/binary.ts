@@ -104,7 +104,7 @@ export function encodeBinary(
 		format = FORMAT_BINARY_V1_0,
 		duplicates,
 	}: Readonly<EncodeBinaryOptions> = {},
-): Uint8Array {
+): Uint8Array<ArrayBuffer> {
 	let e;
 	let x;
 	let i = 8;
