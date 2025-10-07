@@ -19,10 +19,22 @@ import { decodeXml, type DecodeXmlOptions } from './xml.ts';
 /**
  * Decoding options.
  */
-export type DecodeOptions =
-	& DecodeBinaryOptions
-	& DecodeOpenStepOptions
-	& DecodeXmlOptions;
+export interface DecodeOptions {
+	/**
+	 * Binary decoding options.
+	 */
+	binary?: DecodeBinaryOptions;
+
+	/**
+	 * XML decoding options.
+	 */
+	xml?: DecodeXmlOptions;
+
+	/**
+	 * OpenStep decoding options.
+	 */
+	openstep?: DecodeOpenStepOptions;
+}
 
 /**
  * Decode plist result.
@@ -48,9 +60,9 @@ export interface DecodeResult {
  */
 export function decode(
 	encoded: ArrayBufferView | ArrayBuffer,
-	options: Readonly<DecodeOptions> = {},
+	{ binary, xml, openstep }: Readonly<DecodeOptions> = {},
 ): DecodeResult {
-	let d;
+	let d, o;
 	d = bytes(encoded);
 	if (
 		d.length < 8 ||
@@ -63,25 +75,37 @@ export function decode(
 		d[6] !== 48
 	) {
 		if (
-			!options.decoded &&
-			(d = utf8Encoded(d, options.utf16le))
+			!xml?.decoded && !openstep?.decoded &&
+			(o = xml?.utf16le) === openstep?.utf16le
 		) {
-			options = {
-				int64: options.int64,
-				allowMissingSemi: options.allowMissingSemi,
-				decoded: true,
-			};
-			encoded = d;
+			if ((d = utf8Encoded(d, o))) {
+				encoded = d;
+				xml = { int64: xml?.int64, decoded: true };
+			}
+		} else {
+			d = null;
 		}
-		d = decodeXml;
-	} else {
-		d = decodeBinary;
+		try {
+			return decodeXml(encoded, xml);
+		} catch (err) {
+			if (d) {
+				openstep = {
+					allowMissingSemi: openstep?.allowMissingSemi,
+					decoded: true,
+				};
+			}
+			try {
+				return decodeOpenStep(encoded, openstep);
+			} catch {
+				throw err;
+			}
+		}
 	}
 	try {
-		return d(encoded, options);
+		return decodeBinary(encoded, binary);
 	} catch (err) {
 		try {
-			return decodeOpenStep(encoded, options);
+			return decodeOpenStep(encoded, openstep);
 		} catch {
 			throw err;
 		}

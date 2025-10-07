@@ -48,7 +48,10 @@ Deno.test('XML Option: decoded', () => {
 					'',
 				].join('\n'),
 			),
-			{ decoded: true },
+			{
+				xml: { decoded: true },
+				openstep: { decoded: true },
+			},
 		);
 		assertEquals(format, FORMAT_XML_V1_0);
 		assertInstanceOf(plist, PLBoolean);
@@ -59,12 +62,14 @@ Deno.test('XML Option: decoded', () => {
 Deno.test('XML encoding: custom', () => {
 	let count = 0;
 	const options = {
-		decoder(
-			encoding: string,
-			data: Uint8Array,
-		): Uint8Array | null {
-			count++;
-			return encoding === 'ascii' ? ascii2utf8(data) : null;
+		xml: {
+			decoder(
+				encoding: string,
+				data: Uint8Array,
+			): Uint8Array | null {
+				count++;
+				return encoding === 'ascii' ? ascii2utf8(data) : null;
+			},
 		},
 	};
 
@@ -267,7 +272,7 @@ Deno.test('spec: openstep-edge legacy-dict-opt-sc', async () => {
 	);
 
 	const { format, plist } = decode(data, {
-		allowMissingSemi: true,
+		openstep: { allowMissingSemi: true },
 	});
 	assertEquals(format, FORMAT_OPENSTEP);
 	assertInstanceOf(plist, PLDict);
@@ -298,7 +303,7 @@ Deno.test('spec: integer-big: xml', async () => {
 
 	// Not very compatible, created with a private API.
 	assertThrows(
-		() => decode(data, { int64: true }),
+		() => decode(data, { xml: { int64: true } }),
 		SyntaxError,
 		'Invalid XML on line 6',
 	);
@@ -349,7 +354,9 @@ Deno.test('spec: integer-big: binary', async () => {
 	const MIN_128 = -0x8000000000000000_0000000000000000n;
 	const data = await fixturePlist('integer-big', 'binary');
 	{
-		const { format, plist } = decode(data, { int64: true });
+		const { format, plist } = decode(data, {
+			binary: { int64: true },
+		});
 		assertEquals(format, FORMAT_BINARY_V1_0);
 		assertInstanceOf(plist, PLArray);
 		assertEquals(plist.length, 12);
@@ -390,7 +397,9 @@ Deno.test('spec: integer-big: binary', async () => {
 		assertEquals(MIN_PLUS_2.bits, 128);
 	}
 	{
-		const { format, plist } = decode(data, { int64: false });
+		const { format, plist } = decode(data, {
+			binary: { int64: false },
+		});
 		assertEquals(format, FORMAT_BINARY_V1_0);
 		assertInstanceOf(plist, PLArray);
 		assertEquals(plist.length, 12);
