@@ -58,11 +58,10 @@ function getDate(
 			z += m ? 366n : 365n;
 		} while (z < 0);
 	} else {
-		for (let d = 365n; z >= d;) {
+		for (let d = 365n; z >= d; d = m ? 366n : 365n) {
 			z -= d;
 			x = (++y + 1n) % 400n;
 			m = +!(x & 3n || (x && !(x % 100n)));
-			d = m ? 366n : 365n;
 		}
 	}
 	if (year) {
@@ -285,7 +284,6 @@ export function getTime(
 	minute: number,
 	second: number,
 ): number {
-	// Roll months into years.
 	let r;
 	let x;
 	let y = year - 2001 | 0;
@@ -297,14 +295,12 @@ export function getTime(
 
 	// Remaining years of days.
 	if (y < 0) {
-		for (z = y; z;) {
+		for (z = y; z; r -= x & 3 || (x && !(x % 100)) ? 365 : 366) {
 			x = -(++z) % 400;
-			r -= x & 3 || (x && !(x % 100)) ? 365 : 366;
 		}
 	} else {
-		for (z = 0; z < y;) {
+		for (z = 0; z < y; r += x & 3 || (x && !(x % 100)) ? 365 : 366) {
 			x = ++z % 400;
-			r += x & 3 || (x && !(x % 100)) ? 365 : 366;
 		}
 	}
 
