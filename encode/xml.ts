@@ -5,9 +5,9 @@
  */
 
 import type { PLDate } from '../date.ts';
-import { utf8Encode, utf8Size } from '../pri/utf8.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { b64e } from '../pri/base.ts';
+import { utf8Encode, utf8Size } from '../pri/utf8.ts';
 import type { PLType } from '../type.ts';
 import { walk } from '../walk.ts';
 
