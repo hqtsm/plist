@@ -1097,9 +1097,7 @@ Deno.test('Integers: Good', () => {
 								'',
 							].join('\n'),
 						),
-						{
-							int64: true,
-						},
+						CF_STYLE,
 					);
 					assertEquals(format, FORMAT_XML_V1_0, tag);
 					assertInstanceOf(plist, PLInteger, tag);
@@ -1167,7 +1165,7 @@ Deno.test('Integers: EOF', () => {
 			].join('\n'),
 		);
 		assertThrows(
-			() => decodeXml(data, { int64: true }),
+			() => decodeXml(data, CF_STYLE),
 			SyntaxError,
 			'Invalid end on line 4',
 			tag,
@@ -1291,7 +1289,7 @@ Deno.test('Data: EOF', () => {
 			].join('\n'),
 		);
 		assertThrows(
-			() => decodeXml(data, { int64: true }),
+			() => decodeXml(data, CF_STYLE),
 			SyntaxError,
 			'Invalid end on line 4',
 			tag,
