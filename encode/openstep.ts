@@ -224,12 +224,12 @@ export function encodeOpenStep(
 		throw new RangeError('Invalid indent');
 	}
 
-	const quoteC = quote.charCodeAt(0) as 34 | 39;
+	const qc = quote.charCodeAt(0) as 34 | 39;
 	const ancestors = new Set<PLType>();
-	const indentL = i = indent.length;
-	const indentD = new Uint8Array(indentL);
+	const inl = i = indent.length;
+	const ind = new Uint8Array(inl);
 	while (i--) {
-		indentD[i] = indent.charCodeAt(i);
+		ind[i] = indent.charCodeAt(i);
 	}
 	i = 1;
 
@@ -253,7 +253,7 @@ export function encodeOpenStep(
 					}
 					ancestors.add(v);
 					d += base;
-					i += 2 + d++ * indentL + (d * indentL + 2) * k;
+					i += 2 + d++ * inl + (d * inl + 2) * k;
 				} else {
 					i += 2;
 				}
@@ -278,10 +278,10 @@ export function encodeOpenStep(
 				}
 				if (k && typeof k !== 'number') {
 					if (!shortcut || v !== k) {
-						i += 3 + stringLength(v.value, quoteC, quoted);
+						i += 3 + stringLength(v.value, qc, quoted);
 					}
 				} else {
-					i += stringLength(v.value, quoteC, quoted);
+					i += stringLength(v.value, qc, quoted);
 				}
 			},
 			PLDict(v, d, k): void {
@@ -297,8 +297,7 @@ export function encodeOpenStep(
 						throw new TypeError('Circular reference');
 					}
 					ancestors.add(v);
-					i += k * (d * indentL + 2) +
-						(d ? (d - 1) * indentL + 3 : -1);
+					i += k * (d * inl + 2) + (d ? (d - 1) * inl + 3 : -1);
 				} else if (d) {
 					i += 2;
 				}
@@ -330,8 +329,8 @@ export function encodeOpenStep(
 						r[i++] = 44;
 					}
 					r[i++] = 10;
-					for (d += base; d--; i += indentL) {
-						r.set(indentD, i);
+					for (d += base; d--; i += inl) {
+						r.set(ind, i);
 					}
 					k = 0;
 				} else if (k) {
@@ -353,8 +352,8 @@ export function encodeOpenStep(
 						r[i++] = 44;
 					}
 					r[i++] = 10;
-					for (d += base; d--; i += indentL) {
-						r.set(indentD, i);
+					for (d += base; d--; i += inl) {
+						r.set(ind, i);
 					}
 					k = 0;
 				} else if (k) {
@@ -374,8 +373,8 @@ export function encodeOpenStep(
 						r[i++] = 44;
 					}
 					r[i++] = 10;
-					for (k = d; k--; i += indentL) {
-						r.set(indentD, i);
+					for (k = d; k--; i += inl) {
+						r.set(ind, i);
 					}
 					k = 0;
 				} else if (k) {
@@ -399,24 +398,24 @@ export function encodeOpenStep(
 						r[i++] = 44;
 					}
 					r[i++] = 10;
-					for (d += base; d--; i += indentL) {
-						r.set(indentD, i);
+					for (d += base; d--; i += inl) {
+						r.set(ind, i);
 					}
-					i = stringEncode(v.value, r, i, quoteC, quoted);
+					i = stringEncode(v.value, r, i, qc, quoted);
 				} else if (!k) {
 					if (i) {
 						r[i++] = 10;
-						for (d += base; d--; i += indentL) {
-							r.set(indentD, i);
+						for (d += base; d--; i += inl) {
+							r.set(ind, i);
 						}
 					}
-					i = stringEncode(v.value, r, i, quoteC, quoted);
+					i = stringEncode(v.value, r, i, qc, quoted);
 				} else {
 					if (!shortcut || v !== k) {
 						r[i++] = 32;
 						r[i++] = 61;
 						r[i++] = 32;
-						i = stringEncode(v.value, r, i, quoteC, quoted);
+						i = stringEncode(v.value, r, i, qc, quoted);
 					}
 					r[i++] = 59;
 				}
@@ -426,8 +425,8 @@ export function encodeOpenStep(
 			PLArray(v, d, k): void {
 				if (v.length && (d += base + 1)) {
 					r[i++] = 10;
-					for (; --d; i += indentL) {
-						r.set(indentD, i);
+					for (; --d; i += inl) {
+						r.set(ind, i);
 					}
 					r[i++] = 41;
 					if (k && typeof k !== 'number') {
@@ -438,8 +437,8 @@ export function encodeOpenStep(
 			PLDict(v, d, k): void {
 				if (v.size && (d += base + 1)) {
 					r[i++] = 10;
-					for (; --d; i += indentL) {
-						r.set(indentD, i);
+					for (; --d; i += inl) {
+						r.set(ind, i);
 					}
 					r[i++] = 125;
 					if (k && typeof k !== 'number') {
