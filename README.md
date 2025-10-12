@@ -13,8 +13,8 @@ Property list file encoding and decoding
 - Optional support for non-UTF XML encodings (BYO decoder)
 - Support for data types inconsistenly supported by official libraries
 - Supports encoding output identical to official libraries
-- Encoders and decoders preserve the data structure as closely as possible.
-- Includes a type-safe walk function to walk a property list.
+- Encoders and decoders preserve the data structure as closely as possible
+- Includes a type-safe walk function to walk a property list
 
 # Usage
 
