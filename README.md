@@ -102,6 +102,8 @@ const enc = encode(plist, { format: FORMAT_XML_V1_0 });
 console.assert(new TextDecoder().decode(enc) === expected);
 ```
 
+NOTE: Not every type is supported in the XML format. An exception will throw for null type, set type, and non-string keys.
+
 ## Encode XML Options
 
 ### Option: `format` (`'XML-V1.0' | 'XML-V0.9'`)
@@ -155,11 +157,13 @@ const enc = encode(plist, { format: FORMAT_STRINGS });
 console.assert(new TextDecoder().decode(enc) === expected);
 ```
 
+NOTE: Not every type is supported in the OpenStep formats. An exception will throw for any values not a dict, array, string, or data type, and for keys that are not string type. With the strings format only the dict type can be encoded.
+
 ## Encode OpenStep / Strings Options
 
 ### Option: `format` (`'OPENSTEP' | 'STRINGS'`)
 
-Either `FORMAT_OPENSTEP` or `FORMAT_STRINGS`. With the strings format the plist type being encoded must be `PLDict`.
+Either `FORMAT_OPENSTEP` or `FORMAT_STRINGS`.
 
 ### Option: `indent` (`string`)
 
