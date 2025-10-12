@@ -48,7 +48,7 @@ console.assert(String.fromCharCode(...enc.slice(0, 8)) === 'bplist00');
 console.assert(JSON.stringify([...enc]) === JSON.stringify(expected));
 ```
 
-NOTE: It is possible to encode types that official encoders to not support encoding and/or decoding (null type, set type, non-string keys, non-primitive keys).
+NOTE: It is possible to encode types that official libraries to not support encoding and/or decoding (null type, set type, non-string keys, non-primitive keys).
 
 ### Encode Binary Options
 
