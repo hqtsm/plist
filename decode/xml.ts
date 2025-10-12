@@ -628,15 +628,16 @@ export type DecodeXmlDecoder = (
  */
 export interface DecodeXmlOptions {
 	/**
+	 * Flag to skip decoding and assumed UTF-8 without BOM.
+	 *
+	 * @default false
+	 */
+	decoded?: boolean;
+
+	/**
 	 * Optonal decoder for converting to UTF-8.
 	 */
 	decoder?: DecodeXmlDecoder;
-
-	/**
-	 * Optional UTF-16 endian flag.
-	 * Defaults to auto detect.
-	 */
-	utf16le?: boolean;
 
 	/**
 	 * Optionally limit integers to 64-bit signed or unsigned values.
@@ -646,11 +647,10 @@ export interface DecodeXmlOptions {
 	int64?: boolean;
 
 	/**
-	 * Flag to skip decoding and assumed UTF-8 without BOM.
-	 *
-	 * @default false
+	 * Optional UTF-16 endian flag.
+	 * Defaults to auto detect.
 	 */
-	decoded?: boolean;
+	utf16le?: boolean;
 }
 
 /**

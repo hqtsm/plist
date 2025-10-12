@@ -224,17 +224,17 @@ export interface DecodeOpenStepOptions {
 	allowMissingSemi?: boolean;
 
 	/**
-	 * Optional UTF-16 endian flag.
-	 * Defaults to auto detect.
-	 */
-	utf16le?: boolean;
-
-	/**
 	 * Flag to skip decoding and assumed UTF-8 without BOM.
 	 *
 	 * @default false
 	 */
 	decoded?: boolean;
+
+	/**
+	 * Optional UTF-16 endian flag.
+	 * Defaults to auto detect.
+	 */
+	utf16le?: boolean;
 }
 
 /**

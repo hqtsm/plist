@@ -78,18 +78,18 @@ export interface DecodeBinaryOptions {
 	int64?: boolean;
 
 	/**
-	 * Optionally limit key types to strings.
-	 *
-	 * @default false
-	 */
-	stringKeys?: boolean;
-
-	/**
 	 * Optionally limit key types to primitive types.
 	 *
 	 * @default false
 	 */
 	primitiveKeys?: boolean;
+
+	/**
+	 * Optionally limit key types to strings.
+	 *
+	 * @default false
+	 */
+	stringKeys?: boolean;
 }
 
 /**
