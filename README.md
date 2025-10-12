@@ -18,9 +18,7 @@ Property list file encoding and decoding
 
 # Usage
 
-## Encode
-
-### Binary
+## Encode Binary
 
 ```ts
 import {
@@ -43,13 +41,24 @@ const expected = `
 	00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 00
 	00 00 00 00 00 00 00 23
 	`.trim().split(/\s+/).map((s) => parseInt(s, 16));
+
 // OR: encodeBinary(plist);
 const enc = encode(plist, { format: FORMAT_BINARY_V1_0 });
 console.assert(String.fromCharCode(...enc.slice(0, 8)) === 'bplist00');
 console.assert(JSON.stringify([...enc]) === JSON.stringify(expected));
 ```
 
-### XML
+### Encode Binary Options
+
+### Option: `format` (`'BINARY-V1.0'`)
+
+Only `FORMAT_BINARY_V1_0` is valid for binary.
+
+### Option: `duplicates` (`Iterable<PLTypeName | PLType>`)
+
+A list of types or values to be duplicated in the offset table. Only useful to create a 1:1 identical encode as an official encoder.
+
+## Encode XML
 
 ```ts
 import {
@@ -85,12 +94,31 @@ const expected = `<?xml version="1.0" encoding="UTF-8"?>
 </dict>
 </plist>
 `;
+
 // OR: encodeXml(plist);
 const enc = encode(plist, { format: FORMAT_XML_V1_0 });
 console.assert(new TextDecoder().decode(enc) === expected);
 ```
 
-### OpenStep
+## Encode XML Options
+
+### Option: `format` (`'XML-V1.0' | 'XML-V0.9'`)
+
+Either `FORMAT_XML_V1_0` or `FORMAT_XML_V0_9` (different headers).
+
+### Option: `indent` (`string`)
+
+A custom indent strings of tabs or spaces.
+
+### Option: `unsignZero` (`boolean`)
+
+Encode `-0.0` as just `0.0` as official encoders do.
+
+### Option: `min128Zero` (`boolean`)
+
+Encode smallest 128-bit integer as `-0` as official encoders do. 128-bit integers are a private API in official encoders, limited compatibility.
+
+## Encode OpenStep / Strings
 
 ```ts
 import { encode, FORMAT_OPENSTEP, PLDict, PLString } from '@hqtsm/plist';
@@ -104,12 +132,11 @@ const expected = `{
 	"Last Name" = Smith;
 }
 `;
+
 // OR: encodeOpenStep(plist);
 const enc = encode(plist, { format: FORMAT_OPENSTEP });
 console.assert(new TextDecoder().decode(enc) === expected);
 ```
-
-### Strings
 
 ```ts
 import { encode, FORMAT_STRINGS, PLDict, PLString } from '@hqtsm/plist';
@@ -126,9 +153,29 @@ const enc = encode(plist, { format: FORMAT_STRINGS });
 console.assert(new TextDecoder().decode(enc) === expected);
 ```
 
-## Decode
+## Encode OpenStep / Strings Options
 
-### Binary
+### Option: `format` (`'OPENSTEP' | 'STRINGS'`)
+
+Either `FORMAT_OPENSTEP` or `FORMAT_STRINGS`. With the strings format the plist type being encoded must be `PLDict`.
+
+### Option: `indent` (`string`)
+
+A custom indent strings of tabs or spaces.
+
+### Option: `quote` (`'"' | "'"`)
+
+Set the string quote character.
+
+### Option: `quoted` (`boolean`)
+
+Option to always make strings quoted even when it is optional.
+
+### Option: `shortcut` (`boolean`)
+
+Use the "shortcut" style for keys and values that are reference equal.
+
+## Decode Binary
 
 ```ts
 import { decode, FORMAT_BINARY_V1_0, PLDict, walk } from '@hqtsm/plist';
@@ -143,7 +190,7 @@ const encoded = new Uint8Array(
 	`.trim().split(/\s+/).map((s) => parseInt(s, 16)),
 );
 
-// OR: decodeBinary():
+// OR: decodeBinary(encoded):
 const { format, plist } = decode(encoded);
 console.assert(format === FORMAT_BINARY_V1_0);
 console.assert(PLDict.is(plist));
@@ -165,7 +212,21 @@ walk(plist, {
 });
 ```
 
-### XML
+## Decode Binary Options
+
+### Option: `int64` (`boolean`)
+
+Optionally limit integers to the range of 64-bit signed or unsigned values. 128-bit integers in official decoders is limited to unsigned 64-bit values.
+
+### Option: `primitiveKeys` (`boolean`)
+
+Optionally limit key types to primitive types. The open source CF encoder does this.
+
+### Option: `stringKeys` (`boolean`)
+
+Optionally limit key types to string type. The closed source CF encoder does this.
+
+## Decode XML
 
 ```ts
 import { decode, FORMAT_XML_V1_0, PLDict, walk } from '@hqtsm/plist';
@@ -215,7 +276,25 @@ walk(plist, {
 });
 ```
 
-### OpenStep
+## Decode XML Options
+
+### Option: `decoded` (`boolean`)
+
+Flag to skip decoding and assumed UTF-8 without BOM.
+
+### Option: `decoder` (`DecodeXmlDecoder`)
+
+Optonal decoder function for converting XML to UTF-8 based on the header. Useful to decode an XML document with a non-UTF encoding. Official encoders always use UTF-8 but many encodings can be decoded depending on what the host platform has available. Using `TextDecoder` can be helpful, but it may be different in some edge cases.
+
+### Option: `int64` (`boolean`)
+
+Optionally limit integers to the range of 64-bit signed or unsigned values. 128-bit integers in official decoders is limited to unsigned 64-bit values.
+
+### Option: `utf16le` (`boolean`)
+
+Optional UTF-16 endian flag when no BOM available. Defaults to auto detect based on which character is null. Official decoders assume it will match host endian.
+
+## Decode OpenStep / Strings
 
 ```ts
 import { decode, FORMAT_OPENSTEP, PLDict, walk } from '@hqtsm/plist';
@@ -246,8 +325,6 @@ walk(plist, {
 });
 ```
 
-### Strings
-
 ```ts
 import { decode, FORMAT_STRINGS, PLDict, walk } from '@hqtsm/plist';
 
@@ -274,3 +351,17 @@ walk(plist, {
 	},
 });
 ```
+
+## Decode OpenStep / Strings Options
+
+### Option: `allowMissingSemi` (`boolean`)
+
+Allow missing semicolon on the last dict item. Official decoders once allowed this but deprecated and removed it.
+
+### Option: `decoded` (`boolean`)
+
+Flag to skip decoding and assumed UTF-8 without BOM. OpenStep does not store encoding information so UTF is assumed by decoders. If another encoding is used it must first be converted to UTF before decoding.
+
+### Option: `utf16le` (`boolean`)
+
+Optional UTF-16 endian flag when no BOM available. Defaults to auto detect based on which character is null. Official decoders assume it will match host endian.
