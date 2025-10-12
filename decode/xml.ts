@@ -647,7 +647,7 @@ export interface DecodeXmlOptions {
 	int64?: boolean;
 
 	/**
-	 * Optional UTF-16 endian flag.
+	 * Optional UTF-16 endian flag when no BOM available.
 	 * Defaults to auto detect.
 	 */
 	utf16le?: boolean;
