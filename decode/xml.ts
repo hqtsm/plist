@@ -628,7 +628,7 @@ export type DecodeXmlDecoder = (
  */
 export interface DecodeXmlOptions {
 	/**
-	 * Flag to skip decoding and assumed UTF-8 without BOM.
+	 * Flag to skip decoding and assume UTF-8 without BOM.
 	 *
 	 * @default false
 	 */
