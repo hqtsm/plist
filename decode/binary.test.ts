@@ -11,7 +11,7 @@ import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
-import { PLDict } from '../dict.ts';
+import { PLDictionary } from '../dictionary.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { PLNull } from '../null.ts';
@@ -421,7 +421,7 @@ Deno.test('OOB UID', () => {
 	}
 });
 
-Deno.test('OOB Data String Array Dict', () => {
+Deno.test('OOB Data String Array Dictionary', () => {
 	for (
 		const [name, marker] of [
 			['Data', 0x40],
@@ -999,7 +999,7 @@ Deno.test('spec: dict-empties', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_BINARY_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 2);
 
 	const array = plist.find(kp('array'));
@@ -1007,7 +1007,7 @@ Deno.test('spec: dict-empties', async () => {
 	assertEquals(array.length, 0);
 
 	const dict = plist.find(kp('dict'));
-	assertInstanceOf(dict, PLDict);
+	assertInstanceOf(dict, PLDictionary);
 	assertEquals(dict.size, 0);
 });
 
@@ -1018,7 +1018,7 @@ Deno.test('spec: dict-26', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_BINARY_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 26);
 
 	for (let i = 0; i < plist.size; i++) {
@@ -1034,7 +1034,7 @@ Deno.test('spec: dict-long-key', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_BINARY_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 1);
 
 	const str = plist.find(
@@ -1050,7 +1050,7 @@ Deno.test('spec: dict-unicode-key', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_BINARY_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 1);
 
 	const str = plist.find(kp('UTF\u20138'));
@@ -1064,15 +1064,15 @@ Deno.test('spec: dict-nesting', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_BINARY_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 2);
 
 	const A = plist.find(kp('A'));
-	assertInstanceOf(A, PLDict);
+	assertInstanceOf(A, PLDictionary);
 	assertEquals(A.size, 2);
 
 	const AA = A.find(kp('AA'));
-	assertInstanceOf(AA, PLDict);
+	assertInstanceOf(AA, PLDictionary);
 	assertEquals(AA.size, 2);
 
 	const AAA = AA.find(kp('AAA'));
@@ -1084,7 +1084,7 @@ Deno.test('spec: dict-nesting', async () => {
 	assertEquals(AAB.value, 'aab');
 
 	const AB = A.find(kp('AB'));
-	assertInstanceOf(AB, PLDict);
+	assertInstanceOf(AB, PLDictionary);
 	assertEquals(AB.size, 2);
 
 	const ABA = AB.find(kp('ABA'));
@@ -1096,11 +1096,11 @@ Deno.test('spec: dict-nesting', async () => {
 	assertEquals(ABB.value, 'abb');
 
 	const B = plist.find(kp('B'));
-	assertInstanceOf(B, PLDict);
+	assertInstanceOf(B, PLDictionary);
 	assertEquals(B.size, 2);
 
 	const BA = B.find(kp('BA'));
-	assertInstanceOf(BA, PLDict);
+	assertInstanceOf(BA, PLDictionary);
 	assertEquals(BA.size, 2);
 
 	const BAA = BA.find(kp('BAA'));
@@ -1112,7 +1112,7 @@ Deno.test('spec: dict-nesting', async () => {
 	assertEquals(BAB.value, 'bab');
 
 	const BB = B.find(kp('BB'));
-	assertInstanceOf(BB, PLDict);
+	assertInstanceOf(BB, PLDictionary);
 	assertEquals(BB.size, 2);
 
 	const BBA = BB.find(kp('BBA'));
@@ -1130,7 +1130,7 @@ Deno.test('spec: dict-order', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_BINARY_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 7);
 
 	const empty = plist.find(kp(''));
@@ -1172,7 +1172,7 @@ Deno.test('spec: dict-reuse', async () => {
 	assertEquals(plist.length, 2);
 
 	const A = plist.get(0);
-	assertInstanceOf(A, PLDict);
+	assertInstanceOf(A, PLDictionary);
 	{
 		const AAAA = A.find(kp('AAAA'));
 		assertInstanceOf(AAAA, PLString);
@@ -1183,7 +1183,7 @@ Deno.test('spec: dict-reuse', async () => {
 	}
 
 	const B = plist.get(1);
-	assertInstanceOf(B, PLDict);
+	assertInstanceOf(B, PLDictionary);
 	{
 		const AAAA = B.find(kp('AAAA'));
 		assertInstanceOf(AAAA, PLString);
@@ -1210,7 +1210,7 @@ Deno.test('spec: dict-repeat', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_BINARY_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 6);
 
 	for (const [i, [k, v]] of [...plist].entries()) {
@@ -1993,7 +1993,7 @@ Deno.test('spec: binary-edge key-type-string-ascii', async () => {
 	for (const [name, style] of Object.entries(STYLES)) {
 		const { format, plist } = decodeBinary(data, style);
 		assertEquals(format, FORMAT_BINARY_V1_0, name);
-		assertInstanceOf(plist, PLDict, name);
+		assertInstanceOf(plist, PLDictionary, name);
 		assertEquals(plist.size, 1, name);
 		const [[key, value]] = [...plist.entries()];
 		assertInstanceOf(key, PLString, name);
@@ -2008,7 +2008,7 @@ Deno.test('spec: binary-edge key-type-string-unicode', async () => {
 	for (const [name, style] of Object.entries(STYLES)) {
 		const { format, plist } = decodeBinary(data, style);
 		assertEquals(format, FORMAT_BINARY_V1_0, name);
-		assertInstanceOf(plist, PLDict, name);
+		assertInstanceOf(plist, PLDictionary, name);
 		assertEquals(plist.size, 1, name);
 		const [[key, value]] = [...plist.entries()];
 		assertInstanceOf(key, PLString, name);
@@ -2030,7 +2030,7 @@ Deno.test('spec: binary-edge key-type-null', async () => {
 		} else {
 			const { format, plist } = decodeBinary(data, style);
 			assertEquals(format, FORMAT_BINARY_V1_0, name);
-			assertInstanceOf(plist, PLDict, name);
+			assertInstanceOf(plist, PLDictionary, name);
 			assertEquals(plist.size, 1, name);
 			const [[key, value]] = [...plist.entries()];
 			assertInstanceOf(key, PLNull, name);
@@ -2052,7 +2052,7 @@ Deno.test('spec: binary-edge key-type-false', async () => {
 		} else {
 			const { format, plist } = decodeBinary(data, style);
 			assertEquals(format, FORMAT_BINARY_V1_0, name);
-			assertInstanceOf(plist, PLDict, name);
+			assertInstanceOf(plist, PLDictionary, name);
 			assertEquals(plist.size, 1, name);
 			const [[key, value]] = [...plist.entries()];
 			assertInstanceOf(key, PLBoolean, name);
@@ -2075,7 +2075,7 @@ Deno.test('spec: binary-edge key-type-true', async () => {
 		} else {
 			const { format, plist } = decodeBinary(data, style);
 			assertEquals(format, FORMAT_BINARY_V1_0, name);
-			assertInstanceOf(plist, PLDict, name);
+			assertInstanceOf(plist, PLDictionary, name);
 			assertEquals(plist.size, 1, name);
 			const [[key, value]] = [...plist.entries()];
 			assertInstanceOf(key, PLBoolean, name);
@@ -2099,7 +2099,7 @@ Deno.test('spec: binary-edge key-type-data', async () => {
 		} else {
 			const { format, plist } = decodeBinary(data, style);
 			assertEquals(format, FORMAT_BINARY_V1_0, name);
-			assertInstanceOf(plist, PLDict, name);
+			assertInstanceOf(plist, PLDictionary, name);
 			assertEquals(plist.size, 1, name);
 			const [[key, value]] = [...plist.entries()];
 			assertInstanceOf(key, PLData, name);
@@ -2123,7 +2123,7 @@ Deno.test('spec: binary-edge key-type-date', async () => {
 		} else {
 			const { format, plist } = decodeBinary(data, style);
 			assertEquals(format, FORMAT_BINARY_V1_0, name);
-			assertInstanceOf(plist, PLDict, name);
+			assertInstanceOf(plist, PLDictionary, name);
 			assertEquals(plist.size, 1, name);
 			const [[key, value]] = [...plist.entries()];
 			assertInstanceOf(key, PLDate, name);
@@ -2146,7 +2146,7 @@ Deno.test('spec: binary-edge key-type-float', async () => {
 		} else {
 			const { format, plist } = decodeBinary(data, style);
 			assertEquals(format, FORMAT_BINARY_V1_0, name);
-			assertInstanceOf(plist, PLDict, name);
+			assertInstanceOf(plist, PLDictionary, name);
 			assertEquals(plist.size, 1, name);
 			const [[key, value]] = [...plist.entries()];
 			assertInstanceOf(key, PLReal, name);
@@ -2170,7 +2170,7 @@ Deno.test('spec: binary-edge key-type-double', async () => {
 		} else {
 			const { format, plist } = decodeBinary(data, style);
 			assertEquals(format, FORMAT_BINARY_V1_0, name);
-			assertInstanceOf(plist, PLDict, name);
+			assertInstanceOf(plist, PLDictionary, name);
 			assertEquals(plist.size, 1, name);
 			const [[key, value]] = [...plist.entries()];
 			assertInstanceOf(key, PLReal, name);
@@ -2194,7 +2194,7 @@ Deno.test('spec: binary-edge key-type-int', async () => {
 		} else {
 			const { format, plist } = decodeBinary(data, style);
 			assertEquals(format, FORMAT_BINARY_V1_0, name);
-			assertInstanceOf(plist, PLDict, name);
+			assertInstanceOf(plist, PLDictionary, name);
 			assertEquals(plist.size, 1, name);
 			const [[key, value]] = [...plist.entries()];
 			assertInstanceOf(key, PLInteger, name);
@@ -2218,7 +2218,7 @@ Deno.test('spec: binary-edge key-type-uid', async () => {
 		} else {
 			const { format, plist } = decodeBinary(data, style);
 			assertEquals(format, FORMAT_BINARY_V1_0, name);
-			assertInstanceOf(plist, PLDict, name);
+			assertInstanceOf(plist, PLDictionary, name);
 			assertEquals(plist.size, 1, name);
 			const [[key, value]] = [...plist.entries()];
 			assertInstanceOf(key, PLUID, name);
@@ -2241,7 +2241,7 @@ Deno.test('spec: binary-edge key-type-array', async () => {
 		} else {
 			const { format, plist } = decodeBinary(data, style);
 			assertEquals(format, FORMAT_BINARY_V1_0, name);
-			assertInstanceOf(plist, PLDict, name);
+			assertInstanceOf(plist, PLDictionary, name);
 			assertEquals(plist.size, 1, name);
 			const [[key, value]] = [...plist.entries()];
 			assertInstanceOf(key, PLArray, name);
@@ -2264,10 +2264,10 @@ Deno.test('spec: binary-edge key-type-dict', async () => {
 		} else {
 			const { format, plist } = decodeBinary(data, style);
 			assertEquals(format, FORMAT_BINARY_V1_0, name);
-			assertInstanceOf(plist, PLDict, name);
+			assertInstanceOf(plist, PLDictionary, name);
 			assertEquals(plist.size, 1, name);
 			const [[key, value]] = [...plist.entries()];
-			assertInstanceOf(key, PLDict, name);
+			assertInstanceOf(key, PLDictionary, name);
 			assertEquals(key.size, 0, name);
 			assertInstanceOf(value, PLString, name);
 			assertEquals(value.value, 'value', name);
@@ -2287,7 +2287,7 @@ Deno.test('spec: binary-edge key-type-set', async () => {
 		} else {
 			const { format, plist } = decodeBinary(data, style);
 			assertEquals(format, FORMAT_BINARY_V1_0, name);
-			assertInstanceOf(plist, PLDict, name);
+			assertInstanceOf(plist, PLDictionary, name);
 			assertEquals(plist.size, 1, name);
 			const [[key, value]] = [...plist.entries()];
 			assertInstanceOf(key, PLSet, name);
@@ -2311,7 +2311,7 @@ Deno.test('spec: binary-edge reused-key-type-string-ascii', async () => {
 		const [reused, dict] = [...plist.values()];
 		assertInstanceOf(reused, PLString, name);
 		assertEquals(reused.value, 'KEY', name);
-		assertInstanceOf(dict, PLDict, name);
+		assertInstanceOf(dict, PLDictionary, name);
 		assertEquals(dict.size, 1, name);
 		const [[key, value]] = [...dict.entries()];
 		assertStrictEquals(reused, key, name);
@@ -2333,7 +2333,7 @@ Deno.test('spec: binary-edge reused-key-type-string-unicode', async () => {
 		const [reused, dict] = [...plist.values()];
 		assertInstanceOf(reused, PLString, name);
 		assertEquals(reused.value, '\u263A', name);
-		assertInstanceOf(dict, PLDict, name);
+		assertInstanceOf(dict, PLDictionary, name);
 		assertEquals(dict.size, 1, name);
 		const [[key, value]] = [...dict.entries()];
 		assertStrictEquals(reused, key, name);
@@ -2358,7 +2358,7 @@ Deno.test('spec: binary-edge reused-key-type-null', async () => {
 			assertEquals(plist.length, 2, name);
 			const [reused, dict] = [...plist.values()];
 			assertInstanceOf(reused, PLNull, name);
-			assertInstanceOf(dict, PLDict, name);
+			assertInstanceOf(dict, PLDictionary, name);
 			assertEquals(dict.size, 1, name);
 			const [[key, value]] = [...dict.entries()];
 			assertStrictEquals(reused, key, name);
@@ -2385,7 +2385,7 @@ Deno.test('spec: binary-edge reused-key-type-false', async () => {
 			const [reused, dict] = [...plist.values()];
 			assertInstanceOf(reused, PLBoolean, name);
 			assertEquals(reused.value, false, name);
-			assertInstanceOf(dict, PLDict, name);
+			assertInstanceOf(dict, PLDictionary, name);
 			assertEquals(dict.size, 1, name);
 			const [[key, value]] = [...dict.entries()];
 			assertStrictEquals(reused, key, name);
@@ -2412,7 +2412,7 @@ Deno.test('spec: binary-edge reused-key-type-true', async () => {
 			const [reused, dict] = [...plist.values()];
 			assertInstanceOf(reused, PLBoolean, name);
 			assertEquals(reused.value, true, name);
-			assertInstanceOf(dict, PLDict, name);
+			assertInstanceOf(dict, PLDictionary, name);
 			assertEquals(dict.size, 1, name);
 			const [[key, value]] = [...dict.entries()];
 			assertStrictEquals(reused, key, name);
@@ -2441,7 +2441,7 @@ Deno.test('spec: binary-edge reused-key-type-data', async () => {
 			assertInstanceOf(reused, PLData, name);
 			assertEquals(reused.byteLength, 1, name);
 			assertEquals(new Uint8Array(reused.buffer)[0], K, name);
-			assertInstanceOf(dict, PLDict, name);
+			assertInstanceOf(dict, PLDictionary, name);
 			assertEquals(dict.size, 1, name);
 			const [[key, value]] = [...dict.entries()];
 			assertStrictEquals(reused, key, name);
@@ -2468,7 +2468,7 @@ Deno.test('spec: binary-edge reused-key-type-date', async () => {
 			const [reused, dict] = [...plist.values()];
 			assertInstanceOf(reused, PLDate, name);
 			assertAlmostEquals(reused.time, 3.14, 0.001, name);
-			assertInstanceOf(dict, PLDict, name);
+			assertInstanceOf(dict, PLDictionary, name);
 			assertEquals(dict.size, 1, name);
 			const [[key, value]] = [...dict.entries()];
 			assertStrictEquals(reused, key, name);
@@ -2496,7 +2496,7 @@ Deno.test('spec: binary-edge reused-key-type-float', async () => {
 			assertInstanceOf(reused, PLReal, name);
 			assertAlmostEquals(reused.value, 3.14, 0.001, name);
 			assertEquals(reused.bits, 32, name);
-			assertInstanceOf(dict, PLDict, name);
+			assertInstanceOf(dict, PLDictionary, name);
 			assertEquals(dict.size, 1, name);
 			const [[key, value]] = [...dict.entries()];
 			assertStrictEquals(reused, key, name);
@@ -2524,7 +2524,7 @@ Deno.test('spec: binary-edge reused-key-type-double', async () => {
 			assertInstanceOf(reused, PLReal, name);
 			assertAlmostEquals(reused.value, 3.14, 0.001, name);
 			assertEquals(reused.bits, 64, name);
-			assertInstanceOf(dict, PLDict, name);
+			assertInstanceOf(dict, PLDictionary, name);
 			assertEquals(dict.size, 1, name);
 			const [[key, value]] = [...dict.entries()];
 			assertStrictEquals(reused, key, name);
@@ -2552,7 +2552,7 @@ Deno.test('spec: binary-edge reused-key-type-int', async () => {
 			assertInstanceOf(reused, PLInteger, name);
 			assertEquals(reused.value, 123n, name);
 			assertEquals(reused.bits, 64, name);
-			assertInstanceOf(dict, PLDict, name);
+			assertInstanceOf(dict, PLDictionary, name);
 			assertEquals(dict.size, 1, name);
 			const [[key, value]] = [...dict.entries()];
 			assertStrictEquals(reused, key, name);
@@ -2579,7 +2579,7 @@ Deno.test('spec: binary-edge reused-key-type-uid', async () => {
 			const [reused, dict] = [...plist.values()];
 			assertInstanceOf(reused, PLUID, name);
 			assertEquals(reused.value, 42n, name);
-			assertInstanceOf(dict, PLDict, name);
+			assertInstanceOf(dict, PLDictionary, name);
 			assertEquals(dict.size, 1, name);
 			const [[key, value]] = [...dict.entries()];
 			assertStrictEquals(reused, key, name);
@@ -2606,7 +2606,7 @@ Deno.test('spec: binary-edge reused-key-type-array', async () => {
 			const [reused, dict] = [...plist.values()];
 			assertInstanceOf(reused, PLArray, name);
 			assertEquals(reused.length, 0, name);
-			assertInstanceOf(dict, PLDict, name);
+			assertInstanceOf(dict, PLDictionary, name);
 			assertEquals(dict.size, 1, name);
 			const [[key, value]] = [...dict.entries()];
 			assertStrictEquals(reused, key, name);
@@ -2631,9 +2631,9 @@ Deno.test('spec: binary-edge reused-key-type-dict', async () => {
 			assertInstanceOf(plist, PLArray, name);
 			assertEquals(plist.length, 2, name);
 			const [reused, dict] = [...plist.values()];
-			assertInstanceOf(reused, PLDict, name);
+			assertInstanceOf(reused, PLDictionary, name);
 			assertEquals(reused.size, 0, name);
-			assertInstanceOf(dict, PLDict, name);
+			assertInstanceOf(dict, PLDictionary, name);
 			assertEquals(dict.size, 1, name);
 			const [[key, value]] = [...dict.entries()];
 			assertStrictEquals(reused, key, name);
@@ -2660,7 +2660,7 @@ Deno.test('spec: binary-edge reused-key-type-set', async () => {
 			const [reused, dict] = [...plist.values()];
 			assertInstanceOf(reused, PLSet, name);
 			assertEquals(reused.size, 0, name);
-			assertInstanceOf(dict, PLDict, name);
+			assertInstanceOf(dict, PLDictionary, name);
 			assertEquals(dict.size, 1, name);
 			const [[key, value]] = [...dict.entries()];
 			assertStrictEquals(reused, key, name);

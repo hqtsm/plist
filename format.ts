@@ -5,7 +5,7 @@
  */
 
 /**
- * Legacy strings Plist format (OpenStep variant, dict body).
+ * Legacy strings Plist format (OpenStep variant, dictionary body).
  */
 export const FORMAT_STRINGS = 'STRINGS';
 

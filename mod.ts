@@ -9,7 +9,7 @@ export * from './boolean.ts';
 export * from './data.ts';
 export * from './date.ts';
 export * from './decode/mod.ts';
-export * from './dict.ts';
+export * from './dictionary.ts';
 export * from './encode/mod.ts';
 export * from './format.ts';
 export * from './integer.ts';

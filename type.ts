@@ -8,7 +8,7 @@ import type { PLArray } from './array.ts';
 import type { PLBoolean } from './boolean.ts';
 import type { PLData } from './data.ts';
 import type { PLDate } from './date.ts';
-import type { PLDict } from './dict.ts';
+import type { PLDictionary } from './dictionary.ts';
 import type { PLInteger } from './integer.ts';
 import type { PLNull } from './null.ts';
 import type { PLReal } from './real.ts';
@@ -24,7 +24,7 @@ export type PLType =
 	| PLBoolean
 	| PLData
 	| PLDate
-	| PLDict
+	| PLDictionary
 	| PLInteger
 	| PLNull
 	| PLReal

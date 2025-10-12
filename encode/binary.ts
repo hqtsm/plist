@@ -8,7 +8,7 @@ import { type PLArray, PLTYPE_ARRAY } from '../array.ts';
 import { type PLBoolean, PLTYPE_BOOLEAN } from '../boolean.ts';
 import { type PLData, PLTYPE_DATA } from '../data.ts';
 import { type PLDate, PLTYPE_DATE } from '../date.ts';
-import { type PLDict, PLTYPE_DICT } from '../dict.ts';
+import { type PLDictionary, PLTYPE_DICTIONARY } from '../dictionary.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { type PLInteger, PLTYPE_INTEGER } from '../integer.ts';
 import { PLTYPE_NULL } from '../null.ts';
@@ -165,7 +165,7 @@ export function encodeBinary(
 					i += 9;
 				}
 			},
-			PLDict(v): void {
+			PLDictionary(v): void {
 				if ((x = v.size)) {
 					if (ancestors.has(v)) {
 						throw new TypeError('Circular reference');
@@ -281,19 +281,19 @@ export function encodeBinary(
 				}
 				break;
 			}
-			case PLTYPE_DICT: {
-				l = (e as PLDict).size;
+			case PLTYPE_DICTIONARY: {
+				l = (e as PLDictionary).size;
 				if (l < 15) {
 					r[i++] = 208 | l;
 				} else {
 					r[i++] = 223;
 					i = encodeInt(d, i, l);
 				}
-				for (x of (e as PLDict).keys()) {
+				for (x of (e as PLDictionary).keys()) {
 					setInt(d, i, refC, index.get(x)!);
 					i += refC;
 				}
-				for (x of (e as PLDict).values()) {
+				for (x of (e as PLDictionary).values()) {
 					setInt(d, i, refC, index.get(x)!);
 					i += refC;
 				}

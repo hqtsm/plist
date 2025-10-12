@@ -1,31 +1,34 @@
 /**
  * @module
  *
- * Property list dict.
+ * Property list dictionary.
  */
 
 import type { PLType } from './type.ts';
 
-const maps: WeakMap<PLDict, Map<PLType, PLType>> = new WeakMap();
+const maps: WeakMap<PLDictionary, Map<PLType, PLType>> = new WeakMap();
 
 /**
- * PLDict type.
+ * PLDictionary type.
  */
-export const PLTYPE_DICT = 'PLDict' as const;
+export const PLTYPE_DICTIONARY = 'PLDictionary' as const;
 
 /**
- * Property list dict type.
+ * Property list dictionary type.
  */
-export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
-	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_DICT;
+export class PLDictionary<
+	K extends PLType = PLType,
+	V extends PLType = PLType,
+> {
+	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_DICTIONARY;
 
 	/**
 	 * Variable type.
 	 */
-	declare public readonly type: typeof PLTYPE_DICT;
+	declare public readonly type: typeof PLTYPE_DICTIONARY;
 
 	/**
-	 * Create property list dict reference.
+	 * Create property list dictionary reference.
 	 *
 	 * @param entries Key value pairs.
 	 */
@@ -36,14 +39,14 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	/**
 	 * Get size.
 	 *
-	 * @returns Dict size.
+	 * @returns Dictionary size.
 	 */
 	public get size(): number {
 		return (maps.get(this) as Map<K, V>).size;
 	}
 
 	/**
-	 * Check if dict has key.
+	 * Check if dictionary has key.
 	 *
 	 * @param key Key.
 	 * @returns Has.
@@ -83,7 +86,7 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	}
 
 	/**
-	 * Clear dict.
+	 * Clear dictionary.
 	 */
 	public clear(): void {
 		(maps.get(this) as Map<K, V>).clear();
@@ -97,7 +100,7 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	 * @returns Value or undefined.
 	 */
 	public find(
-		predicate: (value: V, key: K, dict: this) => boolean,
+		predicate: (value: V, key: K, dictionary: this) => boolean,
 		thisArg?: unknown,
 	): V | undefined {
 		for (const [k, v] of (maps.get(this) as Map<K, V>)) {
@@ -115,7 +118,7 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	 * @returns Key or undefined.
 	 */
 	public findKey(
-		predicate: (value: V, key: K, dict: this) => boolean,
+		predicate: (value: V, key: K, dictionary: this) => boolean,
 		thisArg?: unknown,
 	): K | undefined {
 		for (const [k, v] of (maps.get(this) as Map<K, V>)) {
@@ -133,7 +136,7 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	 * @returns Value or undefined.
 	 */
 	public findLast(
-		predicate: (value: V, key: K, dict: this) => boolean,
+		predicate: (value: V, key: K, dictionary: this) => boolean,
 		thisArg?: unknown,
 	): V | undefined {
 		for (
@@ -161,7 +164,7 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	 * @returns Key or undefined.
 	 */
 	public findLastKey(
-		predicate: (value: V, key: K, dict: this) => boolean,
+		predicate: (value: V, key: K, dictionary: this) => boolean,
 		thisArg?: unknown,
 	): K | undefined {
 		for (
@@ -182,36 +185,36 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	}
 
 	/**
-	 * Get dict entries.
+	 * Get dictionary entries.
 	 *
-	 * @returns Dict entries.
+	 * @returns Dictionary entries.
 	 */
 	public entries(): IterableIterator<[K, V]> {
 		return (maps.get(this) as Map<K, V>).entries();
 	}
 
 	/**
-	 * Get dict keys.
+	 * Get dictionary keys.
 	 *
-	 * @returns Dict keys.
+	 * @returns Dictionary keys.
 	 */
 	public keys(): IterableIterator<K> {
 		return (maps.get(this) as Map<K, V>).keys();
 	}
 
 	/**
-	 * Get dict values.
+	 * Get dictionary values.
 	 *
-	 * @returns Dict values.
+	 * @returns Dictionary values.
 	 */
 	public values(): IterableIterator<V> {
 		return (maps.get(this) as Map<K, V>).values();
 	}
 
 	/**
-	 * Get dict iterator.
+	 * Get dictionary iterator.
 	 *
-	 * @returns Dict iterator.
+	 * @returns Dictionary iterator.
 	 */
 	public [Symbol.iterator](): IterableIterator<[K, V]> {
 		return (maps.get(this) as Map<K, V>)[Symbol.iterator]();
@@ -252,24 +255,25 @@ export class PLDict<K extends PLType = PLType, V extends PLType = PLType> {
 	/**
 	 * Value getter.
 	 *
-	 * @returns Dict values.
+	 * @returns Dictionary values.
 	 */
 	public valueOf(): Map<K, V> {
 		return new Map(maps.get(this) as Map<K, V>);
 	}
 
 	/**
-	 * Check if dict type.
+	 * Check if dictionary type.
 	 *
 	 * @param arg Variable.
-	 * @returns Is dict type.
+	 * @returns Is dictionary type.
 	 */
-	public static is(arg: unknown): arg is PLDict {
-		return (arg as PLType | null)?.[Symbol.toStringTag] === PLTYPE_DICT;
+	public static is(arg: unknown): arg is PLDictionary {
+		return (arg as PLType | null)?.[Symbol.toStringTag] ===
+			PLTYPE_DICTIONARY;
 	}
 
 	static {
-		const value = { value: PLTYPE_DICT } as const;
+		const value = { value: PLTYPE_DICTIONARY } as const;
 		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
 		Object.defineProperty(this.prototype, 'type', value);
 	}

@@ -8,7 +8,7 @@ import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
-import { PLDict } from '../dict.ts';
+import { PLDictionary } from '../dictionary.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { PLInteger, PLTYPE_INTEGER } from '../integer.ts';
 import { b16d, b64d } from '../pri/base.ts';
@@ -53,7 +53,7 @@ const cfuid = (_: PLType, key: PLType) =>
  */
 interface Plist {
 	/**
-	 * Key when inside dict.
+	 * Key when inside dictionary.
 	 */
 	k: PLString | null;
 
@@ -85,7 +85,7 @@ interface Node {
 	/**
 	 * Plist object.
 	 */
-	p: PLArray | PLDict | Plist;
+	p: PLArray | PLDictionary | Plist;
 
 	/**
 	 * Next node.
@@ -710,11 +710,11 @@ export function decodeXml(
 	let tagI;
 	let tagL;
 	let cId;
-	let cObj: PLArray | PLDict | Plist;
+	let cObj: PLArray | PLDictionary | Plist;
 	let pId;
 	let pObj: typeof cObj;
 	let format: DecodeXmlResult['format'] = FORMAT_XML_V1_0;
-	keyed = new Map<PLDict, PLString>();
+	keyed = new Map<PLDictionary, PLString>();
 	for (;;) {
 		c = d[i = whitespace(d, i)];
 		if (c !== 60) {
@@ -748,7 +748,7 @@ export function decodeXml(
 			n = x.n;
 			sc = x.a;
 			if (sc === 100) {
-				sc = obj = x.p as PLDict;
+				sc = obj = x.p as PLDictionary;
 				if (obj.size === 1 && (x = obj.find(cfuid))) {
 					cId = x[Symbol.toStringTag];
 					if (cId === PLTYPE_INTEGER) {
@@ -771,7 +771,7 @@ export function decodeXml(
 				cObj = n.p;
 				if (sc !== obj) {
 					if (cId === 100) {
-						(cObj as PLDict).set(keyed.get(sc)!, obj);
+						(cObj as PLDictionary).set(keyed.get(sc)!, obj);
 					} else if (cId === 97) {
 						(cObj as PLArray).set(
 							(cObj as PLArray).length - 1,
@@ -794,7 +794,7 @@ export function decodeXml(
 				cId = n.a;
 				cObj = n.p;
 				if (cId === 100) {
-					(cObj as PLDict).set(x.k!, obj);
+					(cObj as PLDictionary).set(x.k!, obj);
 				} else if (cId === 97) {
 					(cObj as PLArray).push(obj);
 				} else if (cId === 112) {
@@ -856,7 +856,7 @@ export function decodeXml(
 					x = d[tagI + 1];
 					if (x === 105) {
 						if (d[tagI + 2] === 99 && d[tagI + 3] === 116) {
-							obj = new PLDict();
+							obj = new PLDictionary();
 							if (!sc) {
 								cId = c;
 								cObj = obj;
@@ -1037,7 +1037,7 @@ export function decodeXml(
 			if (pId === 100) {
 				if (key) {
 					if (c !== 112) {
-						(pObj as PLDict).set(key, obj as PLType);
+						(pObj as PLDictionary).set(key, obj as PLType);
 					}
 					key = null;
 				} else if (c === 107) {

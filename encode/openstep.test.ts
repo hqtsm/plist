@@ -4,7 +4,7 @@ import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
-import { PLDict } from '../dict.ts';
+import { PLDictionary } from '../dictionary.ts';
 import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { PLReal } from '../real.ts';
@@ -53,11 +53,11 @@ Deno.test('Invalid keys', () => {
 		new PLInteger(),
 		new PLReal(),
 		new PLUID(),
-		new PLDict(),
+		new PLDictionary(),
 		{ [Symbol.toStringTag]: 'UNKNOWN' } as unknown as PLType,
 	];
 	for (const key of keys) {
-		const dict = new PLDict();
+		const dict = new PLDictionary();
 		dict.set(key, new PLString());
 		assertThrows(
 			() => encodeOpenStep(dict),
@@ -93,7 +93,7 @@ Deno.test('Invalid strings root', () => {
 
 Deno.test('Circular reference: array', () => {
 	const array = new PLArray();
-	array.push(new PLDict([[new PLString('A'), array]]));
+	array.push(new PLDictionary([[new PLString('A'), array]]));
 	assertThrows(
 		() => {
 			encodeOpenStep(array);
@@ -104,7 +104,7 @@ Deno.test('Circular reference: array', () => {
 });
 
 Deno.test('Circular reference: dict', () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	dict.set(new PLString('A'), new PLArray([dict]));
 	assertThrows(
 		() => {
@@ -118,16 +118,16 @@ Deno.test('Circular reference: dict', () => {
 Deno.test('Custom indent', () => {
 	for (const format of [FORMAT_OPENSTEP, FORMAT_STRINGS] as const) {
 		for (const indent of ['  ', '\t\t', '\t ']) {
-			const dict = new PLDict([
+			const dict = new PLDictionary([
 				[
 					new PLString('A'),
-					new PLDict([
+					new PLDictionary([
 						[
 							new PLString('B'),
-							new PLDict([
+							new PLDictionary([
 								[
 									new PLString('C'),
-									new PLDict([
+									new PLDictionary([
 										[new PLString('D'), new PLString('E')],
 									]),
 								],
@@ -377,7 +377,7 @@ Deno.test('spec: data-256', async () => {
 });
 
 Deno.test('spec: dict-empty', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	{
 		const encode = encodeOpenStep(dict, CF_STYLE);
 		assertEquals(
@@ -398,9 +398,9 @@ Deno.test('spec: dict-empty', async () => {
 });
 
 Deno.test('spec: dict-empties', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	dict.set(new PLString('array'), new PLArray());
-	dict.set(new PLString('dict'), new PLDict());
+	dict.set(new PLString('dict'), new PLDictionary());
 	const encode = encodeOpenStep(dict, CF_STYLE);
 	assertEquals(
 		encode,
@@ -409,7 +409,7 @@ Deno.test('spec: dict-empties', async () => {
 });
 
 Deno.test('spec: dict-26', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	for (const C of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
 		dict.set(new PLString(C), new PLString(C.toLowerCase()));
 	}
@@ -421,7 +421,7 @@ Deno.test('spec: dict-26', async () => {
 });
 
 Deno.test('spec: dict-long-key', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	dict.set(
 		new PLString(
 			'ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789',
@@ -436,7 +436,7 @@ Deno.test('spec: dict-long-key', async () => {
 });
 
 Deno.test('spec: dict-unicode-key', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	dict.set(
 		new PLString('UTF\u20138'),
 		new PLString('utf-8'),
@@ -450,20 +450,20 @@ Deno.test('spec: dict-unicode-key', async () => {
 
 Deno.test('spec: dict-nesting', async () => {
 	const encode = encodeOpenStep(
-		new PLDict([
+		new PLDictionary([
 			[
 				new PLString('A'),
-				new PLDict([
+				new PLDictionary([
 					[
 						new PLString('AA'),
-						new PLDict([
+						new PLDictionary([
 							[new PLString('AAA'), new PLString('aaa')],
 							[new PLString('AAB'), new PLString('aab')],
 						]),
 					],
 					[
 						new PLString('AB'),
-						new PLDict([
+						new PLDictionary([
 							[new PLString('ABA'), new PLString('aba')],
 							[new PLString('ABB'), new PLString('abb')],
 						]),
@@ -472,17 +472,17 @@ Deno.test('spec: dict-nesting', async () => {
 			],
 			[
 				new PLString('B'),
-				new PLDict([
+				new PLDictionary([
 					[
 						new PLString('BA'),
-						new PLDict([
+						new PLDictionary([
 							[new PLString('BAA'), new PLString('baa')],
 							[new PLString('BAB'), new PLString('bab')],
 						]),
 					],
 					[
 						new PLString('BB'),
-						new PLDict([
+						new PLDictionary([
 							[new PLString('BBA'), new PLString('bba')],
 							[new PLString('BBB'), new PLString('bbb')],
 						]),
@@ -500,7 +500,7 @@ Deno.test('spec: dict-nesting', async () => {
 
 Deno.test('spec: dict-order', async () => {
 	const encode = encodeOpenStep(
-		new PLDict([
+		new PLDictionary([
 			[new PLString(), new PLString('0')],
 			[new PLString('a'), new PLString('1')],
 			[new PLString('aa'), new PLString('2')],
@@ -518,7 +518,7 @@ Deno.test('spec: dict-order', async () => {
 });
 
 Deno.test('spec: dict-reuse', async () => {
-	const reuse = new PLDict([
+	const reuse = new PLDictionary([
 		[new PLString('AAAA'), new PLString('1111')],
 		[new PLString('BBBB'), new PLString('2222')],
 	]);
@@ -534,7 +534,7 @@ Deno.test('spec: dict-reuse', async () => {
 	}
 	{
 		const encode = encodeOpenStep(
-			new PLDict([
+			new PLDictionary([
 				[new PLString('A'), reuse],
 				[new PLString('B'), reuse],
 			]),
@@ -552,7 +552,7 @@ Deno.test('spec: dict-reuse', async () => {
 
 Deno.test('spec: dict-repeat', async () => {
 	const encode = encodeOpenStep(
-		new PLDict([
+		new PLDictionary([
 			[new PLString('A'), new PLString('11')],
 			[new PLString('B'), new PLString('21')],
 			[new PLString('B'), new PLString('22')],
@@ -585,7 +585,7 @@ Deno.test('spec: string-ascii', async () => {
 });
 
 Deno.test('spec: string-chars', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	for (let i = 0; i <= 0xffff; i++) {
 		dict.set(
 			new PLString(`${i}`.padStart(5, '0')),
@@ -672,7 +672,7 @@ Deno.test('spec: string-utf8-mb4-robot', async () => {
 
 Deno.test('spec: openstep-edge escapes-octal', async () => {
 	const encode = encodeOpenStep(
-		new PLDict([
+		new PLDictionary([
 			[new PLString('null-0'), new PLString('\x000')],
 			[new PLString('null-8'), new PLString('\x008')],
 			[new PLString('oct16'), new PLString('\x0E')],
@@ -690,14 +690,14 @@ Deno.test('spec: openstep-edge all-types', async () => {
 	const data = new PLData(4);
 	new Uint8Array(data.buffer).set(new Uint8Array([0x01, 0x23, 0x45, 0x67]));
 	const encode = encodeOpenStep(
-		new PLDict<PLType>([
+		new PLDictionary<PLType>([
 			[
 				new PLString('STRING'),
 				new PLString('Example'),
 			],
 			[
 				new PLString('DICT'),
-				new PLDict([
+				new PLDictionary([
 					[new PLString('A'), new PLString('a')],
 					[new PLString('B'), new PLString('b')],
 				]),
@@ -727,14 +727,14 @@ Deno.test('spec: strings-edge all-types', async () => {
 	const data = new PLData(4);
 	new Uint8Array(data.buffer).set(new Uint8Array([0x01, 0x23, 0x45, 0x67]));
 	const encode = encodeOpenStep(
-		new PLDict<PLType>([
+		new PLDictionary<PLType>([
 			[
 				new PLString('STRING'),
 				new PLString('Example'),
 			],
 			[
 				new PLString('DICT'),
-				new PLDict([
+				new PLDictionary([
 					[new PLString('A'), new PLString('a')],
 					[new PLString('B'), new PLString('b')],
 				]),
@@ -768,7 +768,7 @@ Deno.test('spec: openstep-edge shortcut', async () => {
 	// Intended for strings format but valid in OpenStep.
 	const B = new PLString('B');
 	const E = new PLString('E');
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLString('A'), new PLString('C')],
 		[B, B],
 		[new PLString('C'), new PLString('A')],
@@ -789,7 +789,7 @@ Deno.test('spec: strings-edge shortcut', async () => {
 	// Shortcut syntax for keys and values that are the same.
 	const B = new PLString('B');
 	const E = new PLString('E');
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLString('A'), new PLString('C')],
 		[B, B],
 		[new PLString('C'), new PLString('A')],

@@ -25,12 +25,12 @@ import {
 	encode,
 	encodeBinary,
 	FORMAT_BINARY_V1_0,
-	PLDict,
+	PLDictionary,
 	PLInteger,
 	PLString,
 } from '@hqtsm/plist';
 
-const plist = new PLDict();
+const plist = new PLDictionary();
 plist.set(new PLString('Name'), new PLString('John Smith'));
 plist.set(new PLString('Age'), new PLInteger(42n));
 
@@ -66,13 +66,13 @@ A list of types or values to be duplicated in the offset table. Only useful to c
 import {
 	encode,
 	FORMAT_XML_V1_0,
-	PLDict,
+	PLDictionary,
 	PLInteger,
 	PLString,
 	PLUID,
 } from '@hqtsm/plist';
 
-const plist = new PLDict();
+const plist = new PLDictionary();
 plist.set(new PLString('First Name'), new PLString('John'));
 plist.set(new PLString('Last Name'), new PLString('Smith'));
 plist.set(new PLString('Age'), new PLInteger(42n));
@@ -125,9 +125,9 @@ Encode smallest 128-bit integer as `-0` as official encoders do. 128-bit integer
 ## Encode OpenStep / Strings
 
 ```ts
-import { encode, FORMAT_OPENSTEP, PLDict, PLString } from '@hqtsm/plist';
+import { encode, FORMAT_OPENSTEP, PLDictionary, PLString } from '@hqtsm/plist';
 
-const plist = new PLDict();
+const plist = new PLDictionary();
 plist.set(new PLString('First Name'), new PLString('John'));
 plist.set(new PLString('Last Name'), new PLString('Smith'));
 
@@ -143,9 +143,9 @@ console.assert(new TextDecoder().decode(enc) === expected);
 ```
 
 ```ts
-import { encode, FORMAT_STRINGS, PLDict, PLString } from '@hqtsm/plist';
+import { encode, FORMAT_STRINGS, PLDictionary, PLString } from '@hqtsm/plist';
 
-const plist = new PLDict();
+const plist = new PLDictionary();
 plist.set(new PLString('First Name'), new PLString('John'));
 plist.set(new PLString('Last Name'), new PLString('Smith'));
 
@@ -157,7 +157,7 @@ const enc = encode(plist, { format: FORMAT_STRINGS });
 console.assert(new TextDecoder().decode(enc) === expected);
 ```
 
-NOTE: Not every type is supported in the OpenStep formats. An exception will throw for any values not a dict, array, string, or data type, and for keys that are not string type. With the strings format only the dict type can be encoded.
+NOTE: Not every type is supported in the OpenStep formats. An exception will throw for any values not a dictionary, array, string, or data type, and for keys that are not string type. With the strings format only the dictionary type can be encoded.
 
 ## Encode OpenStep / Strings Options
 
@@ -198,7 +198,7 @@ VS
 ## Decode Binary
 
 ```ts
-import { decode, FORMAT_BINARY_V1_0, PLDict, walk } from '@hqtsm/plist';
+import { decode, FORMAT_BINARY_V1_0, PLDictionary, walk } from '@hqtsm/plist';
 
 const encoded = new Uint8Array(
 	`
@@ -213,9 +213,9 @@ const encoded = new Uint8Array(
 // OR: decodeBinary(encoded):
 const { format, plist } = decode(encoded);
 console.assert(format === FORMAT_BINARY_V1_0);
-console.assert(PLDict.is(plist));
+console.assert(PLDictionary.is(plist));
 walk(plist, {
-	PLDict(dict) {
+	PLDictionary(dict) {
 		console.assert(dict.size === 2);
 	},
 	PLString(str, _, key) {
@@ -249,7 +249,7 @@ Optionally limit key types to string type. The closed source CF encoder does thi
 ## Decode XML
 
 ```ts
-import { decode, FORMAT_XML_V1_0, PLDict, walk } from '@hqtsm/plist';
+import { decode, FORMAT_XML_V1_0, PLDictionary, walk } from '@hqtsm/plist';
 
 const encoded = new TextEncoder().encode(`<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -273,9 +273,9 @@ const encoded = new TextEncoder().encode(`<?xml version="1.0" encoding="UTF-8"?>
 // OR: decodeXml(encoded);
 const { format, plist } = decode(encoded);
 console.assert(format === FORMAT_XML_V1_0);
-console.assert(PLDict.is(plist));
+console.assert(PLDictionary.is(plist));
 walk(plist, {
-	PLDict(dict) {
+	PLDictionary(dict) {
 		console.assert(dict.size === 4);
 	},
 	PLString(str, _, key) {
@@ -317,7 +317,7 @@ Optional UTF-16 endian flag when no BOM available. Defaults to auto detect based
 ## Decode OpenStep / Strings
 
 ```ts
-import { decode, FORMAT_OPENSTEP, PLDict, walk } from '@hqtsm/plist';
+import { decode, FORMAT_OPENSTEP, PLDictionary, walk } from '@hqtsm/plist';
 
 const encoded = new TextEncoder().encode(`{
 	"First Name" = John;
@@ -328,9 +328,9 @@ const encoded = new TextEncoder().encode(`{
 // OR: decodeOpenStep(encoded);
 const { format, plist } = decode(encoded);
 console.assert(format === FORMAT_OPENSTEP);
-console.assert(PLDict.is(plist));
+console.assert(PLDictionary.is(plist));
 walk(plist, {
-	PLDict(dict) {
+	PLDictionary(dict) {
 		console.assert(dict.size === 2);
 	},
 	PLString(str, _, key) {
@@ -346,7 +346,7 @@ walk(plist, {
 ```
 
 ```ts
-import { decode, FORMAT_STRINGS, PLDict, walk } from '@hqtsm/plist';
+import { decode, FORMAT_STRINGS, PLDictionary, walk } from '@hqtsm/plist';
 
 const encoded = new TextEncoder().encode(`"First Name" = John;
 "Last Name" = Smith;
@@ -355,9 +355,9 @@ const encoded = new TextEncoder().encode(`"First Name" = John;
 // OR: decodeOpenStep(encoded);
 const { format, plist } = decode(encoded);
 console.assert(format === FORMAT_STRINGS);
-console.assert(PLDict.is(plist));
+console.assert(PLDictionary.is(plist));
 walk(plist, {
-	PLDict(dict) {
+	PLDictionary(dict) {
 		console.assert(dict.size === 2);
 	},
 	PLString(str, _, key) {
@@ -376,7 +376,7 @@ walk(plist, {
 
 ### Option: `allowMissingSemi` (`boolean`)
 
-Allow missing semicolon on the last dict item. Official decoders once allowed this but deprecated and removed it.
+Allow missing semicolon on the last dictionary item. Official decoders once allowed this but deprecated and removed it.
 
 ### Option: `decoded` (`boolean`)
 

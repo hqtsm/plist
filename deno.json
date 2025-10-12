@@ -12,7 +12,7 @@
 		"./decode/binary": "./decode/binary.ts",
 		"./decode/openstep": "./decode/openstep.ts",
 		"./decode/xml": "./decode/xml.ts",
-		"./dict": "./dict.ts",
+		"./dictionary": "./dictionary.ts",
 		"./encode": "./encode/mod.ts",
 		"./encode/binary": "./encode/binary.ts",
 		"./encode/openstep": "./encode/openstep.ts",

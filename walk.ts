@@ -8,7 +8,7 @@ import { type PLArray, PLTYPE_ARRAY } from './array.ts';
 import type { PLBoolean, PLTYPE_BOOLEAN } from './boolean.ts';
 import type { PLData, PLTYPE_DATA } from './data.ts';
 import type { PLDate, PLTYPE_DATE } from './date.ts';
-import { type PLDict, PLTYPE_DICT } from './dict.ts';
+import { type PLDictionary, PLTYPE_DICTIONARY } from './dictionary.ts';
 import type { PLInteger, PLTYPE_INTEGER } from './integer.ts';
 import type { PLNull, PLTYPE_NULL } from './null.ts';
 import type { PLReal, PLTYPE_REAL } from './real.ts';
@@ -29,11 +29,13 @@ function* rootValue(root: PLType): Generator<[null, PLType]> {
 }
 
 /**
- * Iterate dict in pairs.
+ * Iterate dictionary in pairs.
  *
- * @param dict Dict to iterate.
+ * @param dict Dictionary to iterate.
  */
-function* dictPairs(dict: PLDict): Generator<[null | PLType, PLType]> {
+function* dictPairs(
+	dict: PLDictionary,
+): Generator<[null | PLType, PLType]> {
 	let k, v;
 	for (k of dict.keys()) {
 		yield [null, k];
@@ -44,11 +46,13 @@ function* dictPairs(dict: PLDict): Generator<[null | PLType, PLType]> {
 }
 
 /**
- * Iterate dict keys, then values.
+ * Iterate dictionary keys, then values.
  *
- * @param dict Dict to iterate.
+ * @param dict Dictionary to iterate.
  */
-function* dictKeysFirst(dict: PLDict): Generator<[null | PLType, PLType]> {
+function* dictKeysFirst(
+	dict: PLDictionary,
+): Generator<[null | PLType, PLType]> {
 	let k, v;
 	const keys = new Set<PLType>();
 	for (k of dict.keys()) {
@@ -69,7 +73,7 @@ interface Node {
 	/**
 	 * Parent of the generator, null for root.
 	 */
-	p: PLArray | PLDict | PLSet | null;
+	p: PLArray | PLDictionary | PLSet | null;
 
 	/**
 	 * Key of the generator, null for root.
@@ -105,7 +109,7 @@ interface Node {
 /**
  * Walk parent.
  */
-export type WalkParent = PLArray | PLDict | PLSet | null;
+export type WalkParent = PLArray | PLDictionary | PLSet | null;
 
 /**
  * Walk visitor.
@@ -151,9 +155,9 @@ export interface WalkVisit {
 	[PLTYPE_DATE]?: WalkVisitor<PLDate>;
 
 	/**
-	 * PLDict close visitor.
+	 * PLDictionary close visitor.
 	 */
-	[PLTYPE_DICT]?: WalkVisitor<PLDict>;
+	[PLTYPE_DICTIONARY]?: WalkVisitor<PLDictionary>;
 
 	/**
 	 * PLInteger visit.
@@ -201,9 +205,9 @@ export interface WalkLeave {
 	[PLTYPE_ARRAY]?: WalkVisitor<PLArray>;
 
 	/**
-	 * PLDict leave.
+	 * PLDictionary leave.
 	 */
-	[PLTYPE_DICT]?: WalkVisitor<PLDict>;
+	[PLTYPE_DICTIONARY]?: WalkVisitor<PLDictionary>;
 
 	/**
 	 * PLSet leave.
@@ -213,7 +217,7 @@ export interface WalkLeave {
 	/**
 	 * Default leave.
 	 */
-	default?: WalkVisitor<PLArray | PLDict>;
+	default?: WalkVisitor<PLArray | PLDictionary>;
 }
 
 /**
@@ -235,7 +239,7 @@ export interface WalkOptions {
 	min?: number;
 
 	/**
-	 * Visit dict keys first, then values.
+	 * Visit dictionary keys first, then values.
 	 *
 	 * @default false
 	 */
@@ -302,14 +306,14 @@ export function walk(
 				}
 			}
 			switch (t) {
-				case PLTYPE_DICT: {
+				case PLTYPE_DICTIONARY: {
 					n = {
-						p: (p = v as PLDict),
+						p: (p = v as PLDictionary),
 						k,
 						g: (max < 0 || depth < max)
 							? keysFirst
-								? dictKeysFirst(v as PLDict)
-								: dictPairs(v as PLDict)
+								? dictKeysFirst(v as PLDictionary)
+								: dictPairs(v as PLDictionary)
 							: g,
 						n,
 					};

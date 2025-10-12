@@ -10,7 +10,7 @@ import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
-import { PLDict } from '../dict.ts';
+import { PLDictionary } from '../dictionary.ts';
 import { FORMAT_XML_V0_9, FORMAT_XML_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { PLReal } from '../real.ts';
@@ -488,7 +488,7 @@ Deno.test('Format version', () => {
 	}
 });
 
-Deno.test('Dict bad key', () => {
+Deno.test('Dictionary bad key', () => {
 	for (
 		const tag of [
 			'<string></string>',
@@ -1850,7 +1850,7 @@ Deno.test('spec: dict-empties', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 2);
 
 	const array = plist.find(kp('array'));
@@ -1858,7 +1858,7 @@ Deno.test('spec: dict-empties', async () => {
 	assertEquals(array.length, 0);
 
 	const dict = plist.find(kp('dict'));
-	assertInstanceOf(dict, PLDict);
+	assertInstanceOf(dict, PLDictionary);
 	assertEquals(dict.size, 0);
 });
 
@@ -1869,7 +1869,7 @@ Deno.test('spec: dict-26', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 26);
 
 	for (let i = 0; i < plist.size; i++) {
@@ -1885,7 +1885,7 @@ Deno.test('spec: dict-long-key', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 1);
 
 	const str = plist.find(
@@ -1901,7 +1901,7 @@ Deno.test('spec: dict-unicode-key', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 1);
 
 	const str = plist.find(kp('UTF\u20138'));
@@ -1915,15 +1915,15 @@ Deno.test('spec: dict-nesting', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 2);
 
 	const A = plist.find(kp('A'));
-	assertInstanceOf(A, PLDict);
+	assertInstanceOf(A, PLDictionary);
 	assertEquals(A.size, 2);
 
 	const AA = A.find(kp('AA'));
-	assertInstanceOf(AA, PLDict);
+	assertInstanceOf(AA, PLDictionary);
 	assertEquals(AA.size, 2);
 
 	const AAA = AA.find(kp('AAA'));
@@ -1935,7 +1935,7 @@ Deno.test('spec: dict-nesting', async () => {
 	assertEquals(AAB.value, 'aab');
 
 	const AB = A.find(kp('AB'));
-	assertInstanceOf(AB, PLDict);
+	assertInstanceOf(AB, PLDictionary);
 	assertEquals(AB.size, 2);
 
 	const ABA = AB.find(kp('ABA'));
@@ -1947,11 +1947,11 @@ Deno.test('spec: dict-nesting', async () => {
 	assertEquals(ABB.value, 'abb');
 
 	const B = plist.find(kp('B'));
-	assertInstanceOf(B, PLDict);
+	assertInstanceOf(B, PLDictionary);
 	assertEquals(B.size, 2);
 
 	const BA = B.find(kp('BA'));
-	assertInstanceOf(BA, PLDict);
+	assertInstanceOf(BA, PLDictionary);
 	assertEquals(BA.size, 2);
 
 	const BAA = BA.find(kp('BAA'));
@@ -1963,7 +1963,7 @@ Deno.test('spec: dict-nesting', async () => {
 	assertEquals(BAB.value, 'bab');
 
 	const BB = B.find(kp('BB'));
-	assertInstanceOf(BB, PLDict);
+	assertInstanceOf(BB, PLDictionary);
 	assertEquals(BB.size, 2);
 
 	const BBA = BB.find(kp('BBA'));
@@ -1981,7 +1981,7 @@ Deno.test('spec: dict-order', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 7);
 
 	const empty = plist.find(kp(''));
@@ -2022,7 +2022,7 @@ Deno.test('spec: dict-reuse', async () => {
 	assertInstanceOf(plist, PLArray);
 
 	const A = plist.get(0);
-	assertInstanceOf(A, PLDict);
+	assertInstanceOf(A, PLDictionary);
 	{
 		const AAAA = A.find(kp('AAAA'));
 		assertInstanceOf(AAAA, PLString);
@@ -2033,7 +2033,7 @@ Deno.test('spec: dict-reuse', async () => {
 	}
 
 	const B = plist.get(1);
-	assertInstanceOf(B, PLDict);
+	assertInstanceOf(B, PLDictionary);
 	{
 		const AAAA = B.find(kp('AAAA'));
 		assertInstanceOf(AAAA, PLString);
@@ -2060,7 +2060,7 @@ Deno.test('spec: dict-repeat', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 6);
 
 	for (const [i, [k, v]] of [...plist].entries()) {
@@ -2499,7 +2499,7 @@ Deno.test('spec: xml-edge cdata', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 1);
 
 	for (const [k, v] of plist) {
@@ -2516,11 +2516,11 @@ Deno.test('spec: xml-edge comments', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 2);
 
 	const dict = plist.find(kp('dict'))!;
-	assertInstanceOf(dict, PLDict);
+	assertInstanceOf(dict, PLDictionary);
 	assertEquals(dict.size, 0);
 
 	const array = plist.find(kp('array'))!;
@@ -2671,7 +2671,7 @@ Deno.test('spec: xml-edge date-edge', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 
 	{
 		const d = plist.find(kp('leapyear'));
@@ -2790,7 +2790,7 @@ Deno.test('spec: xml-edge date-over-under', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 
 	for (const [k, v] of plist) {
 		assertInstanceOf(k, PLString);
@@ -2817,7 +2817,7 @@ Deno.test('spec: xml-edge dict-attrs-close', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 0);
 });
 
@@ -2857,7 +2857,7 @@ Deno.test('spec: xml-edge empty', async () => {
 	assertEquals(f.value, false);
 
 	const dict = plist.get(2);
-	assertInstanceOf(dict, PLDict);
+	assertInstanceOf(dict, PLDictionary);
 	assertEquals(dict.size, 0);
 
 	const arr = plist.get(3);
@@ -2904,7 +2904,7 @@ Deno.test('spec: xml-edge integer-edge', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	for (const [k, v] of plist) {
 		assertInstanceOf(k, PLString);
 		const key = k.value;
@@ -2943,7 +2943,7 @@ Deno.test('spec: xml-edge key-dict', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 2);
 
 	const A = plist.find(kp('A'));
@@ -2971,7 +2971,7 @@ Deno.test('spec: xml-edge legacy-10.0-0.9-1-null', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V0_9);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 1);
 
 	const name = plist.find(kp('Name'));
@@ -2985,7 +2985,7 @@ Deno.test('spec: xml-edge legacy-10.0-0.9-2', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V0_9);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 2);
 
 	assertEquals([...plist.keys()].map((k) => k.valueOf()), ['Age', 'Name']);
@@ -3066,7 +3066,7 @@ Deno.test('spec: xml-edge plist-tags-dict', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 2);
 
 	const t = plist.find(kp('true'));
@@ -3094,11 +3094,11 @@ Deno.test('spec: xml-edge processing-instructions', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 2);
 
 	const dict = plist.find(kp('dict'))!;
-	assertInstanceOf(dict, PLDict);
+	assertInstanceOf(dict, PLDictionary);
 	assertEquals(dict.size, 0);
 
 	const array = plist.find(kp('array'))!;
@@ -3167,7 +3167,7 @@ Deno.test('spec: xml-edge self-closed', async () => {
 	assertEquals(f.value, false);
 
 	const dict = plist.get(2);
-	assertInstanceOf(dict, PLDict);
+	assertInstanceOf(dict, PLDictionary);
 	assertEquals(dict.size, 0);
 
 	const arr = plist.get(3);
@@ -3285,7 +3285,7 @@ Deno.test('spec: xml-edge uid-negative', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 3);
 
 	for (const [k, v] of plist) {
@@ -3303,7 +3303,7 @@ Deno.test('spec: xml-edge uid-not', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 2);
 
 	const a = plist.find(kp('CF$UID'));
@@ -3321,7 +3321,7 @@ Deno.test('spec: xml-edge uid-over', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 4);
 
 	for (const [k, v] of plist) {
@@ -3389,7 +3389,7 @@ Deno.test('spec: xml-edge uid-string', async () => {
 		CF_STYLE,
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 1);
 
 	const a = plist.find(kp('CF$UID'));
@@ -3469,7 +3469,7 @@ Deno.test('spec: xml-encoding-utf', async () => {
 			CF_STYLE,
 		);
 		assertEquals(format, FORMAT_XML_V1_0, file);
-		assertInstanceOf(plist, PLDict, file);
+		assertInstanceOf(plist, PLDictionary, file);
 		assertEquals(plist.size, 5, file);
 
 		const divide = plist.find(kp('divide'));

@@ -4,7 +4,7 @@ import {
 	assertNotStrictEquals,
 	assertStrictEquals,
 } from '@std/assert';
-import { PLDict, PLTYPE_DICT } from './dict.ts';
+import { PLDictionary, PLTYPE_DICTIONARY } from './dictionary.ts';
 import { PLString } from './string.ts';
 
 function irv<T>(
@@ -20,13 +20,13 @@ function kp(value: string): (_: PLString, key: PLString) => boolean {
 Deno.test('initial value', () => {
 	const a = new PLString('a');
 	const b = new PLString('b');
-	assertEquals(new PLDict().size, 0);
-	assertEquals(new PLDict([]).size, 0);
-	assertEquals(new PLDict([[a, b]]).size, 1);
-	assertEquals(new PLDict([[a, a], [a, b]]).size, 1);
-	assertEquals(new PLDict([[a, b], [b, a]]).size, 2);
+	assertEquals(new PLDictionary().size, 0);
+	assertEquals(new PLDictionary([]).size, 0);
+	assertEquals(new PLDictionary([[a, b]]).size, 1);
+	assertEquals(new PLDictionary([[a, a], [a, b]]).size, 1);
+	assertEquals(new PLDictionary([[a, b], [b, a]]).size, 2);
 	assertEquals(
-		new PLDict(
+		new PLDictionary(
 			new Map([
 				[a, a],
 				[b, b],
@@ -39,7 +39,7 @@ Deno.test('initial value', () => {
 Deno.test('has', () => {
 	const a = new PLString('a');
 	const b = new PLString('b');
-	const dict = new PLDict([[a, b]]);
+	const dict = new PLDictionary([[a, b]]);
 	assertEquals(dict.has(a), true);
 	assertEquals(dict.has(b), false);
 });
@@ -47,7 +47,7 @@ Deno.test('has', () => {
 Deno.test('get', () => {
 	const a = new PLString('a');
 	const b = new PLString('b');
-	const dict = new PLDict([[a, b]]);
+	const dict = new PLDictionary([[a, b]]);
 	assertStrictEquals(dict.get(a), b);
 	assertEquals(dict.get(b), undefined);
 });
@@ -55,7 +55,7 @@ Deno.test('get', () => {
 Deno.test('set', () => {
 	const a = new PLString('a');
 	const b = new PLString('b');
-	const dict = new PLDict([[a, a]]);
+	const dict = new PLDictionary([[a, a]]);
 	assertStrictEquals(dict.get(a), a);
 	dict.set(a, b);
 	assertEquals(dict.size, 1);
@@ -68,7 +68,7 @@ Deno.test('set', () => {
 Deno.test('delete', () => {
 	const a = new PLString('a');
 	const b = new PLString('b');
-	const dict = new PLDict([[a, a], [b, b]]);
+	const dict = new PLDictionary([[a, a], [b, b]]);
 	assertEquals(dict.size, 2);
 	assertEquals(dict.delete(a), true);
 	assertEquals(dict.delete(a), false);
@@ -85,7 +85,7 @@ Deno.test('delete', () => {
 Deno.test('clear', () => {
 	const a = new PLString('a');
 	const b = new PLString('b');
-	const dict = new PLDict([[a, a], [b, b]]);
+	const dict = new PLDictionary([[a, a], [b, b]]);
 	assertEquals(dict.size, 2);
 	dict.clear();
 	assertEquals(dict.size, 0);
@@ -99,7 +99,7 @@ Deno.test('find', () => {
 	const bKey = new PLString('repeat');
 	const bValue = new PLString('B');
 	const values = [[aKey, aValue], [bKey, bValue]] as const;
-	const dict = new PLDict(values);
+	const dict = new PLDictionary(values);
 
 	const that = {};
 	let index = 0;
@@ -126,7 +126,7 @@ Deno.test('findKey', () => {
 	const bKey = new PLString('repeat');
 	const bValue = new PLString('B');
 	const values = [[aKey, aValue], [bKey, bValue]] as const;
-	const dict = new PLDict(values);
+	const dict = new PLDictionary(values);
 
 	const that = {};
 	let index = 0;
@@ -153,7 +153,7 @@ Deno.test('findLast', () => {
 	const bKey = new PLString('repeat');
 	const bValue = new PLString('B');
 	const values = [[aKey, aValue], [bKey, bValue]] as const;
-	const dict = new PLDict(values);
+	const dict = new PLDictionary(values);
 
 	const that = {};
 	let index = values.length - 1;
@@ -180,7 +180,7 @@ Deno.test('findLastKey', () => {
 	const bKey = new PLString('repeat');
 	const bValue = new PLString('B');
 	const values = [[aKey, aValue], [bKey, bValue]] as const;
-	const dict = new PLDict(values);
+	const dict = new PLDictionary(values);
 
 	const that = {};
 	let index = values.length - 1;
@@ -204,7 +204,7 @@ Deno.test('findLastKey', () => {
 Deno.test('entries', () => {
 	const a = new PLString('a');
 	const b = new PLString('b');
-	const dict = new PLDict([[a, a], [b, b]]);
+	const dict = new PLDictionary([[a, a], [b, b]]);
 	const entries = dict.entries();
 	assertEquals(irv(entries.next()), [false, [a, a]]);
 	assertEquals(irv(entries.next()), [false, [b, b]]);
@@ -214,7 +214,7 @@ Deno.test('entries', () => {
 Deno.test('keys', () => {
 	const a = new PLString('a');
 	const b = new PLString('b');
-	const dict = new PLDict([[a, a], [b, b]]);
+	const dict = new PLDictionary([[a, a], [b, b]]);
 	const keys = dict.keys();
 	assertEquals(irv(keys.next()), [false, a]);
 	assertEquals(irv(keys.next()), [false, b]);
@@ -224,7 +224,7 @@ Deno.test('keys', () => {
 Deno.test('values', () => {
 	const a = new PLString('a');
 	const b = new PLString('b');
-	const dict = new PLDict([[a, a], [b, b]]);
+	const dict = new PLDictionary([[a, a], [b, b]]);
 	const values = dict.values();
 	assertEquals(irv(values.next()), [false, a]);
 	assertEquals(irv(values.next()), [false, b]);
@@ -238,7 +238,7 @@ Deno.test('Symbol.iterator', () => {
 		[a, a],
 		[b, b],
 	]);
-	const dict = new PLDict(values);
+	const dict = new PLDictionary(values);
 	for (const [k, v] of dict) {
 		assertStrictEquals(v, values.get(k));
 	}
@@ -251,7 +251,7 @@ Deno.test('toMap', () => {
 		[a, a],
 		[b, b],
 	]);
-	const dict = new PLDict(values);
+	const dict = new PLDictionary(values);
 	const map = dict.toMap();
 	assertEquals(map.size, values.size);
 	for (const [k, v] of map) {
@@ -265,7 +265,7 @@ Deno.test('toValueMap', () => {
 	const A2 = new PLString('A');
 	const b = new PLString('b');
 	const B1 = new PLString('B');
-	const dict = new PLDict([
+	const dict = new PLDictionary([
 		[A1, a],
 		[A2, b],
 		[B1, b],
@@ -288,7 +288,7 @@ Deno.test('valueOf', () => {
 	const A = new PLString('A');
 	const B = new PLString('B');
 	const map = new Map([[A, B], [B, A]]);
-	const dict = new PLDict(map);
+	const dict = new PLDictionary(map);
 	const value = dict.valueOf();
 	assertInstanceOf(value, Map);
 	assertNotStrictEquals(value, map);
@@ -299,20 +299,20 @@ Deno.test('valueOf', () => {
 });
 
 Deno.test('is type', () => {
-	assertEquals(new PLDict().type, PLTYPE_DICT);
-	assertEquals(new PLDict()[Symbol.toStringTag], PLTYPE_DICT);
+	assertEquals(new PLDictionary().type, PLTYPE_DICTIONARY);
+	assertEquals(new PLDictionary()[Symbol.toStringTag], PLTYPE_DICTIONARY);
 	assertEquals(
-		Object.prototype.toString.call(new PLDict()),
-		`[object ${PLTYPE_DICT}]`,
+		Object.prototype.toString.call(new PLDictionary()),
+		`[object ${PLTYPE_DICTIONARY}]`,
 	);
 
-	assertEquals(PLDict.is(new PLDict()), true);
-	assertEquals(PLDict.is(new PLString()), false);
-	assertEquals(PLDict.is({}), false);
-	assertEquals(PLDict.is(null), false);
+	assertEquals(PLDictionary.is(new PLDictionary()), true);
+	assertEquals(PLDictionary.is(new PLString()), false);
+	assertEquals(PLDictionary.is({}), false);
+	assertEquals(PLDictionary.is(null), false);
 
-	for (const v of [new PLDict(), new PLString(), {}, null]) {
-		if (PLDict.is(v)) {
+	for (const v of [new PLDictionary(), new PLString(), {}, null]) {
+		if (PLDictionary.is(v)) {
 			assertEquals(v.size, 0);
 		}
 	}

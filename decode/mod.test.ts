@@ -2,7 +2,7 @@ import { assertEquals, assertInstanceOf, assertThrows } from '@std/assert';
 import { fixturePlist } from '../spec/fixture.ts';
 import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
-import { PLDict } from '../dict.ts';
+import { PLDictionary } from '../dictionary.ts';
 import {
 	FORMAT_BINARY_V1_0,
 	FORMAT_OPENSTEP,
@@ -168,7 +168,7 @@ Deno.test('spec: dict-26: binary', async () => {
 		await fixturePlist('dict-26', 'binary'),
 	);
 	assertEquals(format, FORMAT_BINARY_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 26);
 
 	for (let i = 0; i < plist.size; i++) {
@@ -184,7 +184,7 @@ Deno.test('spec: dict-26: xml', async () => {
 		await fixturePlist('dict-26', 'xml'),
 	);
 	assertEquals(format, FORMAT_XML_V1_0);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 26);
 
 	for (let i = 0; i < plist.size; i++) {
@@ -200,7 +200,7 @@ Deno.test('spec: dict-26: openstep', async () => {
 		await fixturePlist('dict-26', 'openstep'),
 	);
 	assertEquals(format, FORMAT_OPENSTEP);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 26);
 
 	for (let i = 0; i < plist.size; i++) {
@@ -216,7 +216,7 @@ Deno.test('spec: dict-26: strings', async () => {
 		await fixturePlist('dict-26', 'strings'),
 	);
 	assertEquals(format, FORMAT_STRINGS);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 26);
 
 	for (let i = 0; i < plist.size; i++) {
@@ -231,7 +231,7 @@ Deno.test('spec: xml-edge legacy-10.0-0.9-1-null', async () => {
 		await fixturePlist('xml-edge', 'legacy-10.0-0.9-1-null'),
 	);
 	assertEquals(format, FORMAT_XML_V0_9);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 1);
 
 	const name = plist.find(kp('Name'));
@@ -260,7 +260,7 @@ Deno.test('spec: xml-encoding-utf', async () => {
 			await fixturePlist('xml-encoding-utf', file),
 		);
 		assertEquals(format, FORMAT_XML_V1_0, file);
-		assertInstanceOf(plist, PLDict, file);
+		assertInstanceOf(plist, PLDictionary, file);
 		assertEquals(plist.size, 5, file);
 
 		const divide = plist.find(kp('divide'));
@@ -308,7 +308,7 @@ Deno.test('spec: strings-edge bplist00-dict-opt-sc', async () => {
 		},
 	});
 	assertEquals(format, FORMAT_STRINGS);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 2);
 
 	const [[aK, aV], [bK, bV]] = [...plist.entries()];
@@ -335,7 +335,7 @@ Deno.test('spec: openstep-edge legacy-dict-opt-sc', async () => {
 		openstep: { allowMissingSemi: true },
 	});
 	assertEquals(format, FORMAT_OPENSTEP);
-	assertInstanceOf(plist, PLDict);
+	assertInstanceOf(plist, PLDictionary);
 	assertEquals(plist.size, 2);
 
 	const A = plist.find(kp('A'));
@@ -376,7 +376,7 @@ Deno.test('spec: binary-edge key-type-false', async () => {
 			},
 		});
 		assertEquals(format, FORMAT_BINARY_V1_0);
-		assertInstanceOf(plist, PLDict);
+		assertInstanceOf(plist, PLDictionary);
 		assertEquals(plist.size, 1);
 		const [[key, value]] = [...plist.entries()];
 		assertInstanceOf(key, PLBoolean);
@@ -388,7 +388,7 @@ Deno.test('spec: binary-edge key-type-false', async () => {
 	{
 		const { format, plist } = decode(data);
 		assertEquals(format, FORMAT_BINARY_V1_0);
-		assertInstanceOf(plist, PLDict);
+		assertInstanceOf(plist, PLDictionary);
 		assertEquals(plist.size, 1);
 		const [[key, value]] = [...plist.entries()];
 		assertInstanceOf(key, PLBoolean);
@@ -425,7 +425,7 @@ Deno.test('spec: binary-edge key-type-array', async () => {
 	{
 		const { format, plist } = decode(data);
 		assertEquals(format, FORMAT_BINARY_V1_0);
-		assertInstanceOf(plist, PLDict);
+		assertInstanceOf(plist, PLDictionary);
 		assertEquals(plist.size, 1);
 		const [[key, value]] = [...plist.entries()];
 		assertInstanceOf(key, PLArray);

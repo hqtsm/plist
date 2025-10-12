@@ -6,7 +6,7 @@
 
 import { PLArray } from '../array.ts';
 import { PLData } from '../data.ts';
-import { PLDict } from '../dict.ts';
+import { PLDictionary } from '../dictionary.ts';
 import { FORMAT_OPENSTEP, FORMAT_STRINGS } from '../format.ts';
 import { b16d } from '../pri/base.ts';
 import { bytes } from '../pri/data.ts';
@@ -28,7 +28,7 @@ interface Node {
 	/**
 	 * Plist object.
 	 */
-	o: PLArray | PLDict;
+	o: PLArray | PLDictionary;
 
 	/**
 	 * End character.
@@ -217,7 +217,7 @@ function decodeStrU(d: Uint8Array, p: [number]): PLString {
  */
 export interface DecodeOpenStepOptions {
 	/**
-	 * Allow missing semicolon on the last dict item.
+	 * Allow missing semicolon on the last dictionary item.
 	 *
 	 * @default false
 	 */
@@ -279,7 +279,7 @@ export function decodeOpenStep(
 			next(d, p = [0])
 	);
 	if (c < 0) {
-		return { format: FORMAT_STRINGS, plist: new PLDict() };
+		return { format: FORMAT_STRINGS, plist: new PLDictionary() };
 	}
 	if (c === 34 || c === 39) {
 		plist = decodeStrQ(d, p, c);
@@ -292,14 +292,14 @@ export function decodeOpenStep(
 			return { format, plist };
 		}
 		if (c === 59 || c === 61) {
-			n = { o: plist = new PLDict(), e: e = -1, n };
+			n = { o: plist = new PLDictionary(), e: e = -1, n };
 			p[0] = 0;
 			format = FORMAT_STRINGS;
 		}
 	} else if (c === 60) {
 		plist = decodeData(d, p);
 	} else if (c === 123) {
-		n = { o: plist = new PLDict(), e: e = 125, n };
+		n = { o: plist = new PLDictionary(), e: e = 125, n };
 		p[0]++;
 	} else if (c === 40) {
 		n = { o: plist = new PLArray(), e: e = 41, n };
@@ -365,7 +365,7 @@ export function decodeOpenStep(
 					throw new SyntaxError(utf8ErrorEnd(d));
 				}
 				if (c === 59) {
-					(plist as PLDict).set(key, key);
+					(plist as PLDictionary).set(key, key);
 					p[0]++;
 					continue;
 				}
@@ -384,7 +384,7 @@ export function decodeOpenStep(
 		} else if (c === 60) {
 			semi = val = decodeData(d, p);
 		} else if (c === 123) {
-			n = { o: val = new PLDict(), e: e = 125, n };
+			n = { o: val = new PLDictionary(), e: e = 125, n };
 			p[0]++;
 		} else if (c === 40) {
 			n = { o: val = new PLArray(), e: e = 41, n };
@@ -393,7 +393,7 @@ export function decodeOpenStep(
 			throw new SyntaxError(utf8ErrorToken(d, p[0]));
 		}
 		if (key) {
-			(plist as PLDict).set(key, val);
+			(plist as PLDictionary).set(key, val);
 		} else {
 			(plist as PLArray).push(val);
 		}

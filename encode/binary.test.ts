@@ -4,7 +4,7 @@ import { PLArray, PLTYPE_ARRAY } from '../array.ts';
 import { PLBoolean, PLTYPE_BOOLEAN } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
-import { PLDict, PLTYPE_DICT } from '../dict.ts';
+import { PLDictionary, PLTYPE_DICTIONARY } from '../dictionary.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { PLNull } from '../null.ts';
@@ -20,7 +20,7 @@ const CF_STYLE = {
 	duplicates: [
 		PLTYPE_ARRAY,
 		PLTYPE_BOOLEAN,
-		PLTYPE_DICT,
+		PLTYPE_DICTIONARY,
 		PLTYPE_UID,
 	] as const,
 } as const satisfies EncodeBinaryOptions;
@@ -60,7 +60,7 @@ Deno.test('Invalid key', () => {
 		{ [Symbol.toStringTag]: 'UNKNOWN' } as unknown as PLType,
 	];
 	for (const key of keys) {
-		const dict = new PLDict();
+		const dict = new PLDictionary();
 		dict.set(key, new PLString());
 		assertThrows(
 			() => encodeBinary(dict),
@@ -72,7 +72,7 @@ Deno.test('Invalid key', () => {
 
 Deno.test('Circular reference: array', () => {
 	const array = new PLArray();
-	array.push(new PLDict([[new PLString('A'), array]]));
+	array.push(new PLDictionary([[new PLString('A'), array]]));
 	assertThrows(
 		() => {
 			encodeBinary(array);
@@ -83,7 +83,7 @@ Deno.test('Circular reference: array', () => {
 });
 
 Deno.test('Circular reference: dict', () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	dict.set(new PLString('A'), new PLArray([dict]));
 	assertThrows(
 		() => {
@@ -96,7 +96,7 @@ Deno.test('Circular reference: dict', () => {
 
 Deno.test('Circular reference: set', () => {
 	const set = new PLSet();
-	set.add(new PLDict([[new PLString('A'), set]]));
+	set.add(new PLDictionary([[new PLString('A'), set]]));
 	assertThrows(
 		() => {
 			encodeBinary(set);
@@ -407,7 +407,7 @@ Deno.test('spec: data-reuse', async () => {
 });
 
 Deno.test('spec: dict-empty', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	const encode = encodeBinary(dict, CF_STYLE);
 	assertEquals(
 		encode,
@@ -416,8 +416,8 @@ Deno.test('spec: dict-empty', async () => {
 });
 
 Deno.test('spec: dict-empties', async () => {
-	const dict = new PLDict();
-	dict.set(new PLString('dict'), new PLDict());
+	const dict = new PLDictionary();
+	dict.set(new PLString('dict'), new PLDictionary());
 	dict.set(new PLString('array'), new PLArray());
 	const encode = encodeBinary(dict, CF_STYLE);
 	assertEquals(
@@ -427,7 +427,7 @@ Deno.test('spec: dict-empties', async () => {
 });
 
 Deno.test('spec: dict-26', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	for (const C of 'RBKTDMVFOXHQAZJSCLUENWGPYI') {
 		dict.set(new PLString(C), new PLString(C.toLowerCase()));
 	}
@@ -439,7 +439,7 @@ Deno.test('spec: dict-26', async () => {
 });
 
 Deno.test('spec: dict-long-key', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	dict.set(
 		new PLString(
 			'ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789',
@@ -454,7 +454,7 @@ Deno.test('spec: dict-long-key', async () => {
 });
 
 Deno.test('spec: dict-unicode-key', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	dict.set(
 		new PLString('UTF\u20138'),
 		new PLString('utf-8'),
@@ -468,20 +468,20 @@ Deno.test('spec: dict-unicode-key', async () => {
 
 Deno.test('spec: dict-nesting', async () => {
 	const encode = encodeBinary(
-		new PLDict([
+		new PLDictionary([
 			[
 				new PLString('B'),
-				new PLDict([
+				new PLDictionary([
 					[
 						new PLString('BB'),
-						new PLDict([
+						new PLDictionary([
 							[new PLString('BBA'), new PLString('bba')],
 							[new PLString('BBB'), new PLString('bbb')],
 						]),
 					],
 					[
 						new PLString('BA'),
-						new PLDict([
+						new PLDictionary([
 							[new PLString('BAA'), new PLString('baa')],
 							[new PLString('BAB'), new PLString('bab')],
 						]),
@@ -490,17 +490,17 @@ Deno.test('spec: dict-nesting', async () => {
 			],
 			[
 				new PLString('A'),
-				new PLDict([
+				new PLDictionary([
 					[
 						new PLString('AA'),
-						new PLDict([
+						new PLDictionary([
 							[new PLString('AAA'), new PLString('aaa')],
 							[new PLString('AAB'), new PLString('aab')],
 						]),
 					],
 					[
 						new PLString('AB'),
-						new PLDict([
+						new PLDictionary([
 							[new PLString('ABB'), new PLString('abb')],
 							[new PLString('ABA'), new PLString('aba')],
 						]),
@@ -518,7 +518,7 @@ Deno.test('spec: dict-nesting', async () => {
 
 Deno.test('spec: dict-order', async () => {
 	const encode = encodeBinary(
-		new PLDict([
+		new PLDictionary([
 			[new PLString('ac'), new PLString('6')],
 			[new PLString('abb'), new PLString('5')],
 			[new PLString('ab'), new PLString('4')],
@@ -536,7 +536,7 @@ Deno.test('spec: dict-order', async () => {
 });
 
 Deno.test('spec: dict-reuse', async () => {
-	const reuse = new PLDict([
+	const reuse = new PLDictionary([
 		[new PLString('AAAA'), new PLString('1111')],
 		[new PLString('BBBB'), new PLString('2222')],
 	]);
@@ -552,7 +552,7 @@ Deno.test('spec: dict-reuse', async () => {
 
 Deno.test('spec: dict-repeat', async () => {
 	const encode = encodeBinary(
-		new PLDict([
+		new PLDictionary([
 			[new PLString('C'), new PLString('32')],
 			[new PLString('A'), new PLString('11')],
 			[new PLString('C'), new PLString('31')],
@@ -1227,7 +1227,7 @@ Deno.test('spec: array-set', async () => {
 });
 
 Deno.test('spec: binary-edge key-type-string-ascii', async () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLString('KEY'), new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);
@@ -1238,7 +1238,7 @@ Deno.test('spec: binary-edge key-type-string-ascii', async () => {
 });
 
 Deno.test('spec: binary-edge key-type-string-unicode', async () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLString('\u263A'), new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);
@@ -1249,7 +1249,7 @@ Deno.test('spec: binary-edge key-type-string-unicode', async () => {
 });
 
 Deno.test('spec: binary-edge key-type-null', async () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLNull(), new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);
@@ -1260,7 +1260,7 @@ Deno.test('spec: binary-edge key-type-null', async () => {
 });
 
 Deno.test('spec: binary-edge key-type-false', async () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLBoolean(false), new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);
@@ -1271,7 +1271,7 @@ Deno.test('spec: binary-edge key-type-false', async () => {
 });
 
 Deno.test('spec: binary-edge key-type-true', async () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLBoolean(true), new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);
@@ -1284,7 +1284,7 @@ Deno.test('spec: binary-edge key-type-true', async () => {
 Deno.test('spec: binary-edge key-type-data', async () => {
 	const key = new PLData(1);
 	new Uint8Array(key.buffer)[0] = 'K'.charCodeAt(0);
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[key, new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);
@@ -1295,7 +1295,7 @@ Deno.test('spec: binary-edge key-type-data', async () => {
 });
 
 Deno.test('spec: binary-edge key-type-date', async () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLDate(3.14), new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);
@@ -1306,7 +1306,7 @@ Deno.test('spec: binary-edge key-type-date', async () => {
 });
 
 Deno.test('spec: binary-edge key-type-float', async () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLReal(3.14, 32), new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);
@@ -1317,7 +1317,7 @@ Deno.test('spec: binary-edge key-type-float', async () => {
 });
 
 Deno.test('spec: binary-edge key-type-double', async () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLReal(3.14, 64), new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);
@@ -1328,7 +1328,7 @@ Deno.test('spec: binary-edge key-type-double', async () => {
 });
 
 Deno.test('spec: binary-edge key-type-int', async () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLInteger(123n), new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);
@@ -1339,7 +1339,7 @@ Deno.test('spec: binary-edge key-type-int', async () => {
 });
 
 Deno.test('spec: binary-edge key-type-uid', async () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLUID(42n), new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);
@@ -1350,7 +1350,7 @@ Deno.test('spec: binary-edge key-type-uid', async () => {
 });
 
 Deno.test('spec: binary-edge key-type-array', async () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLArray(), new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);
@@ -1361,8 +1361,8 @@ Deno.test('spec: binary-edge key-type-array', async () => {
 });
 
 Deno.test('spec: binary-edge key-type-dict', async () => {
-	const plist = new PLDict([
-		[new PLDict(), new PLString('value')],
+	const plist = new PLDictionary([
+		[new PLDictionary(), new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);
 	assertEquals(
@@ -1372,7 +1372,7 @@ Deno.test('spec: binary-edge key-type-dict', async () => {
 });
 
 Deno.test('spec: binary-edge key-type-set', async () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLSet(), new PLString('value')],
 	]);
 	const encode = encodeBinary(plist);

@@ -207,7 +207,7 @@ export function encodeXml(
 				}
 				i += 52 + v.value.toString().length + d++ * inl + d * inl * 2;
 			},
-			PLDict(v, d, k): void {
+			PLDictionary(v, d, k): void {
 				if (d && k === null) {
 					throw new TypeError('Invalid XML key type');
 				}
@@ -318,7 +318,7 @@ export function encodeXml(
 				i = utf8Encode('</date>', r, i);
 				r[i++] = 10;
 			},
-			PLDict(v, d): void {
+			PLDictionary(v, d): void {
 				for (; d--; i += inl) {
 					r.set(ind, i);
 				}
@@ -388,7 +388,7 @@ export function encodeXml(
 					r[i++] = 10;
 				}
 			},
-			PLDict(v, d): void {
+			PLDictionary(v, d): void {
 				if (v.size) {
 					for (; d--; i += inl) {
 						r.set(ind, i);

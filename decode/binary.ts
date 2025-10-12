@@ -8,7 +8,7 @@ import { PLArray, PLTYPE_ARRAY } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
-import { PLDict, PLTYPE_DICT } from '../dict.ts';
+import { PLDictionary, PLTYPE_DICTIONARY } from '../dictionary.ts';
 import { FORMAT_BINARY_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { PLNull } from '../null.ts';
@@ -219,7 +219,7 @@ export function decodeBinary(
 									? p[Symbol.toStringTag] !== PLTYPE_STRING
 									: (
 										(x = p[Symbol.toStringTag]) ===
-											PLTYPE_DICT ||
+											PLTYPE_DICTIONARY ||
 										x === PLTYPE_ARRAY ||
 										x === PLTYPE_SET
 									)
@@ -482,7 +482,7 @@ export function decodeBinary(
 						if (i + c * 2 * refc > table) {
 							break;
 						}
-						object.set(x, p = new PLDict());
+						object.set(x, p = new PLDictionary());
 						if (c) {
 							ancestors.add(p);
 							aoff = x;
@@ -499,7 +499,7 @@ export function decodeBinary(
 							yield walk(
 								getRefs(d, i + c * refc, refc, c),
 								(o) =>
-									(p as PLDict).set(
+									(p as PLDictionary).set(
 										(r as Map<number, PLType>).get(m++)!,
 										o,
 									),

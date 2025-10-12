@@ -4,7 +4,7 @@ import { PLArray } from '../array.ts';
 import { PLBoolean } from '../boolean.ts';
 import { PLData } from '../data.ts';
 import { PLDate } from '../date.ts';
-import { PLDict } from '../dict.ts';
+import { PLDictionary } from '../dictionary.ts';
 import { FORMAT_XML_V1_0 } from '../format.ts';
 import { PLInteger } from '../integer.ts';
 import { PLReal } from '../real.ts';
@@ -60,11 +60,11 @@ Deno.test('Invalid keys', () => {
 		new PLInteger(),
 		new PLReal(),
 		new PLUID(),
-		new PLDict(),
+		new PLDictionary(),
 		{ [Symbol.toStringTag]: 'UNKNOWN' } as unknown as PLType,
 	];
 	for (const key of keys) {
-		const dict = new PLDict();
+		const dict = new PLDictionary();
 		dict.set(key, new PLString());
 		assertThrows(
 			() => encodeXml(dict),
@@ -76,7 +76,7 @@ Deno.test('Invalid keys', () => {
 
 Deno.test('Circular reference: array', () => {
 	const array = new PLArray();
-	array.push(new PLDict([[new PLString('A'), array]]));
+	array.push(new PLDictionary([[new PLString('A'), array]]));
 	assertThrows(
 		() => {
 			encodeXml(array);
@@ -87,7 +87,7 @@ Deno.test('Circular reference: array', () => {
 });
 
 Deno.test('Circular reference: dict', () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	dict.set(new PLString('A'), new PLArray([dict]));
 	assertThrows(
 		() => {
@@ -458,7 +458,7 @@ Deno.test('spec: data-reuse', async () => {
 });
 
 Deno.test('spec: dict-empty', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	const encode = encodeXml(dict, CF_STYLE);
 	assertEquals(
 		encode,
@@ -467,9 +467,9 @@ Deno.test('spec: dict-empty', async () => {
 });
 
 Deno.test('spec: dict-empties', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	dict.set(new PLString('array'), new PLArray());
-	dict.set(new PLString('dict'), new PLDict());
+	dict.set(new PLString('dict'), new PLDictionary());
 	const encode = encodeXml(dict, CF_STYLE);
 	assertEquals(
 		encode,
@@ -478,7 +478,7 @@ Deno.test('spec: dict-empties', async () => {
 });
 
 Deno.test('spec: dict-26', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	for (const C of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
 		dict.set(new PLString(C), new PLString(C.toLowerCase()));
 	}
@@ -490,7 +490,7 @@ Deno.test('spec: dict-26', async () => {
 });
 
 Deno.test('spec: dict-long-key', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	dict.set(
 		new PLString(
 			'ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789',
@@ -505,7 +505,7 @@ Deno.test('spec: dict-long-key', async () => {
 });
 
 Deno.test('spec: dict-unicode-key', async () => {
-	const dict = new PLDict();
+	const dict = new PLDictionary();
 	dict.set(
 		new PLString('UTF\u20138'),
 		new PLString('utf-8'),
@@ -519,20 +519,20 @@ Deno.test('spec: dict-unicode-key', async () => {
 
 Deno.test('spec: dict-nesting', async () => {
 	const encode = encodeXml(
-		new PLDict([
+		new PLDictionary([
 			[
 				new PLString('A'),
-				new PLDict([
+				new PLDictionary([
 					[
 						new PLString('AA'),
-						new PLDict([
+						new PLDictionary([
 							[new PLString('AAA'), new PLString('aaa')],
 							[new PLString('AAB'), new PLString('aab')],
 						]),
 					],
 					[
 						new PLString('AB'),
-						new PLDict([
+						new PLDictionary([
 							[new PLString('ABA'), new PLString('aba')],
 							[new PLString('ABB'), new PLString('abb')],
 						]),
@@ -541,17 +541,17 @@ Deno.test('spec: dict-nesting', async () => {
 			],
 			[
 				new PLString('B'),
-				new PLDict([
+				new PLDictionary([
 					[
 						new PLString('BA'),
-						new PLDict([
+						new PLDictionary([
 							[new PLString('BAA'), new PLString('baa')],
 							[new PLString('BAB'), new PLString('bab')],
 						]),
 					],
 					[
 						new PLString('BB'),
-						new PLDict([
+						new PLDictionary([
 							[new PLString('BBA'), new PLString('bba')],
 							[new PLString('BBB'), new PLString('bbb')],
 						]),
@@ -569,7 +569,7 @@ Deno.test('spec: dict-nesting', async () => {
 
 Deno.test('spec: dict-order', async () => {
 	const encode = encodeXml(
-		new PLDict([
+		new PLDictionary([
 			[new PLString(), new PLString('0')],
 			[new PLString('a'), new PLString('1')],
 			[new PLString('aa'), new PLString('2')],
@@ -587,7 +587,7 @@ Deno.test('spec: dict-order', async () => {
 });
 
 Deno.test('spec: dict-reuse', async () => {
-	const reuse = new PLDict([
+	const reuse = new PLDictionary([
 		[new PLString('AAAA'), new PLString('1111')],
 		[new PLString('BBBB'), new PLString('2222')],
 	]);
@@ -603,7 +603,7 @@ Deno.test('spec: dict-reuse', async () => {
 
 Deno.test('spec: dict-repeat', async () => {
 	const encode = encodeXml(
-		new PLDict([
+		new PLDictionary([
 			[new PLString('A'), new PLString('11')],
 			[new PLString('B'), new PLString('21')],
 			[new PLString('B'), new PLString('22')],

@@ -284,7 +284,7 @@ export function encodeOpenStep(
 					i += stringLength(v.value, qc, quoted);
 				}
 			},
-			PLDict(v, d, k): void {
+			PLDictionary(v, d, k): void {
 				if (d && k === null) {
 					throw new TypeError('Invalid OpenStep key type');
 				}
@@ -366,7 +366,7 @@ export function encodeOpenStep(
 					r[i++] = 59;
 				}
 			},
-			PLDict(v, d, k): void {
+			PLDictionary(v, d, k): void {
 				d += base;
 				if (typeof k === 'number') {
 					if (k) {
@@ -434,7 +434,7 @@ export function encodeOpenStep(
 					}
 				}
 			},
-			PLDict(v, d, k): void {
+			PLDictionary(v, d, k): void {
 				if (v.size && (d += base + 1)) {
 					r[i++] = 10;
 					for (; --d; i += inl) {

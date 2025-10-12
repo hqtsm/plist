@@ -5,7 +5,7 @@ import {
 	assertThrows,
 } from '@std/assert';
 import { PLBoolean, PLTYPE_BOOLEAN } from '../boolean.ts';
-import { PLDict } from '../dict.ts';
+import { PLDictionary } from '../dictionary.ts';
 import {
 	FORMAT_BINARY_V1_0,
 	FORMAT_OPENSTEP,
@@ -17,7 +17,7 @@ import { PLString } from '../string.ts';
 import { encode, type EncodeOptions } from './mod.ts';
 
 Deno.test('Format: FORMAT_OPENSTEP', () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLString('Key'), new PLString('Value')],
 	]);
 	const enc = encode(plist, {
@@ -37,7 +37,7 @@ Deno.test('Format: FORMAT_OPENSTEP', () => {
 });
 
 Deno.test('Format: FORMAT_STRINGS', () => {
-	const plist = new PLDict([
+	const plist = new PLDictionary([
 		[new PLString('Key'), new PLString('Value')],
 	]);
 	const enc = encode(plist, {
@@ -84,7 +84,7 @@ Deno.test('Format: FORMAT_XML_V0_9', () => {
 
 Deno.test('Format: FORMAT_BINARY_V1_0', () => {
 	const TRUE = new PLBoolean(true);
-	const dict = new PLDict([
+	const dict = new PLDictionary([
 		[new PLString('Dictionary Key 1'), TRUE],
 		[new PLString('Dictionary Key 2'), TRUE],
 	]);
