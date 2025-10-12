@@ -31,15 +31,13 @@ function* rootValue(root: PLType): Generator<[null, PLType]> {
 /**
  * Iterate dictionary in pairs.
  *
- * @param dict Dictionary to iterate.
+ * @param d Dictionary to iterate.
  */
-function* dictPairs(
-	dict: PLDictionary,
-): Generator<[null | PLType, PLType]> {
+function* dictPairs(d: PLDictionary): Generator<[null | PLType, PLType]> {
 	let k, v;
-	for (k of dict.keys()) {
+	for (k of d.keys()) {
 		yield [null, k];
-		if ((v = dict.get(k))) {
+		if ((v = d.get(k))) {
 			yield [k, v];
 		}
 	}
@@ -48,19 +46,17 @@ function* dictPairs(
 /**
  * Iterate dictionary keys, then values.
  *
- * @param dict Dictionary to iterate.
+ * @param d Dictionary to iterate.
  */
-function* dictKeysFirst(
-	dict: PLDictionary,
-): Generator<[null | PLType, PLType]> {
+function* dictKeysFirst(d: PLDictionary): Generator<[null | PLType, PLType]> {
 	let k, v;
 	const keys = new Set<PLType>();
-	for (k of dict.keys()) {
+	for (k of d.keys()) {
 		yield [null, k];
 		keys.add(k);
 	}
 	for (k of keys) {
-		if ((v = dict.get(k))) {
+		if ((v = d.get(k))) {
 			yield [k, v];
 		}
 	}
