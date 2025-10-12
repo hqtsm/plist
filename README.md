@@ -175,6 +175,20 @@ Option to always make strings quoted even when it is optional.
 
 Use the "shortcut" style for keys and values that are reference equal.
 
+```
+{
+	"shortcut";
+}
+```
+
+VS
+
+```
+{
+	"shortcut" = "shortcut";
+}
+```
+
 ## Decode Binary
 
 ```ts
