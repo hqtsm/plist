@@ -84,7 +84,7 @@ export interface EncodeBinaryOptions {
 	format?: typeof FORMAT_BINARY_V1_0;
 
 	/**
-	 * Types to be duplicated in the offset table.
+	 * Types or values to be duplicated in the offset table.
 	 *
 	 * @default [] Empty list.
 	 */
