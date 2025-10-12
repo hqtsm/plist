@@ -176,7 +176,7 @@ export interface EncodeOpenStepOptions {
 	quoted?: boolean;
 
 	/**
-	 * Use shortcut format for matching keys and values.
+	 * Use shortcut format for keys and values that are reference equal.
 	 *
 	 * @default false
 	 */
