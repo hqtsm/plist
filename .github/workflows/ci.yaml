@@ -13,10 +13,10 @@ jobs:
     strategy:
       matrix:
         config:
-          - deno-version: 2.3.3
-          - deno-version: 2.3.0
-          - deno-version: 2.2.12
-          - deno-version: 2.1.12
+          - deno-version: 2.5.4
+          - deno-version: 2.4.5
+          - deno-version: 2.2.15
+          - deno-version: 2.1.14
             deno-lock: 0
           - deno-version: 2.0.0
             deno-lock: 0
@@ -58,7 +58,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: 2.3.3
+          deno-version: 2.4.5
 
       - name: Docs
         run: deno task docs
@@ -90,12 +90,12 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: 2.3.3
+          deno-version: 2.4.5
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22.16.0
+          node-version: 22.20.0
 
       - name: Build NPM
         run: deno task npm dev
@@ -120,12 +120,12 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: 2.3.3
+          deno-version: 2.4.5
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22.16.0
+          node-version: 22.20.0
 
       - name: Build NPM
         run: deno task npm prod
@@ -146,10 +146,10 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 24.1.0
-          - 22.16.0
-          - 22.11.0
-          - 20.9.0
+          - 25.0.0
+          - 22.20.0
+          - 20.19.5
+          - 18.20.8
           - 18.12.0
 
     name: Node ${{ matrix.node-version }}
