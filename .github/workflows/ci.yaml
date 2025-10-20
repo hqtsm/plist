@@ -142,7 +142,7 @@ jobs:
 
       - name: Check Publish
         working-directory: npm
-        run: npm publish --dry-run
+        run: npm publish --dry-run --tag dry-run
 
   node:
     strategy:
