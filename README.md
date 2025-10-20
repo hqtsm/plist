@@ -2,6 +2,17 @@
 
 Property list file encoding and decoding
 
+![plist](https://img.shields.io/badge/plist-eee)
+![encode](https://img.shields.io/badge/encode-eee)
+![decode](https://img.shields.io/badge/decode-eee)
+![openstep](https://img.shields.io/badge/openstep-eee)
+![xml](https://img.shields.io/badge/xml-eee)
+![binary](https://img.shields.io/badge/binary-eee)
+
+[![JSR](https://jsr.io/badges/@hqtsm/plist)](https://jsr.io/@hqtsm/plist)
+[![npm](https://img.shields.io/npm/v/@hqtsm/plist.svg)](https://npmjs.com/package/@hqtsm/plist)
+[![CI](https://github.com/hqtsm/plist/actions/workflows/ci.yaml/badge.svg)](https://github.com/hqtsm/plist/actions/workflows/ci.yaml)
+
 # Features
 
 - Pure TypeScript, run anywhere
