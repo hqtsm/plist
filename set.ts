@@ -15,6 +15,8 @@ export const PLTYPE_SET = 'PLSet' as const;
 
 /**
  * Property list set type.
+ *
+ * @template T Value type.
  */
 export class PLSet<T extends PLType = PLType> {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_SET;
@@ -160,6 +162,7 @@ export class PLSet<T extends PLType = PLType> {
 	/**
 	 * Create a new set of every value in either this set or another.
 	 *
+	 * @template U Value type.
 	 * @param other Other set.
 	 * @returns Union set.
 	 */
@@ -174,6 +177,7 @@ export class PLSet<T extends PLType = PLType> {
 	/**
 	 * Create a new set of every value in both this set and another.
 	 *
+	 * @template U Value type.
 	 * @param other Other set.
 	 * @returns Intersection set.
 	 */
@@ -190,6 +194,7 @@ export class PLSet<T extends PLType = PLType> {
 	/**
 	 * Create a new set of every value in this set but not in another.
 	 *
+	 * @template U Value type.
 	 * @param other Other set.
 	 * @returns Difference set.
 	 */
@@ -206,6 +211,7 @@ export class PLSet<T extends PLType = PLType> {
 	/**
 	 * Create a new set of every value only in either this set or another.
 	 *
+	 * @template U Value type.
 	 * @param other Other set.
 	 * @returns Symmetric difference set.
 	 */

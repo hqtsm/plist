@@ -15,6 +15,9 @@ export const PLTYPE_DICTIONARY = 'PLDictionary' as const;
 
 /**
  * Property list dictionary type.
+ *
+ * @template K Key type.
+ * @template V Value type.
  */
 export class PLDictionary<
 	K extends PLType = PLType,

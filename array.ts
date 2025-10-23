@@ -15,6 +15,8 @@ export const PLTYPE_ARRAY = 'PLArray' as const;
 
 /**
  * Property list array type.
+ *
+ * @template T Value type.
  */
 export class PLArray<T extends PLType = PLType> {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_ARRAY;
