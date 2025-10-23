@@ -16,13 +16,17 @@ Property list file encoding and decoding
 # Features
 
 - Pure TypeScript, run anywhere
+- Zero dependencies
 - Tree shaking friendly design
 - Support for both encoding and decoding multiple formats
   - OpenStep / Strings
   - XML
   - Binary
 - Optional support for non-UTF XML encodings (BYO decoder)
-- Support for data types inconsistenly supported by official libraries
+- Fast custom parsers that correctly handle the edge cases of offical parsers
+- Well tested against hundreds of samples generated from official libraries
+- Additionally tested against samples that offical libraries do not produce
+- Support for obscure data types supported by official libraries
 - Supports encoding output identical to official libraries
 - Encoders and decoders preserve the data structure as closely as possible
 - Includes a type-safe walk function to walk a property list
