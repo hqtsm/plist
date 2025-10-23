@@ -11,8 +11,8 @@ import type { PLType } from './type.ts';
  */
 export type PLRealBits = 32 | 64;
 
-const values: WeakMap<PLReal, number> = new WeakMap();
-const bitses: WeakMap<PLReal, PLRealBits> = new WeakMap();
+let values: WeakMap<PLReal, number>;
+let bitses: WeakMap<PLReal, PLRealBits>;
 
 /**
  * PLReal type.
@@ -37,6 +37,8 @@ export class PLReal {
 	 * @param bits Real bits.
 	 */
 	constructor(value = 0, bits: PLRealBits = 64) {
+		values ??= new WeakMap();
+		bitses ??= new WeakMap();
 		value = +value;
 		switch ((+bits || 0) - (bits % 1 || 0)) {
 			case 32: {

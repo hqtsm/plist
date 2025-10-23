@@ -22,7 +22,7 @@ import {
 } from './pri/date.ts';
 import type { PLType } from './type.ts';
 
-const times: WeakMap<PLDate, number> = new WeakMap();
+let times: WeakMap<PLDate, number>;
 const UNIX_EPOCH = -978307200;
 
 /**
@@ -47,6 +47,7 @@ export class PLDate {
 	 * @param time Date time.
 	 */
 	constructor(time = 0) {
+		times ??= new WeakMap();
 		times.set(this, +time);
 	}
 

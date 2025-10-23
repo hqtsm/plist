@@ -6,7 +6,7 @@
 
 import type { PLType } from './type.ts';
 
-const values: WeakMap<PLUID, bigint> = new WeakMap();
+let values: WeakMap<PLUID, bigint>;
 
 /**
  * PLUID type.
@@ -30,6 +30,7 @@ export class PLUID {
 	 * @param value UID value.
 	 */
 	constructor(value = 0n) {
+		values ??= new WeakMap();
 		values.set(this, BigInt.asUintN(32, BigInt(value)));
 	}
 

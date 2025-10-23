@@ -6,7 +6,7 @@
 
 import type { PLType } from './type.ts';
 
-const values: WeakMap<PLBoolean, boolean> = new WeakMap();
+let values: WeakMap<PLBoolean, boolean>;
 
 /**
  * PLBoolean type.
@@ -30,6 +30,7 @@ export class PLBoolean {
 	 * @param value Boolean value.
 	 */
 	constructor(value = false) {
+		values ??= new WeakMap();
 		values.set(this, !!value);
 	}
 

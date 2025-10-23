@@ -6,7 +6,7 @@
 
 import type { PLType } from './type.ts';
 
-const maps: WeakMap<PLDictionary, Map<PLType, PLType>> = new WeakMap();
+let maps: WeakMap<PLDictionary, Map<PLType, PLType>>;
 
 /**
  * PLDictionary type.
@@ -33,6 +33,7 @@ export class PLDictionary<
 	 * @param entries Key value pairs.
 	 */
 	constructor(entries: Iterable<readonly [K, V]> | null = null) {
+		maps ??= new WeakMap();
 		maps.set(this, new Map(entries));
 	}
 
