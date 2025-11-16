@@ -166,7 +166,12 @@ export class PLInteger {
 	}
 
 	static {
-		const value = { value: PLTYPE_INTEGER } as const;
+		const value = {
+			value: PLTYPE_INTEGER,
+			configurable: false,
+			enumerable: false,
+			writable: false,
+		} as const;
 		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
 		Object.defineProperty(this.prototype, 'type', value);
 	}

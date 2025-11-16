@@ -277,7 +277,12 @@ export class PLDictionary<
 	}
 
 	static {
-		const value = { value: PLTYPE_DICTIONARY } as const;
+		const value = {
+			value: PLTYPE_DICTIONARY,
+			configurable: false,
+			enumerable: false,
+			writable: false,
+		} as const;
 		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
 		Object.defineProperty(this.prototype, 'type', value);
 	}

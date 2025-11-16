@@ -321,7 +321,12 @@ export class PLSet<T extends PLType = PLType> {
 	}
 
 	static {
-		const value = { value: PLTYPE_SET } as const;
+		const value = {
+			value: PLTYPE_SET,
+			configurable: false,
+			enumerable: false,
+			writable: false,
+		} as const;
 		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
 		Object.defineProperty(this.prototype, 'type', value);
 	}

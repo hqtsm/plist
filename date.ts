@@ -288,7 +288,12 @@ export class PLDate {
 	public static readonly UNIX_EPOCH: number;
 
 	static {
-		const value = { value: PLTYPE_DATE } as const;
+		const value = {
+			value: PLTYPE_DATE,
+			configurable: false,
+			enumerable: false,
+			writable: false,
+		} as const;
 		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
 		Object.defineProperty(this.prototype, 'type', value);
 		Object.defineProperty(this, 'UNIX_EPOCH', { value: UNIX_EPOCH });

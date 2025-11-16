@@ -333,7 +333,12 @@ export class PLArray<T extends PLType = PLType> {
 	}
 
 	static {
-		const value = { value: PLTYPE_ARRAY } as const;
+		const value = {
+			value: PLTYPE_ARRAY,
+			configurable: false,
+			enumerable: false,
+			writable: false,
+		} as const;
 		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
 		Object.defineProperty(this.prototype, 'type', value);
 	}

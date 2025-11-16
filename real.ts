@@ -136,7 +136,12 @@ export class PLReal {
 	}
 
 	static {
-		const value = { value: PLTYPE_REAL } as const;
+		const value = {
+			value: PLTYPE_REAL,
+			configurable: false,
+			enumerable: false,
+			writable: false,
+		} as const;
 		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
 		Object.defineProperty(this.prototype, 'type', value);
 	}

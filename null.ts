@@ -56,7 +56,12 @@ export class PLNull {
 	}
 
 	static {
-		const value = { value: PLTYPE_NULL } as const;
+		const value = {
+			value: PLTYPE_NULL,
+			configurable: false,
+			enumerable: false,
+			writable: false,
+		} as const;
 		Object.defineProperty(this.prototype, Symbol.toStringTag, value);
 		Object.defineProperty(this.prototype, 'type', value);
 	}
