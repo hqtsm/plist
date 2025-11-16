@@ -40,7 +40,7 @@ export type EncodeOptions =
 export function encode(
 	plist: PLType,
 	options: Readonly<EncodeOptions>,
-): InstanceType<typeof Uint8Array> {
+): Uint8Array<ArrayBuffer> {
 	switch (options.format) {
 		case FORMAT_BINARY_V1_0: {
 			return encodeBinary(plist, options);

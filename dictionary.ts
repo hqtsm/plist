@@ -193,7 +193,7 @@ export class PLDictionary<
 	 *
 	 * @returns Dictionary entries.
 	 */
-	public entries(): IterableIterator<[K, V]> {
+	public entries(): MapIterator<[K, V]> {
 		return (maps.get(this) as Map<K, V>).entries();
 	}
 
@@ -202,7 +202,7 @@ export class PLDictionary<
 	 *
 	 * @returns Dictionary keys.
 	 */
-	public keys(): IterableIterator<K> {
+	public keys(): MapIterator<K> {
 		return (maps.get(this) as Map<K, V>).keys();
 	}
 
@@ -211,7 +211,7 @@ export class PLDictionary<
 	 *
 	 * @returns Dictionary values.
 	 */
-	public values(): IterableIterator<V> {
+	public values(): MapIterator<V> {
 		return (maps.get(this) as Map<K, V>).values();
 	}
 
@@ -220,7 +220,7 @@ export class PLDictionary<
 	 *
 	 * @returns Dictionary iterator.
 	 */
-	public [Symbol.iterator](): IterableIterator<[K, V]> {
+	public [Symbol.iterator](): MapIterator<[K, V]> {
 		return (maps.get(this) as Map<K, V>)[Symbol.iterator]();
 	}
 

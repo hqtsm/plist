@@ -128,7 +128,7 @@ export class PLSet<T extends PLType = PLType> {
 	 *
 	 * @returns Set entries.
 	 */
-	public entries(): IterableIterator<[T, T]> {
+	public entries(): SetIterator<[T, T]> {
 		return (sets.get(this) as Set<T>).entries();
 	}
 
@@ -137,7 +137,7 @@ export class PLSet<T extends PLType = PLType> {
 	 *
 	 * @returns Set keys.
 	 */
-	public keys(): IterableIterator<T> {
+	public keys(): SetIterator<T> {
 		return (sets.get(this) as Set<T>).keys();
 	}
 
@@ -146,7 +146,7 @@ export class PLSet<T extends PLType = PLType> {
 	 *
 	 * @returns Set values.
 	 */
-	public values(): IterableIterator<T> {
+	public values(): SetIterator<T> {
 		return (sets.get(this) as Set<T>).values();
 	}
 
@@ -155,7 +155,7 @@ export class PLSet<T extends PLType = PLType> {
 	 *
 	 * @returns Set iterator.
 	 */
-	public [Symbol.iterator](): IterableIterator<T> {
+	public [Symbol.iterator](): SetIterator<T> {
 		return (sets.get(this) as Set<T>)[Symbol.iterator]();
 	}
 
