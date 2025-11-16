@@ -6,7 +6,7 @@
 
 import type { PLType } from './type.ts';
 
-let buffers: WeakMap<PLData, ArrayBuffer>;
+const buffers = new WeakMap<PLData, ArrayBuffer>();
 
 /**
  * PLData type.
@@ -30,7 +30,6 @@ export class PLData {
 	 * @param byteLength Byte length.
 	 */
 	constructor(byteLength = 0) {
-		buffers ??= new WeakMap();
 		buffers.set(this, new ArrayBuffer(byteLength));
 	}
 

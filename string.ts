@@ -6,7 +6,7 @@
 
 import type { PLType } from './type.ts';
 
-let values: WeakMap<PLString, string>;
+const values = new WeakMap<PLString, string>();
 
 /**
  * PLString type.
@@ -30,7 +30,6 @@ export class PLString {
 	 * @param value String value.
 	 */
 	constructor(value = '') {
-		values ??= new WeakMap();
 		values.set(this, '' + value);
 	}
 

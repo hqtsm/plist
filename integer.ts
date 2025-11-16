@@ -11,8 +11,8 @@ import type { PLType } from './type.ts';
  */
 export type PLIntegerBits = 8 | 16 | 32 | 64 | 128;
 
-let values: WeakMap<PLInteger, bigint>;
-let bitses: WeakMap<PLInteger, PLIntegerBits>;
+const values = new WeakMap<PLInteger, bigint>();
+const bitses = new WeakMap<PLInteger, PLIntegerBits>();
 
 /**
  * PLInteger type.
@@ -37,8 +37,6 @@ export class PLInteger {
 	 * @param bits Integer bits.
 	 */
 	constructor(value = 0n, bits: PLIntegerBits = 64) {
-		values ??= new WeakMap();
-		bitses ??= new WeakMap();
 		value = BigInt(value);
 		switch ((+bits || 0) - (bits % 1 || 0)) {
 			case 8: {

@@ -6,7 +6,7 @@
 
 import type { PLType } from './type.ts';
 
-let sets: WeakMap<PLSet, Set<PLType>>;
+const sets = new WeakMap<PLSet, Set<PLType>>();
 
 /**
  * PLSet type.
@@ -32,7 +32,6 @@ export class PLSet<T extends PLType = PLType> {
 	 * @param entries Entries.
 	 */
 	constructor(entries: Iterable<T> | null = null) {
-		sets ??= new WeakMap();
 		sets.set(this, new Set(entries));
 	}
 
