@@ -304,7 +304,7 @@ export function walk(
 			switch (t) {
 				case PLTYPE_DICTIONARY: {
 					n = {
-						p: (p = v as PLDictionary),
+						p: p = v as PLDictionary,
 						k,
 						g: (max < 0 || depth < max)
 							? keysFirst
@@ -319,7 +319,7 @@ export function walk(
 				case PLTYPE_ARRAY:
 				case PLTYPE_SET: {
 					n = {
-						p: (p = v as PLArray | PLSet),
+						p: p = v as PLArray | PLSet,
 						k,
 						g: (max < 0 || depth < max)
 							? (v as PLArray | PLSet).entries()
