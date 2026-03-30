@@ -6,6 +6,7 @@ import {
 } from '@std/assert';
 import { PLDictionary, PLTYPE_DICTIONARY } from './dictionary.ts';
 import { PLString } from './string.ts';
+import type { PLType } from '@hqtsm/plist/type';
 
 function irv<T>(
 	ir: { done?: boolean; value?: T },
@@ -50,6 +51,35 @@ Deno.test('get', () => {
 	const dict = new PLDictionary([[a, b]]);
 	assertStrictEquals(dict.get(a), b);
 	assertEquals(dict.get(b), undefined);
+});
+
+Deno.test('getOrInsert', () => {
+	const key = new PLString('key');
+	const def = new PLString('def');
+	const dict = new PLDictionary();
+	assertStrictEquals(dict.getOrInsert(key, def), def);
+	assertEquals(dict.has(key), true);
+	assertStrictEquals(dict.getOrInsert(key, key), def);
+});
+
+Deno.test('getOrInsertComputed', () => {
+	const uncalled = () => {
+		throw new Error('Not called');
+	};
+	const key = new PLString('key');
+	const def = new PLString('def');
+	const dict = new PLDictionary();
+	let computed: PLType | undefined;
+	assertStrictEquals(
+		dict.getOrInsertComputed(key, (key) => {
+			computed = key;
+			return def;
+		}),
+		def,
+	);
+	assertStrictEquals(computed, key);
+	assertEquals(dict.has(key), true);
+	assertStrictEquals(dict.getOrInsertComputed(key, uncalled), def);
 });
 
 Deno.test('set', () => {

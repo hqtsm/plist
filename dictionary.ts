@@ -69,6 +69,39 @@ export class PLDictionary<
 	}
 
 	/**
+	 * Get the value for a key from this map or insert the default value.
+	 *
+	 * @param key Key to get.
+	 * @param defaultValue Default value.
+	 * @returns Value for the key.
+	 */
+	public getOrInsert(key: K, defaultValue: V): V {
+		const map = maps.get(this) as Map<K, V>;
+		if (map.has(key)) {
+			return map.get(key)!;
+		}
+		map.set(key, defaultValue);
+		return defaultValue;
+	}
+
+	/**
+	 * Get the value for a key from this map or insert computed default value.
+	 *
+	 * @param key Key to get.
+	 * @param callback Compute the default value.
+	 * @returns Value for the key.
+	 */
+	public getOrInsertComputed(key: K, callback: (key: K) => V): V {
+		const map = maps.get(this) as Map<K, V>;
+		if (map.has(key)) {
+			return map.get(key)!;
+		}
+		const value = callback(key);
+		map.set(key, value);
+		return value;
+	}
+
+	/**
 	 * Set value for key.
 	 *
 	 * @param key Key.
