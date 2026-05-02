@@ -1,12 +1,22 @@
-import { assertEquals, assertStrictEquals } from '@std/assert';
+import {
+	assertEquals,
+	assertInstanceOf,
+	assertStrictEquals,
+} from '@std/assert';
 import { PLData, PLTYPE_DATA } from './data.ts';
 import { PLBoolean } from './boolean.ts';
 
 Deno.test('initial value', () => {
+	assertInstanceOf(
+		(new PLData() satisfies ArrayBufferView<ArrayBuffer>).buffer,
+		ArrayBuffer,
+	);
 	assertEquals(new PLData().buffer.byteLength, 0);
 	assertEquals(new PLData().byteLength, 0);
+	assertEquals(new PLData().byteOffset, 0);
 	assertEquals(new PLData(42).buffer.byteLength, 42);
 	assertEquals(new PLData(42).byteLength, 42);
+	assertEquals(new PLData(42).byteOffset, 0);
 });
 
 Deno.test('valueOf', () => {

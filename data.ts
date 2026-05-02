@@ -52,6 +52,15 @@ export class PLData {
 	}
 
 	/**
+	 * Get byte offset.
+	 *
+	 * @returns Byte offset, always 0.
+	 */
+	public get byteOffset(): number {
+		return 0;
+	}
+
+	/**
 	 * Value getter.
 	 *
 	 * @returns Buffer value.
