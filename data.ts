@@ -6,7 +6,7 @@
 
 import type { PLType } from './type.ts';
 
-const buffers = new WeakMap<PLData, ArrayBuffer>();
+const buffers = new WeakMap<PLData, ArrayBufferLike>();
 const offsets = new WeakMap<PLData, number | undefined>();
 const lengths = new WeakMap<PLData, number | undefined>();
 
@@ -18,7 +18,7 @@ export const PLTYPE_DATA = 'PLData' as const;
 /**
  * Property list data type.
  */
-export class PLData {
+export class PLData<T extends ArrayBufferLike = ArrayBufferLike> {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_DATA;
 
 	/**
@@ -34,7 +34,7 @@ export class PLData {
 	 * @param byteLength Byte length.
 	 */
 	constructor(
-		buffer: ArrayBuffer,
+		buffer: T,
 		byteOffset?: number,
 		byteLength?: number,
 	) {
@@ -48,8 +48,8 @@ export class PLData {
 	 *
 	 * @returns Data buffer.
 	 */
-	public get buffer(): ArrayBuffer {
-		return buffers.get(this)!;
+	public get buffer(): T {
+		return buffers.get(this) as T;
 	}
 
 	/**
@@ -80,8 +80,8 @@ export class PLData {
 	 *
 	 * @returns Buffer value.
 	 */
-	public valueOf(): ArrayBuffer {
-		return buffers.get(this)!;
+	public valueOf(): T {
+		return buffers.get(this) as T;
 	}
 
 	/**
