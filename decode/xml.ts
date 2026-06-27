@@ -349,8 +349,8 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 					if (c !== 60) {
 						continue;
 					}
-					r = new PLData(new ArrayBuffer(s));
-					o = new Uint8Array(r.buffer);
+					o = new Uint8Array(r = new ArrayBuffer(s));
+					r = new PLData(r);
 					for (a = s = t = 0, i = h;; i++) {
 						c = d[i];
 						if (c > 42 && c < 123) {

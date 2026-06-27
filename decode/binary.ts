@@ -202,7 +202,7 @@ export function decodeBinary(
 	): Next {
 		let c;
 		let i: number;
-		let p: PLType | undefined;
+		let p: PLType | ArrayBuffer | undefined;
 		let m: number;
 		let r: number | string | Map<number, PLType>;
 		for (r of refs) {
@@ -334,8 +334,10 @@ export function decodeBinary(
 						if (i + c > table) {
 							break;
 						}
-						object.set(x, p = new PLData(new ArrayBuffer(c)));
-						new Uint8Array(p.buffer).set(d.subarray(i, i + c));
+						new Uint8Array(p = new ArrayBuffer(c)).set(
+							d.subarray(i, i + c),
+						);
+						object.set(x, p = new PLData(p));
 						push(p);
 						continue;
 					}
