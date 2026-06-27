@@ -7,18 +7,23 @@ import { PLData, PLTYPE_DATA } from './data.ts';
 import { PLBoolean } from './boolean.ts';
 
 Deno.test('initial value', () => {
-	assertInstanceOf(
-		(
-			new PLData(new ArrayBuffer(0)) satisfies ArrayBufferView<
-				ArrayBuffer
-			>
-		)
-			.buffer,
-		ArrayBuffer,
-	);
 	assertEquals(new PLData(new ArrayBuffer(0)).buffer.byteLength, 0);
 	assertEquals(new PLData(new ArrayBuffer(0)).byteLength, 0);
 	assertEquals(new PLData(new ArrayBuffer(0)).byteOffset, 0);
+	{
+		const data = new PLData(new ArrayBuffer(0));
+		assertInstanceOf(
+			(data satisfies ArrayBufferView<ArrayBuffer>).buffer,
+			ArrayBuffer,
+		);
+	}
+	{
+		const data = new PLData(new SharedArrayBuffer(0));
+		assertInstanceOf(
+			(data satisfies ArrayBufferView<SharedArrayBuffer>).buffer,
+			SharedArrayBuffer,
+		);
+	}
 
 	{
 		const ab = new ArrayBuffer(8);
