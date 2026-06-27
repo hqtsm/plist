@@ -17,6 +17,8 @@ export const PLTYPE_DATA = 'PLData' as const;
 
 /**
  * Property list data type.
+ *
+ * @template T Buffer type.
  */
 export class PLData<T extends ArrayBufferLike = ArrayBufferLike> {
 	declare public readonly [Symbol.toStringTag]: typeof PLTYPE_DATA;
