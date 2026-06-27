@@ -104,7 +104,7 @@ function decodeData(d: Uint8Array, p: [number]): PLData {
 	for (let i = p[0] + 1, b = i, c, s = 0, r, l = d.length; i < l;) {
 		if (b16d(c = d[i]) < 0) {
 			if (c === 62) {
-				r = new PLData(s);
+				r = new PLData(new ArrayBuffer(s));
 				c = new Uint8Array(r.buffer);
 				for (s = 0; b < i;) {
 					l = b16d(d[b++]);

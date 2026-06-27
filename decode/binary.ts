@@ -334,7 +334,7 @@ export function decodeBinary(
 						if (i + c > table) {
 							break;
 						}
-						object.set(x, p = new PLData(c));
+						object.set(x, p = new PLData(new ArrayBuffer(c)));
 						new Uint8Array(p.buffer).set(d.subarray(i, i + c));
 						push(p);
 						continue;

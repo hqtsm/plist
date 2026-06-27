@@ -46,7 +46,7 @@ Deno.test('walk: default', () => {
 		const plist of [
 			new PLArray(),
 			new PLBoolean(),
-			new PLData(),
+			new PLData(new ArrayBuffer()),
 			new PLDate(),
 			new PLDictionary(),
 			new PLInteger(),
@@ -132,7 +132,7 @@ Deno.test('walk: all', () => {
 	plist.set(kArray, vArray);
 
 	const kData = new PLString('Data');
-	const vData = new PLData(8);
+	const vData = new PLData(new ArrayBuffer(8));
 	plist.set(kData, vData);
 
 	const kDate = new PLString('Date');

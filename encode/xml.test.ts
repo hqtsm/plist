@@ -55,7 +55,7 @@ Deno.test('Invalid keys', () => {
 	const keys: PLType[] = [
 		new PLArray(),
 		new PLBoolean(),
-		new PLData(),
+		new PLData(new ArrayBuffer()),
 		new PLDate(),
 		new PLInteger(),
 		new PLReal(),
@@ -187,9 +187,9 @@ Deno.test('spec: array-1', async () => {
 });
 
 Deno.test('spec: array-4', async () => {
-	const data0 = new PLData(2);
+	const data0 = new PLData(new ArrayBuffer(2));
 	new Uint8Array(data0.buffer).set([97, 97]);
-	const data1 = new PLData(2);
+	const data1 = new PLData(new ArrayBuffer(2));
 	new Uint8Array(data1.buffer).set([98, 98]);
 	const array = new PLArray();
 	for (let i = 0; i < 4; i++) {
@@ -350,7 +350,7 @@ Deno.test('spec: array-reuse', async () => {
 });
 
 Deno.test('spec: data-0', async () => {
-	const encode = encodeXml(new PLData(), CF_STYLE);
+	const encode = encodeXml(new PLData(new ArrayBuffer()), CF_STYLE);
 	assertEquals(
 		encode,
 		await fixturePlist('data-0', 'xml'),
@@ -358,7 +358,7 @@ Deno.test('spec: data-0', async () => {
 });
 
 Deno.test('spec: data-1', async () => {
-	const data = new PLData(1);
+	const data = new PLData(new ArrayBuffer(1));
 	new Uint8Array(data.buffer)[0] = 0x61;
 	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
@@ -368,7 +368,7 @@ Deno.test('spec: data-1', async () => {
 });
 
 Deno.test('spec: data-2', async () => {
-	const data = new PLData(2);
+	const data = new PLData(new ArrayBuffer(2));
 	new Uint8Array(data.buffer).set(new Uint8Array([0x61, 0x62]));
 	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
@@ -377,7 +377,7 @@ Deno.test('spec: data-2', async () => {
 	);
 });
 Deno.test('spec: data-3', async () => {
-	const data = new PLData(3);
+	const data = new PLData(new ArrayBuffer(3));
 	new Uint8Array(data.buffer).set(new Uint8Array([0x61, 0x62, 0x63]));
 	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
@@ -387,7 +387,7 @@ Deno.test('spec: data-3', async () => {
 });
 
 Deno.test('spec: data-4', async () => {
-	const data = new PLData(4);
+	const data = new PLData(new ArrayBuffer(4));
 	new Uint8Array(data.buffer).set(new Uint8Array([0x61, 0x62, 0x63, 0x64]));
 	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
@@ -398,7 +398,7 @@ Deno.test('spec: data-4', async () => {
 
 Deno.test('spec: data-14', async () => {
 	const chars = [...'abcdefghijklmn'].map((c) => c.charCodeAt(0));
-	const data = new PLData(chars.length);
+	const data = new PLData(new ArrayBuffer(chars.length));
 	new Uint8Array(data.buffer).set(chars);
 	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
@@ -409,7 +409,7 @@ Deno.test('spec: data-14', async () => {
 
 Deno.test('spec: data-15', async () => {
 	const chars = [...'abcdefghijklmno'].map((c) => c.charCodeAt(0));
-	const data = new PLData(chars.length);
+	const data = new PLData(new ArrayBuffer(chars.length));
 	new Uint8Array(data.buffer).set(chars);
 	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
@@ -423,7 +423,7 @@ Deno.test('spec: data-255', async () => {
 	for (let i = 0; i < 255; i++) {
 		bytes[i] = i;
 	}
-	const data = new PLData(255);
+	const data = new PLData(new ArrayBuffer(255));
 	new Uint8Array(data.buffer).set(bytes);
 	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
@@ -437,7 +437,7 @@ Deno.test('spec: data-256', async () => {
 	for (let i = 0; i < 256; i++) {
 		bytes[i] = i;
 	}
-	const data = new PLData(256);
+	const data = new PLData(new ArrayBuffer(256));
 	new Uint8Array(data.buffer).set(bytes);
 	const encode = encodeXml(data, CF_STYLE);
 	assertEquals(
@@ -447,9 +447,9 @@ Deno.test('spec: data-256', async () => {
 });
 
 Deno.test('spec: data-reuse', async () => {
-	const bytes = 'reused'.split('').map((c) => c.charCodeAt(0));
-	const reuse = new PLData(bytes.length);
-	new Uint8Array(reuse.buffer).set(bytes);
+	const chars = 'reused'.split('').map((c) => c.charCodeAt(0));
+	const reuse = new PLData(new ArrayBuffer(chars.length));
+	new Uint8Array(reuse.buffer).set(chars);
 	const encode = encodeXml(new PLArray([reuse, reuse]), CF_STYLE);
 	assertEquals(
 		encode,

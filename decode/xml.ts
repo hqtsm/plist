@@ -349,7 +349,7 @@ function data(d: Uint8Array, p: [number], l: number): PLData {
 					if (c !== 60) {
 						continue;
 					}
-					r = new PLData(s);
+					r = new PLData(new ArrayBuffer(s));
 					o = new Uint8Array(r.buffer);
 					for (a = s = t = 0, i = h;; i++) {
 						c = d[i];

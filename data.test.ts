@@ -8,18 +8,18 @@ import { PLBoolean } from './boolean.ts';
 
 Deno.test('initial value', () => {
 	assertInstanceOf(
-		(new PLData() satisfies ArrayBufferView<ArrayBuffer>).buffer,
+		(
+			new PLData(new ArrayBuffer(0)) satisfies ArrayBufferView<
+				ArrayBuffer
+			>
+		)
+			.buffer,
 		ArrayBuffer,
 	);
-	assertEquals(new PLData().buffer.byteLength, 0);
-	assertEquals(new PLData().byteLength, 0);
-	assertEquals(new PLData().byteOffset, 0);
-	assertEquals(new PLData(42).buffer.byteLength, 42);
-	assertEquals(new PLData(42).byteLength, 42);
-	assertEquals(new PLData(42).byteOffset, 0);
-});
+	assertEquals(new PLData(new ArrayBuffer(0)).buffer.byteLength, 0);
+	assertEquals(new PLData(new ArrayBuffer(0)).byteLength, 0);
+	assertEquals(new PLData(new ArrayBuffer(0)).byteOffset, 0);
 
-Deno.test('buffers', () => {
 	{
 		const ab = new ArrayBuffer(8);
 		const ua = new Uint8Array(ab);
@@ -73,12 +73,12 @@ Deno.test('buffers', () => {
 });
 
 Deno.test('valueOf', () => {
-	const pl = new PLData(42);
+	const pl = new PLData(new ArrayBuffer(42));
 	assertStrictEquals(pl.valueOf(), pl.buffer);
 });
 
 Deno.test('toString', () => {
-	const pl = new PLData(256);
+	const pl = new PLData(new ArrayBuffer(256));
 	const a = new Uint8Array(pl.buffer);
 	let e = '';
 	for (let i = 0; i < 256; i++) {
@@ -89,19 +89,24 @@ Deno.test('toString', () => {
 });
 
 Deno.test('is type', () => {
-	assertEquals(new PLData().type, PLTYPE_DATA);
-	assertEquals(new PLData()[Symbol.toStringTag], PLTYPE_DATA);
+	assertEquals(new PLData(new ArrayBuffer()).type, PLTYPE_DATA);
 	assertEquals(
-		Object.prototype.toString.call(new PLData()),
+		new PLData(new ArrayBuffer())[Symbol.toStringTag],
+		PLTYPE_DATA,
+	);
+	assertEquals(
+		Object.prototype.toString.call(new PLData(new ArrayBuffer())),
 		`[object ${PLTYPE_DATA}]`,
 	);
 
-	assertEquals(PLData.is(new PLData()), true);
+	assertEquals(PLData.is(new PLData(new ArrayBuffer())), true);
 	assertEquals(PLData.is(new PLBoolean()), false);
 	assertEquals(PLData.is({}), false);
 	assertEquals(PLData.is(null), false);
 
-	for (const v of [new PLData(), new PLBoolean(), {}, null]) {
+	for (
+		const v of [new PLData(new ArrayBuffer()), new PLBoolean(), {}, null]
+	) {
 		if (PLData.is(v)) {
 			assertEquals(v.byteLength, 0);
 		}

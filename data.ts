@@ -29,14 +29,7 @@ export class PLData {
 	/**
 	 * Create property list data reference.
 	 *
-	 * @param byteLength Byte length.
-	 */
-	constructor(byteLength?: number);
-
-	/**
-	 * Create property list data reference.
-	 *
-	 * @param buffer Buffer.
+	 * @param buffer Buffer or byte length.
 	 * @param byteOffset Byte offset.
 	 * @param byteLength Byte length.
 	 */
@@ -44,24 +37,7 @@ export class PLData {
 		buffer: ArrayBuffer,
 		byteOffset?: number,
 		byteLength?: number,
-	);
-
-	/**
-	 * Create property list data reference.
-	 *
-	 * @param buffer Buffer or byte length.
-	 * @param byteOffset Byte offset.
-	 * @param byteLength Byte length.
-	 */
-	constructor(
-		buffer?: number | ArrayBuffer,
-		byteOffset?: number,
-		byteLength?: number,
 	) {
-		buffer ||= 0;
-		if (typeof buffer === 'number') {
-			buffer = new ArrayBuffer(buffer);
-		}
 		buffers.set(this, buffer);
 		offsets.set(this, byteOffset);
 		lengths.set(this, byteLength);
