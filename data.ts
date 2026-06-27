@@ -7,6 +7,8 @@
 import type { PLType } from './type.ts';
 
 const buffers = new WeakMap<PLData, ArrayBuffer>();
+const offsets = new WeakMap<PLData, number | undefined>();
+const lengths = new WeakMap<PLData, number | undefined>();
 
 /**
  * PLData type.
@@ -29,8 +31,40 @@ export class PLData {
 	 *
 	 * @param byteLength Byte length.
 	 */
-	constructor(byteLength = 0) {
-		buffers.set(this, new ArrayBuffer(byteLength));
+	constructor(byteLength?: number);
+
+	/**
+	 * Create property list data reference.
+	 *
+	 * @param buffer Buffer.
+	 * @param byteOffset Byte offset.
+	 * @param byteLength Byte length.
+	 */
+	constructor(
+		buffer: ArrayBuffer,
+		byteOffset?: number,
+		byteLength?: number,
+	);
+
+	/**
+	 * Create property list data reference.
+	 *
+	 * @param buffer Buffer or byte length.
+	 * @param byteOffset Byte offset.
+	 * @param byteLength Byte length.
+	 */
+	constructor(
+		buffer?: number | ArrayBuffer,
+		byteOffset?: number,
+		byteLength?: number,
+	) {
+		buffer ||= 0;
+		if (typeof buffer === 'number') {
+			buffer = new ArrayBuffer(buffer);
+		}
+		buffers.set(this, buffer);
+		offsets.set(this, byteOffset);
+		lengths.set(this, byteLength);
 	}
 
 	/**
@@ -48,7 +82,11 @@ export class PLData {
 	 * @returns Byte length.
 	 */
 	public get byteLength(): number {
-		return buffers.get(this)!.byteLength;
+		const limit = Math.max(
+			buffers.get(this)!.byteLength - Math.max(offsets.get(this) || 0, 0),
+			0,
+		);
+		return Math.min(lengths.get(this) ?? limit, limit);
 	}
 
 	/**
@@ -57,7 +95,8 @@ export class PLData {
 	 * @returns Byte offset, always 0.
 	 */
 	public get byteOffset(): number {
-		return 0;
+		const offset = Math.max(offsets.get(this) || 0, 0);
+		return offset > buffers.get(this)!.byteLength ? 0 : offset;
 	}
 
 	/**
